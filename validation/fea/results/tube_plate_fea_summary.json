@@ -1,0 +1,460 @@
+{
+  "acceptance_evaluation": {
+    "all_predeclared_checks_pass": false,
+    "disposition": "Retain every comparison. A failed analytical-agreement check is a model-form disagreement, not a reason to alter inputs or tolerances.",
+    "plate_force_balance_note": "Both plate boundary conditions restrain the whole cut face, which includes pressure-loaded corner nodes whose consistent load share appears in the printed nodal forces, so no reaction-vs-applied acceptance check applies to the plates; the raw support_set_axial_force_n and the global equilibrium residual are retained.",
+    "plates": {
+      "fixed": {
+        "analytical_deflection_agreement_pass": false,
+        "analytical_stress_agreement_pass": true,
+        "finest_mesh_deflection_change_pass": true,
+        "finest_mesh_stress_change_pass": true
+      },
+      "simply_supported": {
+        "analytical_deflection_agreement_pass": true,
+        "analytical_stress_agreement_pass": true,
+        "finest_mesh_deflection_change_pass": true,
+        "finest_mesh_stress_change_pass": true
+      }
+    },
+    "tube": {
+      "analytical_agreement_pass": true,
+      "finest_mesh_change_pass": true,
+      "force_balance_pass": true
+    }
+  },
+  "classification": {
+    "evidence_role": "idealized_linear_elastic_fea_equation_comparison",
+    "not": [
+      "calibration",
+      "allowable_pressure",
+      "certification",
+      "physical_validation",
+      "design_approval"
+    ]
+  },
+  "comparisons": {
+    "finest_mesh_change": {
+      "plates": {
+        "fixed": {
+          "center_bending_stress_change": 0.000347694421218403,
+          "center_deflection_change": 0.002155188749560999
+        },
+        "simply_supported": {
+          "center_bending_stress_change": 0.0002121599304008015,
+          "center_deflection_change": 6.215967577527515e-05
+        }
+      },
+      "tube": {
+        "inner_surface": {
+          "axial_stress_psi": 0.0,
+          "hoop_stress_psi": 6.956990401185692e-05
+        },
+        "outer_surface": {
+          "axial_stress_psi": 0.0,
+          "hoop_stress_psi": 4.738116796909608e-05,
+          "radial_stress_psi": 0.00032733930771222663
+        }
+      }
+    },
+    "plates": {
+      "fixed": [
+        {
+          "center_bending_stress_relative_error": 0.026146895198136066,
+          "center_deflection_relative_error": 0.1604161641025641,
+          "mesh_id": "M1"
+        },
+        {
+          "center_bending_stress_relative_error": 0.024527903454999445,
+          "center_deflection_relative_error": 0.16909981538461527,
+          "mesh_id": "M2"
+        },
+        {
+          "center_bending_stress_relative_error": 0.024884126091413217,
+          "center_deflection_relative_error": 0.17161944615384606,
+          "mesh_id": "M3"
+        }
+      ],
+      "simply_supported": [
+        {
+          "center_bending_stress_relative_error": 0.005465124930145837,
+          "center_deflection_relative_error": 0.03556588679245265,
+          "mesh_id": "M1"
+        },
+        {
+          "center_bending_stress_relative_error": 0.0037517913620535026,
+          "center_deflection_relative_error": 0.036081911949685574,
+          "mesh_id": "M2"
+        },
+        {
+          "center_bending_stress_relative_error": 0.003538835451858402,
+          "center_deflection_relative_error": 0.036146314465408835,
+          "mesh_id": "M3"
+        }
+      ]
+    },
+    "tube": [
+      {
+        "locations": {
+          "inner_surface": {
+            "axial_relative_error": 2.616083549789039e-08,
+            "hoop_relative_error": 0.00046334956637605895,
+            "radial_absolute_error_fraction_of_pressure": 0.003670062115712774
+          },
+          "outer_surface": {
+            "axial_relative_error": 2.616083549789039e-08,
+            "hoop_relative_error": 0.0003450238776810943,
+            "radial_absolute_error_fraction_of_pressure": 0.0023871702026474484
+          }
+        },
+        "mesh_id": "M1"
+      },
+      {
+        "locations": {
+          "inner_surface": {
+            "axial_relative_error": 2.616083549789039e-08,
+            "hoop_relative_error": 0.0001946255699533106,
+            "radial_absolute_error_fraction_of_pressure": 0.0015414228396728796
+          },
+          "outer_surface": {
+            "axial_relative_error": 2.616083549789039e-08,
+            "hoop_relative_error": 0.000149738096091645,
+            "radial_absolute_error_fraction_of_pressure": 0.0010360488688796465
+          }
+        },
+        "mesh_id": "M2"
+      },
+      {
+        "locations": {
+          "inner_surface": {
+            "axial_relative_error": 2.616083549789039e-08,
+            "hoop_relative_error": 0.00012506920602373128,
+            "radial_absolute_error_fraction_of_pressure": 0.0009910837468745973
+          },
+          "outer_surface": {
+            "axial_relative_error": 2.616083549789039e-08,
+            "hoop_relative_error": 0.00010236402288843482,
+            "radial_absolute_error_fraction_of_pressure": 0.0007083704216477305
+          }
+        },
+        "mesh_id": "M3"
+      }
+    ]
+  },
+  "independent_calculations": {
+    "plates": {
+      "fixed": {
+        "maximum_deflection": 0.030468750000000003,
+        "maximum_tangential_bending_stress": 24.375000000000004,
+        "source_equation_case": "Roark Table 24 case 10b"
+      },
+      "simply_supported": {
+        "maximum_deflection": 0.12421875,
+        "maximum_tangential_bending_stress": 61.87499999999999,
+        "source_equation_case": "Roark Table 24 case 10a"
+      }
+    },
+    "tube": {
+      "branch": "thick",
+      "source": "Roark 6th ed. Table 28 case 1c for mean-radius thin membrane stress; Table 32 cases 1a-1d for Lam\u00e9 thick-cylinder stress; UnderPressure 4.0 Appendix C criterion B for ductile-metal von Mises failure",
+      "stress_states": [
+        {
+          "axial_stress": -3959.650103587755,
+          "hoop_stress": -7919.30020717551,
+          "radial_stress": 0.0,
+          "radius": 3.0,
+          "radius_convention": "internal"
+        },
+        {
+          "axial_stress": -3959.650103587755,
+          "hoop_stress": -6919.30020717551,
+          "radial_stress": -1000.0,
+          "radius": 3.4699999999999998,
+          "radius_convention": "external"
+        }
+      ]
+    }
+  },
+  "manifest": {
+    "dockerfile_sha256": "4210bed0102e4549493b5b26a0300d0846b2cdc75185b8909273986b32406a57",
+    "reference_sha256": "e4adbcbe24cc50f8f063e0bfb9755fcb91b85dc94c83360a632a7d190e1883e0",
+    "runner_sha256": "30bea2e3fb1ed3670f05f4dc74774d1c28d2a4a610beeb14d603b96a9c229533"
+  },
+  "meshes": {
+    "fixed": [
+      {
+        "applied_transverse_force_n": 15707.963267948966,
+        "center_deflection_mm": 0.03535643,
+        "center_top_surface": {
+          "hoop_bending_stress_mpa": -25.012361234229385,
+          "mean_in_plane_bending_stress_mpa": 25.012330570454573,
+          "radial_bending_stress_mpa": -25.012299906679758
+        },
+        "dat_sha256": "e9dac2db2abe46c10d3cee11d5e536f4c1d1d4a19c8b84879e2a7519809d1456",
+        "edge_bending_moment_n_mm_per_mm": 617.8821266919919,
+        "edge_bending_stress_mpa": 37.07292760151952,
+        "edge_radial_reaction_moment_full_circle_n_mm": 194113.39499999996,
+        "element_type": "CAX8R",
+        "elements": 16,
+        "global_equilibrium_residual_fraction": 8.142219574766039e-17,
+        "input_sha256": "7baa6894b0f362a848c5dc4174a2ac12ec89cfd24bea0ce2582d800b31feb811",
+        "mesh_id": "M1",
+        "nodes": 69,
+        "radial_elements": 8,
+        "runtime_seconds": 0.009847,
+        "support_set_axial_force_n": 15053.4648,
+        "support_set_includes_pressure_loaded_corner": true,
+        "thickness_elements": 2
+      },
+      {
+        "applied_transverse_force_n": 15707.963267948966,
+        "center_deflection_mm": 0.03562101,
+        "center_top_surface": {
+          "hoop_bending_stress_mpa": -24.97286506964189,
+          "mean_in_plane_bending_stress_mpa": 24.972867646715613,
+          "radial_bending_stress_mpa": -24.97287022378934
+        },
+        "dat_sha256": "f45ba47250623d9eb8b3229655d7e6edb018e43f40b31cf501d2b610d69a8b6e",
+        "edge_bending_moment_n_mm_per_mm": 618.2968407060802,
+        "edge_bending_stress_mpa": 37.09781044236481,
+        "edge_radial_reaction_moment_full_circle_n_mm": 194243.68125,
+        "element_type": "CAX8R",
+        "elements": 64,
+        "global_equilibrium_residual_fraction": 2.0355551801704075e-16,
+        "input_sha256": "04d0432000a6f57913e58c32ca43fb7ea87b642c6e35332c710e2f5fe0fd8213",
+        "mesh_id": "M2",
+        "nodes": 233,
+        "radial_elements": 16,
+        "runtime_seconds": 0.016234,
+        "support_set_axial_force_n": 15380.714826,
+        "support_set_includes_pressure_loaded_corner": true,
+        "thickness_elements": 4
+      },
+      {
+        "applied_transverse_force_n": 15707.963267948966,
+        "center_deflection_mm": 0.03569778,
+        "center_top_surface": {
+          "hoop_bending_stress_mpa": -24.98154865154003,
+          "mean_in_plane_bending_stress_mpa": 24.981550573478202,
+          "radial_bending_stress_mpa": -24.98155249541637
+        },
+        "dat_sha256": "92640cbf0cddf8017c657e4a9e401e08943b1e46898ba0b358ee831fbf681e3a",
+        "edge_bending_moment_n_mm_per_mm": 618.897248551077,
+        "edge_bending_stress_mpa": 37.13383491306462,
+        "edge_radial_reaction_moment_full_circle_n_mm": 194432.3049375,
+        "element_type": "CAX8R",
+        "elements": 256,
+        "global_equilibrium_residual_fraction": 6.310220256387349e-16,
+        "input_sha256": "756839b556d6437fcd486e3899fa97e8b333ef513e72251f15e1d92c7649072b",
+        "mesh_id": "M3",
+        "nodes": 849,
+        "radial_elements": 32,
+        "runtime_seconds": 0.042841,
+        "support_set_axial_force_n": 15544.339739999998,
+        "support_set_includes_pressure_loaded_corner": true,
+        "thickness_elements": 8
+      }
+    ],
+    "simply_supported": [
+      {
+        "applied_transverse_force_n": 15707.963267948966,
+        "center_deflection_mm": 0.1286367,
+        "center_top_surface": {
+          "hoop_bending_stress_mpa": -62.213182595433814,
+          "mean_in_plane_bending_stress_mpa": 62.213154605052765,
+          "radial_bending_stress_mpa": -62.21312661467171
+        },
+        "dat_sha256": "8eee4e047e209c9cf5a5e043ca7a87c95f6451a8840f3fc79f5b41bac808a07c",
+        "element_type": "CAX8R",
+        "elements": 16,
+        "global_equilibrium_residual_fraction": 4.071110360340815e-16,
+        "input_sha256": "b7ae426fcb3aec3155275140a746cea0d6f5e7a52c0599747aec7575c58d7a4f",
+        "mesh_id": "M1",
+        "nodes": 69,
+        "radial_elements": 8,
+        "runtime_seconds": 0.010186,
+        "support_set_axial_force_n": 15053.462999999998,
+        "support_set_includes_pressure_loaded_corner": true,
+        "thickness_elements": 2
+      },
+      {
+        "applied_transverse_force_n": 15707.963267948966,
+        "center_deflection_mm": 0.1287008,
+        "center_top_surface": {
+          "hoop_bending_stress_mpa": -62.10714701345333,
+          "mean_in_plane_bending_stress_mpa": 62.10714209052705,
+          "radial_bending_stress_mpa": -62.10713716760077
+        },
+        "dat_sha256": "aa415e67b1d2732d141d95a56998093246f28728e23fa14801975c9323d1000c",
+        "element_type": "CAX8R",
+        "elements": 64,
+        "global_equilibrium_residual_fraction": 8.651109229245335e-16,
+        "input_sha256": "a3130eb9345b7bd59b9cca27ecddeb7f7d3dc2d9b12f0b6b95a1532306b1c666",
+        "mesh_id": "M2",
+        "nodes": 233,
+        "radial_elements": 16,
+        "runtime_seconds": 0.01818,
+        "support_set_axial_force_n": 15380.714699999999,
+        "support_set_includes_pressure_loaded_corner": true,
+        "thickness_elements": 4
+      },
+      {
+        "applied_transverse_force_n": 15707.963267948966,
+        "center_deflection_mm": 0.1287088,
+        "center_top_surface": {
+          "hoop_bending_stress_mpa": -62.09396102164557,
+          "mean_in_plane_bending_stress_mpa": 62.09396544358373,
+          "radial_bending_stress_mpa": -62.093969865521885
+        },
+        "dat_sha256": "9c90475eb8a3b741353ff643de2239744cd5d24e67caf41ecd7da8a6d3414420",
+        "element_type": "CAX8R",
+        "elements": 256,
+        "global_equilibrium_residual_fraction": 1.3739997752629148e-16,
+        "input_sha256": "65a15af9020484dad6eb1a9638bc9116148adb798cc1c63419de482caf76ecd2",
+        "mesh_id": "M3",
+        "nodes": 849,
+        "radial_elements": 32,
+        "runtime_seconds": 0.041979,
+        "support_set_axial_force_n": 15544.339198200001,
+        "support_set_includes_pressure_loaded_corner": true,
+        "thickness_elements": 8
+      }
+    ],
+    "tube": [
+      {
+        "applied_closed_end_force_lbf": 37827.602982609336,
+        "axial_elements": 8,
+        "bottom_axial_reaction_lbf": 37827.60462,
+        "dat_sha256": "e1c21a9a4eb8b07fbc6637ea25110ea97ff87572140cc9bb3bc4f7c78de4a212",
+        "element_type": "CAX8R",
+        "elements": 32,
+        "global_equilibrium_residual_fraction": 1.8595872974647494e-15,
+        "input_sha256": "76dd8ff6f3db8e372c432bbf05454e0777738f1090701b08447c97658af4cc77",
+        "mesh_id": "M1",
+        "nodes": 121,
+        "radial_elements": 4,
+        "runtime_seconds": 0.012534,
+        "support_reaction_vs_applied_fraction": 4.3285604434117886e-08,
+        "surface_stresses": {
+          "inner_surface": {
+            "axial_stress_psi": -3959.65,
+            "hoop_stress_psi": -7915.630802858514,
+            "radial_stress_psi": -3.670062115712774
+          },
+          "outer_surface": {
+            "axial_stress_psi": -3959.65,
+            "hoop_stress_psi": -6916.912883387191,
+            "radial_stress_psi": -1002.3871702026474
+          }
+        }
+      },
+      {
+        "applied_closed_end_force_lbf": 37827.602982609336,
+        "axial_elements": 16,
+        "bottom_axial_reaction_lbf": 37827.60425999999,
+        "dat_sha256": "8b36d01c5559dffe550780f6cfb2d4a1265f491c0efff1b53792b5f419003ae4",
+        "element_type": "CAX8R",
+        "elements": 128,
+        "global_equilibrium_residual_fraction": 1.1411105276706184e-15,
+        "input_sha256": "4ca77ee58f097a6441f1648c2a4ba510f1696674121fd8fe4c76d13a86306913",
+        "mesh_id": "M2",
+        "nodes": 433,
+        "radial_elements": 8,
+        "runtime_seconds": 0.024819,
+        "support_reaction_vs_applied_fraction": 3.376874446736622e-08,
+        "surface_stresses": {
+          "inner_surface": {
+            "axial_stress_psi": -3959.65,
+            "hoop_stress_psi": -7917.758908859057,
+            "radial_stress_psi": -1.5414228396728795
+          },
+          "outer_surface": {
+            "axial_stress_psi": -3959.65,
+            "hoop_stress_psi": -6918.264124336201,
+            "radial_stress_psi": -1001.0360488688796
+          }
+        }
+      },
+      {
+        "applied_closed_end_force_lbf": 37827.602982609336,
+        "axial_elements": 32,
+        "bottom_axial_reaction_lbf": 37827.60300000001,
+        "dat_sha256": "a158be2a2e145ee3aaa8fecb5970e8aa4a7e2353b9d4b72f3c97fcd80f1be8c2",
+        "element_type": "CAX8R",
+        "elements": 512,
+        "global_equilibrium_residual_fraction": 1.6038940143231593e-15,
+        "input_sha256": "57f8fa5bf6fbaac26a9dc0c2df4dac7160e07d02573994c91941efe955ec39a9",
+        "mesh_id": "M3",
+        "nodes": 1633,
+        "radial_elements": 16,
+        "runtime_seconds": 0.074875,
+        "support_reaction_vs_applied_fraction": 4.5973491680229017e-10,
+        "surface_stresses": {
+          "inner_surface": {
+            "axial_stress_psi": -3959.65,
+            "hoop_stress_psi": -7918.309746586335,
+            "radial_stress_psi": -0.9910837468745974
+          },
+          "outer_surface": {
+            "axial_stress_psi": -3959.65,
+            "hoop_stress_psi": -6918.591919770731,
+            "radial_stress_psi": -1000.7083704216478
+          }
+        }
+      }
+    ]
+  },
+  "rerun_command": "uv run python validation/fea/run_fea.py p5-03 --work-directory /tmp/pv-gen-p5-03 --output /tmp/p5_03_summary.json",
+  "schema_version": "1.2.0",
+  "source_inputs": {
+    "plates": {
+      "geometry": {
+        "free_radius_mm": 50.0,
+        "plate_thickness_mm": 10.0
+      },
+      "load": {
+        "uniform_pressure_mpa": 2.0
+      },
+      "material": {
+        "elastic_modulus_mpa": 70000.0,
+        "poisson_ratio": 0.3
+      },
+      "source_case": "committed synthetic fixed/simply-supported plate equation case",
+      "units": "mm_n_mpa"
+    },
+    "tube": {
+      "geometry": {
+        "internal_radius_in": 3.0,
+        "modeled_length_in": 4.0,
+        "wall_thickness_in": 0.47
+      },
+      "load": {
+        "closed_end_axial_traction_psi": 3959.650103587755,
+        "external_pressure_psi": 1000.0
+      },
+      "material": {
+        "elastic_modulus_psi": 10300000.0,
+        "poisson_ratio": 0.33
+      },
+      "source_case": "UnderPressure 4.0 Example 1 committed analytical example",
+      "units": "inch_lbf_psi"
+    }
+  },
+  "tolerances": {
+    "plate_analytical_center_stress_relative_error": 0.05,
+    "plate_analytical_deflection_relative_error": 0.05,
+    "plate_finest_mesh_center_stress_change": 0.02,
+    "plate_finest_mesh_deflection_change": 0.01,
+    "support_reaction_vs_applied_fraction": 0.005,
+    "tube_analytical_component_relative_error": 0.01,
+    "tube_finest_mesh_component_change": 0.005
+  },
+  "toolchain": {
+    "architecture": "arm64",
+    "calculix_version": "2.20",
+    "docker_server_version": "29.5.3",
+    "image": "pv-gen-fea:ccx2.20",
+    "image_content_size_bytes": 59422299,
+    "image_id": "sha256:4e0cc7560c9dee55446691d1f88c56b89732e38d2a0482ab8eeff508c5f3c5c5"
+  }
+}

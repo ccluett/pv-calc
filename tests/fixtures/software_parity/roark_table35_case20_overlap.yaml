@@ -1,0 +1,76 @@
+fixture_id: roark_table35_case20_valid_overlap_matrix
+role: independent_equation_comparison_over_valid_thin_tube_domain
+source:
+  title: Roark's Formulas for Stress and Strain
+  edition: 6th
+  reference: Table 35 case 20
+  corroborating_reference: 7th ed. Table 15.2 case 20a, p. 736
+  implementation_reference: UnderPressure 4.0 Appendix C, Tube Buckling, p. 85
+  underpressure_manual_url: https://www.deepsea.com/wp-content/uploads/2021/06/UnderPressure_Manual.pdf
+  boundary: closed ends held circular
+  radius_convention: mean
+  applicability: mean radius / thickness > 10
+  probable_minimum_factor: 0.8
+common_inputs:
+  elastic_modulus:
+    value: 10.0
+    unit: Mpsi
+  poisson_ratio: 0.3
+  shell_mean_radius:
+    value: 5.0
+    unit: in
+  wall_thickness:
+    value: 0.25
+    unit: in
+  mean_radius_over_thickness: 20.0
+cases:
+  - case_id: short
+    unsupported_length:
+      value: 5.0
+      unit: in
+    roark_probable_minimum_pressure_psi: 4790.095327852893
+    roark_governing_nodes: 5
+    nasa_regime: short
+    nasa_capacity_status: released
+    nasa_comparator_regime: short
+    nasa_comparator_pressure_kind: recommended_correlated
+    nasa_comparator_pressure_psi: 4739.0398454653505
+  - case_id: moderate
+    unsupported_length:
+      value: 20.0
+      unit: in
+    roark_probable_minimum_pressure_psi: 1086.6419444261421
+    roark_governing_nodes: 3
+    nasa_regime: moderate
+    nasa_capacity_status: released
+    nasa_comparator_regime: moderate
+    nasa_comparator_pressure_kind: recommended_correlated
+    nasa_comparator_pressure_psi: 961.8588680165722
+  - case_id: factor_overlap
+    unsupported_length:
+      value: 100.0
+      unit: in
+    roark_probable_minimum_pressure_psi: 373.44010126590905
+    roark_governing_nodes: 2
+    nasa_regime: moderate_long_correlation_overlap
+    nasa_capacity_status: withheld_correlation_overlap
+    nasa_comparator_regime: long
+    nasa_comparator_pressure_kind: recommended_candidate_not_released
+    nasa_comparator_pressure_psi: 309.065934065934
+  - case_id: long
+    unsupported_length:
+      value: 110.0
+      unit: in
+    roark_probable_minimum_pressure_psi: 371.6698617747747
+    roark_governing_nodes: 2
+    nasa_regime: long
+    nasa_capacity_status: released
+    nasa_comparator_regime: long
+    nasa_comparator_pressure_kind: recommended_correlated
+    nasa_comparator_pressure_psi: 309.065934065934
+classification:
+  equation_verification: true
+  software_version_capture: false
+  physical_validation: false
+  allowable: false
+  design_approval: false

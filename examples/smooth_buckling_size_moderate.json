@@ -1,0 +1,26 @@
+{
+  "schema_version": "5.0.0",
+  "model": "smooth-buckling",
+  "operation": "size",
+  "inputs": {
+    "external_pressure": {"value": 2.0, "unit": "MPa"},
+    "internal_radius": {"value": 100.0, "unit": "mm"},
+    "unsupported_length": {"value": 700.0, "unit": "mm"},
+    "wall_thickness_bounds": {
+      "lower": {"value": 2.0, "unit": "mm"},
+      "upper": {"value": 9.0, "unit": "mm"}
+    },
+    "minimum_margin": 0.25
+  },
+  "material": {
+    "type": "explicit",
+    "name": "Independent NASA moderate-case elastic material",
+    "properties": {
+      "yield_strength": {"value": 250.0, "unit": "MPa"},
+      "proportional_limit": {"value": 200.0, "unit": "MPa"},
+      "failure_category": "ductile_metal",
+      "elastic_modulus": {"value": 70000.0, "unit": "MPa"},
+      "poisson_ratio": 0.3
+    }
+  }
+}

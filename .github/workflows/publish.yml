@@ -1,0 +1,51 @@
+name: publish
+
+# Publishes to PyPI through trusted publishing (OIDC): configure the
+# "pypi" environment and the PyPI trusted publisher for this repository
+# and workflow before the first tag. No API token is stored.
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+jobs:
+  # A tag push does not trigger tests.yml on its own, and PyPI releases are
+  # immutable, so the tagged commit runs the whole suite before it is built.
+  tests:
+    uses: ./.github/workflows/tests.yml
+
+  build:
+    needs: tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: "3.11"
+      - name: Check the tag matches the package version
+        run: |
+          uv sync
+          version="$(uv run pv-calc --version)"
+          test "v$version" = "${GITHUB_REF_NAME}" \
+            || { echo "tag ${GITHUB_REF_NAME} != package version $version"; exit 1; }
+      - run: uv build
+      - run: uvx twine check dist/*
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  pypi:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@release/v1

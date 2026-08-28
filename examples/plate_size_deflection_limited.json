@@ -1,0 +1,26 @@
+{
+  "schema_version": "5.0.0",
+  "model": "plate",
+  "operation": "size",
+  "inputs": {
+    "external_pressure": {"value": 2.0, "unit": "MPa"},
+    "free_radius": {"value": 100.0, "unit": "mm"},
+    "boundary_condition": "fixed",
+    "plate_thickness_bounds": {
+      "lower": {"value": 6.0, "unit": "mm"},
+      "upper": {"value": 9.5, "unit": "mm"}
+    },
+    "minimum_margin": 0.25,
+    "maximum_deflection": {"value": 0.6, "unit": "mm"}
+  },
+  "material": {
+    "type": "explicit",
+    "name": "Independent plate-sizing elastic property set",
+    "properties": {
+      "yield_strength": {"value": 250.0, "unit": "MPa"},
+      "failure_category": "ductile_metal",
+      "elastic_modulus": {"value": 70000.0, "unit": "MPa"},
+      "poisson_ratio": 0.3
+    }
+  }
+}

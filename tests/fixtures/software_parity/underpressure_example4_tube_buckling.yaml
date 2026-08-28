@@ -1,0 +1,63 @@
+fixture_id: underpressure_4_0_example4_tube_buckling
+role: valid_domain_software_and_equation_comparison
+source:
+  title: Under Pressure Version 4.0 User Manual
+  manual_version: "4.0"
+  manual_revision: "3/27/01"
+  publisher: DeepSea Power & Light
+  reference: Example 4, printed pp. 27-33; screenshots on PDF pp. 31 and 35
+  url: https://www.deepsea.com/wp-content/uploads/2021/06/UnderPressure_Manual.pdf
+  equation_reference: Roark's Formulas for Stress and Strain, 6th ed., Table 35 case 20
+  evidence_origin: published_manual_example
+source_inputs:
+  pressure_direction: external
+  tube_internal_diameter:
+    value: 5.000
+    unit: in
+  wall_thickness:
+    value: 0.240
+    unit: in
+  tube_length:
+    value: 10.000
+    unit: in
+  material:
+    category: Plastics
+    name: Acetal
+    working_strength:
+      value: 3.0
+      unit: ksi
+    elastic_modulus:
+      value: 0.41
+      unit: Mpsi
+    poisson_ratio:
+      value: 0.4
+      unit: dimensionless
+displayed_source_result:
+  source_reference: Example 4 analysis screenshot, PDF p. 35
+  label: Thin Wall Buckling
+  value: 266.60
+  unit: psi
+  circumferential_nodes: 3
+source_validity:
+  mean_radius_over_wall_thickness_limit: 10
+  valid_when: greater_than
+  geometry_mean_radius_over_wall_thickness: 10.916666666666666
+  applies_to_this_geometry: true
+independent_roark_case20:
+  ideal_integer_mode_pressure_psi: 333.2478202705453
+  probable_minimum_factor: 0.8
+  probable_minimum_pressure_psi: 266.59825621643625
+  governing_circumferential_nodes: 3
+pv_calc_nasa_comparison:
+  curvature_parameter_z: 145.75622439426974
+  printed_eq24_ideal_pressure_psi: 265.8377632830738
+  printed_eq24_difference_from_displayed_percent: -0.2859109962498895
+  recommended_eq24_pressure_psi: 199.37832246230533
+  capacity_status: withheld_applicability
+classification:
+  published_valid_overlap_case: true
+  equation_verification: true
+  physical_validation: false
+  allowable: false
+  design_approval: false
+  underpressure_4_60_capture: false

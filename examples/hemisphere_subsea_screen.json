@@ -1,0 +1,21 @@
+{
+  "schema_version": "5.0.0",
+  "model": "hemisphere",
+  "inputs": {
+    "external_pressure": {"value": 6.0, "unit": "MPa"},
+    "internal_radius": {"value": 100.0, "unit": "mm"},
+    "wall_thickness": {"value": 2.5316455696202533, "unit": "mm"},
+    "force_thick": false
+  },
+  "material": {
+    "type": "explicit",
+    "name": "Illustrative ductile-metal hemisphere property set",
+    "properties": {
+      "yield_strength": {"value": 276.0, "unit": "MPa"},
+      "proportional_limit": {"value": 200.0, "unit": "MPa"},
+      "failure_category": "ductile_metal",
+      "elastic_modulus": {"value": 68900.0, "unit": "MPa"},
+      "poisson_ratio": 0.33
+    }
+  }
+}

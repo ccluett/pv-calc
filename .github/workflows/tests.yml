@@ -1,0 +1,79 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  # publish.yml runs this whole workflow before it builds a release.
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  pytest:
+    name: pytest (Python ${{ matrix.python-version }}, ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        python-version: ["3.11", "3.12", "3.13", "3.14"]
+        include:
+          - os: macos-latest
+            python-version: "3.13"
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+          enable-cache: true
+      - run: uv sync --extra test
+      - run: uv run pytest
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: "3.11"
+          enable-cache: true
+      - run: uv sync
+      # Pinned: an unpinned tool release changing its verdict would turn this
+      # gate red with no repository change.
+      - run: uvx ruff@0.16.3 check
+      - run: uv run --with mypy==2.3.1 mypy pv_calc
+
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v7
+        with:
+          # Newest supported Python, because the pytest matrix above resolves
+          # newest dependencies: pairing the oldest floors with the newest
+          # interpreter is the combination nothing else covers, and the one a
+          # floor without a current build fails on.
+          python-version: "3.14"
+          enable-cache: true
+      - name: Test declared minimum dependencies
+        run: |
+          uv venv "$RUNNER_TEMP/minimums"
+          uv pip install \
+            --python "$RUNNER_TEMP/minimums/bin/python" \
+            --resolution lowest-direct \
+            ".[test]"
+          "$RUNNER_TEMP/minimums/bin/python" -m pytest
+      - name: Build distributions
+        run: uv build --out-dir "$RUNNER_TEMP/dist"
+      - name: Check distribution metadata
+        run: uvx twine check "$RUNNER_TEMP"/dist/*
+      - name: Smoke-test the wheel
+        run: |
+          uv venv "$RUNNER_TEMP/wheel"
+          uv pip install \
+            --python "$RUNNER_TEMP/wheel/bin/python" \
+            "$RUNNER_TEMP"/dist/*.whl
+          "$RUNNER_TEMP/wheel/bin/pv-calc" --version
+          "$RUNNER_TEMP/wheel/bin/pv-calc" describe tube --json > /dev/null

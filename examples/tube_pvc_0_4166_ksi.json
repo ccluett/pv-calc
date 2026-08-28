@@ -1,0 +1,37 @@
+{
+  "inputs": {
+    "axial_length": {
+      "unit": "inch",
+      "value": 10
+    },
+    "external_pressure": {
+      "unit": "psi",
+      "value": 100
+    },
+    "force_thick": false,
+    "internal_radius": {
+      "unit": "inch",
+      "value": 1.719
+    },
+    "submergence": {
+      "fluid_density": {
+        "unit": "lb/ft^3",
+        "value": 64
+      },
+      "gravity": {
+        "unit": "m/s^2",
+        "value": 9.80665
+      }
+    },
+    "wall_thickness": {
+      "unit": "inch",
+      "value": 0.531
+    }
+  },
+  "material": {
+    "name": "PVC-1120",
+    "type": "named"
+  },
+  "model": "tube",
+  "schema_version": "5.0.0"
+}

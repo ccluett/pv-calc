@@ -1,0 +1,588 @@
+{
+  "cases": {
+    "17": {
+      "case_id": "RS-EIG-17",
+      "classification": "ideal_perfect_geometry_linear_eigenvalue_evidence",
+      "comparison": {
+        "fea_minus_independent_percent": -14.339333907953014,
+        "fea_mode": {
+          "axial_half_waves_m": 1,
+          "circumferential_lobes_n": 3
+        },
+        "finest_fea_ideal_pressure_psi": 460.8971,
+        "independent_equation_ideal_pressure_psi": 538.0498670238466,
+        "independent_equation_mode": {
+          "axial_half_waves_m": 1,
+          "circumferential_lobes_n": 3
+        },
+        "nasa_0p75_value_kept_separate_psi": 403.5374002678849
+      },
+      "convergence": {
+        "all_end_axial_forces_match_closed_end_load": true,
+        "all_static_pressure_orientation_checks_inward": true,
+        "declared_checks_pass": true,
+        "eigenvalue_change_limit_fraction": 0.02,
+        "energy_partition_change_limit": 0.02,
+        "finest_eigenvalue_change_fraction": 0.0031046600152437875,
+        "finest_mode": [
+          1,
+          3,
+          "global_sinusoidal"
+        ],
+        "mode_unchanged": true,
+        "penultimate_mode": [
+          1,
+          3,
+          "global_sinusoidal"
+        ],
+        "ring_energy_fraction_change": 0.0010210000000000496
+      },
+      "meshes": [
+        {
+          "applied_closed_end_force_lbf": 52.20652254704062,
+          "axial_elements": 17,
+          "axial_elements_per_bay": 1,
+          "circumferential_elements": 48,
+          "dat_sha256": "56dd7c450c28d6ea5ff9130996f62387700ea57a805c037757c14ff9db8fc8dc",
+          "end_axial_force_error_fraction": 4.8787785483371614e-08,
+          "force_residual_fraction_of_absolute_applied_load": 5.133261564055981e-17,
+          "governing_global_mode": {
+            "axial_half_waves_m": 1,
+            "axial_sine_fit_fraction": 0.9999566341107736,
+            "circumferential_lobes_n": 3,
+            "classification": "global_sinusoidal",
+            "dominant_angular_energy_fraction": 0.9999992451353128,
+            "eigenvalue_pressure_psi": 546.0135,
+            "end_radial_amplitude_fraction": 4.427272250587868e-05,
+            "method": "DFT of shell-normal displacement at every axial station, followed by complex least-squares projection onto sin(m*pi*x/L)",
+            "mode_number": 1,
+            "strain_energy": {
+              "ring_fraction": 0.677653,
+              "rings_lbf_in": 0.3388265,
+              "shell_fraction": 0.322347,
+              "shell_lbf_in": 0.1611735
+            }
+          },
+          "input_sha256": "dcffd0f691a22956cc10feffb60f05233ded0e0f5fe787b003ffd622888ea39d",
+          "left_end_axial_force_lbf": 52.20652,
+          "mesh_id": "M1",
+          "original_nodes": 2544,
+          "right_end_axial_force_lbf": -52.20652,
+          "ring_centroid_offset_in": 0.10200000000000001,
+          "ring_count": 18,
+          "ring_element_type": "B32R",
+          "ring_elements": 864,
+          "ring_reference_offset2": -0.6035502958579881,
+          "runtime_seconds": 10.387505,
+          "shell_element_type": "S8R",
+          "shell_elements": 816,
+          "solver_warning_count": 0,
+          "stdout_sha256": "c55fac125f1c95fcf717dbe19e6e3dff456cc729d49016400f8fb5e7d8b5d228",
+          "unit_static_midspan_shell_radial_displacement_in": -1.00005e-05,
+          "unit_static_pressure_orientation": "inward"
+        },
+        {
+          "applied_closed_end_force_lbf": 52.20652254704062,
+          "axial_elements": 34,
+          "axial_elements_per_bay": 2,
+          "circumferential_elements": 64,
+          "dat_sha256": "ea4031f0a145ca0e94949f54797dfc9985e250af3f12cca38d3c247495394090",
+          "end_axial_force_error_fraction": 4.8787785483371614e-08,
+          "force_residual_fraction_of_absolute_applied_load": 1.3738918929342581e-16,
+          "governing_global_mode": {
+            "axial_half_waves_m": 1,
+            "axial_sine_fit_fraction": 0.999086627850761,
+            "circumferential_lobes_n": 3,
+            "classification": "global_sinusoidal",
+            "dominant_angular_energy_fraction": 0.9999992696401442,
+            "eigenvalue_pressure_psi": 459.4706,
+            "end_radial_amplitude_fraction": 8.781054491059523e-05,
+            "method": "DFT of shell-normal displacement at every axial station, followed by complex least-squares projection onto sin(m*pi*x/L)",
+            "mode_number": 1,
+            "strain_energy": {
+              "ring_fraction": 0.561012,
+              "rings_lbf_in": 0.280506,
+              "shell_fraction": 0.438988,
+              "shell_lbf_in": 0.219494
+            }
+          },
+          "input_sha256": "65f8edcb6b79aeebe1eb251466ce13b947d39fb118110f2194320d9debfc4db4",
+          "left_end_axial_force_lbf": 52.20652,
+          "mesh_id": "M2",
+          "original_nodes": 6656,
+          "right_end_axial_force_lbf": -52.20652,
+          "ring_centroid_offset_in": 0.10200000000000001,
+          "ring_count": 18,
+          "ring_element_type": "B32R",
+          "ring_elements": 1152,
+          "ring_reference_offset2": -0.6035502958579881,
+          "runtime_seconds": 16.716849,
+          "shell_element_type": "S8R",
+          "shell_elements": 2176,
+          "solver_warning_count": 0,
+          "stdout_sha256": "ff2fa243ad6d01f7497622a97631be68bc457710072adc9c773ddcae674f903b",
+          "unit_static_midspan_shell_radial_displacement_in": -1.277353e-05,
+          "unit_static_pressure_orientation": "inward"
+        },
+        {
+          "applied_closed_end_force_lbf": 52.20652254704062,
+          "axial_elements": 51,
+          "axial_elements_per_bay": 3,
+          "circumferential_elements": 80,
+          "dat_sha256": "7fd89dcee28e375fb915ef35169777cae0f79e8d00fd19b27daa8f57509814fb",
+          "end_axial_force_error_fraction": 4.8787785483371614e-08,
+          "force_residual_fraction_of_absolute_applied_load": 1.330248576752047e-16,
+          "governing_global_mode": {
+            "axial_half_waves_m": 1,
+            "axial_sine_fit_fraction": 0.9992279253694214,
+            "circumferential_lobes_n": 3,
+            "classification": "global_sinusoidal",
+            "dominant_angular_energy_fraction": 0.9999992708180981,
+            "eigenvalue_pressure_psi": 460.8971,
+            "end_radial_amplitude_fraction": 9.169392653402476e-05,
+            "method": "DFT of shell-normal displacement at every axial station, followed by complex least-squares projection onto sin(m*pi*x/L)",
+            "mode_number": 1,
+            "strain_energy": {
+              "ring_fraction": 0.562033,
+              "rings_lbf_in": 0.2810165,
+              "shell_fraction": 0.437967,
+              "shell_lbf_in": 0.2189835
+            }
+          },
+          "input_sha256": "da7f3bec7369e8e3e7c3b1cefd854a7078e5d52876a776e5c620b8f2124ef685",
+          "left_end_axial_force_lbf": 52.20652,
+          "mesh_id": "M3",
+          "original_nodes": 12400,
+          "right_end_axial_force_lbf": -52.20652,
+          "ring_centroid_offset_in": 0.10200000000000001,
+          "ring_count": 18,
+          "ring_element_type": "B32R",
+          "ring_elements": 1440,
+          "ring_reference_offset2": -0.6035502958579881,
+          "runtime_seconds": 27.491696,
+          "shell_element_type": "S8R",
+          "shell_elements": 4080,
+          "solver_warning_count": 0,
+          "stdout_sha256": "fa6d46308cde21f724db1270657780e501bdb1e00fa2510e18904559091e0aee",
+          "unit_static_midspan_shell_radial_displacement_in": -1.23777e-05,
+          "unit_static_pressure_orientation": "inward"
+        }
+      ],
+      "reference_and_context": {
+        "independent_equation": {
+          "axial_half_waves_m": 1,
+          "circumferential_lobes_n": 3,
+          "nasa_0p75_adjusted_pressure_psi": 403.5374002678849,
+          "rectangle_area_in2": 0.014534,
+          "rectangle_centroidal_inertia_in4": 3.459213116666667e-05,
+          "rectangle_saint_venant_j_in4": 2.4387021865573156e-05,
+          "with_ring_torsion_ideal_pressure_psi": 538.0498670238466,
+          "without_ring_torsion_ideal_pressure_psi": 536.543722561596
+        },
+        "published_benchmark_context": {
+          "comparison_only_not_calibration": true,
+          "experiment_lobes_n": 3,
+          "experiment_pressure_psi": 473,
+          "kendrick_part_iii_lobes_n": 3,
+          "kendrick_part_iii_pressure_psi": 428
+        }
+      }
+    },
+    "33": {
+      "case_id": "RS-EIG-33",
+      "classification": "ideal_perfect_geometry_linear_eigenvalue_evidence",
+      "comparison": {
+        "fea_minus_independent_percent": 0.583700398627968,
+        "fea_mode": {
+          "axial_half_waves_m": 1,
+          "circumferential_lobes_n": 2
+        },
+        "finest_fea_ideal_pressure_psi": 257.5255,
+        "independent_equation_ideal_pressure_psi": 256.03104576525686,
+        "independent_equation_mode": {
+          "axial_half_waves_m": 1,
+          "circumferential_lobes_n": 2
+        },
+        "nasa_0p75_value_kept_separate_psi": 192.02328432394265
+      },
+      "convergence": {
+        "all_end_axial_forces_match_closed_end_load": true,
+        "all_static_pressure_orientation_checks_inward": true,
+        "declared_checks_pass": true,
+        "eigenvalue_change_limit_fraction": 0.02,
+        "energy_partition_change_limit": 0.02,
+        "finest_eigenvalue_change_fraction": 0.002056054329017787,
+        "finest_mode": [
+          1,
+          2,
+          "global_sinusoidal"
+        ],
+        "mode_unchanged": true,
+        "penultimate_mode": [
+          1,
+          2,
+          "global_sinusoidal"
+        ],
+        "ring_energy_fraction_change": 0.0012536000000000214
+      },
+      "meshes": [
+        {
+          "applied_closed_end_force_lbf": 52.20652254704062,
+          "axial_elements": 33,
+          "axial_elements_per_bay": 1,
+          "circumferential_elements": 48,
+          "dat_sha256": "aed2f21c2119dc9be1272ce4289ebd19cb0c7d6353eadffc73c18e8296a185d0",
+          "end_axial_force_error_fraction": 4.8787785483371614e-08,
+          "force_residual_fraction_of_absolute_applied_load": 1.8635528773256225e-16,
+          "governing_global_mode": {
+            "axial_half_waves_m": 1,
+            "axial_sine_fit_fraction": 0.9999493468864351,
+            "circumferential_lobes_n": 2,
+            "classification": "global_sinusoidal",
+            "dominant_angular_energy_fraction": 0.9999988617916331,
+            "eigenvalue_pressure_psi": 286.6654,
+            "end_radial_amplitude_fraction": 7.131730614543806e-05,
+            "method": "DFT of shell-normal displacement at every axial station, followed by complex least-squares projection onto sin(m*pi*x/L)",
+            "mode_number": 1,
+            "strain_energy": {
+              "ring_fraction": 0.5654522,
+              "rings_lbf_in": 0.2827261,
+              "shell_fraction": 0.4345478,
+              "shell_lbf_in": 0.2172739
+            }
+          },
+          "input_sha256": "0464c7651632fdb14cf9c5f47a42d00af7bf445163707cdd38462ec0ef0e12d9",
+          "left_end_axial_force_lbf": 52.20652,
+          "mesh_id": "M1",
+          "original_nodes": 4848,
+          "right_end_axial_force_lbf": -52.20652,
+          "ring_centroid_offset_in": 0.10200000000000001,
+          "ring_count": 34,
+          "ring_element_type": "B32R",
+          "ring_elements": 1632,
+          "ring_reference_offset2": -0.6035502958579881,
+          "runtime_seconds": 20.704153,
+          "shell_element_type": "S8R",
+          "shell_elements": 1584,
+          "solver_warning_count": 0,
+          "stdout_sha256": "5d2dde206ae6e82eacf5b2a91d47ae2801ba25549406a7b255c16820155f8b26",
+          "unit_static_midspan_shell_radial_displacement_in": -1.000049e-05,
+          "unit_static_pressure_orientation": "inward"
+        },
+        {
+          "applied_closed_end_force_lbf": 52.20652254704062,
+          "axial_elements": 66,
+          "axial_elements_per_bay": 2,
+          "circumferential_elements": 64,
+          "dat_sha256": "1f3e0ad1db08e9751ea4cc304c8aca461599f939404bdfb1fe04122c603d948a",
+          "end_axial_force_error_fraction": 4.8787785483371614e-08,
+          "force_residual_fraction_of_absolute_applied_load": 1.6373864737460782e-16,
+          "governing_global_mode": {
+            "axial_half_waves_m": 1,
+            "axial_sine_fit_fraction": 0.9998504156764737,
+            "circumferential_lobes_n": 2,
+            "classification": "global_sinusoidal",
+            "dominant_angular_energy_fraction": 0.9999989824861676,
+            "eigenvalue_pressure_psi": 256.9971,
+            "end_radial_amplitude_fraction": 8.191123210678276e-05,
+            "method": "DFT of shell-normal displacement at every axial station, followed by complex least-squares projection onto sin(m*pi*x/L)",
+            "mode_number": 1,
+            "strain_energy": {
+              "ring_fraction": 0.483301,
+              "rings_lbf_in": 0.2416505,
+              "shell_fraction": 0.516699,
+              "shell_lbf_in": 0.2583495
+            }
+          },
+          "input_sha256": "57e49364661532f4f6a05da91100a7c70dc55c2ead72e2cf24327a21cafe8503",
+          "left_end_axial_force_lbf": 52.20652,
+          "mesh_id": "M2",
+          "original_nodes": 12800,
+          "right_end_axial_force_lbf": -52.20652,
+          "ring_centroid_offset_in": 0.10200000000000001,
+          "ring_count": 34,
+          "ring_element_type": "B32R",
+          "ring_elements": 2176,
+          "ring_reference_offset2": -0.6035502958579881,
+          "runtime_seconds": 34.338674,
+          "shell_element_type": "S8R",
+          "shell_elements": 4224,
+          "solver_warning_count": 0,
+          "stdout_sha256": "5ce1d798e39d8beab89455ce9f6d0b059c91353428584b4c9eee88b13f2be880",
+          "unit_static_midspan_shell_radial_displacement_in": -1.277353e-05,
+          "unit_static_pressure_orientation": "inward"
+        },
+        {
+          "applied_closed_end_force_lbf": 52.20652254704062,
+          "axial_elements": 99,
+          "axial_elements_per_bay": 3,
+          "circumferential_elements": 80,
+          "dat_sha256": "7946ed6a7aff5d1383b03811c053e2da47241697d5c68e23d780b0e7b52e1505",
+          "end_axial_force_error_fraction": 4.8787785483371614e-08,
+          "force_residual_fraction_of_absolute_applied_load": 2.534262404054998e-16,
+          "governing_global_mode": {
+            "axial_half_waves_m": 1,
+            "axial_sine_fit_fraction": 0.9998661981326897,
+            "circumferential_lobes_n": 2,
+            "classification": "global_sinusoidal",
+            "dominant_angular_energy_fraction": 0.9999989619826715,
+            "eigenvalue_pressure_psi": 257.5255,
+            "end_radial_amplitude_fraction": 8.280570443612769e-05,
+            "method": "DFT of shell-normal displacement at every axial station, followed by complex least-squares projection onto sin(m*pi*x/L)",
+            "mode_number": 1,
+            "strain_energy": {
+              "ring_fraction": 0.4845546,
+              "rings_lbf_in": 0.2422773,
+              "shell_fraction": 0.5154454,
+              "shell_lbf_in": 0.2577227
+            }
+          },
+          "input_sha256": "44361faeed3fb6ca7c5777a914afbf5623bfc084ef012488df997ef4c6471098",
+          "left_end_axial_force_lbf": 52.20652,
+          "mesh_id": "M3",
+          "original_nodes": 23920,
+          "right_end_axial_force_lbf": -52.20652,
+          "ring_centroid_offset_in": 0.10200000000000001,
+          "ring_count": 34,
+          "ring_element_type": "B32R",
+          "ring_elements": 2720,
+          "ring_reference_offset2": -0.6035502958579881,
+          "runtime_seconds": 60.73652,
+          "shell_element_type": "S8R",
+          "shell_elements": 7920,
+          "solver_warning_count": 0,
+          "stdout_sha256": "ee12911a0cf960737056982e9ee6a71a41b2afbc467ab0ba351adf91f2d2ce63",
+          "unit_static_midspan_shell_radial_displacement_in": -1.23777e-05,
+          "unit_static_pressure_orientation": "inward"
+        }
+      ],
+      "reference_and_context": {
+        "independent_equation": {
+          "axial_half_waves_m": 1,
+          "circumferential_lobes_n": 2,
+          "nasa_0p75_adjusted_pressure_psi": 192.02328432394265,
+          "rectangle_area_in2": 0.014534,
+          "rectangle_centroidal_inertia_in4": 3.459213116666667e-05,
+          "rectangle_saint_venant_j_in4": 2.4387021865573156e-05,
+          "with_ring_torsion_ideal_pressure_psi": 256.03104576525686,
+          "without_ring_torsion_ideal_pressure_psi": 255.62757120324105
+        },
+        "published_benchmark_context": {
+          "comparison_only_not_calibration": true,
+          "experiment_lobes_n": 2,
+          "experiment_pressure_psi": 281,
+          "kendrick_part_iii_lobes_n": 2,
+          "kendrick_part_iii_pressure_psi": 197
+        }
+      }
+    }
+  },
+  "classification": {
+    "evidence_role": "idealized_linear_eigenvalue_fea_equation_comparison",
+    "not": [
+      "calibration",
+      "allowable_pressure",
+      "certification",
+      "physical_validation",
+      "design_approval"
+    ]
+  },
+  "known_numerical_limit": "CalculiX does not report a separate artificial/hourglass-energy channel for these S8R/B32R modes; modal shell/ring strain-energy partition is recorded, but the specification's quantitative artificial-energy check remains open.",
+  "manifest": {
+    "dockerfile_sha256": "4210bed0102e4549493b5b26a0300d0846b2cdc75185b8909273986b32406a57",
+    "ring_reference_sha256": "da9bb04ea9304b96626adb9b6e381cfbeaa64e8fba33326360247a10a8e06141",
+    "runner_sha256": "30bea2e3fb1ed3670f05f4dc74774d1c28d2a4a610beeb14d603b96a9c229533"
+  },
+  "rerun_command": "uv run python validation/fea/run_fea.py p5-04 --include-series --work-directory /tmp/pv-gen-p5-04 --output /tmp/p5_04_summary.json",
+  "schema_version": "1.2.0",
+  "series": [
+    {
+      "dat_sha256": "7fd89dcee28e375fb915ef35169777cae0f79e8d00fd19b27daa8f57509814fb",
+      "end_axial_force_error_fraction": 4.8787785483371614e-08,
+      "fea_axial_half_waves_m": 1,
+      "fea_circumferential_lobes_n": 3,
+      "fea_ideal_pressure_psi": 460.8971,
+      "fea_minus_independent_percent": -14.339333907953014,
+      "frame_spaces": 17,
+      "independent_axial_half_waves_m": 1,
+      "independent_circumferential_lobes_n": 3,
+      "independent_ideal_pressure_psi": 538.0498670238466,
+      "input_sha256": "da7f3bec7369e8e3e7c3b1cefd854a7078e5d52876a776e5c620b8f2124ef685",
+      "mesh_id": "M3",
+      "mode_families_match": true,
+      "runtime_seconds": 27.491696,
+      "solver_warning_count": 0
+    },
+    {
+      "dat_sha256": "2c4077edbe104dd6c7675855fe14d6b736d5f3d4564dabdd55bbd9fac00291c0",
+      "end_axial_force_error_fraction": 4.8787785483371614e-08,
+      "fea_axial_half_waves_m": 1,
+      "fea_circumferential_lobes_n": 3,
+      "fea_ideal_pressure_psi": 433.6536,
+      "fea_minus_independent_percent": -3.682038564035386,
+      "frame_spaces": 21,
+      "independent_axial_half_waves_m": 1,
+      "independent_circumferential_lobes_n": 2,
+      "independent_ideal_pressure_psi": 450.2312897146472,
+      "input_sha256": "b145309ef7448398e07ad3827b551a5a11c2bf2f730887286b9f61f41b7e696e",
+      "mesh_id": "M3",
+      "mode_families_match": false,
+      "runtime_seconds": 28.521665,
+      "solver_warning_count": 0
+    },
+    {
+      "dat_sha256": "32c5f191697be380bfe825d4f914449d7890d2fd3ef7f9f0128df5bf83ac3d84",
+      "end_axial_force_error_fraction": 4.8787785483371614e-08,
+      "fea_axial_half_waves_m": 1,
+      "fea_circumferential_lobes_n": 3,
+      "fea_ideal_pressure_psi": 428.3907,
+      "fea_minus_independent_percent": 12.954210115578233,
+      "frame_spaces": 23,
+      "independent_axial_half_waves_m": 1,
+      "independent_circumferential_lobes_n": 2,
+      "independent_ideal_pressure_psi": 379.2604981803311,
+      "input_sha256": "1dde448c5d17a69770567f217a32a91c8158202b46e81b68f42e8acc59e3b312",
+      "mesh_id": "M3",
+      "mode_families_match": false,
+      "runtime_seconds": 31.600451,
+      "solver_warning_count": 0
+    },
+    {
+      "dat_sha256": "66a852c5bf7d37e9ff4980be3ae38cf24a6a48f14104e7b4fce9248ea68aecaf",
+      "end_axial_force_error_fraction": 4.8787785483371614e-08,
+      "fea_axial_half_waves_m": 1,
+      "fea_circumferential_lobes_n": 2,
+      "fea_ideal_pressure_psi": 390.5252,
+      "fea_minus_independent_percent": 17.295354578356797,
+      "frame_spaces": 25,
+      "independent_axial_half_waves_m": 1,
+      "independent_circumferential_lobes_n": 2,
+      "independent_ideal_pressure_psi": 332.94174471259004,
+      "input_sha256": "fbc67b298158c28a6229becd17ae665dba77385a1f235b92e67b85a27d8e1050",
+      "mesh_id": "M3",
+      "mode_families_match": true,
+      "runtime_seconds": 34.83795,
+      "solver_warning_count": 0
+    },
+    {
+      "dat_sha256": "84c87f07f7a7a8c167b16b92ce5a8ec98386b46380d4004354110b92a2e22a17",
+      "end_axial_force_error_fraction": 4.8787785483371614e-08,
+      "fea_axial_half_waves_m": 1,
+      "fea_circumferential_lobes_n": 2,
+      "fea_ideal_pressure_psi": 362.4451,
+      "fea_minus_independent_percent": 14.713007700795279,
+      "frame_spaces": 26,
+      "independent_axial_half_waves_m": 1,
+      "independent_circumferential_lobes_n": 2,
+      "independent_ideal_pressure_psi": 315.9581526668377,
+      "input_sha256": "d1e45a2bb89b991cc0a1ac67853eb7ddf36fea34d67c39ef30c79a93b7499d83",
+      "mesh_id": "M3",
+      "mode_families_match": true,
+      "runtime_seconds": 37.860676,
+      "solver_warning_count": 0
+    },
+    {
+      "dat_sha256": "0846ccf26471fccbfe3aaff822f08eb8d9361cf8289d8477137190a240d1526b",
+      "end_axial_force_error_fraction": 4.8787785483371614e-08,
+      "fea_axial_half_waves_m": 1,
+      "fea_circumferential_lobes_n": 2,
+      "fea_ideal_pressure_psi": 338.9346,
+      "fea_minus_independent_percent": 12.22986794431979,
+      "frame_spaces": 27,
+      "independent_axial_half_waves_m": 1,
+      "independent_circumferential_lobes_n": 2,
+      "independent_ideal_pressure_psi": 302.00035534939275,
+      "input_sha256": "bbbecbad6c7ced33ad4958f55be2599dd7f1ae2ed10d5c186acf64b63ada2786",
+      "mesh_id": "M3",
+      "mode_families_match": true,
+      "runtime_seconds": 38.820557,
+      "solver_warning_count": 0
+    },
+    {
+      "dat_sha256": "7e6c37ec8a8eb3b54d226b52a0ed95819f5e906e102300be12cdad9b8ff8cc0f",
+      "end_axial_force_error_fraction": 4.8787785483371614e-08,
+      "fea_axial_half_waves_m": 1,
+      "fea_circumferential_lobes_n": 2,
+      "fea_ideal_pressure_psi": 319.1777,
+      "fea_minus_independent_percent": 9.881423363908603,
+      "frame_spaces": 28,
+      "independent_axial_half_waves_m": 1,
+      "independent_circumferential_lobes_n": 2,
+      "independent_ideal_pressure_psi": 290.47466826393185,
+      "input_sha256": "d36e139231a22cf3b94093ffb904528989c360194e3af013472063e68da48da1",
+      "mesh_id": "M3",
+      "mode_families_match": true,
+      "runtime_seconds": 39.534222,
+      "solver_warning_count": 0
+    },
+    {
+      "dat_sha256": "cdf36521cf182639de131c33294cbce5a4ff7310992ce7856e9d1496389d681c",
+      "end_axial_force_error_fraction": 4.8787785483371614e-08,
+      "fea_axial_half_waves_m": 1,
+      "fea_circumferential_lobes_n": 2,
+      "fea_ideal_pressure_psi": 302.5152,
+      "fea_minus_independent_percent": 7.689010885626554,
+      "frame_spaces": 29,
+      "independent_axial_half_waves_m": 1,
+      "independent_circumferential_lobes_n": 2,
+      "independent_ideal_pressure_psi": 280.91557115450973,
+      "input_sha256": "4971b58cb87046777c0dc96300732d4c580231a30333f26dfd0eaa171bfa2a18",
+      "mesh_id": "M3",
+      "mode_families_match": true,
+      "runtime_seconds": 41.079625,
+      "solver_warning_count": 0
+    },
+    {
+      "dat_sha256": "84770f4729e05d84d52bfada5850476ee32ad3ae655af76c6ba66bb549f13d59",
+      "end_axial_force_error_fraction": 4.8787785483371614e-08,
+      "fea_axial_half_waves_m": 1,
+      "fea_circumferential_lobes_n": 2,
+      "fea_ideal_pressure_psi": 276.44,
+      "fea_minus_independent_percent": 3.8066600965700403,
+      "frame_spaces": 31,
+      "independent_axial_half_waves_m": 1,
+      "independent_circumferential_lobes_n": 2,
+      "independent_ideal_pressure_psi": 266.30275913205503,
+      "input_sha256": "18c21ff34aa9b392a5c298c466228117c6397d130528f49156f20e0f3ae7e9ce",
+      "mesh_id": "M3",
+      "mode_families_match": true,
+      "runtime_seconds": 45.560645,
+      "solver_warning_count": 0
+    },
+    {
+      "dat_sha256": "7946ed6a7aff5d1383b03811c053e2da47241697d5c68e23d780b0e7b52e1505",
+      "end_axial_force_error_fraction": 4.8787785483371614e-08,
+      "fea_axial_half_waves_m": 1,
+      "fea_circumferential_lobes_n": 2,
+      "fea_ideal_pressure_psi": 257.5255,
+      "fea_minus_independent_percent": 0.583700398627968,
+      "frame_spaces": 33,
+      "independent_axial_half_waves_m": 1,
+      "independent_circumferential_lobes_n": 2,
+      "independent_ideal_pressure_psi": 256.03104576525686,
+      "input_sha256": "44361faeed3fb6ca7c5777a914afbf5623bfc084ef012488df997ef4c6471098",
+      "mesh_id": "M3",
+      "mode_families_match": true,
+      "runtime_seconds": 60.73652,
+      "solver_warning_count": 0
+    }
+  ],
+  "status": {
+    "RS-EIG-17": "executed_three_mesh_evidence",
+    "RS-EIG-17-J0": "blocked: CalculiX 2.20 native rectangle beams do not expose an independent J=0 override while preserving A and I; GENERAL is limited to user element U1, which is outside this validation scope",
+    "RS-EIG-33": "executed_three_mesh_evidence",
+    "RS-EIG-SERIES": "executed_at_finest_primary_mesh",
+    "RS-GNL-17": "blocked: selected CalculiX 2.20 toolchain has no documented arc-length/Riks continuation through a limit point",
+    "RS-GNL-33": "blocked: selected CalculiX 2.20 toolchain has no documented arc-length/Riks continuation through a limit point",
+    "p5_04_complete": false,
+    "refined_ring_representation": "not_run: the required separate shell/continuum ring model with at least four elements across ring width remains open"
+  },
+  "toolchain": {
+    "architecture": "arm64",
+    "calculix_version": "2.20",
+    "docker_server_version": "29.5.3",
+    "image": "pv-gen-fea:ccx2.20",
+    "image_content_size_bytes": 59422299,
+    "image_id": "sha256:4e0cc7560c9dee55446691d1f88c56b89732e38d2a0482ab8eeff508c5f3c5c5"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "schema_version": "5.0.0",
+  "model": "compare-materials",
+  "inputs": {
+    "materials": ["Al-6061-T6", "Ti-6Al-4V"],
+    "mass_properties": {
+      "solid_volume": {"value": 2.5, "unit": "L"},
+      "displaced_volume": {"value": 6.0, "unit": "L"},
+      "fluid_density": {"value": 1025.0, "unit": "kg/m^3"},
+      "gravity": {"value": 9.81, "unit": "m/s^2"}
+    }
+  },
+  "request": {
+    "schema_version": "5.0.0",
+    "model": "tube",
+    "inputs": {
+      "external_pressure": {"value": 1000.0, "unit": "psi"},
+      "force_thick": false,
+      "internal_radius": {"value": 3.0, "unit": "inch"},
+      "wall_thickness": {"value": 0.47, "unit": "inch"}
+    },
+    "material": {"type": "named", "name": "Al-6061-T6"}
+  }
+}

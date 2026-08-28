@@ -1,0 +1,31 @@
+{
+  "schema_version": "5.0.0",
+  "model": "sweep",
+  "inputs": {
+    "external_pressure": {
+      "type": "range",
+      "start": {"value": 500.0, "unit": "psi"},
+      "stop": {"value": 1500.0, "unit": "psi"},
+      "count": 3
+    }
+  },
+  "request": {
+    "schema_version": "5.0.0",
+    "model": "tube",
+    "inputs": {
+      "external_pressure": {"value": 1000.0, "unit": "psi"},
+      "force_thick": false,
+      "internal_radius": {"value": 3.0, "unit": "inch"},
+      "wall_thickness": {"value": 0.47, "unit": "inch"}
+    },
+    "material": {
+      "type": "explicit",
+      "name": "Al-7075-T6 example property set",
+      "provenance": "Illustrative material properties for wrought 7075-T6 aluminum, chosen for this example: 62 ksi yield strength. 7075-T6 has no single minimum yield strength: it runs 54 to 73 ksi across product forms and thickness bands, so a figure quoted without a form and thickness is not a specification minimum. Not a design allowable, and not read from any material database.",
+      "properties": {
+        "failure_category": "ductile_metal",
+        "yield_strength": {"value": 62.0, "unit": "ksi"}
+      }
+    }
+  }
+}

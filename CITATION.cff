@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: If you use this software, please cite it using this metadata.
+title: pv-calc
+type: software
+authors:
+  - family-names: Cluett
+    given-names: Christopher S.
+license: MIT
+version: 0.1.0
+date-released: 2026-08-28
+repository-code: https://github.com/ccluett/pv-calc
+url: https://github.com/ccluett/pv-calc
+abstract: >-
+  A Python library and command-line tool for external-pressure vessel
+  calculations. It covers tube stress, flat circular plates,
+  hemispherical heads, NASA smooth-cylinder buckling, and NASA ring-stiffened
+  shell general instability through a versioned JSON contract. Results include
+  formula sources, assumptions, and validity checks. They come from idealized
+  models and do not constitute design approval.

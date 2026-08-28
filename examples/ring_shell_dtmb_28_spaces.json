@@ -1,0 +1,24 @@
+{
+  "schema_version": "5.0.0",
+  "model": "ring-shell",
+  "inputs": {
+    "external_pressure": {"value": 391.0, "unit": "psi"},
+    "shell_mid_surface_radius": {"value": 4.0765, "unit": "inch"},
+    "wall_thickness": {"value": 0.035, "unit": "inch"},
+    "unsupported_length": {"value": 32.256, "unit": "inch"},
+    "ring_spacing": {"value": 1.152, "unit": "inch"},
+    "ring_axial_width": {"value": 0.086, "unit": "inch"},
+    "ring_radial_height": {"value": 0.169, "unit": "inch"},
+    "ring_location": "external"
+  },
+  "material": {
+    "type": "explicit",
+    "name": "DTMB Report 1324 nominal high-yield steel",
+    "properties": {
+      "elastic_modulus": {"value": 30000000.0, "unit": "psi"},
+      "poisson_ratio": 0.3,
+      "yield_strength": {"value": 85000.0, "unit": "psi"},
+      "failure_category": "ductile_metal"
+    }
+  }
+}

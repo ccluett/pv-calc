@@ -1,0 +1,303 @@
+# `P5-xx` identifiers are stable validation-record IDs. Each one links a
+# test in tests/test_independent_reference_parity.py with its evidence
+# record here; renaming them would be churn across both with no benefit.
+# They carry no ordering or phase-plan meaning beyond that traceability.
+# The committed result files under validation/fea/results/ are named for
+# their content instead.
+models:
+  - model_id: closed_end_tube_stress
+    model_version: "2.0.0"
+    maturity: verified_equation
+    completeness: partial
+    evidence:
+      - category: independent_equation
+        source: validation/non_ring_reference.md
+        status: >-
+          complete for stress; displacement is re-derived separately in
+          validation/tube_displacement_reference.py, which transcribes DTMB 1497
+          Eq. [5] with Eqs. [A7]-[A10] and Boresi and Schmidt Eqs. (11.24) and
+          (11.15) and is compared against production in
+          tests/test_independent_reference_parity.py at the 1e-9 relative
+          limit
+      - category: software_parity
+        source: tests/test_tube_stress.py
+        status: >-
+          underpressure 4.0 manual reproduced for ductile-metal stress and for
+          the plastic PVC report sample's maximum hoop stress and shell failure
+          pressure; no software oracle selected for displacement, which
+          UnderPressure 4.0 does not report
+      - category: published_theory
+        source: validation/sources/tube_scalar_displacement.md
+        status: >-
+          Roark/Lame stress equations transcribed in docs/engineering.md; the
+          displacement and axial-strain equations, their conventions, surfaces,
+          and end-condition assumptions are recorded per branch here
+      - category: experiment
+        source: docs/engineering.md
+        status: not required for equation verification
+      - category: fea
+        source: validation/fea/results/tube_plate_fea_summary.json
+        status: >-
+          three meshes converged, all checks pass; the executed comparison is
+          the stress field, and no displacement comparison has been run
+    important_limitations:
+      - >-
+        Material failure under the category's own criterion only, von Mises
+        stress against yield strength for a ductile metal and maximum hoop
+        stress against the working or ultimate compressive strength for a
+        plastic or brittle material; shell stability and closures are separate.
+      - Applies away from the tube/endcap interface.
+      - >-
+        Radial displacement and axial strain are withheld unless the caller
+        supplies an elastic modulus and a Poisson ratio, and the axial length
+        change additionally needs a gauge length.
+      - >-
+        Displacement covers junction effects, local restraint at closures,
+        ovalization, instability, plasticity, and ring-frame restraint no more
+        than the stress result does; all six are excluded.
+      - >-
+        The displacement equations are small-deformation and linearly elastic.
+        DTMB 1497 states its results are not likely reliable once a shell
+        element's radial displacement exceeds the wall thickness; the thin
+        branch withholds deformation beyond that explicit boundary. Equality
+        remains released. No unsourced numeric gate is imposed on the thick
+        branch.
+      - UnderPressure 4.60 version-stamped captures remain open.
+      - Service, material, fabrication, temperature, and inspection inputs remain design-use blockers.
+
+  - model_id: uniformly_loaded_flat_circular_plate
+    model_version: "3.0.0"
+    maturity: verified_equation
+    completeness: partial
+    evidence:
+      - category: independent_equation
+        source: validation/non_ring_reference.md
+        status: complete
+      - category: software_parity
+        source: validation/published/underpressure_example2_flat_plate.md
+        status: >-
+          underpressure 4.0 manual reproduced, including the Example 2 seat
+          failure pressure
+      - category: published_theory
+        source: tests/test_flat_circular_plate.py
+        status: Roark cases 10a/10b transcribed
+      - category: experiment
+        source: docs/engineering.md
+        status: not required for equation verification
+      - category: fea
+        source: validation/fea/results/plate_sweep_fea_summary.json
+        status: >-
+          144 solves over seven D_free/t ratios, three Poisson values, and
+          both edges, extending the P5-03 plate meshes in
+          validation/fea/results/tube_plate_fea_summary.json, including an 18-solve
+          deep-mesh sensitivity study at the floor-adjacent and
+          estimate-limiting cases; every compared quantity is
+          mesh-converged, the per-output bending and center-deflection
+          floors hold at every solved Poisson value and no within-budget
+          decision changes at the deepest meshes, the fixed-edge
+          margin-governing stress is compared through its convergent
+          reaction-moment resultant, and the shear-corrected deflection
+          estimate exceeds the solved deflection at every case
+    important_limitations:
+      - >-
+        Fixed and simply-supported ideal boundaries only, each realized as
+        restraint of the whole plate edge face; seat compliance is not
+        modeled.
+      - >-
+        Seat response is the average bearing stress on the outside annulus
+        only; attachment, seal, penetration, and local-edge response are absent.
+      - UnderPressure 4.60 version-stamped captures remain open.
+      - >-
+        Floors sit on solved ratios; releasing the continuous range above a
+        floor relies on the demonstrated monotone decrease of the model-form
+        error with thinness. No evidence exists below D_free/t = 4 or outside
+        0.05 <= poisson_ratio <= 0.35, so those inputs stay withheld rather
+        than extrapolated.
+      - >-
+        The w <= t/2 small-deflection limit is applied to the shear-corrected
+        deflection estimate. The sweep found that estimate above the solved
+        deflection at every case, for both edges, with a margin that shrinks
+        toward zero at the thinnest solved ratios; that is a measured fact
+        about the solved cases, not a claimed mathematical bound.
+      - Service, material, fabrication, temperature, and inspection inputs remain design-use blockers.
+
+  - model_id: roark_nasa_hemispherical_head_external_pressure
+    model_version: "3.0.0"
+    maturity: verified_equation
+    completeness: partial
+    evidence:
+      - category: independent_equation
+        source: validation/non_ring_reference.md
+        status: >-
+          complete for stress and buckling; the thin-branch membrane
+          displacement is re-derived separately in
+          validation/hemisphere_displacement_reference.py, which transcribes
+          NASA TM-4579 Eq. (5) and is compared against production in
+          tests/test_independent_reference_parity.py at the 1e-9 relative
+          limit
+      - category: software_parity
+        source: validation/published/underpressure_hemisphere_example.md
+        status: >-
+          underpressure 4.0 manual reproduced for stress; no software oracle
+          selected for displacement, which UnderPressure 4.0 does not report
+      - category: published_theory
+        source: validation/sources/nasa_sp8032_hemisphere_external_pressure.md
+        status: >-
+          Roark stress and NASA SP-8032 Eqs. 1-4 transcribed; the membrane
+          displacement equation, its conventions, its meridional location, and
+          the thick-branch withholding are recorded in
+          validation/sources/hemisphere_scalar_displacement.md
+      - category: experiment
+        source: validation/sources/nasa_sp8032_hemisphere_external_pressure.md
+        status: NASA lower-bound data only
+      - category: fea
+        source: docs/engineering.md
+        status: not executed
+    important_limitations:
+      - >-
+        Constant-thickness isotropic hemisphere under uniform external
+        pressure. The buckling correlation uses a clamped equator; the membrane
+        stress and displacement apply away from the equator and do not claim
+        that boundary condition.
+      - Buckling capacity is withheld outside the thin-shell and NASA lambda gates or without elastic proportional-limit support.
+      - >-
+        Junction bending, actual restraint, attachments, penetrations,
+        imperfections, residual stress, and plastic interaction are absent;
+        the seat is the average bearing stress on the equator annulus only.
+      - >-
+        Radial displacement is released on the thin branch only. The
+        thick-sphere branch withholds it because no consulted primary source
+        states a thick-sphere displacement; that is a recorded evidence gap,
+        not a claim that the quantity does not exist.
+      - >-
+        The released displacement is the membrane value away from the equator.
+        It is not the equator's radial closure and not a seal-gap estimate, and
+        the equator boundary layer, displacement fields, post-buckling
+        deformation, and ring-stiffened service displacement are all outside it.
+      - UnderPressure 4.60 version-stamped captures remain open.
+      - No calibration or physical validation was performed; the result is advisory.
+
+  - model_id: nasa_smooth_cylinder_external_pressure_buckling
+    model_version: "3.0.0"
+    maturity: verified_equation
+    completeness: partial
+    evidence:
+      - category: independent_equation
+        source: validation/non_ring_reference.md
+        status: complete
+      - category: software_parity
+        source: validation/published/underpressure_example4_smooth_buckling.md
+        status: >-
+          underpressure 4.0 manual reproduced; the kernel's own Roark case-20
+          probable-minimum candidate reproduces the four manual Thin Wall
+          Buckling displays (Examples 1 and 4 and the report sample) at their
+          displayed precision
+      - category: published_theory
+        source: https://ntrs.nasa.gov/citations/20205011530
+        status: NASA equations and regimes transcribed
+      - category: experiment
+        source: https://ntrs.nasa.gov/citations/20205011530
+        status: NASA correlation data only
+      - category: fea
+        source: docs/engineering.md
+        status: not executed
+    important_limitations:
+      - The moderate/long factor overlap withholds capacity.
+      - Released capacity requires a source-traceable proportional limit; a correlated
+        critical membrane stress above it releases an elastic upper bound only.
+      - Inelastic corrections, end-restraint credit, and physical validation are absent.
+      - UnderPressure 4.60 version-stamped captures remain open.
+      - Imperfection, cycling, environment, temperature, product-form, and fabrication inputs remain design-use blockers.
+
+  - model_id: nasa_ring_stiffened_shell_external_pressure
+    model_version: "2.0.0"
+    maturity: benchmark_compared
+    completeness: partial
+    evidence:
+      - category: independent_equation
+        source: validation/ring_shell_reference.py
+        status: complete
+      - category: software_parity
+        source: docs/engineering.md
+        status: not applicable, no software oracle selected
+      - category: published_theory
+        source: validation/sources/nasa_sp8007_eq64_eq66_transition.md
+        status: Eqs. 64/65 and 82-91 transcribed, Eq. 66 transition open
+      - category: experiment
+        source: validation/published/dtmb_1324_case17.md
+        status: ten DTMB Table 2 cases compared
+      - category: fea
+        source: validation/fea/results/ring_shell_eigenvalue_fea_summary.json
+        status: eigenvalue cases executed and converged, nonlinear open
+    important_limitations:
+      - Global and inter-ring stability remain advisory.
+      - A global capacity whose implied membrane stress exceeds the proportional limit, or
+        the yield strength when none is supplied, is labelled an elastic upper bound only;
+        NASA sanctions no inelastic correction for the smeared orthotropic mode.
+      - Numeric Eq. 64/Eq. 66 transition remains an external blocker.
+      - Low-lobe accuracy, ring strength and tripping, attachment, fabrication, and interaction remain unresolved.
+      - Imperfection, cycling, environment, temperature, product-form, manufacturing-route, and inspection inputs remain design-use blockers.
+
+  - model_id: archimedes_submerged_mass_and_buoyancy
+    model_version: "1.0.0"
+    maturity: verified_equation
+    completeness: partial
+    evidence:
+      - category: independent_equation
+        source: tests/test_hydrostatics.py
+        status: >-
+          hand-computed masses, net mass, and buoyant force over the positive,
+          neutral, and negative cases, in exactly representable binary values
+          asserted with ==; no entry in the two reference modules, because
+          re-deriving rho*V and rho_f*V*g there would restate the kernel
+      - category: software_parity
+        source: docs/engineering.md
+        status: not applicable, no software oracle selected
+      - category: published_theory
+        source: docs/engineering.md
+        status: Archimedes Props. 6-7 and Lautrup Eqs. (5-5)-(5-8) transcribed
+      - category: experiment
+        source: docs/engineering.md
+        status: not required for equation verification
+      - category: fea
+        source: docs/engineering.md
+        status: not applicable, no stress or deformation field is computed
+    important_limitations:
+      - Fully submerged, rigid, closed, non-flooded bodies only, at uniform gravity and one uniform fluid density.
+      - Both volumes are the caller's resolved undeformed geometry; pressure-deformed volumes are absent.
+      - Payloads, penetrators, openings, flooding, and trapped gas are absent.
+      - Centre of gravity, centre of buoyancy, stability, and drag are absent.
+      - Fluid density and gravity are request inputs; the package states no default and carries no fluid database.
+
+  - model_id: hydrostatic_external_pressure_from_depth
+    model_version: "1.0.0"
+    maturity: verified_equation
+    completeness: partial
+    evidence:
+      - category: independent_equation
+        source: tests/test_hydrostatics.py
+        status: >-
+          the service and design pressures asserted with == against the literal
+          rho*g*h and rho*g*h*factor products at eight depth and factor pairs
+          from 0 to 11 km, plus linearity in each of the four inputs by exact
+          powers of two, the zero-depth surface boundary, and the evaluation
+          order the design pressure depends on; no entry in the two reference
+          modules, because re-deriving rho*g*h there would restate the kernel
+      - category: software_parity
+        source: docs/engineering.md
+        status: not applicable, no software oracle selected
+      - category: published_theory
+        source: docs/engineering.md
+        status: Lautrup sec. 4.1 Eqs. (4-3) and (4-4) transcribed
+      - category: experiment
+        source: docs/engineering.md
+        status: not required for equation verification
+      - category: fea
+        source: docs/engineering.md
+        status: not applicable, no stress or deformation field is computed
+    important_limitations:
+      - Both pressures are differentials across the wall with the interior held at zero gauge; no absolute pressure is formed and internal gas compression is absent.
+      - One uniform fluid density under uniform gravity; layered fluids, depth-varying density profiles, and fluid compressibility are absent.
+      - Depth is one scalar below the free surface; the vessel's own vertical extent is not resolved.
+      - The design factor is the caller's policy multiplier on the service pressure; no source states a value for it.
+      - Fluid density and gravity are caller inputs; the package states no default and carries no fluid database.

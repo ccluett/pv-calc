@@ -1,0 +1,18 @@
+{
+  "schema_version": "5.0.0",
+  "model": "mass-properties",
+  "inputs": {
+    "solid_volume": {"value": 2.5, "unit": "L"},
+    "displaced_volume": {"value": 6.0, "unit": "L"},
+    "fluid_density": {"value": 1025.0, "unit": "kg/m^3"},
+    "gravity": {"value": 9.81, "unit": "m/s^2"}
+  },
+  "material": {
+    "type": "explicit",
+    "name": "Al-6061-T6 example property set",
+    "provenance": "ASM Aerospace Specification Metals / MatWeb data sheet \"Aluminum 6061-T6; 6061-T651\": 2.7 g/cc, which is 2700 kg/m3.",
+    "properties": {
+      "density": {"value": 2700.0, "unit": "kg/m^3"}
+    }
+  }
+}

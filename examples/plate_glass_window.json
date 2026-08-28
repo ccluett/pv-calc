@@ -1,0 +1,27 @@
+{
+  "inputs": {
+    "boundary_condition": "simply_supported",
+    "external_pressure": {
+      "unit": "psi",
+      "value": 300
+    },
+    "free_radius": {
+      "unit": "inch",
+      "value": 2.5
+    },
+    "outside_radius": {
+      "unit": "inch",
+      "value": 3
+    },
+    "plate_thickness": {
+      "unit": "inch",
+      "value": 0.625
+    }
+  },
+  "material": {
+    "name": "Glass-Fused-Silica",
+    "type": "named"
+  },
+  "model": "plate",
+  "schema_version": "5.0.0"
+}
