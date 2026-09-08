@@ -968,7 +968,7 @@ def hemisphere(
     material_provenance: MaterialProvenanceOption = None,
     force_thick: Annotated[
         bool,
-        typer.Option("--force-thick", help="Force the thick-wall stress branch."),
+        typer.Option("--force-thick", help="Compatibility option; exact Lame stress is now used at every thickness."),
     ] = False,
     input_path: Annotated[
         str | None,
