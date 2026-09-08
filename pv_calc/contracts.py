@@ -33,17 +33,17 @@ from pv_calc.schemas import MaterialFailureCategory
 from pv_calc.units import Q_, dimensionless_factor, magnitude, unit_expression_problem
 
 CALC_SCHEMA_VERSION = "5.0.0"
-TUBE_SIZE_OPERATION_VERSION = "2.1.0"
+TUBE_SIZE_OPERATION_VERSION = "3.0.0"
 # The tube's material check under the category's own criterion, named for the
 # structural mode as the plate's flat_endcap_bending is; the selected forward
 # result's failure_criterion says which stress met which strength.
 TUBE_SIZING_CHECK: Final = "cylindrical_shell_stress"
 TUBE_SIZING_CHECK_SET: tuple[Literal["cylindrical_shell_stress"], ...] = (TUBE_SIZING_CHECK,)
-SMOOTH_BUCKLING_SIZE_OPERATION_VERSION = "2.1.0"
+SMOOTH_BUCKLING_SIZE_OPERATION_VERSION = "3.0.0"
 SMOOTH_BUCKLING_SIZING_CHECK_SET: tuple[
     Literal["cylindrical_shell_stress", "smooth_cylinder_buckling"], ...
 ] = (TUBE_SIZING_CHECK, "smooth_cylinder_buckling")
-PLATE_SIZE_OPERATION_VERSION = "1.1.0"
+PLATE_SIZE_OPERATION_VERSION = "2.0.0"
 # The plate's bending failure mode, and the caller's own serviceability limit.
 # The second is declared only when the request carries a maximum deflection.
 PLATE_SIZING_BENDING_CHECK = "flat_endcap_bending"
@@ -610,6 +610,14 @@ class DerivedBranchBoundary(ContractModel):
     inside_bounds: bool
 
 
+class ExcludedThicknessInterval(ContractModel):
+    """An interval outside the released model, not a failed capacity check."""
+
+    lower: MillimeterQuantity
+    upper: MillimeterQuantity
+    withheld_reasons: list[NonBlankString]
+
+
 class SmoothBucklingSizingMetadata(ContractModel):
     operation: Literal["wall_thickness_inverse_sizing"]
     operation_version: Literal[SMOOTH_BUCKLING_SIZE_OPERATION_VERSION]  # type: ignore[valid-type]  # mypy has no Literal[<constant>]; pydantic reads it
@@ -627,6 +635,11 @@ class SmoothBucklingSizingMetadata(ContractModel):
     selected_minimum_margin: FiniteFloat
     selected_governing_check: SizingCheckName
     solution_type: Literal["lower_bound", "branch_start", "interior_root"]
+    selection_scope: Literal["model_eligible_thicknesses"]
+    excluded_thickness_intervals: list[ExcludedThicknessInterval] = Field(
+        description="Model-ineligible intervals skipped below the selected thickness; "
+        "this is not a complete applicability map of the supplied bounds.",
+    )
     algorithm: Literal["known_branch_partition_and_bisection"]
     evaluation_count: Annotated[int, Field(ge=1)]
     bisection_iterations: Annotated[int, Field(ge=0)]
@@ -689,6 +702,11 @@ class PlateSizingMetadata(ContractModel):
     selected_governing_check: PlateSizingCheckName
     selected_minimum_target_slack: FiniteFloat
     solution_type: Literal["lower_bound", "branch_start", "interior_root"]
+    selection_scope: Literal["model_eligible_thicknesses"]
+    excluded_thickness_intervals: list[ExcludedThicknessInterval] = Field(
+        description="Model-ineligible intervals skipped below the selected thickness; "
+        "this is not a complete applicability map of the supplied bounds.",
+    )
     algorithm: Literal["known_branch_partition_and_bisection"]
     evaluation_count: Annotated[int, Field(ge=1)]
     bisection_iterations: Annotated[int, Field(ge=0)]
