@@ -147,8 +147,9 @@ def _sizing_state_changes(
 ) -> list[_SizingStateChange]:
     changes: list[_SizingStateChange] = []
     for lower, upper in zip(samples, samples[1:]):
-        # Do not report a capacity jump across a region with no usable margin.
-        if not lower.eligible or not upper.eligible:
+        # Regime labels remain known when a required capacity is unavailable;
+        # governing checks do not. Report only labels present at both ends.
+        if state_name not in lower.states or state_name not in upper.states:
             continue
         from_state = lower.states[state_name]
         to_state = upper.states[state_name]
@@ -259,11 +260,12 @@ def _solve_thickness(
         variable=bounds_variable,
     )
 
-    thickness_tolerance = max(
-        _SIZING_ABSOLUTE_THICKNESS_TOLERANCE_MM,
-        _SIZING_RELATIVE_THICKNESS_TOLERANCE
-        * max(abs(lower_bound_mm), abs(upper_bound_mm)),
-    )
+    def thickness_tolerance(thickness_mm: float) -> float:
+        return max(
+            _SIZING_ABSOLUTE_THICKNESS_TOLERANCE_MM,
+            _SIZING_RELATIVE_THICKNESS_TOLERANCE * thickness_mm,
+        )
+
     cache: dict[float, _SizingSample] = {}
 
     def sample(thickness_mm: float) -> _SizingSample:
@@ -322,6 +324,11 @@ def _solve_thickness(
         for lower_mm, upper_mm in intervals:
             interval_lower = sample(lower_mm)
             interval_upper = sample(upper_mm)
+            # Known applicability boundaries have already split the domain.
+            # Regime changes inside a wholly withheld interval need no bracket.
+            if not interval_lower.eligible and not interval_upper.eligible:
+                excluded_intervals.append((interval_lower, interval_upper))
+                continue
             if interval_lower.branch != interval_upper.branch:
                 raise CalcCliError(
                     "no_reliable_solution",
@@ -348,11 +355,18 @@ def _solve_thickness(
             selected = opening_sample
             solution_type = "branch_start"
         elif candidate_bracket is None:
+            if any(evaluated.eligible for evaluated in cache.values()):
+                message = (
+                    "no model-eligible thickness meets every target; no fail/pass"
+                    f" margin bracket exists within the supplied {bounds_variable} bounds"
+                )
+            else:
+                reasons = (lower_sample.unavailable_details or {}).get("withheld_reasons", ())
+                message = "required model outputs are unavailable throughout the supplied bounds"
+                if reasons:
+                    message += "; lower bound: " + "; ".join(reasons)
             raise CalcCliError(
-                "no_reliable_solution",
-                "no model-eligible thickness meets every target; no fail/pass"
-                f" margin bracket exists within the supplied {bounds_variable} bounds",
-                failure_details(ordered()),
+                "no_reliable_solution", message, failure_details(ordered()),
             )
         else:
             solution_type = "interior_root"
@@ -360,7 +374,7 @@ def _solve_thickness(
             for iteration in range(1, _SIZING_MAX_BISECTION_ITERATIONS + 1):
                 if (
                     bracket_upper.thickness_mm - bracket_lower.thickness_mm
-                    <= thickness_tolerance
+                    <= thickness_tolerance(bracket_upper.thickness_mm)
                 ):
                     break
                 midpoint = bracket_lower.thickness_mm + (
@@ -378,6 +392,15 @@ def _solve_thickness(
                 else:
                     bracket_lower = middle
                 bisection_iterations = iteration
+            if (
+                bracket_upper.thickness_mm - bracket_lower.thickness_mm
+                > thickness_tolerance(bracket_upper.thickness_mm)
+            ):
+                raise CalcCliError(
+                    "no_reliable_solution",
+                    "thickness bisection did not converge to the reported tolerance",
+                    failure_details(ordered()),
+                )
             selected = bracket_upper
             bracket = (bracket_lower, bracket_upper)
 
@@ -398,7 +421,7 @@ def _solve_thickness(
         bracket=bracket,
         samples=samples,
         bisection_iterations=bisection_iterations,
-        thickness_tolerance_mm=thickness_tolerance,
+        thickness_tolerance_mm=thickness_tolerance(selected.thickness_mm),
         excluded_intervals=tuple(excluded_intervals),
     )
 
@@ -455,10 +478,9 @@ def _tube_sizing_point(sample: _SizingSample) -> TubeSizingPoint:
     # The sample's states dict erases the kernel's Literal types; restore them.
     return TubeSizingPoint(
         wall_thickness=_millimeters(sample.thickness_mm),
-        branch=cast(Literal["thin", "thick"], sample.states["branch"]),
+        branch=cast(Literal["thick"], sample.states["branch"]),
         governing_location=cast(
-            Literal["internal", "external", "mean"],
-            sample.states["governing_location"],
+            Literal["internal"], sample.states["governing_location"],
         ),
         check_margins=dict(sample.check_margins),
         minimum_margin=sample.minimum_margin,
@@ -1207,14 +1229,14 @@ def _smooth_buckling_sizing_point(sample: _SizingSample) -> SmoothBucklingSizing
     # The sample's states dict erases the kernels' Literal types; restore them.
     return SmoothBucklingSizingPoint(
         wall_thickness=_millimeters(sample.thickness_mm),
-        tube_branch=cast(Literal["thin", "thick"], sample.states["tube_branch"]),
+        tube_branch=cast(Literal["thick"], sample.states["tube_branch"]),
         buckling_regime=cast(
             Literal["short", "moderate", "moderate_long_correlation_overlap", "long"],
             sample.states["buckling_regime"],
         ),
-        governing_check=cast(SizingCheckName, sample.states["governing_check"]),
+        governing_check=cast(SizingCheckName | None, sample.states.get("governing_check")),
         check_margins=dict(sample.check_margins),
-        minimum_margin=sample.minimum_margin,
+        minimum_margin=sample.minimum_margin if sample.eligible else None,
     )
 
 
@@ -1229,7 +1251,9 @@ def _smooth_buckling_state_changes(
             upper=_smooth_buckling_sizing_point(change.upper),
             from_state=change.from_state,
             to_state=change.to_state,
-            margin_jump=change.margin_jump,
+            margin_jump=(
+                change.margin_jump if change.lower.eligible and change.upper.eligible else None
+            ),
         )
         for change in _sizing_state_changes(samples, state_name)
     ]

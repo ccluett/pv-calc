@@ -123,6 +123,11 @@ def test_describe_reports_complete_discoverable_contracts() -> None:
         size_contract["output_contract"]["sizing_json_schema"]
         == TubeSizingMetadata.model_json_schema()
     )
+    tube_point = size_contract["output_contract"]["sizing_json_schema"]["$defs"][
+        "TubeSizingPoint"
+    ]["properties"]
+    assert tube_point["branch"]["const"] == "thick"
+    assert tube_point["governing_location"]["const"] == "internal"
     assert size_contract["failure"] == {
         "error_codes": [
             "invalid_bounds",
@@ -194,6 +199,9 @@ def test_describe_reports_complete_discoverable_contracts() -> None:
         "moderate_regime_gamma_z_limit",
         "moderate_regime_more_than_two_wave_limit",
         "long_regime_oval_wave_limit",
+        "short_regime_proportional_limit",
+        "moderate_regime_proportional_limit",
+        "long_regime_proportional_limit",
     ]
     assert smooth_size["input_contract"]["json_schema"] == (
         SmoothBucklingSizeRequest.model_json_schema()
@@ -201,6 +209,10 @@ def test_describe_reports_complete_discoverable_contracts() -> None:
     assert smooth_size["output_contract"]["sizing_json_schema"] == (
         SmoothBucklingSizingMetadata.model_json_schema()
     )
+    smooth_point = smooth_size["output_contract"]["sizing_json_schema"]["$defs"][
+        "SmoothBucklingSizingPoint"
+    ]["properties"]
+    assert smooth_point["tube_branch"]["const"] == "thick"
     assert smooth_size["output_contract"]["selected_results_fields"] == [
         "smooth-buckling",
         "tube",

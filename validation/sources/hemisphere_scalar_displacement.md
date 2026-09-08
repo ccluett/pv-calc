@@ -22,6 +22,17 @@ clamped-equator assumption belongs to the separate NASA buckling correlation.
   by the former implementation. Its hemisphere/cylinder junction discussion
   explains why uniform spherical displacement cannot resolve the junction.
 
+Source bytes retrieved and inspected on 2026-09-07 (not vendored):
+
+| Source above | Format | SHA-256 |
+|---|---|---|
+| Coreform, section 6 | HTML | `5e366f9de3eb205340a593132b05d6b2b875665801a0ae5b928ec245044a9e19` |
+| IIT Kharagpur, tutorial 7, problem 8, p. 3 | PDF | `649dd367aa28ca1de475c1cce50b7f3dfb338715020a471d7cf3d69d93d89b09` |
+| NASA TM-4579, Eq. (5), printed p. 6 | PDF | `dafa8fee4428e30bc8cef2225c5e74e19226b2b6e3a2bdbcea232831a8b38e68` |
+
+The HTML hash identifies the inspected page; later site updates may change it.
+These pins identify equation sources, not pv-calc FEA or experimental results.
+
 ## Derivation and sign convention
 
 For external pressure `p > 0`, zero internal gauge pressure, inner radius `a`,

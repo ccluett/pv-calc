@@ -1403,7 +1403,7 @@
       "operation_version": "2.0.0",
       "plate_thickness_tolerance": {
         "unit": "mm",
-        "value": 9.5e-09
+        "value": 9.33127789285e-09
       },
       "selected_check_margins": {
         "center_deflection": 2.60612198488e-10,
@@ -9209,7 +9209,7 @@
         "result": {
           "axial_line_load_n_per_mm": {
             "unit": "N/mm",
-            "value": 102.130794171
+            "value": 102.13079417
           },
           "boundary_assumptions": [
             "Simply supported ends: zero radial deflection and zero bending moment.",
@@ -9227,26 +9227,26 @@
               ],
               "applicable": false,
               "circumferential_wave_count_n": null,
-              "continuous_circumferential_wave_count": 1.96271274041,
+              "continuous_circumferential_wave_count": 1.96271274077,
               "correlated_critical_circumferential_stress_mpa": {
                 "unit": "MPa",
-                "value": 61.5137041677
+                "value": 61.513704097
               },
               "correlated_critical_pressure_mpa": {
                 "unit": "MPa",
-                "value": 2.56676829659
+                "value": 2.56676829172
               },
               "correlation_factor_gamma": 0.5625,
-              "critical_aspect_ratio_beta": 4.28201515376,
-              "critical_buckling_coefficient": 26.233112466,
+              "critical_aspect_ratio_beta": 4.28201515463,
+              "critical_buckling_coefficient": 26.2331124759,
               "eq25_simplified_critical_pressure_mpa": {
                 "unit": "MPa",
                 "value": null
               },
-              "gamma_z": 604.103147081,
+              "gamma_z": 604.103147552,
               "ideal_critical_pressure_mpa": {
                 "unit": "MPa",
-                "value": 3.39976928889
+                "value": 3.39976928244
               },
               "regime": "short",
               "source_equations": [
@@ -9264,26 +9264,26 @@
               ],
               "applicable": true,
               "circumferential_wave_count_n": null,
-              "continuous_circumferential_wave_count": 1.96271274041,
+              "continuous_circumferential_wave_count": 1.96271274077,
               "correlated_critical_circumferential_stress_mpa": {
                 "unit": "MPa",
-                "value": 59.9135734317
+                "value": 59.9135733634
               },
               "correlated_critical_pressure_mpa": {
                 "unit": "MPa",
-                "value": 2.50000000651
+                "value": 2.50000000179
               },
               "correlation_factor_gamma": 0.5625,
-              "critical_aspect_ratio_beta": 4.28201515376,
-              "critical_buckling_coefficient": 25.5616502574,
+              "critical_aspect_ratio_beta": 4.28201515463,
+              "critical_buckling_coefficient": 25.5616502674,
               "eq25_simplified_critical_pressure_mpa": {
                 "unit": "MPa",
                 "value": null
               },
-              "gamma_z": 604.103147081,
+              "gamma_z": 604.103147552,
               "ideal_critical_pressure_mpa": {
                 "unit": "MPa",
-                "value": 3.33333334202
+                "value": 3.33333333572
               },
               "regime": "moderate",
               "source_equations": [
@@ -9303,23 +9303,23 @@
               "continuous_circumferential_wave_count": 2.0,
               "correlated_critical_circumferential_stress_mpa": {
                 "unit": "MPa",
-                "value": 30.1348295504
+                "value": 30.1348295053
               },
               "correlated_critical_pressure_mpa": {
                 "unit": "MPa",
-                "value": 1.25742915599
+                "value": 1.25742915316
               },
               "correlation_factor_gamma": 0.9,
               "critical_aspect_ratio_beta": null,
-              "critical_buckling_coefficient": 12.851288724,
+              "critical_buckling_coefficient": 12.8512887244,
               "eq25_simplified_critical_pressure_mpa": {
                 "unit": "MPa",
                 "value": null
               },
-              "gamma_z": 966.565035329,
+              "gamma_z": 966.565036084,
               "ideal_critical_pressure_mpa": {
                 "unit": "MPa",
-                "value": 1.39714350665
+                "value": 1.39714350351
               },
               "regime": "long",
               "source_equations": [
@@ -9333,23 +9333,23 @@
           "capacity_status": "released",
           "circumferential_line_load_n_per_mm": {
             "unit": "N/mm",
-            "value": 204.261588342
+            "value": 204.261588339
           },
           "circumferential_wave_count_n": null,
           "comparison_source_reference": "Roark's Formulas for Stress and Strain, 6th ed., Table 35 case 20, its theoretical pressure minimized over integer lobe counts and reduced by the table's 0.80 probable-minimum factor",
-          "continuous_circumferential_wave_count": 1.96271274041,
+          "continuous_circumferential_wave_count": 1.96271274077,
           "correlated_critical_circumferential_stress_mpa": {
             "unit": "MPa",
-            "value": 59.9135734317
+            "value": 59.9135733634
           },
           "correlated_critical_pressure_mpa": {
             "unit": "MPa",
-            "value": 2.50000000651
+            "value": 2.50000000179
           },
           "correlation_factor_gamma": 0.5625,
-          "critical_aspect_ratio_beta": 4.28201515376,
-          "critical_buckling_coefficient": 25.5616502574,
-          "curvature_parameter_z": 1073.96115037,
+          "critical_aspect_ratio_beta": 4.28201515463,
+          "critical_buckling_coefficient": 25.5616502674,
+          "curvature_parameter_z": 1073.9611512,
           "elastic_applicability": "within",
           "elastic_applicability_limit_basis": "proportional_limit",
           "elastic_applicability_limit_mpa": {
@@ -9366,22 +9366,22 @@
           },
           "flexural_rigidity_n_mm": {
             "unit": "N*mm",
-            "value": 496123.602937
+            "value": 496123.601799
           },
-          "geometry_mode_parameter": 22.8615624978,
+          "geometry_mode_parameter": 22.8615625149,
           "ideal_critical_pressure_mpa": {
             "unit": "MPa",
-            "value": 3.33333334202
+            "value": 3.33333333572
           },
           "line_load_sign_convention": "positive_compression_magnitude",
           "load_case": "hydrostatic_closed_end",
-          "margin": 0.250000003257,
+          "margin": 0.250000000897,
           "model_id": "nasa_smooth_cylinder_external_pressure_buckling",
           "model_version": "4.0.0",
           "moderate_gamma_z_lower_boundary": 100.0,
-          "moderate_long_boundary_parameter": 6167.28227014,
-          "moderate_long_overlap_end_z": 10964.0573691,
-          "moderate_long_overlap_start_z": 6852.53585571,
+          "moderate_long_boundary_parameter": 6167.28227937,
+          "moderate_long_overlap_end_z": 10964.0573856,
+          "moderate_long_overlap_start_z": 6852.53586597,
           "notes": [
             "The NASA equations assume a thin, circular, isotropic, unstiffened shell with uniform thickness, elastic response, membrane prebuckling, and simply supported ends.",
             "Radius is the shell mid-surface radius; callers starting from an internal radius must add one-half the wall thickness.",
@@ -9407,13 +9407,13 @@
           "roark_probable_minimum_lobes_n": 2,
           "roark_probable_minimum_pressure_mpa": {
             "unit": "MPa",
-            "value": 3.02623985179
+            "value": 3.02623984703
           },
           "shell_mid_surface_radius_mm": {
             "unit": "mm",
-            "value": 102.130794171
+            "value": 102.13079417
           },
-          "shell_mid_surface_radius_over_thickness": 23.9654293102,
+          "shell_mid_surface_radius_over_thickness": 23.9654293282,
           "short_regime_gamma_z_boundary": 100.0,
           "source_equations": [
             "NASA Eq. 23",
@@ -9426,15 +9426,15 @@
             "unit": "mm",
             "value": 700.0
           },
-          "unsupported_length_over_radius": 6.85395629869,
+          "unsupported_length_over_radius": 6.8539562988,
           "validity_violations": [],
           "wall_thickness_mm": {
             "unit": "mm",
-            "value": 4.26158834249
+            "value": 4.26158833923
           },
           "working_circumferential_membrane_stress_mpa": {
             "unit": "MPa",
-            "value": 47.9308586205
+            "value": 47.9308586564
           },
           "yield_strength_mpa": {
             "unit": "MPa",
@@ -9480,7 +9480,7 @@
             "unit": "mm",
             "value": null
           },
-          "axial_strain": -0.000142719205733,
+          "axial_strain": -0.000142719205835,
           "branch": "thick",
           "displacement_source_reference": "Boresi and Schmidt, Advanced Mechanics of Materials, 6th ed., 2003, Eq. (11.24), printed p. 396, for the closed-cylinder radial displacement and Eq. (11.15), printed p. 394, for the closed-cylinder axial strain, both at sections far from the end-cap junction",
           "displacement_status": "released",
@@ -9496,7 +9496,7 @@
           },
           "external_radius_mm": {
             "unit": "mm",
-            "value": 104.261588342
+            "value": 104.261588339
           },
           "failure_criterion": "von_mises_stress_vs_yield_strength",
           "force_thick": false,
@@ -9506,22 +9506,22 @@
           },
           "governing_stress_mpa": {
             "unit": "MPa",
-            "value": 43.2594602203
+            "value": 43.2594602514
           },
           "internal_radius_mm": {
             "unit": "mm",
             "value": 100.0
           },
           "load_case": "hydrostatic_closed_end",
-          "margin": 4.77908274229,
+          "margin": 4.77908273814,
           "material_failure_category": "ductile_metal",
-          "maximum_absolute_strain": 0.000606556624363,
-          "maximum_radial_displacement_over_thickness": 0.0142331115917,
+          "maximum_absolute_strain": 0.000606556624799,
+          "maximum_radial_displacement_over_thickness": 0.0142331116128,
           "mean_radius_mm": {
             "unit": "mm",
-            "value": 102.130794171
+            "value": 102.13079417
           },
-          "mean_radius_over_thickness": 23.9654293102,
+          "mean_radius_over_thickness": 23.9654293282,
           "model_id": "closed_end_tube_stress",
           "model_version": "3.0.0",
           "notes": [
@@ -9549,23 +9549,23 @@
             {
               "axial_stress_mpa": {
                 "unit": "MPa",
-                "value": -24.9758610032
+                "value": -24.9758610211
               },
               "hoop_stress_mpa": {
                 "unit": "MPa",
-                "value": -49.9517220064
+                "value": -49.9517220423
               },
               "principal_stresses_mpa": {
                 "unit": "MPa",
                 "value": [
                   0.0,
-                  -24.9758610032,
-                  -49.9517220064
+                  -24.9758610211,
+                  -49.9517220423
                 ]
               },
               "radial_displacement_mm": {
                 "unit": "mm",
-                "value": -0.0606556624363
+                "value": -0.0606556624799
               },
               "radial_stress_mpa": {
                 "unit": "MPa",
@@ -9578,29 +9578,29 @@
               },
               "von_mises_stress_mpa": {
                 "unit": "MPa",
-                "value": 43.2594602203
+                "value": 43.2594602514
               }
             },
             {
               "axial_stress_mpa": {
                 "unit": "MPa",
-                "value": -24.9758610032
+                "value": -24.9758610211
               },
               "hoop_stress_mpa": {
                 "unit": "MPa",
-                "value": -47.9517220064
+                "value": -47.9517220423
               },
               "principal_stresses_mpa": {
                 "unit": "MPa",
                 "value": [
                   -2.0,
-                  -24.9758610032,
-                  -47.9517220064
+                  -24.9758610211,
+                  -47.9517220423
                 ]
               },
               "radial_displacement_mm": {
                 "unit": "mm",
-                "value": -0.0593679837945
+                "value": -0.059367983838
               },
               "radial_stress_mpa": {
                 "unit": "MPa",
@@ -9609,23 +9609,23 @@
               "radius_convention": "external",
               "radius_mm": {
                 "unit": "mm",
-                "value": 104.261588342
+                "value": 104.261588339
               },
               "von_mises_stress_mpa": {
                 "unit": "MPa",
-                "value": 39.7953586052
+                "value": 39.7953586362
               }
             }
           ],
           "theoretical_failure_pressure_mpa": {
             "unit": "MPa",
-            "value": 11.5581654846
+            "value": 11.5581654763
           },
           "thin_wall_threshold_mean_radius_over_thickness": 10.0,
           "validity_violations": [],
           "wall_thickness_mm": {
             "unit": "mm",
-            "value": 4.26158834249
+            "value": 4.26158833923
           }
         },
         "schema_version": "5.0.0"
@@ -9633,7 +9633,7 @@
     },
     "sizing": {
       "algorithm": "known_branch_partition_and_bisection",
-      "bisection_iterations": 30,
+      "bisection_iterations": 31,
       "bounds": {
         "lower": {
           "unit": "mm",
@@ -9659,25 +9659,25 @@
           }
         }
       ],
-      "evaluation_count": 32,
+      "evaluation_count": 33,
       "excluded_thickness_intervals": [],
       "governing_check_changes": [],
       "load_case": "hydrostatic_closed_end",
       "operation": "wall_thickness_inverse_sizing",
       "operation_version": "3.0.0",
       "selected_check_margins": {
-        "cylindrical_shell_stress": 4.77908274229,
-        "smooth_cylinder_buckling": 0.250000003257
+        "cylindrical_shell_stress": 4.77908273814,
+        "smooth_cylinder_buckling": 0.250000000897
       },
       "selected_governing_check": "smooth_cylinder_buckling",
-      "selected_minimum_margin": 0.250000003257,
+      "selected_minimum_margin": 0.250000000897,
       "selected_shell_mid_surface_radius": {
         "unit": "mm",
-        "value": 102.130794171
+        "value": 102.13079417
       },
       "selected_wall_thickness": {
         "unit": "mm",
-        "value": 4.26158834249
+        "value": 4.26158833923
       },
       "selection_scope": "model_eligible_thicknesses",
       "shell_mid_surface_radius_convention": "internal_radius_plus_half_wall_thickness",
@@ -9703,25 +9703,25 @@
         "upper": {
           "buckling_regime": "moderate",
           "check_margins": {
-            "cylindrical_shell_stress": 4.77908274229,
-            "smooth_cylinder_buckling": 0.250000003257
+            "cylindrical_shell_stress": 4.77908273814,
+            "smooth_cylinder_buckling": 0.250000000897
           },
           "governing_check": "smooth_cylinder_buckling",
-          "minimum_margin": 0.250000003257,
+          "minimum_margin": 0.250000000897,
           "tube_branch": "thick",
           "wall_thickness": {
             "unit": "mm",
-            "value": 4.26158834249
+            "value": 4.26158833923
           }
         },
         "wall_thickness_width": {
           "unit": "mm",
-          "value": 6.51925802231e-09
+          "value": 3.25962901115e-09
         }
       },
       "wall_thickness_tolerance": {
         "unit": "mm",
-        "value": 9e-09
+        "value": 4.26158833923e-09
       }
     }
   },
@@ -11717,7 +11717,7 @@
       },
       "wall_thickness_tolerance": {
         "unit": "mm",
-        "value": 1.27e-08
+        "value": 9.81029653363e-09
       }
     }
   }

@@ -1063,7 +1063,17 @@ def test_cylinder_size_can_start_after_an_excluded_overlap() -> None:
     assert metadata["verified_bracket"] is None
     assert metadata["selection_scope"] == "model_eligible_thicknesses"
     assert metadata["excluded_thickness_intervals"][0]["lower"]["value"] == 4.0
+    change = metadata["buckling_regime_changes"][-1]
+    assert change["from_state"] == "moderate_long_correlation_overlap"
+    assert change["to_state"] == "long"
+    assert change["lower"]["governing_check"] is None
+    assert change["lower"]["minimum_margin"] is None
+    assert set(change["lower"]["check_margins"]) == {"cylindrical_shell_stress"}
+    assert change["upper"]["minimum_margin"] >= 0.0
+    assert change["margin_jump"] is None
+    assert metadata["governing_check_changes"] == []
     selected = metadata["selected_wall_thickness"]["value"]
+    assert change["upper"]["wall_thickness"]["value"] == selected
     for thickness, expected_status in (
         (math.nextafter(selected, -math.inf), "withheld_correlation_overlap"),
         (selected, "released"),
@@ -1497,6 +1507,9 @@ def test_plate_size_searches_between_applicability_limits() -> None:
     )
     band_payload = _error_payload(outside_band)
     assert band_payload["error"]["code"] == "no_reliable_solution"
+    assert "required model outputs are unavailable" in band_payload["error"]["message"]
+    assert "swept evidence band" in band_payload["error"]["message"]
+    assert "bracket" not in band_payload["error"]["message"]
     assert any(
         "swept evidence band" in reason
         for reason in band_payload["error"]["details"][0]["lower_evaluation"]["withheld_reasons"]
@@ -1729,3 +1742,85 @@ def test_committed_plate_size_example_runs() -> None:
     }
     assert payload["sizing"]["selected_minimum_target_slack"] >= 0.0
     assert payload["result"]["deflection_status"] == "released"
+
+
+def test_cylinder_sizing_excludes_regime_changes_beyond_the_thin_shell_limit() -> None:
+    material = CYLINDER_SIZE_MATERIAL.copy()
+    material[material.index("--proportional-limit") + 1] = "150 MPa"
+    result = runner.invoke(
+        app,
+        _cylinder_size_args(
+            external_pressure="4 MPa", internal_radius="50 mm",
+            unsupported_length="700 mm", lower="1 mm", upper="8 mm",
+            minimum_margin="0.5", material=material,
+        ),
+    )
+    error = _error_payload(result)["error"]
+    assert error["code"] == "no_reliable_solution"
+    assert "no fail/pass margin bracket" in error["message"]
+    assert "was not isolated" not in error["message"]
+    # The unpartitioned overlap-to-long change lies beyond the monotonic R/t
+    # applicability limit, so no thickness in that interval can be eligible.
+    details = error["details"][0]
+    assert details["lower_evaluation"]["buckling_regime"] == "moderate"
+    assert details["upper_evaluation"]["buckling_regime"] == "long"
+    assert details["upper_evaluation"]["capacity_status"] == "withheld_applicability"
+    changes = details["buckling_regime_changes"]
+    assert changes[-1]["from_state"] == "moderate_long_correlation_overlap"
+    assert changes[-1]["to_state"] == "long"
+    assert changes[-1]["lower"]["minimum_margin"] is None
+    assert changes[-1]["upper"]["minimum_margin"] is None
+
+
+@pytest.mark.parametrize("lower_eligible", [False, True])
+def test_sizing_still_refuses_an_unisolated_mixed_applicability_boundary(lower_eligible) -> None:
+    def evaluate(thickness):
+        eligible = lower_eligible if thickness == 1.0 else not lower_eligible
+        return sizing._SizingSample(
+            thickness_mm=thickness,
+            branch="released" if eligible else "withheld",
+            states={},
+            check_margins={"check": -1.0} if eligible else {},
+            unavailable_details=None if eligible else {"withheld_reasons": ["outside model"]},
+        )
+
+    with pytest.raises(CalcCliError, match="boundary was not isolated"):
+        sizing._solve_thickness(
+            lower_bound_mm=1.0, upper_bound_mm=2.0,
+            bounds_variable="thickness", check_targets={"check": 0.0},
+            evaluate=evaluate, partition_thicknesses=(),
+            branch_label="test branch", failure_details=lambda samples: [],
+        )
+
+
+@pytest.mark.parametrize("upper", ["20 mm", "1e10 mm"])
+def test_plate_sizing_tolerance_tracks_the_answer_instead_of_the_bounds(upper) -> None:
+    result = runner.invoke(
+        app,
+        _plate_size_args(external_pressure="1 MPa", lower="1 mm", upper=upper),
+    )
+    assert result.exit_code == 0, result.output
+    metadata = json.loads(result.stdout)["sizing"]
+    selected = metadata["selected_plate_thickness"]["value"]
+    # Fixed plate edge bending: sigma = 3*p*a^2/(4*t^2).
+    root = math.sqrt(3.0 * 1.0 * 100.0**2 / (4.0 * 250.0))
+    tolerance = metadata["plate_thickness_tolerance"]["value"]
+    assert tolerance == pytest.approx(1e-9 * selected)
+    assert root <= selected <= root + tolerance
+    assert metadata["verified_bracket"]["plate_thickness_width"]["value"] <= tolerance
+
+
+def test_sizing_refuses_a_bracket_that_exhausts_the_iteration_limit() -> None:
+    def evaluate(thickness):
+        return sizing._SizingSample(
+            thickness_mm=thickness, branch="continuous", states={},
+            check_margins={"check": thickness - 5.0},
+        )
+
+    with pytest.raises(CalcCliError, match="bisection did not converge"):
+        sizing._solve_thickness(
+            lower_bound_mm=1.0, upper_bound_mm=1e50,
+            bounds_variable="thickness", check_targets={"check": 0.0},
+            evaluate=evaluate, partition_thicknesses=(),
+            branch_label="test branch", failure_details=lambda samples: [],
+        )

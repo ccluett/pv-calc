@@ -902,7 +902,8 @@ def _smooth_buckling_size_contract(cli_options: Mapping[str, str]) -> dict[str, 
             " the closed-end hydrostatic one, so the buckling check uses the"
             " matching hydrostatic_closed_end case.",
             "The bounds are partitioned at the buckling model's thin-shell"
-            " limit and the four NASA regime boundaries, whose"
+            " limit, the four NASA regime boundaries, and each regime's"
+            " proportional-limit crossing. Their"
             " thicknesses are solved for rather than assumed, because they"
             " depend on the correlation factor gamma and on the mid-surface"
             " radius that moves with the thickness.",
@@ -924,6 +925,9 @@ def _smooth_buckling_size_contract(cli_options: Mapping[str, str]) -> dict[str, 
         "derived_branch_boundaries": [
             _SMOOTH_BUCKLING_THIN_SHELL_BOUNDARY,
             *(name for name, _, _, _ in _SMOOTH_BUCKLING_REGIME_BOUNDARIES),
+            "short_regime_proportional_limit",
+            "moderate_regime_proportional_limit",
+            "long_regime_proportional_limit",
         ],
         "fixed_inputs": [
             "external_pressure",

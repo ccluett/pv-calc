@@ -31,6 +31,10 @@ model; both predate this changelog.
   forward checks; no solution is inferred inside withheld regions. Exclusions
   retain released endpoint margins so a known material failure remains visible
   when another required output is unavailable.
+- Preserve known sizing regime changes across excluded intervals without
+  inventing missing margins. Distinguish model-inapplicable bounds from failed
+  targets, exclude wholly ineligible intervals despite irrelevant regime
+  changes, and scale bisection tolerance to the solution thickness.
 - Model versions: tube 3.0.0, hemisphere 4.0.0, plate 4.0.0, smooth buckling
   4.0.0, ring shell 3.0.0 (nested smooth result). Sizing operation versions:
   tube and smooth buckling 3.0.0, plate 2.0.0. Request schema remains 5.0.0.

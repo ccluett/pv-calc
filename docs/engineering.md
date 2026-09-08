@@ -67,11 +67,15 @@ constraint, that output's stricter floor does not restrict sizing.
 
 All three operations search known model-eligible intervals in increasing
 thickness, verify monotonicity within them, and return the first target crossing
-with its forward checks. A crossing within an interval is bisected to the
-reported tolerance. A NASA branch can instead open above the target: switching
+with its forward checks. A crossing within an interval is bisected to a tolerance
+of `max(1e-9 mm, 1e-9 * selected_thickness)`, so distant input bounds do not
+reduce accuracy at the solution. A NASA branch can instead open above the target: switching
 from Eq. 24 to Eqs. 20/22 as thickness increases raises the approximate capacity
 by 6.77% under hydrostatic pressure. Such a solution is reported as `branch_start`,
 with no false continuous bracket across the jump.
+Known regime changes are also reported across excluded intervals, with
+`governing_check`, `minimum_margin`, and `margin_jump` null wherever a required
+capacity is unavailable.
 
 "Smallest" means smallest among thicknesses the model can evaluate for the
 requested checks. An excluded interval lacks a required output; this does not
@@ -237,8 +241,8 @@ evaluation order produced.
 
 The tube and hemisphere models report exact Lamé stress at the inner and
 outer surfaces for every thickness. The thin-wall approximation previously
-underestimated the governing material stress by up to about 10.25% for tubes
-and 15.67% for hemispheres near the former `r_m/t = 10` switch. Using the
+underestimated the governing material stress by up to about 9.30% for tubes
+and 13.54% for hemispheres near the former `r_m/t = 10` switch. Using the
 through-wall solution removes that discontinuity and makes the same exact
 stress govern forward margins and inverse sizing.
 
@@ -368,7 +372,7 @@ where a released result publishes it as its own disposition.
 
 | Question | Source |
 |---|---|
-| Tube, plate, and hemisphere stress | Roark's Formulas for Stress and Strain, 6th ed.: Table 28 case 1c and Table 32 cases 1a-1d (tube), Table 24 cases 10a-10b, p. 429 (plate), Table 28 case 3a, p. 523 and Table 32 cases 2a-2b, p. 640 (hemisphere) |
+| Tube, plate, and hemisphere stress | Roark's Formulas for Stress and Strain, 6th ed.: Table 32 cases 1a-1d (tube), Table 24 cases 10a-10b, p. 429 (plate), Table 32 cases 2a-2b, p. 640 (hemisphere) |
 | Probable-minimum buckling comparators | Roark's Formulas for Stress and Strain, 6th ed., Table 35 case 22, p. 691 (sphere) and Table 35 case 20 (cylinder), the table's probable minimums; each is reported beside the released capacity and sets none |
 | Historical tube membrane limit | DTMB Report 1497 (Pulos and Salerno, 1961), Eq. [5] with Eqs. [A7]-[A10] |
 | Exact tube radial displacement and axial strain | Boresi and Schmidt, *Advanced Mechanics of Materials*, 6th ed., Eqs. (11.24) and (11.15) |

@@ -1,4 +1,4 @@
-"""Independent standard-library reference for hemisphere membrane displacement.
+"""Historical independent reference for hemisphere membrane displacement.
 
 This module imports no production calculation, adapter, fixture, expected
 output, or section helper.  It transcribes one cited source equation directly:
@@ -11,8 +11,10 @@ equation and applies both to the hemispherical bulkheads of the analyzed
 vessel.  Ko's ref. 1 is Timoshenko and Woinowsky-Krieger, *Theory of Plates and
 Shells*, 1959, pp. 481-485.
 
-The decision record behind it, including why the thick-sphere branch is
-withheld, is ``validation/sources/hemisphere_scalar_displacement.md``.
+This module preserves the former membrane calculation and thick-branch
+withholding. Current production uses exact Lamé displacement at every wall
+thickness; its sources and scope are recorded in
+``validation/sources/hemisphere_scalar_displacement.md``.
 
 It is a separate module from ``non_ring_reference.py`` for the reason recorded
 there: that file's SHA-256 is ``manifest.reference_sha256`` in the committed
@@ -105,13 +107,13 @@ def hemispherical_head_displacement_reference(
     poisson_ratio: float,
     force_thick: bool = False,
 ) -> dict[str, Any]:
-    """Branch the reference the way the released hemisphere model branches.
+    """Preserve the former hemisphere model's displacement branches.
 
     The thin branch is used only above ``mean radius / thickness = 10`` and
     reports one displacement at the median surface.  The thick branch is used
     at or below it, or when ``force_thick`` is set, and reports none: NASA
-    TM-4579 Eq. (5) is a thin-shell membrane result, and no consulted source
-    states a thick-sphere radial displacement.
+    TM-4579 Eq. (5) is a thin-shell membrane result. This historical source
+    transcription does not implement the current exact spherical solution.
     """
     mean_radius = internal_radius + wall_thickness / 2.0
     radius_ratio = mean_radius / wall_thickness
@@ -168,16 +170,16 @@ def cylinder_to_sphere_ratio_reference(*, poisson_ratio: float) -> float:
     Dividing Eq. (4) by Eq. (5) leaves ``(2 - nu) / (1 - nu)``, free of
     pressure, radius, thickness, and modulus.  Ko evaluates it at ``nu = 0.28``
     in his Eq. (7); the printed digits of that evaluation are not relied on
-    here, only the closed form.  The released tube and hemisphere models take
-    their thin displacements from two different sources, DTMB 1497 Eq. [5] and
-    this one, so their ratio at one geometry reproducing this closed form is a
-    check that the two transcriptions are mutually consistent.
+    here, only the closed form. The historical tube and hemisphere membrane
+    transcriptions use DTMB 1497 Eq. [5] and this source; reproducing this ratio
+    checks their consistency. The current Lamé solutions approach it as the
+    wall thins.
     """
     return (2.0 - poisson_ratio) / (1.0 - poisson_ratio)
 
 
 def build_evidence() -> dict[str, Any]:
-    """Build the checked independent hemisphere-displacement evidence."""
+    """Build the historical independent membrane-displacement evidence."""
     released_inputs = {
         "external_pressure": 6.0,
         "internal_radius": 100.0,
@@ -185,7 +187,7 @@ def build_evidence() -> dict[str, Any]:
         "elastic_modulus": 68_900.0,
         "poisson_ratio": 0.33,
     }
-    # The released branch switch sits at mean radius / thickness = 10, where
+    # The former branch switch sat at mean radius / thickness = 10, where
     # the thick branch is taken; the thin branch starts just above it.
     transition_thick_inputs = {
         "external_pressure": 1.0,
@@ -205,7 +207,7 @@ def build_evidence() -> dict[str, Any]:
         "conventions": {
             "radial_displacement": "positive outward; external pressure gives a negative value",
             "thin_branch_surface": "median surface",
-            "thick_branch_surfaces": "withheld; no source states a thick-sphere displacement",
+            "thick_branch_surfaces": "withheld in this historical membrane reference",
             "meridional_location": (
                 "away from the equator; a restrained equator suppresses the displacement "
                 "locally and the released value is not the equator's radial closure"

@@ -530,8 +530,12 @@ class NormalizedThicknessBounds(ContractModel):
 
 class TubeSizingPoint(ContractModel):
     wall_thickness: MillimeterQuantity
-    branch: Literal["thin", "thick"]
-    governing_location: Literal["internal", "external", "mean"]
+    branch: Literal["thick"] = Field(
+        description="Legacy branch field; the current exact Lamé model always reports thick.",
+    )
+    governing_location: Literal["internal"] = Field(
+        description="Both von Mises stress and hoop stress magnitude are largest at the bore.",
+    )
     check_margins: dict[str, FiniteFloat]
     minimum_margin: FiniteFloat
 
@@ -566,8 +570,12 @@ class TubeSizingMetadata(ContractModel):
     bisection_iterations: Annotated[int, Field(ge=0)]
     wall_thickness_tolerance: MillimeterQuantity
     verified_bracket: TubeSizingBracket | None
-    branch_changes: list[TubeSizingStateChange]
-    governing_location_changes: list[TubeSizingStateChange]
+    branch_changes: list[TubeSizingStateChange] = Field(
+        description="Retained for compatibility; always empty with the current exact Lamé model.",
+    )
+    governing_location_changes: list[TubeSizingStateChange] = Field(
+        description="Retained for compatibility; always empty because the bore governs at every thickness.",
+    )
 
 
 SizingCheckName = Literal["cylindrical_shell_stress", "smooth_cylinder_buckling"]
@@ -581,11 +589,16 @@ BucklingRegimeName = Literal[
 
 class SmoothBucklingSizingPoint(ContractModel):
     wall_thickness: MillimeterQuantity
-    tube_branch: Literal["thin", "thick"]
+    tube_branch: Literal["thick"]
     buckling_regime: BucklingRegimeName
-    governing_check: SizingCheckName
+    governing_check: SizingCheckName | None = Field(
+        description="Governing check when every required margin is available; otherwise null.",
+    )
     check_margins: dict[str, FiniteFloat]
-    minimum_margin: FiniteFloat
+    minimum_margin: FiniteFloat | None = Field(
+        description="Minimum of every required check margin; null when any required margin is unavailable. "
+        "Available check margins remain in check_margins.",
+    )
 
 
 class SmoothBucklingSizingBracket(ContractModel):
@@ -599,7 +612,10 @@ class SmoothBucklingSizingStateChange(ContractModel):
     upper: SmoothBucklingSizingPoint
     from_state: NonBlankString
     to_state: NonBlankString
-    margin_jump: FiniteFloat
+    margin_jump: FiniteFloat | None = Field(
+        description="Change in minimum margin across the boundary; null if either endpoint "
+        "lacks a required margin, even when its model state is known.",
+    )
 
 
 class DerivedBranchBoundary(ContractModel):

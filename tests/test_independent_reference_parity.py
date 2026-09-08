@@ -221,11 +221,15 @@ def test_non_ring_inventory_covers_every_golden_and_released_example() -> None:
     expected_case_ids = {
         "tube_underpressure_example_1_failure",
         "tube_lame_intermediates",
-        "tube_thin_mean_radius_and_branch_boundary",
+        "tube_exact_surfaces_and_former_branch_boundary",
         "tube_cli_sizing_golden",
         "tube_worked_component_stresses",
         "tube_radial_displacement_and_axial_strain",
-        "hemisphere_membrane_radial_displacement",
+        "hemisphere_historical_membrane_radial_displacement",
+        "shell_exact_stress_force_balance_and_compatibility",
+        "hemisphere_exact_radial_displacement",
+        "elastic_output_material_limit_policy",
+        "shell_small_deformation_release_policy",
         "hemisphere_underpressure_manual_example",
         "hemisphere_cli_and_release_gates",
         "plate_underpressure_example_2_failure",
@@ -248,6 +252,7 @@ def test_non_ring_inventory_covers_every_golden_and_released_example() -> None:
             "independent_equation",
             "independent_equation_plus_manual_display",
             "independent_equation_plus_accepted_manual_4_0_display",
+            "release_policy",
         }
         for artifact in item["artifacts"]:
             assert Path(artifact).exists(), artifact
@@ -820,13 +825,29 @@ def _assert_plate_parity(
     assert [item.replace("_mm", "") for item in released.validity_violations] == (
         independent["validity_violations"]
     )
+    # The pinned oracle's deflection policy checked geometry only. Keep its
+    # equation values unchanged and check the current material-limit policy
+    # against its independently calculated bending stress.
+    expected_status = independent["deflection_status"]
+    expected_deflection_violations = list(independent["deflection_validity_violations"])
+    if independent["governing_bending_stress"] > yield_strength_mpa:
+        expected_deflection_violations.append(
+            "governing bending stress exceeds the supplied material strength; "
+            "the deflection is an elastic formula estimate beyond the material limit"
+        )
+        if expected_status == "released":
+            expected_status = "elastic_estimate_material_limit"
     assert [
         item.replace("_mm", "") for item in released.deflection_validity_violations
-    ] == independent["deflection_validity_violations"]
-    assert released.deflection_status == independent["deflection_status"]
-    assert (released.released_maximum_deflection_mm is None) == (
-        independent["released_maximum_deflection"] is None
-    )
+    ] == expected_deflection_violations
+    assert released.deflection_status == expected_status
+    if expected_status == "released":
+        _assert_reference_close(
+            released.released_maximum_deflection_mm,
+            independent["maximum_deflection"],
+        )
+    else:
+        assert released.released_maximum_deflection_mm is None
     # The reference computes the Kirchhoff margin unconditionally; production
     # withholds it, as the verdict, wherever the bending validity is violated.
     if released.validity_violations:
@@ -898,6 +919,14 @@ def _assert_plate_parity(
         # the estimate crosses t/2 between the two pressures.
         (0.3348190750059909, 50.0, 2.5, 70_000.0, 0.35, 300.0, "simply_supported"),
         (0.33, 50.0, 2.5, 70_000.0, 0.35, 300.0, "simply_supported"),
+        # Binary-exact fixed-edge stress is 0.75*1*(50/5)^2 = 75 MPa.
+        # The historical oracle releases deflection in all three cases;
+        # current policy withholds it only when the supplied strength is lower.
+        (1.0, 50.0, 5.0, 70_000.0, 0.30, math.nextafter(75.0, 0.0), "fixed"),
+        (1.0, 50.0, 5.0, 70_000.0, 0.30, 75.0, "fixed"),
+        (1.0, 50.0, 5.0, 70_000.0, 0.30, math.nextafter(75.0, math.inf), "fixed"),
+        # Geometry remains the primary status when material also fails.
+        (1.0, 50.0, 5.0, 70_000.0, 0.45, 50.0, "fixed"),
     ],
 )
 def test_all_plate_goldens_and_validity_boundaries_match_independent_reference(
