@@ -201,7 +201,7 @@ models:
     important_limitations:
       - The moderate/long factor overlap withholds capacity.
       - Released capacity requires a source-traceable proportional limit; a correlated
-        critical membrane stress above it releases an elastic upper bound only.
+        critical membrane stress above it retains an elastic upper bound with a null margin.
       - Inelastic corrections, end-restraint credit, and physical validation are absent.
       - UnderPressure 4.60 version-stamped captures remain open.
       - Imperfection, cycling, environment, temperature, product-form, and fabrication inputs remain design-use blockers.

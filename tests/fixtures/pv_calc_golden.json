@@ -84,7 +84,7 @@
             "calculation_source": {
               "function": "pv_calc.pressure_vessel.closed_end_tube_stress",
               "model_id": "closed_end_tube_stress",
-              "model_version": "2.0.0",
+              "model_version": "3.0.0",
               "package_version": "0.1.0"
             },
             "material": {
@@ -158,18 +158,19 @@
               },
               "mean_radius_over_thickness": 6.8829787234,
               "model_id": "closed_end_tube_stress",
-              "model_version": "2.0.0",
+              "model_version": "3.0.0",
               "notes": [
                 "Closed ends transmit uniform external-pressure axial load.",
                 "Results apply away from the tube/endcap interface.",
                 "Compression is negative and tension is positive.",
-                "The documented branch switch is discrete: at mean-radius/thickness = 10, the thick-wall equivalent stress is 10.25% above the thin-wall limiting value.",
+                "Lam\u00e9 stresses apply at every wall thickness; branch retains the legacy value 'thick', force_thick is a compatibility no-op, and the former thin-wall threshold is metadata only.",
                 "This result covers material failure under the category's own criterion: von Mises stress against yield strength for a ductile metal, maximum hoop stress against the working strength for a plastic or the ultimate compressive strength for a brittle material. Shell stability and end closures are separate checks.",
                 "Radial displacement and axial strain need an elastic modulus and a Poisson ratio; without both, every stress result is unchanged and displacement is withheld with its reason.",
-                "Radial displacement is positive outward, so external pressure gives a negative value, and each stress state carries the displacement at its own radius: the median surface on the thin branch, the internal and external surfaces on the thick branch.",
-                "Axial strain is uniform through the wall and along the tube in both branches; the axial length change is that strain times the caller's gauge length, which is null when no length is supplied.",
+                "Radial displacement is positive outward, so external pressure gives a negative value, and each stress state carries the displacement at its own internal or external surface radius.",
+                "Axial strain is uniform through the wall and along the tube; the axial length change is that strain times the caller's gauge length, which is null when no length is supplied.",
                 "Displacement excludes tube/endcap junction effects, local restraint at closures, ovalization and initial out-of-roundness, instability, plasticity, and ring-frame restraint.",
-                "The displacement equations assume small deformations. On the thin branch, displacement is withheld when its absolute radial value exceeds the wall thickness, the explicit reliability limit stated by DTMB 1497; no unsourced counterpart is imposed on the thick branch."
+                "The displacement equations assume small deformations; the closed-cylinder source states no numeric deformation limit.",
+                "When the governing material stress exceeds the supplied strength, deformation remains available as elastic_estimate_material_limit; no plastic deformation is modeled."
               ],
               "poisson_ratio": 0.33,
               "principal_stress_ordering": "descending_algebraic",
@@ -192,7 +193,7 @@
                   "principal_stresses_mpa": {
                     "unit": "MPa",
                     "value": [
-                      0.0,
+                      -3.5527136788e-15,
                       -27.3008264301,
                       -54.6016528602
                     ]
@@ -203,7 +204,7 @@
                   },
                   "radial_stress_mpa": {
                     "unit": "MPa",
-                    "value": 0.0
+                    "value": -3.5527136788e-15
                   },
                   "radius_convention": "internal",
                   "radius_mm": {
@@ -347,7 +348,7 @@
             "calculation_source": {
               "function": "pv_calc.pressure_vessel.closed_end_tube_stress",
               "model_id": "closed_end_tube_stress",
-              "model_version": "2.0.0",
+              "model_version": "3.0.0",
               "package_version": "0.1.0"
             },
             "material": {
@@ -421,18 +422,19 @@
               },
               "mean_radius_over_thickness": 6.8829787234,
               "model_id": "closed_end_tube_stress",
-              "model_version": "2.0.0",
+              "model_version": "3.0.0",
               "notes": [
                 "Closed ends transmit uniform external-pressure axial load.",
                 "Results apply away from the tube/endcap interface.",
                 "Compression is negative and tension is positive.",
-                "The documented branch switch is discrete: at mean-radius/thickness = 10, the thick-wall equivalent stress is 10.25% above the thin-wall limiting value.",
+                "Lam\u00e9 stresses apply at every wall thickness; branch retains the legacy value 'thick', force_thick is a compatibility no-op, and the former thin-wall threshold is metadata only.",
                 "This result covers material failure under the category's own criterion: von Mises stress against yield strength for a ductile metal, maximum hoop stress against the working strength for a plastic or the ultimate compressive strength for a brittle material. Shell stability and end closures are separate checks.",
                 "Radial displacement and axial strain need an elastic modulus and a Poisson ratio; without both, every stress result is unchanged and displacement is withheld with its reason.",
-                "Radial displacement is positive outward, so external pressure gives a negative value, and each stress state carries the displacement at its own radius: the median surface on the thin branch, the internal and external surfaces on the thick branch.",
-                "Axial strain is uniform through the wall and along the tube in both branches; the axial length change is that strain times the caller's gauge length, which is null when no length is supplied.",
+                "Radial displacement is positive outward, so external pressure gives a negative value, and each stress state carries the displacement at its own internal or external surface radius.",
+                "Axial strain is uniform through the wall and along the tube; the axial length change is that strain times the caller's gauge length, which is null when no length is supplied.",
                 "Displacement excludes tube/endcap junction effects, local restraint at closures, ovalization and initial out-of-roundness, instability, plasticity, and ring-frame restraint.",
-                "The displacement equations assume small deformations. On the thin branch, displacement is withheld when its absolute radial value exceeds the wall thickness, the explicit reliability limit stated by DTMB 1497; no unsourced counterpart is imposed on the thick branch."
+                "The displacement equations assume small deformations; the closed-cylinder source states no numeric deformation limit.",
+                "When the governing material stress exceeds the supplied strength, deformation remains available as elastic_estimate_material_limit; no plastic deformation is modeled."
               ],
               "poisson_ratio": 0.34,
               "principal_stress_ordering": "descending_algebraic",
@@ -455,7 +457,7 @@
                   "principal_stresses_mpa": {
                     "unit": "MPa",
                     "value": [
-                      0.0,
+                      -3.5527136788e-15,
                       -27.3008264301,
                       -54.6016528602
                     ]
@@ -466,7 +468,7 @@
                   },
                   "radial_stress_mpa": {
                     "unit": "MPa",
-                    "value": 0.0
+                    "value": -3.5527136788e-15
                   },
                   "radius_convention": "internal",
                   "radius_mm": {
@@ -540,7 +542,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.hemispherical_head_external_pressure",
       "model_id": "roark_nasa_hemispherical_head_external_pressure",
-      "model_version": "3.0.0",
+      "model_version": "4.0.0",
       "package_version": "0.1.0"
     },
     "material": {
@@ -569,7 +571,7 @@
     },
     "model": "hemisphere",
     "result": {
-      "branch": "thin",
+      "branch": "thick",
       "buckling_boundary_condition": "clamped_equator",
       "buckling_capacity_status": "released",
       "buckling_margin": 0.336474834239,
@@ -579,7 +581,7 @@
         "unit": "MPa",
         "value": 52.6751020575
       },
-      "displacement_source_reference": "NASA Technical Memorandum 4579 (W. L. Ko, 1994), Eq. (5), printed p. 6, which states the spherical-shell membrane stress sigma_theta = sigma_phi = p*R/(2*t) and the radial displacement p*R^2*(1 - nu)/(2*E*t) in one equation and applies both to the hemispherical bulkheads of the analyzed vessel, citing Timoshenko and Woinowsky-Krieger, Theory of Plates and Shells, 1959, pp. 481-485",
+      "displacement_source_reference": "Derived from the Lam\u00e9 spherical stresses in Roark's Formulas for Stress and Strain, 6th ed., Table 32 cases 2a-2b, p. 640, using spherical strain compatibility epsilon_theta = u/r and isotropic three-dimensional Hooke's law: u(r) = r * ((1 - nu) * sigma_theta - nu * sigma_r) / E; the strain relation and constitutive assumption are stated in IIT Kharagpur, Mechanics of Solids (ME21203), Tutorial Sheet 7 (2024), problem 8, p. 3",
       "displacement_status": "released",
       "displacement_validity_violations": [],
       "elastic_modulus_mpa": {
@@ -598,11 +600,11 @@
       "force_thick": false,
       "governing_radius_mm": {
         "unit": "mm",
-        "value": 101.265822785
+        "value": 100.0
       },
       "governing_stress_mpa": {
         "unit": "MPa",
-        "value": 120.0
+        "value": 124.549997396
       },
       "half_included_angle_degrees": 90.0,
       "included_angle_degrees": 180.0,
@@ -618,7 +620,7 @@
       },
       "mean_radius_over_thickness": 40.0,
       "model_id": "roark_nasa_hemispherical_head_external_pressure",
-      "model_version": "3.0.0",
+      "model_version": "4.0.0",
       "nasa_candidate_critical_membrane_stress_mpa": {
         "unit": "MPa",
         "value": 160.376980109
@@ -632,17 +634,19 @@
       "nasa_minimum_lambda": 2.0,
       "notes": [
         "Uniform external pressure acts on a constant-thickness isotropic hemispherical head.",
-        "The radius input is internal; thin stress and both buckling comparisons use the shell mean radius.",
+        "The radius input is internal; stresses and displacement use both wall surfaces, while both buckling comparisons use the shell mean radius.",
+        "Lam\u00e9 spherical stresses apply at every wall thickness; branch retains the legacy value 'thick' and force_thick is a compatibility no-op. The thin-shell threshold gates buckling only.",
         "The NASA SP-8032 result assumes a clamped equator and a 180-degree included spherical cap.",
         "The SP-8032 correlation is the source's lower bound to clamped-cap test data.",
         "The release gate adopts mean-radius/thickness > 10 from the conventional thin-shell domain Roark states; NASA SP-8032 does not state that numeric cutoff.",
         "Elastic buckling capacity requires a proportional limit at or above the NASA-correlated critical membrane stress; no inelastic correction is implemented.",
         "The Roark probable-minimum pressure is reported only as a published comparator and does not set released capacity.",
         "The seat bearing stress is the average over the flat equator annulus between the internal and external radii, reported as a positive compressive magnitude with its own failure pressure and margin; it does not enter the shell stress margin.",
-        "Radial displacement is released on the thin branch only, at that branch's own median-surface radius, and is positive outward, so external pressure gives a negative value.",
-        "The source states that displacement in the same equation as the membrane stress reported here, so it carries that stress's idealization and no further assumption; the clamped equator belongs to the buckling correlation and not to either of them.",
+        "Radial displacement is derived from the same Lam\u00e9 stresses using spherical strain compatibility and three-dimensional Hooke's law. Each stress state carries the displacement at its own surface radius, positive outward, so external pressure gives a negative value.",
+        "Stress and displacement use the spherically symmetric elastic solution away from the equator; the clamped equator belongs to the buckling correlation.",
         "The displacement holds away from the equator. A restrained equator suppresses it locally, so the released value is not the equator's radial closure and not a seal-gap estimate.",
-        "The thick-sphere branch withholds displacement with its reason. Displacement fields, junction analysis, post-buckling deformation, and ring-stiffened service displacement are outside this result."
+        "Displacement assumes small deformations and excludes junction analysis, plasticity, post-buckling deformation, and ring-stiffened service displacement.",
+        "When the governing material stress exceeds the supplied strength, displacement remains available as elastic_estimate_material_limit; no plastic deformation is modeled."
       ],
       "poisson_ratio": 0.33,
       "principal_stress_ordering": "descending_algebraic",
@@ -675,43 +679,78 @@
         "unit": "MPa",
         "value": 276.0
       },
-      "stress_margin": 1.3,
+      "stress_margin": 1.2159775654,
       "stress_sign_convention": "tension_positive",
-      "stress_source_reference": "Roark's Formulas for Stress and Strain, 6th ed., Table 28 case 3a, p. 523",
+      "stress_source_reference": "Roark's Formulas for Stress and Strain, 6th ed., Table 32 cases 2a-2b, p. 640",
       "stress_states": [
         {
           "hoop_stress_mpa": {
             "unit": "MPa",
-            "value": -120.0
+            "value": -124.549997396
           },
           "meridional_stress_mpa": {
             "unit": "MPa",
-            "value": -120.0
+            "value": -124.549997396
           },
           "principal_stresses_mpa": {
             "unit": "MPa",
             "value": [
               0.0,
-              -120.0,
-              -120.0
+              -124.549997396,
+              -124.549997396
             ]
           },
           "radial_displacement_mm": {
             "unit": "mm",
-            "value": -0.118167955761
+            "value": -0.121115382083
           },
           "radial_stress_mpa": {
             "unit": "MPa",
             "value": 0.0
           },
-          "radius_convention": "mean",
+          "radius_convention": "internal",
           "radius_mm": {
             "unit": "mm",
-            "value": 101.265822785
+            "value": 100.0
           },
           "von_mises_stress_mpa": {
             "unit": "MPa",
-            "value": 120.0
+            "value": 124.549997396
+          }
+        },
+        {
+          "hoop_stress_mpa": {
+            "unit": "MPa",
+            "value": -121.549997396
+          },
+          "meridional_stress_mpa": {
+            "unit": "MPa",
+            "value": -121.549997396
+          },
+          "principal_stresses_mpa": {
+            "unit": "MPa",
+            "value": [
+              -6.0,
+              -121.549997396,
+              -121.549997396
+            ]
+          },
+          "radial_displacement_mm": {
+            "unit": "mm",
+            "value": -0.118243985205
+          },
+          "radial_stress_mpa": {
+            "unit": "MPa",
+            "value": -6.0
+          },
+          "radius_convention": "external",
+          "radius_mm": {
+            "unit": "mm",
+            "value": 102.53164557
+          },
+          "von_mises_stress_mpa": {
+            "unit": "MPa",
+            "value": 115.549997396
           }
         }
       ],
@@ -721,7 +760,7 @@
       },
       "theoretical_stress_failure_pressure_mpa": {
         "unit": "MPa",
-        "value": 13.8
+        "value": 13.2958653924
       },
       "thin_wall_threshold_mean_radius_over_thickness": 10.0,
       "wall_thickness_mm": {
@@ -810,7 +849,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.flat_circular_plate",
       "model_id": "uniformly_loaded_flat_circular_plate",
-      "model_version": "3.0.0",
+      "model_version": "4.0.0",
       "package_version": "0.1.0"
     },
     "material": {
@@ -896,7 +935,7 @@
       },
       "maximum_tangential_stress_location": "center",
       "model_id": "uniformly_loaded_flat_circular_plate",
-      "model_version": "3.0.0",
+      "model_version": "4.0.0",
       "notes": [
         "boundary_condition: simply-supported edge prevents transverse deflection while allowing radial rotation and displacement.",
         "The free radius is half the plate free/unsupported diameter at the support or seal line.",
@@ -907,7 +946,8 @@
         "Bearing-contact distribution, attachment, seal compression, penetrations, and local edge details are not evaluated.",
         "Kirchhoff theory omits transverse-shear deformation, so the center deflection is released on its own measured floor and is withheld before the bending/yield gate closes.",
         "The w <= t/2 small-deflection limit is applied to a shear-corrected deflection estimate (Reissner kappa = 5/6), because the released Kirchhoff deflection is measurably below the three-dimensional value. The swept evidence found the estimate above the solved deflection at every solved case; between solved points, and beyond D_free/t = 40, that margin persisting is engineering judgment, not a bound.",
-        "The validity floors are evidenced for 0.05 <= poisson_ratio <= 0.35; outside that band both the bending margin and the deflection are withheld."
+        "The validity floors are evidenced for 0.05 <= poisson_ratio <= 0.35; outside that band both the bending margin and the deflection are withheld.",
+        "When governing bending stress exceeds the supplied material strength, the raw deflection is an elastic estimate and released_maximum_deflection_mm is null; geometric withholding takes precedence over the elastic_estimate_material_limit status."
       ],
       "outside_radius_mm": {
         "unit": "mm",
@@ -974,7 +1014,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.flat_circular_plate",
       "model_id": "uniformly_loaded_flat_circular_plate",
-      "model_version": "3.0.0",
+      "model_version": "4.0.0",
       "package_version": "0.1.0"
     },
     "material": {
@@ -1064,7 +1104,7 @@
       },
       "maximum_tangential_stress_location": "center",
       "model_id": "uniformly_loaded_flat_circular_plate",
-      "model_version": "3.0.0",
+      "model_version": "4.0.0",
       "notes": [
         "boundary_condition: simply-supported edge prevents transverse deflection while allowing radial rotation and displacement.",
         "The free radius is half the plate free/unsupported diameter at the support or seal line.",
@@ -1076,6 +1116,7 @@
         "Kirchhoff theory omits transverse-shear deformation, so the center deflection is released on its own measured floor and is withheld before the bending/yield gate closes.",
         "The w <= t/2 small-deflection limit is applied to a shear-corrected deflection estimate (Reissner kappa = 5/6), because the released Kirchhoff deflection is measurably below the three-dimensional value. The swept evidence found the estimate above the solved deflection at every solved case; between solved points, and beyond D_free/t = 40, that margin persisting is engineering judgment, not a bound.",
         "The validity floors are evidenced for 0.05 <= poisson_ratio <= 0.35; outside that band both the bending margin and the deflection are withheld.",
+        "When governing bending stress exceeds the supplied material strength, the raw deflection is an elastic estimate and released_maximum_deflection_mm is null; geometric withholding takes precedence over the elastic_estimate_material_limit status.",
         "Brittle materials are intended for compression, but the convex face of a pressure-loaded plate is in tension, so the surface bending stress is compared to the ultimate tensile strength; the seat is compressive and is compared to the ultimate compressive strength."
       ],
       "outside_radius_mm": {
@@ -1143,7 +1184,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.flat_circular_plate",
       "model_id": "uniformly_loaded_flat_circular_plate",
-      "model_version": "3.0.0",
+      "model_version": "4.0.0",
       "package_version": "0.1.0"
     },
     "material": {
@@ -1192,13 +1233,13 @@
       "failure_criterion": "surface_bending_stress_vs_yield_strength",
       "flexural_rigidity_n_mm": {
         "unit": "N*mm",
-        "value": 5208333.33481
+        "value": 5208333.33469
       },
       "free_diameter_mm": {
         "unit": "mm",
         "value": 200.0
       },
-      "free_diameter_over_thickness": 21.4332915915,
+      "free_diameter_over_thickness": 21.4332915916,
       "free_radius_mm": {
         "unit": "mm",
         "value": 100.0
@@ -1206,29 +1247,29 @@
       "governing_bending_direction": "radial",
       "governing_bending_stress_mpa": {
         "unit": "MPa",
-        "value": 172.269745667
+        "value": 172.269745669
       },
       "load_type": "uniform_transverse_pressure",
-      "margin": 0.451212451916,
+      "margin": 0.451212451894,
       "material_failure_category": "ductile_metal",
       "maximum_deflection_location": "center",
       "maximum_deflection_mm": {
         "unit": "mm",
-        "value": 0.59999999983
+        "value": 0.599999999844
       },
-      "maximum_deflection_over_thickness": 0.0642998747562,
+      "maximum_deflection_over_thickness": 0.0642998747581,
       "maximum_radial_bending_stress_mpa": {
         "unit": "MPa",
-        "value": 172.269745667
+        "value": 172.269745669
       },
       "maximum_radial_stress_location": "free_diameter",
       "maximum_tangential_bending_stress_mpa": {
         "unit": "MPa",
-        "value": 111.975334683
+        "value": 111.975334685
       },
       "maximum_tangential_stress_location": "center",
       "model_id": "uniformly_loaded_flat_circular_plate",
-      "model_version": "3.0.0",
+      "model_version": "4.0.0",
       "notes": [
         "boundary_condition: fixed edge prevents radial rotation and transverse deflection while allowing radial displacement.",
         "The free radius is half the plate free/unsupported diameter at the support or seal line.",
@@ -1239,7 +1280,8 @@
         "Bearing-contact distribution, attachment, seal compression, penetrations, and local edge details are not evaluated.",
         "Kirchhoff theory omits transverse-shear deformation, so the center deflection is released on its own measured floor and is withheld before the bending/yield gate closes.",
         "The w <= t/2 small-deflection limit is applied to a shear-corrected deflection estimate (Reissner kappa = 5/6), because the released Kirchhoff deflection is measurably below the three-dimensional value. The swept evidence found the estimate above the solved deflection at every solved case; between solved points, and beyond D_free/t = 40, that margin persisting is engineering judgment, not a bound.",
-        "The validity floors are evidenced for 0.05 <= poisson_ratio <= 0.35; outside that band both the bending margin and the deflection are withheld."
+        "The validity floors are evidenced for 0.05 <= poisson_ratio <= 0.35; outside that band both the bending margin and the deflection are withheld.",
+        "When governing bending stress exceeds the supplied material strength, the raw deflection is an elastic estimate and released_maximum_deflection_mm is null; geometric withholding takes precedence over the elastic_estimate_material_limit status."
       ],
       "outside_radius_mm": {
         "unit": "mm",
@@ -1247,7 +1289,7 @@
       },
       "plate_thickness_mm": {
         "unit": "mm",
-        "value": 9.33127789292
+        "value": 9.33127789285
       },
       "poisson_ratio": 0.3,
       "poisson_ratio_evidence_band": [
@@ -1257,7 +1299,7 @@
       "radial_bending_stress_coefficient": 0.75,
       "released_maximum_deflection_mm": {
         "unit": "mm",
-        "value": 0.59999999983
+        "value": 0.599999999844
       },
       "seat_bearing_stress_mpa": {
         "unit": "MPa",
@@ -1267,9 +1309,9 @@
       "seat_source_reference": "Equilibrium on the flat annular seat: the total pressure load on the closure's outside radius, p * pi * R_o^2, is carried by the annulus area pi * (R_o^2 - R_i^2) inside it, so the average bearing stress is sigma_seat = p * R_o^2 / (R_o^2 - R_i^2), compared to the material's uniaxial strength",
       "shear_corrected_deflection_estimate_mm": {
         "unit": "mm",
-        "value": 0.62388281046
+        "value": 0.623882810474
       },
-      "shear_corrected_deflection_estimate_over_thickness": 0.0668593109775,
+      "shear_corrected_deflection_estimate_over_thickness": 0.0668593109795,
       "source_equation_case": "Roark Table 24 case 10b",
       "source_reference": "Roark's Formulas for Stress and Strain, 6th ed., Table 24 cases 10a-10b, p. 429; transverse shear is the average on the support perimeter from equilibrium, tau = p * D_free / (4 * t), the pressure load over the free area divided by the cylindrical area pi * D_free * t it crosses; the small-deflection gate's shear-corrected deflection estimate uses kappa = 5/6 from Reissner, J. Appl. Mech. 12 (1945) A69-A77",
       "strength_mpa": {
@@ -1279,11 +1321,11 @@
       "tangential_bending_stress_coefficient": 0.4875,
       "theoretical_failure_pressure_mpa": {
         "unit": "MPa",
-        "value": 2.90242490383
+        "value": 2.90242490379
       },
       "theoretical_radial_failure_pressure_mpa": {
         "unit": "MPa",
-        "value": 2.90242490383
+        "value": 2.90242490379
       },
       "theoretical_seat_failure_pressure_mpa": {
         "unit": "MPa",
@@ -1291,19 +1333,19 @@
       },
       "theoretical_tangential_failure_pressure_mpa": {
         "unit": "MPa",
-        "value": 4.46526908282
+        "value": 4.46526908275
       },
       "transverse_shear_location": "free_diameter",
       "transverse_shear_stress_mpa": {
         "unit": "MPa",
-        "value": 10.7166457957
+        "value": 10.7166457958
       },
       "validity_violations": []
     },
     "schema_version": "5.0.0",
     "sizing": {
       "algorithm": "known_branch_partition_and_bisection",
-      "bisection_iterations": 29,
+      "bisection_iterations": 28,
       "boundary_condition": "fixed",
       "bounds": {
         "lower": {
@@ -1323,59 +1365,75 @@
         "flat_endcap_bending",
         "center_deflection"
       ],
-      "evaluation_count": 31,
+      "evaluation_count": 32,
+      "excluded_thickness_intervals": [
+        {
+          "lower": {
+            "unit": "mm",
+            "value": 6.0
+          },
+          "upper": {
+            "unit": "mm",
+            "value": 7.74596669241
+          },
+          "withheld_reasons": [
+            "governing bending stress exceeds the supplied material strength; the deflection is an elastic formula estimate beyond the material limit"
+          ]
+        }
+      ],
       "governing_check_changes": [],
       "maximum_deflection": {
         "unit": "mm",
         "value": 0.6
       },
       "operation": "plate_thickness_inverse_sizing",
-      "operation_version": "1.1.0",
+      "operation_version": "2.0.0",
       "plate_thickness_tolerance": {
         "unit": "mm",
         "value": 9.5e-09
       },
       "selected_check_margins": {
-        "center_deflection": 2.83473911011e-10,
-        "flat_endcap_bending": 0.451212451916
+        "center_deflection": 2.60612198488e-10,
+        "flat_endcap_bending": 0.451212451894
       },
       "selected_governing_check": "center_deflection",
-      "selected_minimum_target_slack": 2.83473911011e-10,
+      "selected_minimum_target_slack": 2.60612198488e-10,
       "selected_plate_thickness": {
         "unit": "mm",
-        "value": 9.33127789292
+        "value": 9.33127789285
       },
+      "selection_scope": "model_eligible_thicknesses",
       "solution_type": "interior_root",
       "variable": "plate_thickness",
       "verified_bracket": {
         "lower": {
           "check_margins": {
-            "center_deflection": -1.81246351261e-09,
-            "flat_endcap_bending": 0.451212449889
+            "center_deflection": -1.84015602755e-09,
+            "flat_endcap_bending": 0.451212449862
           },
-          "free_diameter_over_thickness": 21.4332916064,
+          "free_diameter_over_thickness": 21.4332916066,
           "governing_check": "center_deflection",
-          "minimum_target_slack": -1.81246351261e-09,
+          "minimum_target_slack": -1.84015602755e-09,
           "plate_thickness": {
             "unit": "mm",
-            "value": 9.33127788641
+            "value": 9.33127788632
           }
         },
         "plate_thickness_width": {
           "unit": "mm",
-          "value": 6.51925802231e-09
+          "value": 6.53428422481e-09
         },
         "upper": {
           "check_margins": {
-            "center_deflection": 2.83473911011e-10,
-            "flat_endcap_bending": 0.451212451916
+            "center_deflection": 2.60612198488e-10,
+            "flat_endcap_bending": 0.451212451894
           },
-          "free_diameter_over_thickness": 21.4332915915,
+          "free_diameter_over_thickness": 21.4332915916,
           "governing_check": "center_deflection",
-          "minimum_target_slack": 2.83473911011e-10,
+          "minimum_target_slack": 2.60612198488e-10,
           "plate_thickness": {
             "unit": "mm",
-            "value": 9.33127789292
+            "value": 9.33127789285
           }
         }
       }
@@ -1385,7 +1443,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "2.0.0",
+      "model_version": "3.0.0",
       "package_version": "0.1.0"
     },
     "material": {
@@ -1858,7 +1916,7 @@
         "load_case": "hydrostatic_closed_end",
         "margin": null,
         "model_id": "nasa_smooth_cylinder_external_pressure_buckling",
-        "model_version": "3.0.0",
+        "model_version": "4.0.0",
         "moderate_gamma_z_lower_boundary": 100.0,
         "moderate_long_boundary_parameter": 145667.344866,
         "moderate_long_overlap_end_z": 258964.16865,
@@ -1871,7 +1929,7 @@
           "Longitudinal end restraint can increase theoretical capacity, and rotational restraint can affect short cylinders; those boundary-condition sensitivities are not credited.",
           "NASA Eq. 28 states sqrt(gamma)=0.75 for Eqs. 23-25; because the source adds the gamma^2 term to Eqs. 20/22 and introduces Eq. 23 as their gamma*Z > 100 reduction, this model applies the same factor inside Eqs. 20/22 at every gamma*Z. gamma=0.90 belongs to Eqs. 26-27; the moderate/long overlap created by the two factors has no selection rule and stays withheld from capacity.",
           "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
-          "Inelastic corrections in NASA Eqs. 30-32 are outside this model: they need secant and tangent moduli this model does not carry. The source calls plasticity factors for the biaxial hydrostatic state unavailable and directs that Eqs. 30-32 may be used for lack of better information; without those moduli, a correlated critical membrane stress above the proportional limit is an elastic upper bound reported as released_pending_plasticity, not a capacity.",
+          "Inelastic corrections in NASA Eqs. 30-32 are outside this model: they need secant and tangent moduli this model does not carry. The source calls plasticity factors for the biaxial hydrostatic state unavailable and directs that Eqs. 30-32 may be used for lack of better information; without those moduli, a correlated critical membrane stress above the proportional limit is an elastic upper bound reported as released_pending_plasticity, not a capacity; its ordinary margin is null.",
           "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
           "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
           "elastic_applicability compares the applied working membrane stress p*r/t with the same limit the plasticity check applies to the correlated critical stress. 'exceeded' means every capacity at or above the applied pressure exceeds that limit too, at every unsupported length, because only wall thickness moves this stress: with a proportional limit supplied such a capacity is an elastic upper bound reported as released_pending_plasticity, and with only a yield strength it is withheld for the missing limit. It is a screen on applicability, not a capacity or a margin."
@@ -1988,7 +2046,7 @@
         }
       ],
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "2.0.0",
+      "model_version": "3.0.0",
       "notes": [
         "The 0.75 multiplier is NASA's recommendation immediately following Eq. 68; it is not tuned to DTMB.",
         "The shell radius is explicitly the shell mid-surface radius, consistent with the Eq. 82-91 reference surface.",
@@ -2076,7 +2134,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "2.0.0",
+      "model_version": "3.0.0",
       "package_version": "0.1.0"
     },
     "material": {
@@ -2549,7 +2607,7 @@
         "load_case": "hydrostatic_closed_end",
         "margin": null,
         "model_id": "nasa_smooth_cylinder_external_pressure_buckling",
-        "model_version": "3.0.0",
+        "model_version": "4.0.0",
         "moderate_gamma_z_lower_boundary": 100.0,
         "moderate_long_boundary_parameter": 145667.344866,
         "moderate_long_overlap_end_z": 258964.16865,
@@ -2562,7 +2620,7 @@
           "Longitudinal end restraint can increase theoretical capacity, and rotational restraint can affect short cylinders; those boundary-condition sensitivities are not credited.",
           "NASA Eq. 28 states sqrt(gamma)=0.75 for Eqs. 23-25; because the source adds the gamma^2 term to Eqs. 20/22 and introduces Eq. 23 as their gamma*Z > 100 reduction, this model applies the same factor inside Eqs. 20/22 at every gamma*Z. gamma=0.90 belongs to Eqs. 26-27; the moderate/long overlap created by the two factors has no selection rule and stays withheld from capacity.",
           "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
-          "Inelastic corrections in NASA Eqs. 30-32 are outside this model: they need secant and tangent moduli this model does not carry. The source calls plasticity factors for the biaxial hydrostatic state unavailable and directs that Eqs. 30-32 may be used for lack of better information; without those moduli, a correlated critical membrane stress above the proportional limit is an elastic upper bound reported as released_pending_plasticity, not a capacity.",
+          "Inelastic corrections in NASA Eqs. 30-32 are outside this model: they need secant and tangent moduli this model does not carry. The source calls plasticity factors for the biaxial hydrostatic state unavailable and directs that Eqs. 30-32 may be used for lack of better information; without those moduli, a correlated critical membrane stress above the proportional limit is an elastic upper bound reported as released_pending_plasticity, not a capacity; its ordinary margin is null.",
           "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
           "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
           "elastic_applicability compares the applied working membrane stress p*r/t with the same limit the plasticity check applies to the correlated critical stress. 'exceeded' means every capacity at or above the applied pressure exceeds that limit too, at every unsupported length, because only wall thickness moves this stress: with a proportional limit supplied such a capacity is an elastic upper bound reported as released_pending_plasticity, and with only a yield strength it is withheld for the missing limit. It is a screen on applicability, not a capacity or a margin."
@@ -2679,7 +2737,7 @@
         }
       ],
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "2.0.0",
+      "model_version": "3.0.0",
       "notes": [
         "The 0.75 multiplier is NASA's recommendation immediately following Eq. 68; it is not tuned to DTMB.",
         "The shell radius is explicitly the shell mid-surface radius, consistent with the Eq. 82-91 reference surface.",
@@ -2767,7 +2825,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "2.0.0",
+      "model_version": "3.0.0",
       "package_version": "0.1.0"
     },
     "material": {
@@ -3240,7 +3298,7 @@
         "load_case": "hydrostatic_closed_end",
         "margin": null,
         "model_id": "nasa_smooth_cylinder_external_pressure_buckling",
-        "model_version": "3.0.0",
+        "model_version": "4.0.0",
         "moderate_gamma_z_lower_boundary": 100.0,
         "moderate_long_boundary_parameter": 145667.344866,
         "moderate_long_overlap_end_z": 258964.16865,
@@ -3253,7 +3311,7 @@
           "Longitudinal end restraint can increase theoretical capacity, and rotational restraint can affect short cylinders; those boundary-condition sensitivities are not credited.",
           "NASA Eq. 28 states sqrt(gamma)=0.75 for Eqs. 23-25; because the source adds the gamma^2 term to Eqs. 20/22 and introduces Eq. 23 as their gamma*Z > 100 reduction, this model applies the same factor inside Eqs. 20/22 at every gamma*Z. gamma=0.90 belongs to Eqs. 26-27; the moderate/long overlap created by the two factors has no selection rule and stays withheld from capacity.",
           "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
-          "Inelastic corrections in NASA Eqs. 30-32 are outside this model: they need secant and tangent moduli this model does not carry. The source calls plasticity factors for the biaxial hydrostatic state unavailable and directs that Eqs. 30-32 may be used for lack of better information; without those moduli, a correlated critical membrane stress above the proportional limit is an elastic upper bound reported as released_pending_plasticity, not a capacity.",
+          "Inelastic corrections in NASA Eqs. 30-32 are outside this model: they need secant and tangent moduli this model does not carry. The source calls plasticity factors for the biaxial hydrostatic state unavailable and directs that Eqs. 30-32 may be used for lack of better information; without those moduli, a correlated critical membrane stress above the proportional limit is an elastic upper bound reported as released_pending_plasticity, not a capacity; its ordinary margin is null.",
           "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
           "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
           "elastic_applicability compares the applied working membrane stress p*r/t with the same limit the plasticity check applies to the correlated critical stress. 'exceeded' means every capacity at or above the applied pressure exceeds that limit too, at every unsupported length, because only wall thickness moves this stress: with a proportional limit supplied such a capacity is an elastic upper bound reported as released_pending_plasticity, and with only a yield strength it is withheld for the missing limit. It is a screen on applicability, not a capacity or a margin."
@@ -3370,7 +3428,7 @@
         }
       ],
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "2.0.0",
+      "model_version": "3.0.0",
       "notes": [
         "The 0.75 multiplier is NASA's recommendation immediately following Eq. 68; it is not tuned to DTMB.",
         "The shell radius is explicitly the shell mid-surface radius, consistent with the Eq. 82-91 reference surface.",
@@ -3458,7 +3516,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "2.0.0",
+      "model_version": "3.0.0",
       "package_version": "0.1.0"
     },
     "material": {
@@ -3931,7 +3989,7 @@
         "load_case": "hydrostatic_closed_end",
         "margin": null,
         "model_id": "nasa_smooth_cylinder_external_pressure_buckling",
-        "model_version": "3.0.0",
+        "model_version": "4.0.0",
         "moderate_gamma_z_lower_boundary": 100.0,
         "moderate_long_boundary_parameter": 145667.344866,
         "moderate_long_overlap_end_z": 258964.16865,
@@ -3944,7 +4002,7 @@
           "Longitudinal end restraint can increase theoretical capacity, and rotational restraint can affect short cylinders; those boundary-condition sensitivities are not credited.",
           "NASA Eq. 28 states sqrt(gamma)=0.75 for Eqs. 23-25; because the source adds the gamma^2 term to Eqs. 20/22 and introduces Eq. 23 as their gamma*Z > 100 reduction, this model applies the same factor inside Eqs. 20/22 at every gamma*Z. gamma=0.90 belongs to Eqs. 26-27; the moderate/long overlap created by the two factors has no selection rule and stays withheld from capacity.",
           "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
-          "Inelastic corrections in NASA Eqs. 30-32 are outside this model: they need secant and tangent moduli this model does not carry. The source calls plasticity factors for the biaxial hydrostatic state unavailable and directs that Eqs. 30-32 may be used for lack of better information; without those moduli, a correlated critical membrane stress above the proportional limit is an elastic upper bound reported as released_pending_plasticity, not a capacity.",
+          "Inelastic corrections in NASA Eqs. 30-32 are outside this model: they need secant and tangent moduli this model does not carry. The source calls plasticity factors for the biaxial hydrostatic state unavailable and directs that Eqs. 30-32 may be used for lack of better information; without those moduli, a correlated critical membrane stress above the proportional limit is an elastic upper bound reported as released_pending_plasticity, not a capacity; its ordinary margin is null.",
           "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
           "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
           "elastic_applicability compares the applied working membrane stress p*r/t with the same limit the plasticity check applies to the correlated critical stress. 'exceeded' means every capacity at or above the applied pressure exceeds that limit too, at every unsupported length, because only wall thickness moves this stress: with a proportional limit supplied such a capacity is an elastic upper bound reported as released_pending_plasticity, and with only a yield strength it is withheld for the missing limit. It is a screen on applicability, not a capacity or a margin."
@@ -4061,7 +4119,7 @@
         }
       ],
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "2.0.0",
+      "model_version": "3.0.0",
       "notes": [
         "The 0.75 multiplier is NASA's recommendation immediately following Eq. 68; it is not tuned to DTMB.",
         "The shell radius is explicitly the shell mid-surface radius, consistent with the Eq. 82-91 reference surface.",
@@ -4149,7 +4207,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "2.0.0",
+      "model_version": "3.0.0",
       "package_version": "0.1.0"
     },
     "material": {
@@ -4622,7 +4680,7 @@
         "load_case": "hydrostatic_closed_end",
         "margin": null,
         "model_id": "nasa_smooth_cylinder_external_pressure_buckling",
-        "model_version": "3.0.0",
+        "model_version": "4.0.0",
         "moderate_gamma_z_lower_boundary": 100.0,
         "moderate_long_boundary_parameter": 145667.344866,
         "moderate_long_overlap_end_z": 258964.16865,
@@ -4635,7 +4693,7 @@
           "Longitudinal end restraint can increase theoretical capacity, and rotational restraint can affect short cylinders; those boundary-condition sensitivities are not credited.",
           "NASA Eq. 28 states sqrt(gamma)=0.75 for Eqs. 23-25; because the source adds the gamma^2 term to Eqs. 20/22 and introduces Eq. 23 as their gamma*Z > 100 reduction, this model applies the same factor inside Eqs. 20/22 at every gamma*Z. gamma=0.90 belongs to Eqs. 26-27; the moderate/long overlap created by the two factors has no selection rule and stays withheld from capacity.",
           "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
-          "Inelastic corrections in NASA Eqs. 30-32 are outside this model: they need secant and tangent moduli this model does not carry. The source calls plasticity factors for the biaxial hydrostatic state unavailable and directs that Eqs. 30-32 may be used for lack of better information; without those moduli, a correlated critical membrane stress above the proportional limit is an elastic upper bound reported as released_pending_plasticity, not a capacity.",
+          "Inelastic corrections in NASA Eqs. 30-32 are outside this model: they need secant and tangent moduli this model does not carry. The source calls plasticity factors for the biaxial hydrostatic state unavailable and directs that Eqs. 30-32 may be used for lack of better information; without those moduli, a correlated critical membrane stress above the proportional limit is an elastic upper bound reported as released_pending_plasticity, not a capacity; its ordinary margin is null.",
           "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
           "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
           "elastic_applicability compares the applied working membrane stress p*r/t with the same limit the plasticity check applies to the correlated critical stress. 'exceeded' means every capacity at or above the applied pressure exceeds that limit too, at every unsupported length, because only wall thickness moves this stress: with a proportional limit supplied such a capacity is an elastic upper bound reported as released_pending_plasticity, and with only a yield strength it is withheld for the missing limit. It is a screen on applicability, not a capacity or a margin."
@@ -4752,7 +4810,7 @@
         }
       ],
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "2.0.0",
+      "model_version": "3.0.0",
       "notes": [
         "The 0.75 multiplier is NASA's recommendation immediately following Eq. 68; it is not tuned to DTMB.",
         "The shell radius is explicitly the shell mid-surface radius, consistent with the Eq. 82-91 reference surface.",
@@ -4840,7 +4898,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "2.0.0",
+      "model_version": "3.0.0",
       "package_version": "0.1.0"
     },
     "material": {
@@ -5313,7 +5371,7 @@
         "load_case": "hydrostatic_closed_end",
         "margin": null,
         "model_id": "nasa_smooth_cylinder_external_pressure_buckling",
-        "model_version": "3.0.0",
+        "model_version": "4.0.0",
         "moderate_gamma_z_lower_boundary": 100.0,
         "moderate_long_boundary_parameter": 145667.344866,
         "moderate_long_overlap_end_z": 258964.16865,
@@ -5326,7 +5384,7 @@
           "Longitudinal end restraint can increase theoretical capacity, and rotational restraint can affect short cylinders; those boundary-condition sensitivities are not credited.",
           "NASA Eq. 28 states sqrt(gamma)=0.75 for Eqs. 23-25; because the source adds the gamma^2 term to Eqs. 20/22 and introduces Eq. 23 as their gamma*Z > 100 reduction, this model applies the same factor inside Eqs. 20/22 at every gamma*Z. gamma=0.90 belongs to Eqs. 26-27; the moderate/long overlap created by the two factors has no selection rule and stays withheld from capacity.",
           "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
-          "Inelastic corrections in NASA Eqs. 30-32 are outside this model: they need secant and tangent moduli this model does not carry. The source calls plasticity factors for the biaxial hydrostatic state unavailable and directs that Eqs. 30-32 may be used for lack of better information; without those moduli, a correlated critical membrane stress above the proportional limit is an elastic upper bound reported as released_pending_plasticity, not a capacity.",
+          "Inelastic corrections in NASA Eqs. 30-32 are outside this model: they need secant and tangent moduli this model does not carry. The source calls plasticity factors for the biaxial hydrostatic state unavailable and directs that Eqs. 30-32 may be used for lack of better information; without those moduli, a correlated critical membrane stress above the proportional limit is an elastic upper bound reported as released_pending_plasticity, not a capacity; its ordinary margin is null.",
           "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
           "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
           "elastic_applicability compares the applied working membrane stress p*r/t with the same limit the plasticity check applies to the correlated critical stress. 'exceeded' means every capacity at or above the applied pressure exceeds that limit too, at every unsupported length, because only wall thickness moves this stress: with a proportional limit supplied such a capacity is an elastic upper bound reported as released_pending_plasticity, and with only a yield strength it is withheld for the missing limit. It is a screen on applicability, not a capacity or a margin."
@@ -5443,7 +5501,7 @@
         }
       ],
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "2.0.0",
+      "model_version": "3.0.0",
       "notes": [
         "The 0.75 multiplier is NASA's recommendation immediately following Eq. 68; it is not tuned to DTMB.",
         "The shell radius is explicitly the shell mid-surface radius, consistent with the Eq. 82-91 reference surface.",
@@ -5531,7 +5589,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "2.0.0",
+      "model_version": "3.0.0",
       "package_version": "0.1.0"
     },
     "material": {
@@ -6004,7 +6062,7 @@
         "load_case": "hydrostatic_closed_end",
         "margin": null,
         "model_id": "nasa_smooth_cylinder_external_pressure_buckling",
-        "model_version": "3.0.0",
+        "model_version": "4.0.0",
         "moderate_gamma_z_lower_boundary": 100.0,
         "moderate_long_boundary_parameter": 145667.344866,
         "moderate_long_overlap_end_z": 258964.16865,
@@ -6017,7 +6075,7 @@
           "Longitudinal end restraint can increase theoretical capacity, and rotational restraint can affect short cylinders; those boundary-condition sensitivities are not credited.",
           "NASA Eq. 28 states sqrt(gamma)=0.75 for Eqs. 23-25; because the source adds the gamma^2 term to Eqs. 20/22 and introduces Eq. 23 as their gamma*Z > 100 reduction, this model applies the same factor inside Eqs. 20/22 at every gamma*Z. gamma=0.90 belongs to Eqs. 26-27; the moderate/long overlap created by the two factors has no selection rule and stays withheld from capacity.",
           "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
-          "Inelastic corrections in NASA Eqs. 30-32 are outside this model: they need secant and tangent moduli this model does not carry. The source calls plasticity factors for the biaxial hydrostatic state unavailable and directs that Eqs. 30-32 may be used for lack of better information; without those moduli, a correlated critical membrane stress above the proportional limit is an elastic upper bound reported as released_pending_plasticity, not a capacity.",
+          "Inelastic corrections in NASA Eqs. 30-32 are outside this model: they need secant and tangent moduli this model does not carry. The source calls plasticity factors for the biaxial hydrostatic state unavailable and directs that Eqs. 30-32 may be used for lack of better information; without those moduli, a correlated critical membrane stress above the proportional limit is an elastic upper bound reported as released_pending_plasticity, not a capacity; its ordinary margin is null.",
           "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
           "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
           "elastic_applicability compares the applied working membrane stress p*r/t with the same limit the plasticity check applies to the correlated critical stress. 'exceeded' means every capacity at or above the applied pressure exceeds that limit too, at every unsupported length, because only wall thickness moves this stress: with a proportional limit supplied such a capacity is an elastic upper bound reported as released_pending_plasticity, and with only a yield strength it is withheld for the missing limit. It is a screen on applicability, not a capacity or a margin."
@@ -6134,7 +6192,7 @@
         }
       ],
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "2.0.0",
+      "model_version": "3.0.0",
       "notes": [
         "The 0.75 multiplier is NASA's recommendation immediately following Eq. 68; it is not tuned to DTMB.",
         "The shell radius is explicitly the shell mid-surface radius, consistent with the Eq. 82-91 reference surface.",
@@ -6222,7 +6280,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "2.0.0",
+      "model_version": "3.0.0",
       "package_version": "0.1.0"
     },
     "material": {
@@ -6695,7 +6753,7 @@
         "load_case": "hydrostatic_closed_end",
         "margin": null,
         "model_id": "nasa_smooth_cylinder_external_pressure_buckling",
-        "model_version": "3.0.0",
+        "model_version": "4.0.0",
         "moderate_gamma_z_lower_boundary": 100.0,
         "moderate_long_boundary_parameter": 145667.344866,
         "moderate_long_overlap_end_z": 258964.16865,
@@ -6708,7 +6766,7 @@
           "Longitudinal end restraint can increase theoretical capacity, and rotational restraint can affect short cylinders; those boundary-condition sensitivities are not credited.",
           "NASA Eq. 28 states sqrt(gamma)=0.75 for Eqs. 23-25; because the source adds the gamma^2 term to Eqs. 20/22 and introduces Eq. 23 as their gamma*Z > 100 reduction, this model applies the same factor inside Eqs. 20/22 at every gamma*Z. gamma=0.90 belongs to Eqs. 26-27; the moderate/long overlap created by the two factors has no selection rule and stays withheld from capacity.",
           "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
-          "Inelastic corrections in NASA Eqs. 30-32 are outside this model: they need secant and tangent moduli this model does not carry. The source calls plasticity factors for the biaxial hydrostatic state unavailable and directs that Eqs. 30-32 may be used for lack of better information; without those moduli, a correlated critical membrane stress above the proportional limit is an elastic upper bound reported as released_pending_plasticity, not a capacity.",
+          "Inelastic corrections in NASA Eqs. 30-32 are outside this model: they need secant and tangent moduli this model does not carry. The source calls plasticity factors for the biaxial hydrostatic state unavailable and directs that Eqs. 30-32 may be used for lack of better information; without those moduli, a correlated critical membrane stress above the proportional limit is an elastic upper bound reported as released_pending_plasticity, not a capacity; its ordinary margin is null.",
           "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
           "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
           "elastic_applicability compares the applied working membrane stress p*r/t with the same limit the plasticity check applies to the correlated critical stress. 'exceeded' means every capacity at or above the applied pressure exceeds that limit too, at every unsupported length, because only wall thickness moves this stress: with a proportional limit supplied such a capacity is an elastic upper bound reported as released_pending_plasticity, and with only a yield strength it is withheld for the missing limit. It is a screen on applicability, not a capacity or a margin."
@@ -6825,7 +6883,7 @@
         }
       ],
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "2.0.0",
+      "model_version": "3.0.0",
       "notes": [
         "The 0.75 multiplier is NASA's recommendation immediately following Eq. 68; it is not tuned to DTMB.",
         "The shell radius is explicitly the shell mid-surface radius, consistent with the Eq. 82-91 reference surface.",
@@ -6913,7 +6971,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "2.0.0",
+      "model_version": "3.0.0",
       "package_version": "0.1.0"
     },
     "material": {
@@ -7386,7 +7444,7 @@
         "load_case": "hydrostatic_closed_end",
         "margin": null,
         "model_id": "nasa_smooth_cylinder_external_pressure_buckling",
-        "model_version": "3.0.0",
+        "model_version": "4.0.0",
         "moderate_gamma_z_lower_boundary": 100.0,
         "moderate_long_boundary_parameter": 145667.344866,
         "moderate_long_overlap_end_z": 258964.16865,
@@ -7399,7 +7457,7 @@
           "Longitudinal end restraint can increase theoretical capacity, and rotational restraint can affect short cylinders; those boundary-condition sensitivities are not credited.",
           "NASA Eq. 28 states sqrt(gamma)=0.75 for Eqs. 23-25; because the source adds the gamma^2 term to Eqs. 20/22 and introduces Eq. 23 as their gamma*Z > 100 reduction, this model applies the same factor inside Eqs. 20/22 at every gamma*Z. gamma=0.90 belongs to Eqs. 26-27; the moderate/long overlap created by the two factors has no selection rule and stays withheld from capacity.",
           "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
-          "Inelastic corrections in NASA Eqs. 30-32 are outside this model: they need secant and tangent moduli this model does not carry. The source calls plasticity factors for the biaxial hydrostatic state unavailable and directs that Eqs. 30-32 may be used for lack of better information; without those moduli, a correlated critical membrane stress above the proportional limit is an elastic upper bound reported as released_pending_plasticity, not a capacity.",
+          "Inelastic corrections in NASA Eqs. 30-32 are outside this model: they need secant and tangent moduli this model does not carry. The source calls plasticity factors for the biaxial hydrostatic state unavailable and directs that Eqs. 30-32 may be used for lack of better information; without those moduli, a correlated critical membrane stress above the proportional limit is an elastic upper bound reported as released_pending_plasticity, not a capacity; its ordinary margin is null.",
           "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
           "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
           "elastic_applicability compares the applied working membrane stress p*r/t with the same limit the plasticity check applies to the correlated critical stress. 'exceeded' means every capacity at or above the applied pressure exceeds that limit too, at every unsupported length, because only wall thickness moves this stress: with a proportional limit supplied such a capacity is an elastic upper bound reported as released_pending_plasticity, and with only a yield strength it is withheld for the missing limit. It is a screen on applicability, not a capacity or a margin."
@@ -7516,7 +7574,7 @@
         }
       ],
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "2.0.0",
+      "model_version": "3.0.0",
       "notes": [
         "The 0.75 multiplier is NASA's recommendation immediately following Eq. 68; it is not tuned to DTMB.",
         "The shell radius is explicitly the shell mid-surface radius, consistent with the Eq. 82-91 reference surface.",
@@ -7604,7 +7662,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "2.0.0",
+      "model_version": "3.0.0",
       "package_version": "0.1.0"
     },
     "material": {
@@ -8077,7 +8135,7 @@
         "load_case": "hydrostatic_closed_end",
         "margin": null,
         "model_id": "nasa_smooth_cylinder_external_pressure_buckling",
-        "model_version": "3.0.0",
+        "model_version": "4.0.0",
         "moderate_gamma_z_lower_boundary": 100.0,
         "moderate_long_boundary_parameter": 145667.344866,
         "moderate_long_overlap_end_z": 258964.16865,
@@ -8090,7 +8148,7 @@
           "Longitudinal end restraint can increase theoretical capacity, and rotational restraint can affect short cylinders; those boundary-condition sensitivities are not credited.",
           "NASA Eq. 28 states sqrt(gamma)=0.75 for Eqs. 23-25; because the source adds the gamma^2 term to Eqs. 20/22 and introduces Eq. 23 as their gamma*Z > 100 reduction, this model applies the same factor inside Eqs. 20/22 at every gamma*Z. gamma=0.90 belongs to Eqs. 26-27; the moderate/long overlap created by the two factors has no selection rule and stays withheld from capacity.",
           "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
-          "Inelastic corrections in NASA Eqs. 30-32 are outside this model: they need secant and tangent moduli this model does not carry. The source calls plasticity factors for the biaxial hydrostatic state unavailable and directs that Eqs. 30-32 may be used for lack of better information; without those moduli, a correlated critical membrane stress above the proportional limit is an elastic upper bound reported as released_pending_plasticity, not a capacity.",
+          "Inelastic corrections in NASA Eqs. 30-32 are outside this model: they need secant and tangent moduli this model does not carry. The source calls plasticity factors for the biaxial hydrostatic state unavailable and directs that Eqs. 30-32 may be used for lack of better information; without those moduli, a correlated critical membrane stress above the proportional limit is an elastic upper bound reported as released_pending_plasticity, not a capacity; its ordinary margin is null.",
           "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
           "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
           "elastic_applicability compares the applied working membrane stress p*r/t with the same limit the plasticity check applies to the correlated critical stress. 'exceeded' means every capacity at or above the applied pressure exceeds that limit too, at every unsupported length, because only wall thickness moves this stress: with a proportional limit supplied such a capacity is an elastic upper bound reported as released_pending_plasticity, and with only a yield strength it is withheld for the missing limit. It is a screen on applicability, not a capacity or a margin."
@@ -8207,7 +8265,7 @@
         }
       ],
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "2.0.0",
+      "model_version": "3.0.0",
       "notes": [
         "The 0.75 multiplier is NASA's recommendation immediately following Eq. 68; it is not tuned to DTMB.",
         "The shell radius is explicitly the shell mid-surface radius, consistent with the Eq. 82-91 reference surface.",
@@ -8295,7 +8353,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.smooth_cylinder_external_pressure_buckling",
       "model_id": "nasa_smooth_cylinder_external_pressure_buckling",
-      "model_version": "3.0.0",
+      "model_version": "4.0.0",
       "package_version": "0.1.0"
     },
     "material": {
@@ -8494,7 +8552,7 @@
       "load_case": "hydrostatic_closed_end",
       "margin": 215.346153846,
       "model_id": "nasa_smooth_cylinder_external_pressure_buckling",
-      "model_version": "3.0.0",
+      "model_version": "4.0.0",
       "moderate_gamma_z_lower_boundary": 100.0,
       "moderate_long_boundary_parameter": 4295.2,
       "moderate_long_overlap_end_z": 7635.91111111,
@@ -8507,7 +8565,7 @@
         "Longitudinal end restraint can increase theoretical capacity, and rotational restraint can affect short cylinders; those boundary-condition sensitivities are not credited.",
         "NASA Eq. 28 states sqrt(gamma)=0.75 for Eqs. 23-25; because the source adds the gamma^2 term to Eqs. 20/22 and introduces Eq. 23 as their gamma*Z > 100 reduction, this model applies the same factor inside Eqs. 20/22 at every gamma*Z. gamma=0.90 belongs to Eqs. 26-27; the moderate/long overlap created by the two factors has no selection rule and stays withheld from capacity.",
         "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
-        "Inelastic corrections in NASA Eqs. 30-32 are outside this model: they need secant and tangent moduli this model does not carry. The source calls plasticity factors for the biaxial hydrostatic state unavailable and directs that Eqs. 30-32 may be used for lack of better information; without those moduli, a correlated critical membrane stress above the proportional limit is an elastic upper bound reported as released_pending_plasticity, not a capacity.",
+        "Inelastic corrections in NASA Eqs. 30-32 are outside this model: they need secant and tangent moduli this model does not carry. The source calls plasticity factors for the biaxial hydrostatic state unavailable and directs that Eqs. 30-32 may be used for lack of better information; without those moduli, a correlated critical membrane stress above the proportional limit is an elastic upper bound reported as released_pending_plasticity, not a capacity; its ordinary margin is null.",
         "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
         "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
         "elastic_applicability compares the applied working membrane stress p*r/t with the same limit the plasticity check applies to the correlated critical stress. 'exceeded' means every capacity at or above the applied pressure exceeds that limit too, at every unsupported length, because only wall thickness moves this stress: with a proportional limit supplied such a capacity is an elastic upper bound reported as released_pending_plasticity, and with only a yield strength it is withheld for the missing limit. It is a screen on applicability, not a capacity or a margin."
@@ -8564,7 +8622,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.smooth_cylinder_external_pressure_buckling",
       "model_id": "nasa_smooth_cylinder_external_pressure_buckling",
-      "model_version": "3.0.0",
+      "model_version": "4.0.0",
       "package_version": "0.1.0"
     },
     "material": {
@@ -8763,7 +8821,7 @@
       "load_case": "hydrostatic_closed_end",
       "margin": 12.382642396,
       "model_id": "nasa_smooth_cylinder_external_pressure_buckling",
-      "model_version": "3.0.0",
+      "model_version": "4.0.0",
       "moderate_gamma_z_lower_boundary": 100.0,
       "moderate_long_boundary_parameter": 107380.0,
       "moderate_long_overlap_end_z": 190897.777778,
@@ -8776,7 +8834,7 @@
         "Longitudinal end restraint can increase theoretical capacity, and rotational restraint can affect short cylinders; those boundary-condition sensitivities are not credited.",
         "NASA Eq. 28 states sqrt(gamma)=0.75 for Eqs. 23-25; because the source adds the gamma^2 term to Eqs. 20/22 and introduces Eq. 23 as their gamma*Z > 100 reduction, this model applies the same factor inside Eqs. 20/22 at every gamma*Z. gamma=0.90 belongs to Eqs. 26-27; the moderate/long overlap created by the two factors has no selection rule and stays withheld from capacity.",
         "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
-        "Inelastic corrections in NASA Eqs. 30-32 are outside this model: they need secant and tangent moduli this model does not carry. The source calls plasticity factors for the biaxial hydrostatic state unavailable and directs that Eqs. 30-32 may be used for lack of better information; without those moduli, a correlated critical membrane stress above the proportional limit is an elastic upper bound reported as released_pending_plasticity, not a capacity.",
+        "Inelastic corrections in NASA Eqs. 30-32 are outside this model: they need secant and tangent moduli this model does not carry. The source calls plasticity factors for the biaxial hydrostatic state unavailable and directs that Eqs. 30-32 may be used for lack of better information; without those moduli, a correlated critical membrane stress above the proportional limit is an elastic upper bound reported as released_pending_plasticity, not a capacity; its ordinary margin is null.",
         "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
         "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
         "elastic_applicability compares the applied working membrane stress p*r/t with the same limit the plasticity check applies to the correlated critical stress. 'exceeded' means every capacity at or above the applied pressure exceeds that limit too, at every unsupported length, because only wall thickness moves this stress: with a proportional limit supplied such a capacity is an elastic upper bound reported as released_pending_plasticity, and with only a yield strength it is withheld for the missing limit. It is a screen on applicability, not a capacity or a margin."
@@ -8833,7 +8891,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.smooth_cylinder_external_pressure_buckling",
       "model_id": "nasa_smooth_cylinder_external_pressure_buckling",
-      "model_version": "3.0.0",
+      "model_version": "4.0.0",
       "package_version": "0.1.0"
     },
     "material": {
@@ -9032,7 +9090,7 @@
       "load_case": "lateral_only",
       "margin": 0.104872319466,
       "model_id": "nasa_smooth_cylinder_external_pressure_buckling",
-      "model_version": "3.0.0",
+      "model_version": "4.0.0",
       "moderate_gamma_z_lower_boundary": 100.0,
       "moderate_long_boundary_parameter": 107380.0,
       "moderate_long_overlap_end_z": 190897.777778,
@@ -9045,7 +9103,7 @@
         "Longitudinal end restraint can increase theoretical capacity, and rotational restraint can affect short cylinders; those boundary-condition sensitivities are not credited.",
         "NASA Eq. 28 states sqrt(gamma)=0.75 for Eqs. 23-25; because the source adds the gamma^2 term to Eqs. 20/22 and introduces Eq. 23 as their gamma*Z > 100 reduction, this model applies the same factor inside Eqs. 20/22 at every gamma*Z. gamma=0.90 belongs to Eqs. 26-27; the moderate/long overlap created by the two factors has no selection rule and stays withheld from capacity.",
         "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
-        "Inelastic corrections in NASA Eqs. 30-32 are outside this model: they need secant and tangent moduli this model does not carry. The source calls plasticity factors for the biaxial hydrostatic state unavailable and directs that Eqs. 30-32 may be used for lack of better information; without those moduli, a correlated critical membrane stress above the proportional limit is an elastic upper bound reported as released_pending_plasticity, not a capacity.",
+        "Inelastic corrections in NASA Eqs. 30-32 are outside this model: they need secant and tangent moduli this model does not carry. The source calls plasticity factors for the biaxial hydrostatic state unavailable and directs that Eqs. 30-32 may be used for lack of better information; without those moduli, a correlated critical membrane stress above the proportional limit is an elastic upper bound reported as released_pending_plasticity, not a capacity; its ordinary margin is null.",
         "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
         "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
         "elastic_applicability compares the applied working membrane stress p*r/t with the same limit the plasticity check applies to the correlated critical stress. 'exceeded' means every capacity at or above the applied pressure exceeds that limit too, at every unsupported length, because only wall thickness moves this stress: with a proportional limit supplied such a capacity is an elastic upper bound reported as released_pending_plasticity, and with only a yield strength it is withheld for the missing limit. It is a screen on applicability, not a capacity or a margin."
@@ -9107,7 +9165,7 @@
         "calculation_source": {
           "function": "pv_calc.pressure_vessel.smooth_cylinder_external_pressure_buckling",
           "model_id": "nasa_smooth_cylinder_external_pressure_buckling",
-          "model_version": "3.0.0",
+          "model_version": "4.0.0",
           "package_version": "0.1.0"
         },
         "material": {
@@ -9306,7 +9364,7 @@
           "load_case": "hydrostatic_closed_end",
           "margin": 0.250000003257,
           "model_id": "nasa_smooth_cylinder_external_pressure_buckling",
-          "model_version": "3.0.0",
+          "model_version": "4.0.0",
           "moderate_gamma_z_lower_boundary": 100.0,
           "moderate_long_boundary_parameter": 6167.28227014,
           "moderate_long_overlap_end_z": 10964.0573691,
@@ -9319,7 +9377,7 @@
             "Longitudinal end restraint can increase theoretical capacity, and rotational restraint can affect short cylinders; those boundary-condition sensitivities are not credited.",
             "NASA Eq. 28 states sqrt(gamma)=0.75 for Eqs. 23-25; because the source adds the gamma^2 term to Eqs. 20/22 and introduces Eq. 23 as their gamma*Z > 100 reduction, this model applies the same factor inside Eqs. 20/22 at every gamma*Z. gamma=0.90 belongs to Eqs. 26-27; the moderate/long overlap created by the two factors has no selection rule and stays withheld from capacity.",
             "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
-            "Inelastic corrections in NASA Eqs. 30-32 are outside this model: they need secant and tangent moduli this model does not carry. The source calls plasticity factors for the biaxial hydrostatic state unavailable and directs that Eqs. 30-32 may be used for lack of better information; without those moduli, a correlated critical membrane stress above the proportional limit is an elastic upper bound reported as released_pending_plasticity, not a capacity.",
+            "Inelastic corrections in NASA Eqs. 30-32 are outside this model: they need secant and tangent moduli this model does not carry. The source calls plasticity factors for the biaxial hydrostatic state unavailable and directs that Eqs. 30-32 may be used for lack of better information; without those moduli, a correlated critical membrane stress above the proportional limit is an elastic upper bound reported as released_pending_plasticity, not a capacity; its ordinary margin is null.",
             "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
             "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
             "elastic_applicability compares the applied working membrane stress p*r/t with the same limit the plasticity check applies to the correlated critical stress. 'exceeded' means every capacity at or above the applied pressure exceeds that limit too, at every unsupported length, because only wall thickness moves this stress: with a proportional limit supplied such a capacity is an elastic upper bound reported as released_pending_plasticity, and with only a yield strength it is withheld for the missing limit. It is a screen on applicability, not a capacity or a margin."
@@ -9376,7 +9434,7 @@
         "calculation_source": {
           "function": "pv_calc.pressure_vessel.closed_end_tube_stress",
           "model_id": "closed_end_tube_stress",
-          "model_version": "2.0.0",
+          "model_version": "3.0.0",
           "package_version": "0.1.0"
         },
         "material": {
@@ -9409,9 +9467,9 @@
             "unit": "mm",
             "value": null
           },
-          "axial_strain": -0.000136945310344,
-          "branch": "thin",
-          "displacement_source_reference": "DTMB Report 1497 (Pulos and Salerno, 1961), Eq. [5], printed p. 2, for the median-surface radial displacement of a long unstiffened shell under external hydrostatic pressure, with Eqs. [A7]-[A10] and the stated N_x = -p*R/2, printed p. 43, for the axial strain",
+          "axial_strain": -0.000142719205733,
+          "branch": "thick",
+          "displacement_source_reference": "Boresi and Schmidt, Advanced Mechanics of Materials, 6th ed., 2003, Eq. (11.24), printed p. 396, for the closed-cylinder radial displacement and Eq. (11.15), printed p. 394, for the closed-cylinder axial strain, both at sections far from the end-cap junction",
           "displacement_status": "released",
           "displacement_validity_violations": [],
           "elastic_modulus_mpa": {
@@ -9431,18 +9489,18 @@
           "force_thick": false,
           "governing_radius_mm": {
             "unit": "mm",
-            "value": 102.130794171
+            "value": 100.0
           },
           "governing_stress_mpa": {
             "unit": "MPa",
-            "value": 41.5093411905
+            "value": 43.2594602203
           },
           "internal_radius_mm": {
             "unit": "mm",
             "value": 100.0
           },
           "load_case": "hydrostatic_closed_end",
-          "margin": 5.02274073328,
+          "margin": 4.77908274229,
           "material_failure_category": "ductile_metal",
           "mean_radius_mm": {
             "unit": "mm",
@@ -9450,22 +9508,23 @@
           },
           "mean_radius_over_thickness": 23.9654293102,
           "model_id": "closed_end_tube_stress",
-          "model_version": "2.0.0",
+          "model_version": "3.0.0",
           "notes": [
             "Closed ends transmit uniform external-pressure axial load.",
             "Results apply away from the tube/endcap interface.",
             "Compression is negative and tension is positive.",
-            "The documented branch switch is discrete: at mean-radius/thickness = 10, the thick-wall equivalent stress is 10.25% above the thin-wall limiting value.",
+            "Lam\u00e9 stresses apply at every wall thickness; branch retains the legacy value 'thick', force_thick is a compatibility no-op, and the former thin-wall threshold is metadata only.",
             "This result covers material failure under the category's own criterion: von Mises stress against yield strength for a ductile metal, maximum hoop stress against the working strength for a plastic or the ultimate compressive strength for a brittle material. Shell stability and end closures are separate checks.",
             "Radial displacement and axial strain need an elastic modulus and a Poisson ratio; without both, every stress result is unchanged and displacement is withheld with its reason.",
-            "Radial displacement is positive outward, so external pressure gives a negative value, and each stress state carries the displacement at its own radius: the median surface on the thin branch, the internal and external surfaces on the thick branch.",
-            "Axial strain is uniform through the wall and along the tube in both branches; the axial length change is that strain times the caller's gauge length, which is null when no length is supplied.",
+            "Radial displacement is positive outward, so external pressure gives a negative value, and each stress state carries the displacement at its own internal or external surface radius.",
+            "Axial strain is uniform through the wall and along the tube; the axial length change is that strain times the caller's gauge length, which is null when no length is supplied.",
             "Displacement excludes tube/endcap junction effects, local restraint at closures, ovalization and initial out-of-roundness, instability, plasticity, and ring-frame restraint.",
-            "The displacement equations assume small deformations. On the thin branch, displacement is withheld when its absolute radial value exceeds the wall thickness, the explicit reliability limit stated by DTMB 1497; no unsourced counterpart is imposed on the thick branch."
+            "The displacement equations assume small deformations; the closed-cylinder source states no numeric deformation limit.",
+            "When the governing material stress exceeds the supplied strength, deformation remains available as elastic_estimate_material_limit; no plastic deformation is modeled."
           ],
           "poisson_ratio": 0.3,
           "principal_stress_ordering": "descending_algebraic",
-          "source_reference": "Roark's Formulas for Stress and Strain, 6th ed., Table 28 case 1c",
+          "source_reference": "Lam\u00e9 closed-end thick-cylinder stresses from Roark's Formulas for Stress and Strain, 6th ed., Table 32 cases 1a-1d",
           "strength_mpa": {
             "unit": "MPa",
             "value": 250.0
@@ -9475,42 +9534,77 @@
             {
               "axial_stress_mpa": {
                 "unit": "MPa",
-                "value": -23.9654293102
+                "value": -24.9758610032
               },
               "hoop_stress_mpa": {
                 "unit": "MPa",
-                "value": -47.9308586205
+                "value": -49.9517220064
               },
               "principal_stresses_mpa": {
                 "unit": "MPa",
                 "value": [
                   0.0,
-                  -23.9654293102,
-                  -47.9308586205
+                  -24.9758610032,
+                  -49.9517220064
                 ]
               },
               "radial_displacement_mm": {
                 "unit": "mm",
-                "value": -0.0594419165398
+                "value": -0.0606556624363
               },
               "radial_stress_mpa": {
                 "unit": "MPa",
                 "value": 0.0
               },
-              "radius_convention": "mean",
+              "radius_convention": "internal",
               "radius_mm": {
                 "unit": "mm",
-                "value": 102.130794171
+                "value": 100.0
               },
               "von_mises_stress_mpa": {
                 "unit": "MPa",
-                "value": 41.5093411905
+                "value": 43.2594602203
+              }
+            },
+            {
+              "axial_stress_mpa": {
+                "unit": "MPa",
+                "value": -24.9758610032
+              },
+              "hoop_stress_mpa": {
+                "unit": "MPa",
+                "value": -47.9517220064
+              },
+              "principal_stresses_mpa": {
+                "unit": "MPa",
+                "value": [
+                  -2.0,
+                  -24.9758610032,
+                  -47.9517220064
+                ]
+              },
+              "radial_displacement_mm": {
+                "unit": "mm",
+                "value": -0.0593679837945
+              },
+              "radial_stress_mpa": {
+                "unit": "MPa",
+                "value": -2.0
+              },
+              "radius_convention": "external",
+              "radius_mm": {
+                "unit": "mm",
+                "value": 104.261588342
+              },
+              "von_mises_stress_mpa": {
+                "unit": "MPa",
+                "value": 39.7953586052
               }
             }
           ],
           "theoretical_failure_pressure_mpa": {
             "unit": "MPa",
-            "value": 12.0454814666
+            "value": 11.5581654846
           },
           "thin_wall_threshold_mean_radius_over_thickness": 10.0,
           "validity_violations": [],
@@ -9542,14 +9636,6 @@
       ],
       "derived_branch_partition": [
         {
-          "boundary": "tube_thin_to_thick_transition",
-          "inside_bounds": false,
-          "wall_thickness": {
-            "unit": "mm",
-            "value": 10.5263157895
-          }
-        },
-        {
           "boundary": "buckling_thin_shell_radius_thickness_limit",
           "inside_bounds": false,
           "wall_thickness": {
@@ -9559,12 +9645,13 @@
         }
       ],
       "evaluation_count": 32,
+      "excluded_thickness_intervals": [],
       "governing_check_changes": [],
       "load_case": "hydrostatic_closed_end",
       "operation": "wall_thickness_inverse_sizing",
-      "operation_version": "2.1.0",
+      "operation_version": "3.0.0",
       "selected_check_margins": {
-        "cylindrical_shell_stress": 5.02274073328,
+        "cylindrical_shell_stress": 4.77908274229,
         "smooth_cylinder_buckling": 0.250000003257
       },
       "selected_governing_check": "smooth_cylinder_buckling",
@@ -9577,6 +9664,7 @@
         "unit": "mm",
         "value": 4.26158834249
       },
+      "selection_scope": "model_eligible_thicknesses",
       "shell_mid_surface_radius_convention": "internal_radius_plus_half_wall_thickness",
       "solution_type": "interior_root",
       "target_minimum_margin": 0.25,
@@ -9586,12 +9674,12 @@
         "lower": {
           "buckling_regime": "moderate",
           "check_margins": {
-            "cylindrical_shell_stress": 5.02274072426,
+            "cylindrical_shell_stress": 4.77908273399,
             "smooth_cylinder_buckling": 0.249999998536
           },
           "governing_check": "smooth_cylinder_buckling",
           "minimum_margin": 0.249999998536,
-          "tube_branch": "thin",
+          "tube_branch": "thick",
           "wall_thickness": {
             "unit": "mm",
             "value": 4.26158833597
@@ -9600,12 +9688,12 @@
         "upper": {
           "buckling_regime": "moderate",
           "check_margins": {
-            "cylindrical_shell_stress": 5.02274073328,
+            "cylindrical_shell_stress": 4.77908274229,
             "smooth_cylinder_buckling": 0.250000003257
           },
           "governing_check": "smooth_cylinder_buckling",
           "minimum_margin": 0.250000003257,
-          "tube_branch": "thin",
+          "tube_branch": "thick",
           "wall_thickness": {
             "unit": "mm",
             "value": 4.26158834249
@@ -9680,7 +9768,7 @@
             "calculation_source": {
               "function": "pv_calc.pressure_vessel.closed_end_tube_stress",
               "model_id": "closed_end_tube_stress",
-              "model_version": "2.0.0",
+              "model_version": "3.0.0",
               "package_version": "0.1.0"
             },
             "material": {
@@ -9757,18 +9845,19 @@
               },
               "mean_radius_over_thickness": 6.8829787234,
               "model_id": "closed_end_tube_stress",
-              "model_version": "2.0.0",
+              "model_version": "3.0.0",
               "notes": [
                 "Closed ends transmit uniform external-pressure axial load.",
                 "Results apply away from the tube/endcap interface.",
                 "Compression is negative and tension is positive.",
-                "The documented branch switch is discrete: at mean-radius/thickness = 10, the thick-wall equivalent stress is 10.25% above the thin-wall limiting value.",
+                "Lam\u00e9 stresses apply at every wall thickness; branch retains the legacy value 'thick', force_thick is a compatibility no-op, and the former thin-wall threshold is metadata only.",
                 "This result covers material failure under the category's own criterion: von Mises stress against yield strength for a ductile metal, maximum hoop stress against the working strength for a plastic or the ultimate compressive strength for a brittle material. Shell stability and end closures are separate checks.",
                 "Radial displacement and axial strain need an elastic modulus and a Poisson ratio; without both, every stress result is unchanged and displacement is withheld with its reason.",
-                "Radial displacement is positive outward, so external pressure gives a negative value, and each stress state carries the displacement at its own radius: the median surface on the thin branch, the internal and external surfaces on the thick branch.",
-                "Axial strain is uniform through the wall and along the tube in both branches; the axial length change is that strain times the caller's gauge length, which is null when no length is supplied.",
+                "Radial displacement is positive outward, so external pressure gives a negative value, and each stress state carries the displacement at its own internal or external surface radius.",
+                "Axial strain is uniform through the wall and along the tube; the axial length change is that strain times the caller's gauge length, which is null when no length is supplied.",
                 "Displacement excludes tube/endcap junction effects, local restraint at closures, ovalization and initial out-of-roundness, instability, plasticity, and ring-frame restraint.",
-                "The displacement equations assume small deformations. On the thin branch, displacement is withheld when its absolute radial value exceeds the wall thickness, the explicit reliability limit stated by DTMB 1497; no unsourced counterpart is imposed on the thick branch."
+                "The displacement equations assume small deformations; the closed-cylinder source states no numeric deformation limit.",
+                "When the governing material stress exceeds the supplied strength, deformation remains available as elastic_estimate_material_limit; no plastic deformation is modeled."
               ],
               "poisson_ratio": null,
               "principal_stress_ordering": "descending_algebraic",
@@ -9881,7 +9970,7 @@
             "calculation_source": {
               "function": "pv_calc.pressure_vessel.closed_end_tube_stress",
               "model_id": "closed_end_tube_stress",
-              "model_version": "2.0.0",
+              "model_version": "3.0.0",
               "package_version": "0.1.0"
             },
             "material": {
@@ -9958,18 +10047,19 @@
               },
               "mean_radius_over_thickness": 6.8829787234,
               "model_id": "closed_end_tube_stress",
-              "model_version": "2.0.0",
+              "model_version": "3.0.0",
               "notes": [
                 "Closed ends transmit uniform external-pressure axial load.",
                 "Results apply away from the tube/endcap interface.",
                 "Compression is negative and tension is positive.",
-                "The documented branch switch is discrete: at mean-radius/thickness = 10, the thick-wall equivalent stress is 10.25% above the thin-wall limiting value.",
+                "Lam\u00e9 stresses apply at every wall thickness; branch retains the legacy value 'thick', force_thick is a compatibility no-op, and the former thin-wall threshold is metadata only.",
                 "This result covers material failure under the category's own criterion: von Mises stress against yield strength for a ductile metal, maximum hoop stress against the working strength for a plastic or the ultimate compressive strength for a brittle material. Shell stability and end closures are separate checks.",
                 "Radial displacement and axial strain need an elastic modulus and a Poisson ratio; without both, every stress result is unchanged and displacement is withheld with its reason.",
-                "Radial displacement is positive outward, so external pressure gives a negative value, and each stress state carries the displacement at its own radius: the median surface on the thin branch, the internal and external surfaces on the thick branch.",
-                "Axial strain is uniform through the wall and along the tube in both branches; the axial length change is that strain times the caller's gauge length, which is null when no length is supplied.",
+                "Radial displacement is positive outward, so external pressure gives a negative value, and each stress state carries the displacement at its own internal or external surface radius.",
+                "Axial strain is uniform through the wall and along the tube; the axial length change is that strain times the caller's gauge length, which is null when no length is supplied.",
                 "Displacement excludes tube/endcap junction effects, local restraint at closures, ovalization and initial out-of-roundness, instability, plasticity, and ring-frame restraint.",
-                "The displacement equations assume small deformations. On the thin branch, displacement is withheld when its absolute radial value exceeds the wall thickness, the explicit reliability limit stated by DTMB 1497; no unsourced counterpart is imposed on the thick branch."
+                "The displacement equations assume small deformations; the closed-cylinder source states no numeric deformation limit.",
+                "When the governing material stress exceeds the supplied strength, deformation remains available as elastic_estimate_material_limit; no plastic deformation is modeled."
               ],
               "poisson_ratio": null,
               "principal_stress_ordering": "descending_algebraic",
@@ -10082,7 +10172,7 @@
             "calculation_source": {
               "function": "pv_calc.pressure_vessel.closed_end_tube_stress",
               "model_id": "closed_end_tube_stress",
-              "model_version": "2.0.0",
+              "model_version": "3.0.0",
               "package_version": "0.1.0"
             },
             "material": {
@@ -10159,18 +10249,19 @@
               },
               "mean_radius_over_thickness": 6.8829787234,
               "model_id": "closed_end_tube_stress",
-              "model_version": "2.0.0",
+              "model_version": "3.0.0",
               "notes": [
                 "Closed ends transmit uniform external-pressure axial load.",
                 "Results apply away from the tube/endcap interface.",
                 "Compression is negative and tension is positive.",
-                "The documented branch switch is discrete: at mean-radius/thickness = 10, the thick-wall equivalent stress is 10.25% above the thin-wall limiting value.",
+                "Lam\u00e9 stresses apply at every wall thickness; branch retains the legacy value 'thick', force_thick is a compatibility no-op, and the former thin-wall threshold is metadata only.",
                 "This result covers material failure under the category's own criterion: von Mises stress against yield strength for a ductile metal, maximum hoop stress against the working strength for a plastic or the ultimate compressive strength for a brittle material. Shell stability and end closures are separate checks.",
                 "Radial displacement and axial strain need an elastic modulus and a Poisson ratio; without both, every stress result is unchanged and displacement is withheld with its reason.",
-                "Radial displacement is positive outward, so external pressure gives a negative value, and each stress state carries the displacement at its own radius: the median surface on the thin branch, the internal and external surfaces on the thick branch.",
-                "Axial strain is uniform through the wall and along the tube in both branches; the axial length change is that strain times the caller's gauge length, which is null when no length is supplied.",
+                "Radial displacement is positive outward, so external pressure gives a negative value, and each stress state carries the displacement at its own internal or external surface radius.",
+                "Axial strain is uniform through the wall and along the tube; the axial length change is that strain times the caller's gauge length, which is null when no length is supplied.",
                 "Displacement excludes tube/endcap junction effects, local restraint at closures, ovalization and initial out-of-roundness, instability, plasticity, and ring-frame restraint.",
-                "The displacement equations assume small deformations. On the thin branch, displacement is withheld when its absolute radial value exceeds the wall thickness, the explicit reliability limit stated by DTMB 1497; no unsourced counterpart is imposed on the thick branch."
+                "The displacement equations assume small deformations; the closed-cylinder source states no numeric deformation limit.",
+                "When the governing material stress exceeds the supplied strength, deformation remains available as elastic_estimate_material_limit; no plastic deformation is modeled."
               ],
               "poisson_ratio": null,
               "principal_stress_ordering": "descending_algebraic",
@@ -10302,7 +10393,7 @@
             "calculation_source": {
               "function": "pv_calc.pressure_vessel.closed_end_tube_stress",
               "model_id": "closed_end_tube_stress",
-              "model_version": "2.0.0",
+              "model_version": "3.0.0",
               "package_version": "0.1.0"
             },
             "material": {
@@ -10379,18 +10470,19 @@
               },
               "mean_radius_over_thickness": 6.8829787234,
               "model_id": "closed_end_tube_stress",
-              "model_version": "2.0.0",
+              "model_version": "3.0.0",
               "notes": [
                 "Closed ends transmit uniform external-pressure axial load.",
                 "Results apply away from the tube/endcap interface.",
                 "Compression is negative and tension is positive.",
-                "The documented branch switch is discrete: at mean-radius/thickness = 10, the thick-wall equivalent stress is 10.25% above the thin-wall limiting value.",
+                "Lam\u00e9 stresses apply at every wall thickness; branch retains the legacy value 'thick', force_thick is a compatibility no-op, and the former thin-wall threshold is metadata only.",
                 "This result covers material failure under the category's own criterion: von Mises stress against yield strength for a ductile metal, maximum hoop stress against the working strength for a plastic or the ultimate compressive strength for a brittle material. Shell stability and end closures are separate checks.",
                 "Radial displacement and axial strain need an elastic modulus and a Poisson ratio; without both, every stress result is unchanged and displacement is withheld with its reason.",
-                "Radial displacement is positive outward, so external pressure gives a negative value, and each stress state carries the displacement at its own radius: the median surface on the thin branch, the internal and external surfaces on the thick branch.",
-                "Axial strain is uniform through the wall and along the tube in both branches; the axial length change is that strain times the caller's gauge length, which is null when no length is supplied.",
+                "Radial displacement is positive outward, so external pressure gives a negative value, and each stress state carries the displacement at its own internal or external surface radius.",
+                "Axial strain is uniform through the wall and along the tube; the axial length change is that strain times the caller's gauge length, which is null when no length is supplied.",
                 "Displacement excludes tube/endcap junction effects, local restraint at closures, ovalization and initial out-of-roundness, instability, plasticity, and ring-frame restraint.",
-                "The displacement equations assume small deformations. On the thin branch, displacement is withheld when its absolute radial value exceeds the wall thickness, the explicit reliability limit stated by DTMB 1497; no unsourced counterpart is imposed on the thick branch."
+                "The displacement equations assume small deformations; the closed-cylinder source states no numeric deformation limit.",
+                "When the governing material stress exceeds the supplied strength, deformation remains available as elastic_estimate_material_limit; no plastic deformation is modeled."
               ],
               "poisson_ratio": null,
               "principal_stress_ordering": "descending_algebraic",
@@ -10413,7 +10505,7 @@
                   "principal_stresses_mpa": {
                     "unit": "MPa",
                     "value": [
-                      0.0,
+                      -1.7763568394e-15,
                       -13.6504132151,
                       -27.3008264301
                     ]
@@ -10424,7 +10516,7 @@
                   },
                   "radial_stress_mpa": {
                     "unit": "MPa",
-                    "value": 0.0
+                    "value": -1.7763568394e-15
                   },
                   "radius_convention": "internal",
                   "radius_mm": {
@@ -10495,7 +10587,7 @@
             "calculation_source": {
               "function": "pv_calc.pressure_vessel.closed_end_tube_stress",
               "model_id": "closed_end_tube_stress",
-              "model_version": "2.0.0",
+              "model_version": "3.0.0",
               "package_version": "0.1.0"
             },
             "material": {
@@ -10572,18 +10664,19 @@
               },
               "mean_radius_over_thickness": 6.8829787234,
               "model_id": "closed_end_tube_stress",
-              "model_version": "2.0.0",
+              "model_version": "3.0.0",
               "notes": [
                 "Closed ends transmit uniform external-pressure axial load.",
                 "Results apply away from the tube/endcap interface.",
                 "Compression is negative and tension is positive.",
-                "The documented branch switch is discrete: at mean-radius/thickness = 10, the thick-wall equivalent stress is 10.25% above the thin-wall limiting value.",
+                "Lam\u00e9 stresses apply at every wall thickness; branch retains the legacy value 'thick', force_thick is a compatibility no-op, and the former thin-wall threshold is metadata only.",
                 "This result covers material failure under the category's own criterion: von Mises stress against yield strength for a ductile metal, maximum hoop stress against the working strength for a plastic or the ultimate compressive strength for a brittle material. Shell stability and end closures are separate checks.",
                 "Radial displacement and axial strain need an elastic modulus and a Poisson ratio; without both, every stress result is unchanged and displacement is withheld with its reason.",
-                "Radial displacement is positive outward, so external pressure gives a negative value, and each stress state carries the displacement at its own radius: the median surface on the thin branch, the internal and external surfaces on the thick branch.",
-                "Axial strain is uniform through the wall and along the tube in both branches; the axial length change is that strain times the caller's gauge length, which is null when no length is supplied.",
+                "Radial displacement is positive outward, so external pressure gives a negative value, and each stress state carries the displacement at its own internal or external surface radius.",
+                "Axial strain is uniform through the wall and along the tube; the axial length change is that strain times the caller's gauge length, which is null when no length is supplied.",
                 "Displacement excludes tube/endcap junction effects, local restraint at closures, ovalization and initial out-of-roundness, instability, plasticity, and ring-frame restraint.",
-                "The displacement equations assume small deformations. On the thin branch, displacement is withheld when its absolute radial value exceeds the wall thickness, the explicit reliability limit stated by DTMB 1497; no unsourced counterpart is imposed on the thick branch."
+                "The displacement equations assume small deformations; the closed-cylinder source states no numeric deformation limit.",
+                "When the governing material stress exceeds the supplied strength, deformation remains available as elastic_estimate_material_limit; no plastic deformation is modeled."
               ],
               "poisson_ratio": null,
               "principal_stress_ordering": "descending_algebraic",
@@ -10606,7 +10699,7 @@
                   "principal_stresses_mpa": {
                     "unit": "MPa",
                     "value": [
-                      0.0,
+                      -3.5527136788e-15,
                       -27.3008264301,
                       -54.6016528602
                     ]
@@ -10617,7 +10710,7 @@
                   },
                   "radial_stress_mpa": {
                     "unit": "MPa",
-                    "value": 0.0
+                    "value": -3.5527136788e-15
                   },
                   "radius_convention": "internal",
                   "radius_mm": {
@@ -10688,7 +10781,7 @@
             "calculation_source": {
               "function": "pv_calc.pressure_vessel.closed_end_tube_stress",
               "model_id": "closed_end_tube_stress",
-              "model_version": "2.0.0",
+              "model_version": "3.0.0",
               "package_version": "0.1.0"
             },
             "material": {
@@ -10765,18 +10858,19 @@
               },
               "mean_radius_over_thickness": 6.8829787234,
               "model_id": "closed_end_tube_stress",
-              "model_version": "2.0.0",
+              "model_version": "3.0.0",
               "notes": [
                 "Closed ends transmit uniform external-pressure axial load.",
                 "Results apply away from the tube/endcap interface.",
                 "Compression is negative and tension is positive.",
-                "The documented branch switch is discrete: at mean-radius/thickness = 10, the thick-wall equivalent stress is 10.25% above the thin-wall limiting value.",
+                "Lam\u00e9 stresses apply at every wall thickness; branch retains the legacy value 'thick', force_thick is a compatibility no-op, and the former thin-wall threshold is metadata only.",
                 "This result covers material failure under the category's own criterion: von Mises stress against yield strength for a ductile metal, maximum hoop stress against the working strength for a plastic or the ultimate compressive strength for a brittle material. Shell stability and end closures are separate checks.",
                 "Radial displacement and axial strain need an elastic modulus and a Poisson ratio; without both, every stress result is unchanged and displacement is withheld with its reason.",
-                "Radial displacement is positive outward, so external pressure gives a negative value, and each stress state carries the displacement at its own radius: the median surface on the thin branch, the internal and external surfaces on the thick branch.",
-                "Axial strain is uniform through the wall and along the tube in both branches; the axial length change is that strain times the caller's gauge length, which is null when no length is supplied.",
+                "Radial displacement is positive outward, so external pressure gives a negative value, and each stress state carries the displacement at its own internal or external surface radius.",
+                "Axial strain is uniform through the wall and along the tube; the axial length change is that strain times the caller's gauge length, which is null when no length is supplied.",
                 "Displacement excludes tube/endcap junction effects, local restraint at closures, ovalization and initial out-of-roundness, instability, plasticity, and ring-frame restraint.",
-                "The displacement equations assume small deformations. On the thin branch, displacement is withheld when its absolute radial value exceeds the wall thickness, the explicit reliability limit stated by DTMB 1497; no unsourced counterpart is imposed on the thick branch."
+                "The displacement equations assume small deformations; the closed-cylinder source states no numeric deformation limit.",
+                "When the governing material stress exceeds the supplied strength, deformation remains available as elastic_estimate_material_limit; no plastic deformation is modeled."
               ],
               "poisson_ratio": null,
               "principal_stress_ordering": "descending_algebraic",
@@ -10880,7 +10974,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.closed_end_tube_stress",
       "model_id": "closed_end_tube_stress",
-      "model_version": "2.0.0",
+      "model_version": "3.0.0",
       "package_version": "0.1.0"
     },
     "material": {
@@ -10957,18 +11051,19 @@
       },
       "mean_radius_over_thickness": 6.8829787234,
       "model_id": "closed_end_tube_stress",
-      "model_version": "2.0.0",
+      "model_version": "3.0.0",
       "notes": [
         "Closed ends transmit uniform external-pressure axial load.",
         "Results apply away from the tube/endcap interface.",
         "Compression is negative and tension is positive.",
-        "The documented branch switch is discrete: at mean-radius/thickness = 10, the thick-wall equivalent stress is 10.25% above the thin-wall limiting value.",
+        "Lam\u00e9 stresses apply at every wall thickness; branch retains the legacy value 'thick', force_thick is a compatibility no-op, and the former thin-wall threshold is metadata only.",
         "This result covers material failure under the category's own criterion: von Mises stress against yield strength for a ductile metal, maximum hoop stress against the working strength for a plastic or the ultimate compressive strength for a brittle material. Shell stability and end closures are separate checks.",
         "Radial displacement and axial strain need an elastic modulus and a Poisson ratio; without both, every stress result is unchanged and displacement is withheld with its reason.",
-        "Radial displacement is positive outward, so external pressure gives a negative value, and each stress state carries the displacement at its own radius: the median surface on the thin branch, the internal and external surfaces on the thick branch.",
-        "Axial strain is uniform through the wall and along the tube in both branches; the axial length change is that strain times the caller's gauge length, which is null when no length is supplied.",
+        "Radial displacement is positive outward, so external pressure gives a negative value, and each stress state carries the displacement at its own internal or external surface radius.",
+        "Axial strain is uniform through the wall and along the tube; the axial length change is that strain times the caller's gauge length, which is null when no length is supplied.",
         "Displacement excludes tube/endcap junction effects, local restraint at closures, ovalization and initial out-of-roundness, instability, plasticity, and ring-frame restraint.",
-        "The displacement equations assume small deformations. On the thin branch, displacement is withheld when its absolute radial value exceeds the wall thickness, the explicit reliability limit stated by DTMB 1497; no unsourced counterpart is imposed on the thick branch."
+        "The displacement equations assume small deformations; the closed-cylinder source states no numeric deformation limit.",
+        "When the governing material stress exceeds the supplied strength, deformation remains available as elastic_estimate_material_limit; no plastic deformation is modeled."
       ],
       "poisson_ratio": null,
       "principal_stress_ordering": "descending_algebraic",
@@ -10991,7 +11086,7 @@
           "principal_stresses_mpa": {
             "unit": "MPa",
             "value": [
-              0.0,
+              -3.5527136788e-15,
               -27.3008264301,
               -54.6016528602
             ]
@@ -11002,7 +11097,7 @@
           },
           "radial_stress_mpa": {
             "unit": "MPa",
-            "value": 0.0
+            "value": -3.5527136788e-15
           },
           "radius_convention": "internal",
           "radius_mm": {
@@ -11067,7 +11162,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.closed_end_tube_stress",
       "model_id": "closed_end_tube_stress",
-      "model_version": "2.0.0",
+      "model_version": "3.0.0",
       "package_version": "0.1.0"
     },
     "failure_depths": {
@@ -11168,6 +11263,9 @@
           "value": 13.8
         }
       },
+      "property_sources": {
+        "working_strength": "Tabulated, not derived here: 2000 psi at 73 F is the hydrostatic design stress the compound designation itself names, the trailing 20 of PVC 1120 being that stress in hundreds of psi. It is half of the 4000 psi hydrostatic design basis listed for the compound, the other half being the 0.5 design factor that ASTM D1785 applies to rate Schedule 40 and 80 PVC pipe. Stored as 2 ksi x 6.894757 = 13.789 MPa, rounded to 13.8. Unlike a short-term ultimate this already carries creep: the design basis comes from a long-term regression of hoop stress against time to failure under ASTM D2837, and the design factor carries the rest. Two limits on reading it here. It is a tensile hoop quantity from internal-pressure testing, so using it as the allowable for the compressive hoop stress of an external-pressure case is the conservative direction for stress but says nothing about stability, which stays withheld. And it is stated at 73 F; PVC derates steeply with temperature and no derating is stored. A calculation input, not a design allowable."
+      },
       "source": {
         "database": "materials.yaml",
         "name": "PVC-1120",
@@ -11226,18 +11324,19 @@
       },
       "mean_radius_over_thickness": 3.73728813559,
       "model_id": "closed_end_tube_stress",
-      "model_version": "2.0.0",
+      "model_version": "3.0.0",
       "notes": [
         "Closed ends transmit uniform external-pressure axial load.",
         "Results apply away from the tube/endcap interface.",
         "Compression is negative and tension is positive.",
-        "The documented branch switch is discrete: at mean-radius/thickness = 10, the thick-wall equivalent stress is 10.25% above the thin-wall limiting value.",
+        "Lam\u00e9 stresses apply at every wall thickness; branch retains the legacy value 'thick', force_thick is a compatibility no-op, and the former thin-wall threshold is metadata only.",
         "This result covers material failure under the category's own criterion: von Mises stress against yield strength for a ductile metal, maximum hoop stress against the working strength for a plastic or the ultimate compressive strength for a brittle material. Shell stability and end closures are separate checks.",
         "Radial displacement and axial strain need an elastic modulus and a Poisson ratio; without both, every stress result is unchanged and displacement is withheld with its reason.",
-        "Radial displacement is positive outward, so external pressure gives a negative value, and each stress state carries the displacement at its own radius: the median surface on the thin branch, the internal and external surfaces on the thick branch.",
-        "Axial strain is uniform through the wall and along the tube in both branches; the axial length change is that strain times the caller's gauge length, which is null when no length is supplied.",
+        "Radial displacement is positive outward, so external pressure gives a negative value, and each stress state carries the displacement at its own internal or external surface radius.",
+        "Axial strain is uniform through the wall and along the tube; the axial length change is that strain times the caller's gauge length, which is null when no length is supplied.",
         "Displacement excludes tube/endcap junction effects, local restraint at closures, ovalization and initial out-of-roundness, instability, plasticity, and ring-frame restraint.",
-        "The displacement equations assume small deformations. On the thin branch, displacement is withheld when its absolute radial value exceeds the wall thickness, the explicit reliability limit stated by DTMB 1497; no unsourced counterpart is imposed on the thick branch.",
+        "The displacement equations assume small deformations; the closed-cylinder source states no numeric deformation limit.",
+        "When the governing material stress exceeds the supplied strength, deformation remains available as elastic_estimate_material_limit; no plastic deformation is modeled.",
         "Plastic strength depends on service temperature and load duration (creep); the working strength is the designer's allowance for both, and the margin is against that allowance."
       ],
       "poisson_ratio": 0.38,
@@ -11337,7 +11436,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.closed_end_tube_stress",
       "model_id": "closed_end_tube_stress",
-      "model_version": "2.0.0",
+      "model_version": "3.0.0",
       "package_version": "0.1.0"
     },
     "material": {
@@ -11390,7 +11489,7 @@
       },
       "external_radius_mm": {
         "unit": "mm",
-        "value": 86.0102965311
+        "value": 86.0102965336
       },
       "failure_criterion": "von_mises_stress_vs_yield_strength",
       "force_thick": false,
@@ -11400,33 +11499,34 @@
       },
       "governing_stress_mpa": {
         "unit": "MPa",
-        "value": 388.613592829
+        "value": 388.613592747
       },
       "internal_radius_mm": {
         "unit": "mm",
         "value": 76.2
       },
       "load_case": "hydrostatic_closed_end",
-      "margin": 0.100000000166,
+      "margin": 0.100000000398,
       "material_failure_category": "ductile_metal",
       "mean_radius_mm": {
         "unit": "mm",
-        "value": 81.1051482656
+        "value": 81.1051482668
       },
-      "mean_radius_over_thickness": 8.26734931081,
+      "mean_radius_over_thickness": 8.26734930884,
       "model_id": "closed_end_tube_stress",
-      "model_version": "2.0.0",
+      "model_version": "3.0.0",
       "notes": [
         "Closed ends transmit uniform external-pressure axial load.",
         "Results apply away from the tube/endcap interface.",
         "Compression is negative and tension is positive.",
-        "The documented branch switch is discrete: at mean-radius/thickness = 10, the thick-wall equivalent stress is 10.25% above the thin-wall limiting value.",
+        "Lam\u00e9 stresses apply at every wall thickness; branch retains the legacy value 'thick', force_thick is a compatibility no-op, and the former thin-wall threshold is metadata only.",
         "This result covers material failure under the category's own criterion: von Mises stress against yield strength for a ductile metal, maximum hoop stress against the working strength for a plastic or the ultimate compressive strength for a brittle material. Shell stability and end closures are separate checks.",
         "Radial displacement and axial strain need an elastic modulus and a Poisson ratio; without both, every stress result is unchanged and displacement is withheld with its reason.",
-        "Radial displacement is positive outward, so external pressure gives a negative value, and each stress state carries the displacement at its own radius: the median surface on the thin branch, the internal and external surfaces on the thick branch.",
-        "Axial strain is uniform through the wall and along the tube in both branches; the axial length change is that strain times the caller's gauge length, which is null when no length is supplied.",
+        "Radial displacement is positive outward, so external pressure gives a negative value, and each stress state carries the displacement at its own internal or external surface radius.",
+        "Axial strain is uniform through the wall and along the tube; the axial length change is that strain times the caller's gauge length, which is null when no length is supplied.",
         "Displacement excludes tube/endcap junction effects, local restraint at closures, ovalization and initial out-of-roundness, instability, plasticity, and ring-frame restraint.",
-        "The displacement equations assume small deformations. On the thin branch, displacement is withheld when its absolute radial value exceeds the wall thickness, the explicit reliability limit stated by DTMB 1497; no unsourced counterpart is imposed on the thick branch."
+        "The displacement equations assume small deformations; the closed-cylinder source states no numeric deformation limit.",
+        "When the governing material stress exceeds the supplied strength, deformation remains available as elastic_estimate_material_limit; no plastic deformation is modeled."
       ],
       "poisson_ratio": null,
       "principal_stress_ordering": "descending_algebraic",
@@ -11440,18 +11540,18 @@
         {
           "axial_stress_mpa": {
             "unit": "MPa",
-            "value": -224.366162431
+            "value": -224.366162383
           },
           "hoop_stress_mpa": {
             "unit": "MPa",
-            "value": -448.732324861
+            "value": -448.732324766
           },
           "principal_stresses_mpa": {
             "unit": "MPa",
             "value": [
-              0.0,
-              -224.366162431,
-              -448.732324861
+              2.84217094304e-14,
+              -224.366162383,
+              -448.732324766
             ]
           },
           "radial_displacement_mm": {
@@ -11460,7 +11560,7 @@
           },
           "radial_stress_mpa": {
             "unit": "MPa",
-            "value": 0.0
+            "value": 2.84217094304e-14
           },
           "radius_convention": "internal",
           "radius_mm": {
@@ -11469,24 +11569,24 @@
           },
           "von_mises_stress_mpa": {
             "unit": "MPa",
-            "value": 388.613592829
+            "value": 388.613592747
           }
         },
         {
           "axial_stress_mpa": {
             "unit": "MPa",
-            "value": -224.366162431
+            "value": -224.366162383
           },
           "hoop_stress_mpa": {
             "unit": "MPa",
-            "value": -400.469023809
+            "value": -400.469023714
           },
           "principal_stresses_mpa": {
             "unit": "MPa",
             "value": [
               -48.2633010522,
-              -224.366162431,
-              -400.469023809
+              -224.366162383,
+              -400.469023714
             ]
           },
           "radial_displacement_mm": {
@@ -11500,29 +11600,29 @@
           "radius_convention": "external",
           "radius_mm": {
             "unit": "mm",
-            "value": 86.0102965311
+            "value": 86.0102965336
           },
           "von_mises_stress_mpa": {
             "unit": "MPa",
-            "value": 305.019103266
+            "value": 305.019103184
           }
         }
       ],
       "theoretical_failure_pressure_mpa": {
         "unit": "MPa",
-        "value": 53.0896311654
+        "value": 53.0896311766
       },
       "thin_wall_threshold_mean_radius_over_thickness": 10.0,
       "validity_violations": [],
       "wall_thickness_mm": {
         "unit": "mm",
-        "value": 9.81029653114
+        "value": 9.81029653363
       }
     },
     "schema_version": "5.0.0",
     "sizing": {
       "algorithm": "known_branch_partition_and_bisection",
-      "bisection_iterations": 29,
+      "bisection_iterations": 30,
       "bounds": {
         "lower": {
           "unit": "mm",
@@ -11533,81 +11633,21 @@
           "value": 12.7
         }
       },
-      "branch_changes": [
-        {
-          "from_state": "thin",
-          "lower": {
-            "branch": "thin",
-            "check_margins": {
-              "cylindrical_shell_stress": 0.0227347625645
-            },
-            "governing_location": "mean",
-            "minimum_margin": 0.0227347625645,
-            "wall_thickness": {
-              "unit": "mm",
-              "value": 8.02105263158
-            }
-          },
-          "margin_jump": -0.0950841842747,
-          "to_state": "thick",
-          "upper": {
-            "branch": "thick",
-            "check_margins": {
-              "cylindrical_shell_stress": -0.0723494217102
-            },
-            "governing_location": "internal",
-            "minimum_margin": -0.0723494217102,
-            "wall_thickness": {
-              "unit": "mm",
-              "value": 8.02105263158
-            }
-          }
-        }
-      ],
+      "branch_changes": [],
       "declared_check_set": [
         "cylindrical_shell_stress"
       ],
-      "evaluation_count": 33,
-      "governing_location_changes": [
-        {
-          "from_state": "mean",
-          "lower": {
-            "branch": "thin",
-            "check_margins": {
-              "cylindrical_shell_stress": 0.0227347625645
-            },
-            "governing_location": "mean",
-            "minimum_margin": 0.0227347625645,
-            "wall_thickness": {
-              "unit": "mm",
-              "value": 8.02105263158
-            }
-          },
-          "margin_jump": -0.0950841842747,
-          "to_state": "internal",
-          "upper": {
-            "branch": "thick",
-            "check_margins": {
-              "cylindrical_shell_stress": -0.0723494217102
-            },
-            "governing_location": "internal",
-            "minimum_margin": -0.0723494217102,
-            "wall_thickness": {
-              "unit": "mm",
-              "value": 8.02105263158
-            }
-          }
-        }
-      ],
+      "evaluation_count": 32,
+      "governing_location_changes": [],
       "operation": "wall_thickness_inverse_sizing",
-      "operation_version": "2.1.0",
+      "operation_version": "3.0.0",
       "selected_check_margins": {
-        "cylindrical_shell_stress": 0.100000000166
+        "cylindrical_shell_stress": 0.100000000398
       },
-      "selected_minimum_margin": 0.100000000166,
+      "selected_minimum_margin": 0.100000000398,
       "selected_wall_thickness": {
         "unit": "mm",
-        "value": 9.81029653114
+        "value": 9.81029653363
       },
       "solution_type": "interior_root",
       "target_minimum_margin": 0.1,
@@ -11616,30 +11656,30 @@
         "lower": {
           "branch": "thick",
           "check_margins": {
-            "cylindrical_shell_stress": 0.0999999993523
+            "cylindrical_shell_stress": 0.099999999515
           },
           "governing_location": "internal",
-          "minimum_margin": 0.0999999993523,
+          "minimum_margin": 0.099999999515,
           "wall_thickness": {
             "unit": "mm",
-            "value": 9.81029652242
+            "value": 9.81029652417
           }
         },
         "upper": {
           "branch": "thick",
           "check_margins": {
-            "cylindrical_shell_stress": 0.100000000166
+            "cylindrical_shell_stress": 0.100000000398
           },
           "governing_location": "internal",
-          "minimum_margin": 0.100000000166,
+          "minimum_margin": 0.100000000398,
           "wall_thickness": {
             "unit": "mm",
-            "value": 9.81029653114
+            "value": 9.81029653363
           }
         },
         "wall_thickness_width": {
           "unit": "mm",
-          "value": 8.71521876888e-09
+          "value": 9.46223721598e-09
         }
       },
       "wall_thickness_tolerance": {

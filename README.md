@@ -43,7 +43,7 @@ estimate above the proportional limit retains its pressure but has a null
 `margin`. Deformation beyond the supplied material strength is labeled
 `elastic_estimate_material_limit`; it is not a plastic-deformation prediction.
 Thickness sizing selects the smallest solution among model-eligible intervals
-within the requested bounds and reports excluded intervals.
+within the requested bounds and reports excluded intervals below the selection.
 
 Material properties can be entered directly on the command line, as above, or
 loaded from a named record with

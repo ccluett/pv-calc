@@ -74,8 +74,8 @@ by 6.77% under hydrostatic pressure. Such a solution is reported as `branch_star
 with no false continuous bracket across the jump.
 
 "Smallest" means smallest among thicknesses the model can evaluate for the
-requested checks. Excluded intervals are reported; nothing is inferred about
-the physical adequacy of those thicknesses. A missing proportional limit or no
+requested checks. Intervals skipped below the selection are reported; nothing
+is inferred about the physical adequacy of those thicknesses. A missing proportional limit or no
 eligible thickness meeting the targets returns `no_reliable_solution`. The
 selected forward checks must be released and meet every target. These operations
 add no physical equation and have no separate evidence-matrix rows.
