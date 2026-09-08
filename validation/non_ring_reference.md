@@ -1,6 +1,6 @@
-# Independent non-ring golden audit
+# Independent non-ring equation audit
 
-- **Status:** non-ring audit complete
+- **Status:** current equations checked against preserved independent references
 - **Executable reference:** [`non_ring_reference.py`](non_ring_reference.py)
 - **Scope:** released closed-end tube stress, hemispherical-head stress and buckling, flat circular plate, and smooth-cylinder buckling goldens and examples
 - **Evidence role:** independent equation verification and accepted manual software-parity provenance
@@ -17,39 +17,61 @@ focused test parses the module's imports and rejects any `pv_calc` or `yaml`
 import; the module itself performs no file reads, so it cannot consume
 fixtures, production configuration, or expected outputs.
 
+The executable reference retains the original thin/thick stress switch and
+historical sizing calculations. It is preserved byte for byte because the
+committed FEA evidence identifies that source by SHA-256. Current production
+uses exact Lamé stresses at every wall thickness, so the parity tests select
+the reference's existing exact path with `force_thick=True`, including at
+thin geometries. Production's `force_thick` option is now a compatibility
+no-op; selecting it in the historical reference still has its original
+meaning. No FEA source hash, solver result, or manifest has been restamped.
+
 ## Sources and conventions
 
 | Model | Primary equation source | Convention |
 |---|---|---|
-| Closed-end tube | Roark 6th ed., Table 28 case 1c (thin) and Table 32 cases 1a-1d (Lamé thick); UnderPressure 4.0 Appendix C criterion B | External pressure; internal surface traction-free; closed ends; mean radius only for `r_m/t > 10`; through-wall Lamé solution at `r_m/t <= 10`; compression negative; 3D von Mises failure for ductile metal |
-| Hemispherical head | Roark 6th ed., Table 28 case 3a and Table 32 cases 2a-2b for stress; NASA SP-8032 Section 4.2.1.1, Eqs. 1-4 for buckling | Uniform external pressure; internal input and mean-radius analysis; thin biaxial membrane or through-wall thick-sphere stress; clamped equator; 180-degree included cap; elastic capacity only for `r_m/t > 10`, `lambda > 2`, and a sufficient supplied proportional limit |
+| Closed-end tube | Roark 6th ed., Table 32 cases 1a-1d; UnderPressure 4.0 Appendix C criterion B; Table 28 case 1c retained as a membrane comparator | External pressure; internal surface traction-free; closed ends; exact Lamé stresses at internal and external surfaces at every thickness; compression negative; 3D von Mises failure for ductile metal |
+| Hemispherical head | Roark 6th ed., Table 32 cases 2a-2b for stress; Table 28 case 3a retained as a membrane comparator; NASA SP-8032 Section 4.2.1.1, Eqs. 1-4 for buckling | Uniform external pressure; exact spherical surface stresses at every thickness; mean-radius buckling analysis with clamped equator and 180-degree included cap; elastic capacity only for `r_m/t > 10`, `lambda > 2`, and a sufficient supplied proportional limit |
 | Flat circular plate | Roark 6th ed., Table 24 cases 10a-10b, p. 429; UnderPressure 4.0 Example 2 shear convention | Uniform pressure over free radius; explicitly simply supported or fixed; center deflection; support-line transverse shear |
 | Smooth cylinder | NASA/SP-8007-2020/REV 2, Eqs. 3-5 and 17-29, pp. 22 and 26-29 | Shell mid-surface radius; simply-supported circular ends; lateral-only or closed-end hydrostatic load; short and moderate `sqrt(gamma)=0.75`, and long `gamma=0.90` candidates kept separate |
 | Smooth software overlap | Roark 6th ed., Table 35 case 20; UnderPressure 4.0 Appendix C | Mean radius; integer circumferential-node search; Roark 0.80 probable-minimum factor; validity classified separately from numerical parity |
 
-Closed-end tube **displacement** is re-derived in a separate module,
+Closed-end tube **displacement** has a separate independent module,
 [`tube_displacement_reference.py`](tube_displacement_reference.py), from
-DTMB Report 1497 Eq. [5] with Eqs. [A7]-[A10] for the thin branch and Boresi and
-Schmidt Eqs. (11.24) and (11.15) for the thick one; its conventions, surfaces,
+DTMB Report 1497 Eq. [5] with Eqs. [A7]-[A10] for its historical thin branch and
+Boresi and Schmidt Eqs. (11.24) and (11.15) for the exact closed-cylinder
+solution. The parity tests select the exact reference at every thickness;
+its conventions, surfaces,
 assumptions, and exclusions are recorded in
 [`sources/tube_scalar_displacement.md`](sources/tube_scalar_displacement.md).
 It is a separate file because this module's SHA-256 is recorded as
-`manifest.reference_sha256` in the committed tube/plate FEA summaries, and no
-rerun is available to restore that hash. Its comparisons use the same `1e-9`
+`manifest.reference_sha256` in the committed tube/plate FEA summaries. The
+source revision recorded in those manifests is retained. Comparisons use the same `1e-9`
 relative and `1e-10` absolute limits stated below and run in the same test
 module.
 
-Hemispherical-head membrane **displacement** is re-derived in a fourth module,
+Hemispherical-head membrane **displacement** remains in
 [`hemisphere_displacement_reference.py`](hemisphere_displacement_reference.py),
 from NASA Technical Memorandum 4579 Eq. (5), which states the spherical-shell
 membrane stress and radial displacement together and applies both to a
-hemispherical bulkhead; its conventions, the thin-branch-only release, and the
-withheld thick-sphere branch are recorded in
+hemispherical bulkhead. Its original thin-branch displacement and withheld
+thick-branch behavior are preserved as historical evidence. Production now
+derives exact spherical displacement from the Lamé stresses and 3D Hooke's
+law. The parity test checks it against the independently expressed closed
+form `u(r) = C1*r + C2/r^2`, with the constants fixed by the surface pressure
+tractions. The derivation and scope are recorded in
 [`sources/hemisphere_scalar_displacement.md`](sources/hemisphere_scalar_displacement.md).
-It is separate from this module for the same `manifest.reference_sha256`
-reason. It is also separate from the tube reference because it transcribes a
-different source and shell geometry. Its comparisons use the same limits and
-run in the same test module.
+The NASA and DTMB membrane displacement transcriptions still reproduce
+NASA TM-4579 Eq. (6), `u_cylinder/u_sphere = (2 - nu)/(1 - nu)`, at their mean
+surface. The current exact bore ratio includes the finite-thickness factor
+`2*(a^2 + a*b + b^2)/(3*b*(a+b))`; the tests check that correction and its
+approach to one as the wall thins. Membrane approximation error is kept
+separate from the unchanged numerical equation tolerances.
+
+The smooth-cylinder reference likewise retains its historical margin against
+an elastic pressure estimate when plasticity is pending. Tests continue to
+check that pressure and its historical ratio, while requiring current
+production to report a usable margin only for `capacity_status="released"`.
 
 The inspected external PDFs are not vendored:
 
@@ -81,15 +103,15 @@ Comments inside the two pinned reference modules still call that test file by
 its former name, `test_phase5_validation.py`, and the plate sweep summary by
 its former `p5_03_plate_sweep_summary.json`. Editing a comment would change
 the `reference_sha256` and `ring_reference_sha256` pins in the committed FEA
-summaries, and no rerun is available to restore them, so the stale names stand
-and the current names are the ones given here.
+summaries, so the historical source text remains intact. The current artifact
+names are the ones given here.
 
 ## Inventory and independent results
 
 | Family | Committed values/behavior independently covered | Representative independent result |
 |---|---|---:|
-| Tube | UnderPressure Example 1 and released CLI input; Lamé inner/outer stresses; thin mean-radius branch; forced-thick branch; exact `r_m/t = 10` and just-above boundary; the CLI thin-branch sizing golden `7.83358455 mm` by independent bisection; three worked component-stress fixtures | Example 1 failure `9.0401211605 ksi`; worked governing von Mises `80.0056865866 MPa`; sizing thickness `7.8335845425 mm` |
-| Hemisphere | UnderPressure 4.0 dialog geometry and displays; thick and thin stress branches; exact `r_m/t = 10` and just-above boundary; NASA `lambda` and proportional-limit release gates; committed CLI case | Manual case stress `4,544.3787 psi` and failure `7,701.8229 psi`; invalid Roark comparator `64,240 psi`; CLI NASA capacity `8.01884900543 MPa` |
+| Tube | UnderPressure Example 1 and released CLI input; exact Lamé inner/outer stresses for thin and thick geometries; both sides of the former `r_m/t = 10` stress switch; three worked component-stress fixtures; exact and historical membrane sizing solutions | Example 1 failure `9.0401211605 ksi`; worked governing von Mises `80.0056865866 MPa`; exact sizing thickness `8.7584452920 mm`, with historical membrane result `7.8335845425 mm` retained separately |
+| Hemisphere | UnderPressure 4.0 dialog geometry and displays; exact spherical stresses and displacement for thin and thick geometries; both sides of the former stress switch; preserved membrane displacement comparator; NASA `lambda` and proportional-limit release gates; committed CLI case | Manual case stress `4,544.3787 psi` and failure `7,701.8229 psi`; invalid Roark comparator `64,240 psi`; CLI NASA capacity `8.01884900543 MPa` |
 | Plate | UnderPressure Example 2 and released CLI input; Appendix E fixed and simply-supported stresses; both deflections and shear; `D/t = 4`, just-invalid diameter, and the large-deflection and shear-corrected small-deflection boundaries; fixed worked fixture | Example 2 failure `9.0384428873 ksi`; Appendix E simply-supported `19,800/19,800 psi`, fixed `12,000/7,800 psi` |
 | Smooth short | lateral and hydrostatic Eqs. 19-22, line loads, `K`, `beta`, pressure, and released status; released short example | `Z = 34.3418112510`; ideal pressures `1.3537046232 MPa` lateral and `1.1992415550 MPa` hydrostatic |
 | Smooth moderate | Eqs. 23-25 and 28, both load-case mode diagnostics, rounded `nu=0.316` comparator, released moderate example | `Z = 1236.30520504`; recommended `0.133826423960 MPa` |
@@ -104,6 +126,16 @@ is kept apart from the executable reference so that moving an artifact cannot
 change the reference's pinned hash. The test suite freezes the exact unique
 inventory and its artifact paths. The inventory is not updated automatically;
 a new golden must be added to it by hand.
+
+For the tube sizing example (`a = 3 in`, `p = 7 ksi`, `S_y = 62 ksi`), the
+exact bore condition is
+`sigma_VM(a) = sqrt(3)*p*b^2/(b^2-a^2) = S_y`. Solving it gives
+`t = a*(sqrt(S_y/(S_y-sqrt(3)*p)) - 1) = 8.7584452920 mm`.
+The test checks this thickness against both current production and the
+preserved reference's Lamé equations. It also retains the reference's old
+membrane sizing result and verifies that result has a negative margin under
+the exact calculation. The older output is evidence of the original model,
+not a current thickness recommendation.
 
 ## Manual-oracle boundary
 
