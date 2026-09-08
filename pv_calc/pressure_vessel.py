@@ -84,16 +84,9 @@ TUBE_STRESS_MODEL_VERSION = "3.0.0"
 # Retained as output metadata for callers of the former thin/thick model.
 # Lamé stress and displacement now apply at every radius/thickness ratio.
 TUBE_THIN_WALL_MEAN_RADIUS_RATIO = 10.0
-TUBE_THIN_SOURCE = "Roark's Formulas for Stress and Strain, 6th ed., Table 28 case 1c"
 TUBE_THICK_SOURCE = (
     "Lamé closed-end thick-cylinder stresses from Roark's Formulas for Stress and Strain, "
     "6th ed., Table 32 cases 1a-1d"
-)
-TUBE_THIN_DISPLACEMENT_SOURCE = (
-    "DTMB Report 1497 (Pulos and Salerno, 1961), Eq. [5], printed p. 2, for the "
-    "median-surface radial displacement of a long unstiffened shell under external "
-    "hydrostatic pressure, with Eqs. [A7]-[A10] and the stated N_x = -p*R/2, printed "
-    "p. 43, for the axial strain"
 )
 TUBE_THICK_DISPLACEMENT_SOURCE = (
     "Boresi and Schmidt, Advanced Mechanics of Materials, 6th ed., 2003, Eq. (11.24), "
@@ -141,9 +134,6 @@ HEMISPHERE_MODEL_VERSION = "4.0.0"
 HEMISPHERE_THIN_WALL_MEAN_RADIUS_RATIO = 10.0
 HEMISPHERE_NASA_MINIMUM_LAMBDA = 2.0
 HEMISPHERE_ROARK_PROBABLE_MINIMUM_COEFFICIENT = 0.365
-HEMISPHERE_THIN_STRESS_SOURCE = (
-    "Roark's Formulas for Stress and Strain, 6th ed., Table 28 case 3a, p. 523"
-)
 HEMISPHERE_THICK_STRESS_SOURCE = (
     "Roark's Formulas for Stress and Strain, 6th ed., Table 32 cases 2a-2b, p. 640"
 )
@@ -154,13 +144,6 @@ HEMISPHERE_BUCKLING_SOURCE = (
 HEMISPHERE_SOFTWARE_PARITY_SOURCE = (
     "Roark's Formulas for Stress and Strain, 6th ed., Table 35 case 22, p. 691, the table's "
     "probable-minimum external pressure for a thin spherical shell"
-)
-HEMISPHERE_MEMBRANE_DISPLACEMENT_SOURCE = (
-    "NASA Technical Memorandum 4579 (W. L. Ko, 1994), Eq. (5), printed p. 6, which states "
-    "the spherical-shell membrane stress sigma_theta = sigma_phi = p*R/(2*t) and the radial "
-    "displacement p*R^2*(1 - nu)/(2*E*t) in one equation and applies both to the "
-    "hemispherical bulkheads of the analyzed vessel, citing Timoshenko and "
-    "Woinowsky-Krieger, Theory of Plates and Shells, 1959, pp. 481-485"
 )
 HEMISPHERE_LAME_DISPLACEMENT_SOURCE = (
     "Derived from the Lamé spherical stresses in Roark's Formulas for Stress and Strain, "
@@ -282,6 +265,9 @@ FLAT_CIRCULAR_PLATE_SCOPE_NOTES = (
     "margin persisting is engineering judgment, not a bound.",
     "The validity floors are evidenced for 0.05 <= poisson_ratio <= 0.35; outside that band "
     "both the bending margin and the deflection are withheld.",
+    "When governing bending stress exceeds the supplied material strength, the raw deflection "
+    "is an elastic estimate and released_maximum_deflection_mm is null; geometric withholding "
+    "takes precedence over the elastic_estimate_material_limit status.",
 )
 
 SMOOTH_CYLINDER_BUCKLING_MODEL_ID = "nasa_smooth_cylinder_external_pressure_buckling"

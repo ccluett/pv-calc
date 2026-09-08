@@ -34,7 +34,16 @@ pv-calc tube \
 
 Every dimensioned input carries a unit, quoted (`"8 mm"`) or attached (`8mm`).
 Results are JSON with `{"value", "unit"}` quantities, model and source
-citations, and validity status.
+citations, and validity status. Tube and hemisphere material checks use exact
+Lamé stresses at both wall surfaces for every thickness. `--force-thick` is
+accepted for compatibility and has no effect.
+
+Read status fields alongside numbers. A smooth-cylinder elastic buckling
+estimate above the proportional limit retains its pressure but has a null
+`margin`. Deformation beyond the supplied material strength is labeled
+`elastic_estimate_material_limit`; it is not a plastic-deformation prediction.
+Thickness sizing selects the smallest solution among model-eligible intervals
+within the requested bounds and reports excluded intervals.
 
 Material properties can be entered directly on the command line, as above, or
 loaded from a named record with
@@ -44,12 +53,13 @@ von Mises stress against yield strength. A `plastic` is checked by its largest
 stress against a designer-selected working strength that accounts for creep.
 A `brittle` material is checked against separate tensile and compressive
 ultimate strengths because it has no yield strength. The buckling models use
-only the elastic properties.
+elastic properties and a proportional-limit applicability check.
 
 [materials.yaml](https://github.com/ccluett/pv-calc/blob/main/materials.yaml)
 contains ten material records across the three failure categories. Each
 property identifies its source. The stored strengths are reference inputs,
-not design allowables.
+not design allowables. When used, the stored derivations of working strengths
+and proportional limits appear in `material.property_sources`.
 
 The same kernels are plain Python functions in MPa and mm, returning frozen
 dataclasses:

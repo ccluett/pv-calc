@@ -61,13 +61,12 @@ from pv_calc.pressure_vessel import (
     FLAT_CIRCULAR_PLATE_SCOPE_NOTES,
     FLAT_CIRCULAR_PLATE_SOURCE,
     HEMISPHERE_BUCKLING_SOURCE,
-    HEMISPHERE_MEMBRANE_DISPLACEMENT_SOURCE,
+    HEMISPHERE_LAME_DISPLACEMENT_SOURCE,
     HEMISPHERE_MODEL_ID,
     HEMISPHERE_MODEL_VERSION,
     HEMISPHERE_SCOPE_NOTES,
     HEMISPHERE_SOFTWARE_PARITY_SOURCE,
     HEMISPHERE_THICK_STRESS_SOURCE,
-    HEMISPHERE_THIN_STRESS_SOURCE,
     MATERIAL_FAILURE_SOURCE,
     RING_SHELL_BENCHMARK_SOURCE,
     RING_SHELL_MODEL_ID,
@@ -85,8 +84,6 @@ from pv_calc.pressure_vessel import (
     TUBE_STRESS_MODEL_VERSION,
     TUBE_THICK_DISPLACEMENT_SOURCE,
     TUBE_THICK_SOURCE,
-    TUBE_THIN_DISPLACEMENT_SOURCE,
-    TUBE_THIN_SOURCE,
     FlatCircularPlateResult,
     HemisphereResult,
     RingShellResult,
@@ -111,7 +108,6 @@ from pv_calc.serialize import (
 from pv_calc.sizing import (
     _SMOOTH_BUCKLING_REGIME_BOUNDARIES,
     _SMOOTH_BUCKLING_THIN_SHELL_BOUNDARY,
-    _SMOOTH_BUCKLING_TUBE_BRANCH_BOUNDARY,
 )
 
 
@@ -119,6 +115,23 @@ from pv_calc.sizing import (
 # name nor its unit conveys.  Without the note a consumer reads the contract,
 # sees a nullable number, and has no way to learn when it is populated.
 _RESULT_FIELD_DESCRIPTIONS: dict[str, str] = {
+    "displacement_status": (
+        "elastic_estimate_material_limit retains the elastic formula values when"
+        " governing material stress exceeds the supplied strength. The reasons"
+        " appear in displacement_validity_violations; no plastic deformation is modeled."
+    ),
+    "deflection_status": (
+        "released requires both geometric applicability and governing bending stress"
+        " no greater than the supplied material strength. elastic_estimate_material_limit"
+        " retains maximum_deflection_mm as a raw formula value while"
+        " released_maximum_deflection_mm is null. Geometric violations take precedence"
+        " as withheld_applicability."
+    ),
+    "correlated_critical_pressure_mpa": (
+        "Retained as an elastic estimate when capacity_status is"
+        " released_pending_plasticity. The ordinary margin is null unless the"
+        " enclosing result's capacity_status is released."
+    ),
     "eq25_simplified_critical_pressure_mpa": (
         "NASA/SP-8007-2020/REV 2 Eq. 25, printed p. 27, which that source states only "
         "for nu = 0.316. Populated when poisson_ratio is exactly 0.316 and null at "
@@ -303,16 +316,13 @@ def _describe_model(
         function = "closed_end_tube_stress"
         module = "pv_calc.pressure_vessel"
         sources = [
-            TUBE_THIN_SOURCE,
             TUBE_THICK_SOURCE,
             MATERIAL_FAILURE_SOURCE,
-            TUBE_THIN_DISPLACEMENT_SOURCE,
             TUBE_THICK_DISPLACEMENT_SOURCE,
         ]
         assumptions = list(TUBE_SCOPE_NOTES)
         checks = [
-            "closed-end thin-wall mean-radius membrane stress",
-            "closed-end thick-wall Lame radial, hoop, and axial stress",
+            "exact closed-end Lame radial, hoop, and axial stress at both wall surfaces",
             (
                 "material failure under the category's criterion: von Mises stress against "
                 "yield strength for a ductile metal, maximum hoop stress against the working "
@@ -361,30 +371,29 @@ def _describe_model(
         function = "hemispherical_head_external_pressure"
         module = "pv_calc.pressure_vessel"
         sources = [
-            HEMISPHERE_THIN_STRESS_SOURCE,
             HEMISPHERE_THICK_STRESS_SOURCE,
             MATERIAL_FAILURE_SOURCE,
             HEMISPHERE_BUCKLING_SOURCE,
             HEMISPHERE_SOFTWARE_PARITY_SOURCE,
-            HEMISPHERE_MEMBRANE_DISPLACEMENT_SOURCE,
+            HEMISPHERE_LAME_DISPLACEMENT_SOURCE,
             SEAT_BEARING_STRESS_SOURCE,
         ]
         assumptions = list(HEMISPHERE_SCOPE_NOTES)
         checks = [
-            "thin biaxial spherical membrane stress or thick-sphere Lame stress",
+            "exact spherical Lame stress at both wall surfaces for every thickness",
             "material failure under the category's criterion, as for the tube",
             "average seat bearing stress on the equator annulus, its failure pressure and margin",
             "classical Zoelly elastic pressure and NASA SP-8032 clamped-cap correlation",
             "Roark probable-minimum comparator",
             "thin-shell, lambda, and explicit proportional-limit buckling release gates",
-            "thin-branch membrane radial displacement, withheld on the thick branch",
+            "exact spherical radial displacement at both wall surfaces",
         ]
         omissions = [
             "equator-junction bending, bearing-contact distribution, attachment, and seal response",
             "cutouts, penetrations, thickness variation, and local flat spots",
             "plastic buckling interaction and inelastic material corrections",
             "fabrication imperfections, residual stress, and pressure-hull safety factors",
-            "thick-sphere displacement, displacement fields, post-buckling deformation, and "
+            "equator displacement fields, post-buckling deformation, and "
             "ring-stiffened service displacement",
         ]
         material_properties = {
@@ -422,7 +431,7 @@ def _describe_model(
             "fixed or simply-supported surface bending stress",
             (
                 "center deflection, released on its own swept-FEA validity floor "
-                "and subject to the small-deflection check"
+                "and subject to the small-deflection and material-strength checks"
             ),
             "transverse shear response",
             (
@@ -475,7 +484,7 @@ def _describe_model(
             "rule between gamma=0.5625 in Eqs. 23-25 and gamma=0.90 in Eqs. 26-27",
             "inelastic Esec/Etan corrections from NASA Eqs. 30-32, so a correlated critical "
             "membrane stress above the proportional limit releases an elastic upper bound as "
-            "released_pending_plasticity rather than a capacity",
+            "released_pending_plasticity with a null ordinary margin",
             "rings, cutouts, penetrations, fabrication effects, and nonuniform loading",
             "end-restraint capacity increases and safety factors",
         ]
@@ -668,6 +677,11 @@ def _describe_model(
             "material": {
                 "properties_used": material_properties,
                 "source_fields": ["type", "name", "database", "provenance"],
+                "property_sources": (
+                    "Optional map of stored working_strength and proportional_limit"
+                    " derivations, included only when that property has a value in"
+                    " properties_used. Omitted without an applicable stored derivation."
+                ),
             },
             "required_top_level_fields": [
                 "schema_version", "model", "calculation_source", "material", "result"
@@ -764,12 +778,9 @@ def _plate_size_contract(
             " margin, and inputs.maximum_deflection is a limit, met at margin"
             " zero. Both margins keep the allowable/actual - 1 form the models"
             " use, the second against the caller's own limit.",
-            "Both released margins rise smoothly with thickness, the bending"
-            " stress as (free_radius/thickness)^2 and the centre deflection as"
-            " 1/thickness^3, so the bounds are one continuous piece and there"
-            " is no branch boundary to partition at. That rise is still"
-            " verified against every evaluated thickness before any solution"
-            " is returned.",
+            "Within the eligible interval, bending stress decreases as"
+            " (free_radius/thickness)^2 and centre deflection as 1/thickness^3."
+            " Monotonicity is checked before a solution is returned.",
             "The two outputs carry separate FEA-derived evidence floors on"
             " free_diameter/thickness, and both are upper limits on thickness,"
             " so they move as the search varies it and are re-read at every"
@@ -777,10 +788,11 @@ def _plate_size_contract(
             "Only the outputs this request needs are required: without a"
             " maximum deflection the centre deflection constrains nothing and"
             " its stricter floor never decides anything.",
-            "A withheld output is not a margin. Any thickness the search has"
-            " to evaluate whose needed bending or centre deflection the model"
-            " withholds ends the operation with no_reliable_solution, naming"
-            " the thickness, the withheld outputs, and the reasons.",
+            "Only model-eligible thicknesses are searched. The evidence floor"
+            " limits thickness above; the small-deflection gate limits it below."
+            " A deflection constraint also requires the material strength not"
+            " be exceeded. Excluded intervals are reported, and an ineligible"
+            " bound does not prevent finding a valid interior solution.",
         ],
         "command": "pv-calc plate size",
         "possible_check_set": [
@@ -873,9 +885,8 @@ def _smooth_buckling_size_contract(cli_options: Mapping[str, str]) -> dict[str, 
             "The load case is not an input either: the shell stress check has only"
             " the closed-end hydrostatic one, so the buckling check uses the"
             " matching hydrostatic_closed_end case.",
-            "The bounds are partitioned at every branch boundary that applies:"
-            " the tube model's thin-to-thick transition, the buckling model's"
-            " thin-shell limit, and the four NASA regime boundaries, whose"
+            "The bounds are partitioned at the buckling model's thin-shell"
+            " limit and the four NASA regime boundaries, whose"
             " thicknesses are solved for rather than assumed, because they"
             " depend on the correlation factor gamma and on the mid-surface"
             " radius that moves with the thickness.",
@@ -884,25 +895,16 @@ def _smooth_buckling_size_contract(cli_options: Mapping[str, str]) -> dict[str, 
             " thickness before any solution is returned.",
             "A smooth-cylinder capacity that is withheld, or released only as"
             " an elastic upper bound pending plasticity, is not a sizing margin."
-            " Any thickness the search has to evaluate that reaches either state"
-            " ends the operation with no_reliable_solution, naming the thickness,"
-            " the regime, the capacity status, and the reasons.",
-            "For a ductile metal, whenever the buckling capacity is fully"
-            " released, the buckling margin is the smaller of the two: the"
-            " released status requires the correlated critical circumferential"
-            " stress to be at or below the proportional limit,"
-            " which is at or below the yield"
-            " strength, while von Mises yielding could only govern above"
-            " 2/sqrt(3) times the yield strength. A plastic's working strength"
-            " or a brittle material's ultimate compressive strength is not"
-            " ordered against its proportional limit, so either check may"
-            " govern. The governing check is reported at every evaluated"
-            " thickness rather than assumed.",
+            " Such intervals are excluded and reported. The smallest eligible"
+            " thickness meeting every target is selected; the solver makes no"
+            " physical adequacy claim about excluded thicknesses.",
+            "Exact Lame tube stress and released buckling are checked at the"
+            " selected thickness. The governing check is calculated from the"
+            " material category's own strength and reported rather than assumed.",
         ],
         "command": "pv-calc smooth-buckling size",
         "declared_check_set": list(SMOOTH_BUCKLING_SIZING_CHECK_SET),
         "derived_branch_boundaries": [
-            _SMOOTH_BUCKLING_TUBE_BRANCH_BOUNDARY,
             _SMOOTH_BUCKLING_THIN_SHELL_BOUNDARY,
             *(name for name, _, _, _ in _SMOOTH_BUCKLING_REGIME_BOUNDARIES),
         ],

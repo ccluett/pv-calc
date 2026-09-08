@@ -9,6 +9,26 @@ model; both predate this changelog.
 
 ## [Unreleased]
 
+- Use exact Lamé stresses for tube and hemisphere material checks at every
+  thickness, including inverse sizing. The former membrane branch could
+  overstate failure pressure near its cutoff by about 10.25% for tubes and
+  15.67% for hemispheres. Both wall surfaces now report exact stress and
+  displacement. `branch` is always `thick`; `force_thick` is an accepted no-op.
+- Derive spherical displacement from the Lamé stress field and 3D Hooke's law.
+  Label tube, hemisphere, and plate deformation beyond the supplied material
+  strength as `elastic_estimate_material_limit`; retain raw elastic formula
+  values and withhold the plate's released deflection in that state.
+- Set the ordinary smooth-cylinder buckling margin to null for
+  `released_pending_plasticity`, retaining the elastic candidate pressure.
+- Preserve relevant named-material working-strength and proportional-limit
+  derivations in optional `material.property_sources` output.
+- Search model-eligible portions of sizing bounds, including when an endpoint
+  is outside applicability. Report excluded intervals and verify the selected
+  forward checks; no solution is inferred inside withheld regions.
+- Model versions: tube 3.0.0, hemisphere 4.0.0, plate 4.0.0, smooth buckling
+  4.0.0, ring shell 3.0.0 (nested smooth result). Sizing operation versions:
+  tube and smooth buckling 3.0.0, plate 2.0.0. Request schema remains 5.0.0.
+
 ## [0.1.0] - 2026-08-28
 
 Initial release.

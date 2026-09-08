@@ -23,7 +23,7 @@ def test_default_tube_detects_yield_missed_by_the_former_membrane_approximation(
 
     assert result.governing_radius_mm == 100.0
     assert result.governing_stress_mpa == pytest.approx(259.4777067)
-    assert result.margin == pytest.approx(-0.07121119999)
+    assert result.margin == pytest.approx(-0.07121115309323078, abs=1.0e-12)
 
 
 def test_default_hemisphere_detects_yield_missed_by_the_former_membrane_approximation() -> None:
@@ -39,7 +39,7 @@ def test_default_hemisphere_detects_yield_missed_by_the_former_membrane_approxim
 
     assert result.governing_radius_mm == 100.0
     assert result.governing_stress_mpa == pytest.approx(259.3640483)
-    assert result.stress_margin == pytest.approx(-0.07080413462)
+    assert result.stress_margin == pytest.approx(-0.07080413980279432, abs=1.0e-12)
 
 
 @pytest.mark.parametrize("radius_ratio", [2.0, 10.0, 10.5, 40.0, 1000.0])

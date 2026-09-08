@@ -164,7 +164,7 @@ def test_describe_reports_complete_discoverable_contracts() -> None:
     )
     assert "no_reliable_solution" in plate_size["failure"]["error_codes"]
     assert any("re-read at every" in item for item in plate_size["assumptions"])
-    assert any("no branch boundary" in item for item in plate_size["assumptions"])
+    assert any("Only model-eligible thicknesses" in item for item in plate_size["assumptions"])
     assert any("the shell" in item for item in plate_size["known_omissions"])
 
     smooth = json.loads(
@@ -189,7 +189,6 @@ def test_describe_reports_complete_discoverable_contracts() -> None:
         "internal_radius_plus_half_wall_thickness"
     )
     assert smooth_size["derived_branch_boundaries"] == [
-        "tube_thin_to_thick_transition",
         "buckling_thin_shell_radius_thickness_limit",
         "short_regime_gamma_z_limit",
         "moderate_regime_gamma_z_limit",

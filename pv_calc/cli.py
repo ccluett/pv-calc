@@ -577,7 +577,7 @@ def tube(
     ] = None,
     failure_category: FailureCategoryOption = None,
     material_provenance: MaterialProvenanceOption = None,
-    force_thick: Annotated[bool, typer.Option("--force-thick", help="Force the thick-wall branch.")] = False,
+    force_thick: Annotated[bool, typer.Option("--force-thick", help="Compatibility option; exact Lame stress is now used at every thickness.")] = False,
     input_path: Annotated[str | None, typer.Option("--input", help="JSON request file, or '-' for stdin.")] = None,
     materials_file: MaterialsFileOption = None,
     json_output: JsonOutputOption = False,
@@ -664,7 +664,7 @@ def tube_size(
         typer.Option(help="Optional explicit dimensionless Poisson ratio; releases displacement."),
     ] = None,
     material_provenance: MaterialProvenanceOption = None,
-    force_thick: Annotated[bool, typer.Option("--force-thick", help="Force the thick-wall branch.")] = False,
+    force_thick: Annotated[bool, typer.Option("--force-thick", help="Compatibility option; exact Lame stress is now used at every thickness.")] = False,
     input_path: Annotated[
         str | None,
         typer.Option("--input", help="JSON sizing request file, or '-' for stdin."),
@@ -672,7 +672,7 @@ def tube_size(
     materials_file: MaterialsFileOption = None,
     json_output: JsonOutputOption = False,
 ) -> None:
-    """Find the minimum reliable wall thickness within explicit bounds."""
+    """Find the minimum model-eligible wall thickness within explicit bounds."""
     try:
         _ensure_file_input_is_exclusive(ctx)
         if input_path is not None:

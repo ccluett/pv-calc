@@ -587,6 +587,8 @@ def test_buckling_reads_no_strength_and_every_category_sizes(tmp_path: Path) -> 
     # A plastic's working strength is not ordered against its proportional
     # limit, so unlike a ductile metal its shell stress can govern the coupled
     # search: at 3 MPa working strength the governing check crosses over.
+    # Exact surface hoop stress needs 9.5445 mm here; the former 9 mm upper
+    # bound could satisfy only the approximate membrane check.
     coupled = runner.invoke(
         app,
         [
@@ -595,7 +597,7 @@ def test_buckling_reads_no_strength_and_every_category_sizes(tmp_path: Path) -> 
             "--internal-radius", "100 mm",
             "--unsupported-length", "700 mm",
             "--wall-thickness-lower", "2 mm",
-            "--wall-thickness-upper", "9 mm",
+            "--wall-thickness-upper", "10 mm",
             "--minimum-margin", "0.25",
             "--failure-category", "plastic",
             "--working-strength", "3 MPa",
