@@ -1,0 +1,47 @@
+{
+  "schema_version": "5.0.0",
+  "model": "cylinder",
+  "inputs": {
+    "external_pressure": {
+      "value": 0.1,
+      "unit": "MPa"
+    },
+    "internal_radius": {
+      "value": 50.0,
+      "unit": "mm"
+    },
+    "wall_thickness": {
+      "value": 1.0,
+      "unit": "mm"
+    },
+    "unsupported_length": {
+      "value": 300.0,
+      "unit": "mm"
+    }
+  },
+  "material": {
+    "type": "explicit",
+    "name": "Illustrative ductile metal",
+    "provenance": "Illustrative values for a composition example; not a qualified material record.",
+    "properties": {
+      "failure_category": "ductile_metal",
+      "yield_strength": {
+        "value": 250.0,
+        "unit": "MPa"
+      },
+      "elastic_modulus": {
+        "value": 70000.0,
+        "unit": "MPa"
+      },
+      "poisson_ratio": 0.33,
+      "proportional_limit": {
+        "value": 180.0,
+        "unit": "MPa"
+      },
+      "density": {
+        "value": 2700.0,
+        "unit": "kg/m^3"
+      }
+    }
+  }
+}

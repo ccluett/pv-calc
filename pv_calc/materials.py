@@ -9,6 +9,7 @@ only for the mass-properties operation.
 from __future__ import annotations
 
 import math
+from importlib.resources import files
 from pathlib import Path
 from typing import Any
 
@@ -16,6 +17,9 @@ import yaml
 from pydantic import BaseModel, ConfigDict, field_validator, model_validator
 
 from pv_calc.schemas import MaterialFailureCategory
+
+
+BUNDLED_MATERIAL_DATABASE = "bundled:pv_calc/data/materials.yaml"
 
 
 class CalcMaterial(BaseModel):
@@ -112,8 +116,14 @@ class CalcMaterial(BaseModel):
         return self
 
 
-def load_calc_materials(path: str | Path) -> dict[str, CalcMaterial]:
-    with Path(path).open("r", encoding="utf-8") as handle:
+def load_calc_materials(path: str | Path | None = None) -> dict[str, CalcMaterial]:
+    """Load an explicit database, or the package's reference records.
+
+    The default is independent of the working directory. Supplying a path
+    always selects that file; an unreadable override never falls back.
+    """
+    source = Path(path) if path is not None else files("pv_calc").joinpath("data/materials.yaml")
+    with source.open("r", encoding="utf-8") as handle:
         data = yaml.safe_load(handle) or {}
     if not isinstance(data, dict):
         raise ValueError("materials file must contain a mapping")
@@ -131,3 +141,78 @@ def load_calc_materials(path: str | Path) -> dict[str, CalcMaterial]:
             )
         materials[name] = CalcMaterial.model_validate(raw)
     return materials
+
+
+def material_capabilities(material: CalcMaterial) -> dict[str, dict[str, Any]]:
+    """Material-property availability, before geometry and load applicability.
+
+    ``available`` means the inputs for the named calculation are present. It
+    does not promise that a capacity will be released at a particular geometry
+    or load, or qualify the reference properties as design allowables.
+    """
+    strength_field = {
+        "ductile_metal": "yield_strength_mpa",
+        "plastic": "working_strength_mpa",
+        "brittle": "ultimate_compressive_strength_mpa",
+    }.get(material.failure_category or "")
+    shell = ["failure_category", strength_field or "failure_category"]
+    elastic = ["elastic_modulus_mpa", "poisson_ratio"]
+    bending = shell if material.failure_category != "brittle" else [
+        "failure_category", "ultimate_tensile_strength_mpa", "ultimate_compressive_strength_mpa",
+    ]
+    buckling = ["failure_category", *elastic, "proportional_limit_mpa"]
+    requirements = {
+        "tube_stress": shell,
+        "tube_displacement": [*shell, *elastic],
+        "plate_bending": [*bending, *elastic],
+        "plate_deflection": [*bending, *elastic],
+        "hemisphere_stress": [*shell, *elastic],
+        "hemisphere_buckling_capacity": [*shell, *buckling],
+        "smooth_cylinder_buckling_capacity": buckling,
+        "cylinder": [*shell, *buckling],
+        "mass_properties": ["density_kg_per_m3"],
+    }
+    return {
+        name: {
+            "available": not (missing := sorted({
+                field for field in required if getattr(material, field) is None
+            })),
+            "missing_properties": missing,
+        }
+        for name, required in requirements.items()
+    }
+
+
+def _material_record(name: str, material: CalcMaterial, database: str) -> dict[str, Any]:
+    return {
+        "name": name,
+        "database": database,
+        "properties": material.model_dump(exclude_none=True),
+        "capabilities": material_capabilities(material),
+        "capability_scope": "Property availability only; geometry, load, and source applicability must still be evaluated.",
+    }
+
+
+def list_materials(materials_file: str | Path | None = None) -> list[dict[str, Any]]:
+    """List named records and calculation-property availability in name order."""
+    database = str(materials_file) if materials_file is not None else BUNDLED_MATERIAL_DATABASE
+    return [
+        {
+            "name": name,
+            "database": database,
+            "failure_category": material.failure_category,
+            "capabilities": material_capabilities(material),
+        }
+        for name, material in sorted(load_calc_materials(materials_file).items())
+    ]
+
+
+def show_material(name: str, materials_file: str | Path | None = None) -> dict[str, Any]:
+    """Return one record, its property sources, and capability availability.
+
+    Unknown names raise ``KeyError``; malformed or unreadable databases raise
+    the same exceptions as :func:`load_calc_materials`.
+    """
+    materials = load_calc_materials(materials_file)
+    database = str(materials_file) if materials_file is not None else BUNDLED_MATERIAL_DATABASE
+    return _material_record(name, materials[name], database)

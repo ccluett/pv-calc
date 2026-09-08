@@ -3,6 +3,10 @@
 from __future__ import annotations
 
 import json
+import os
+import subprocess
+import sys
+import zipfile
 from pathlib import Path
 
 import pytest
@@ -10,7 +14,10 @@ from pydantic import ValidationError
 
 from pv_calc.cli import app
 from pv_calc.contracts import CALC_SCHEMA_VERSION
-from pv_calc.materials import CalcMaterial, load_calc_materials
+from pv_calc.materials import (
+    BUNDLED_MATERIAL_DATABASE, CalcMaterial, list_materials, load_calc_materials,
+    material_capabilities, show_material,
+)
 from pv_calc.units import Q_, magnitude
 
 from _cli_helpers import (
@@ -56,6 +63,60 @@ def test_named_material_returns_only_values_used_by_model() -> None:
     }
     # The plate does not read the database's derived proportional limit.
     assert "property_sources" not in material
+
+
+def test_bundled_materials_work_outside_checkout_and_explicit_override_wins(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.chdir(tmp_path)
+    records = list_materials()
+    assert len(records) == 10
+    assert all(record["database"] == BUNDLED_MATERIAL_DATABASE for record in records)
+    aluminium = show_material("Al-6061-T6")
+    assert aluminium["properties"]["proportional_limit_source"].startswith("Derived, not tabulated")
+    assert aluminium["capabilities"]["cylinder"]["available"]
+    other = show_material("Al-7075-T6")
+    assert other["capabilities"]["smooth_cylinder_buckling_capacity"] == {
+        "available": False, "missing_properties": ["proportional_limit_mpa"],
+    }
+    options = ["tube", "--external-pressure", "1MPa", "--internal-radius", "50mm",
+               "--wall-thickness", "1mm", "--material", "Al-6061-T6", "--json"]
+    result = runner.invoke(app, options)
+    assert result.exit_code == 0, result.output
+    assert json.loads(result.stdout)["material"]["source"]["database"] == BUNDLED_MATERIAL_DATABASE
+    database = tmp_path / "override.yaml"
+    database.write_text("materials:\n  Al-6061-T6:\n    source: Local override\n    failure_category: ductile_metal\n    yield_strength_mpa: 123\n")
+    override = runner.invoke(app, [*options, "--materials-file", str(database)])
+    assert override.exit_code == 0, override.output
+    assert json.loads(override.stdout)["result"]["strength_mpa"]["value"] == 123
+    database.unlink()
+    missing = runner.invoke(app, [*options, "--materials-file", str(database)])
+    assert _error_payload(missing)["error"]["code"] == "invalid_material_database"
+
+
+def test_material_capability_availability_is_per_calculation() -> None:
+    material = CalcMaterial(source="Density only", density_kg_per_m3=2700)
+    capabilities = material_capabilities(material)
+    assert capabilities["mass_properties"]["available"]
+    assert not capabilities["tube_stress"]["available"]
+    assert not capabilities["smooth_cylinder_buckling_capacity"]["available"]
+
+
+def test_bundled_materials_are_readable_from_an_installed_zip_package(tmp_path: Path) -> None:
+    """No repository-relative path or real data-file path is required."""
+    package = Path(__file__).resolve().parents[1] / "pv_calc"
+    archive = tmp_path / "package.zip"
+    with zipfile.ZipFile(archive, "w") as target:
+        for path in [*package.glob("*.py"), package / "data" / "materials.yaml"]:
+            target.write(path, path.relative_to(package.parent))
+    script = (
+        "import pv_calc; from pv_calc.materials import load_calc_materials; "
+        "assert '.zip/' in pv_calc.__file__; "
+        "assert load_calc_materials()['Al-6061-T6'].yield_strength_mpa == 241; "
+        "from pv_calc.resolve import _load_named_material; "
+        "assert _load_named_material('Al-6061-T6', None)[1].startswith('bundled:')"
+    )
+    result = subprocess.run([sys.executable, "-c", script], cwd=tmp_path,
+                            env={**os.environ, "PYTHONPATH": str(archive)}, capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
 
 
 @pytest.mark.parametrize(

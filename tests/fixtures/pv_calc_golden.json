@@ -84,7 +84,7 @@
             "calculation_source": {
               "function": "pv_calc.pressure_vessel.closed_end_tube_stress",
               "model_id": "closed_end_tube_stress",
-              "model_version": "3.0.0",
+              "model_version": "3.1.0",
               "package_version": "0.1.0"
             },
             "material": {
@@ -160,7 +160,7 @@
               },
               "mean_radius_over_thickness": 6.8829787234,
               "model_id": "closed_end_tube_stress",
-              "model_version": "3.0.0",
+              "model_version": "3.1.0",
               "notes": [
                 "Closed ends transmit uniform external-pressure axial load.",
                 "Results apply away from the tube/endcap interface.",
@@ -350,7 +350,7 @@
             "calculation_source": {
               "function": "pv_calc.pressure_vessel.closed_end_tube_stress",
               "model_id": "closed_end_tube_stress",
-              "model_version": "3.0.0",
+              "model_version": "3.1.0",
               "package_version": "0.1.0"
             },
             "material": {
@@ -426,7 +426,7 @@
               },
               "mean_radius_over_thickness": 6.8829787234,
               "model_id": "closed_end_tube_stress",
-              "model_version": "3.0.0",
+              "model_version": "3.1.0",
               "notes": [
                 "Closed ends transmit uniform external-pressure axial load.",
                 "Results apply away from the tube/endcap interface.",
@@ -535,18 +535,1806 @@
           }
         }
       ],
-      "operation_version": "1.0.0",
+      "operation_version": "1.1.0",
       "substituted_input": "request.material"
     },
     "model": "tube",
     "operation": "compare-materials",
     "schema_version": "5.0.0"
   },
+  "cylinder_check.json": {
+    "assessment": {
+      "checks": [
+        {
+          "applicability": "released",
+          "capacity": {
+            "unit": "MPa",
+            "value": 5.6048036513
+          },
+          "demand": {
+            "unit": "MPa",
+            "value": 0.1
+          },
+          "id": "cylindrical_shell_stress",
+          "margin": 55.048036513,
+          "reasons": [],
+          "required_margin": 0.0,
+          "status": "pass"
+        },
+        {
+          "applicability": "released",
+          "capacity": {
+            "unit": "MPa",
+            "value": 0.454592497022
+          },
+          "demand": {
+            "unit": "MPa",
+            "value": 0.1
+          },
+          "id": "smooth_cylinder_buckling",
+          "margin": 3.54592497022,
+          "reasons": [],
+          "required_margin": 0.0,
+          "status": "pass"
+        }
+      ],
+      "governing_check": "smooth_cylinder_buckling",
+      "omissions": [
+        "End closures: no closure geometry or strength checks were requested.",
+        "Seals, leak tightness, closure retention, bolts, welds, and attachment strength.",
+        "Local joint stresses, grooves, penetrations, and shell/closure interaction.",
+        "Manufacturing imperfections, corrosion, fatigue, and pressure cycling.",
+        "Qualification of the assumed end-support and closure boundary conditions."
+      ],
+      "required_check_coverage": {
+        "complete": true,
+        "evaluated": [
+          "cylindrical_shell_stress",
+          "smooth_cylinder_buckling"
+        ],
+        "indeterminate": [],
+        "required": [
+          "cylindrical_shell_stress",
+          "smooth_cylinder_buckling"
+        ]
+      },
+      "scope": "Acceptance is limited to the requested, idealized component checks; it is not a housing qualification or a code-compliance determination.",
+      "status": "pass"
+    },
+    "assumptions": [
+      "The same uniform differential external pressure acts on a closed-end cylinder and all supplied closures; the interior is the zero-gauge reference.",
+      "Cylinder buckling uses simply supported circular ends separated by unsupported_length; stress uses the exact closed-end Lam\u00e9 solution away from junctions.",
+      "Each closure inherits the tube bore and outer radius. Plates use the requested idealized edge support; hemispherical buckling assumes a clamped equator. The assembly does not establish that its connections provide these restraints."
+    ],
+    "calculation_source": {
+      "function": "pv_calc.cylinder.evaluate_cylinder",
+      "model_id": "cylinder_assessment",
+      "model_version": "1.0.0",
+      "package_version": "0.1.0"
+    },
+    "components": {
+      "closures": [],
+      "smooth_buckling": {
+        "calculation_source": {
+          "function": "pv_calc.pressure_vessel.smooth_cylinder_external_pressure_buckling",
+          "model_id": "nasa_smooth_cylinder_external_pressure_buckling",
+          "model_version": "4.1.0",
+          "package_version": "0.1.0"
+        },
+        "material": {
+          "properties_used": {
+            "elastic_modulus": {
+              "unit": "MPa",
+              "value": 70000.0
+            },
+            "failure_category": "ductile_metal",
+            "poisson_ratio": 0.33,
+            "proportional_limit": {
+              "unit": "MPa",
+              "value": 180.0
+            },
+            "yield_strength": {
+              "unit": "MPa",
+              "value": 250.0
+            }
+          },
+          "source": {
+            "database": null,
+            "name": "Illustrative ductile metal",
+            "provenance": "Illustrative values for a composition example; not a qualified material record.",
+            "type": "explicit"
+          }
+        },
+        "model": "smooth-buckling",
+        "result": {
+          "axial_line_load_n_per_mm": {
+            "unit": "N/mm",
+            "value": 2.525
+          },
+          "boundary_assumptions": [
+            "Simply supported ends: zero radial deflection and zero bending moment.",
+            "Eqs. 20/22 use the source's continuous beta minimization with axial half-wave m=1.",
+            "Eq. 27 long-cylinder capacity is the axial-invariant oval mode n=2.",
+            "Unsupported length is the distance between the idealized circular end supports.",
+            "No capacity increase from longitudinal or rotational end restraint is credited."
+          ],
+          "boundary_condition": "simply_supported",
+          "candidates": [
+            {
+              "applicability_conditions": [
+                "gamma*Z <= 100, below the Eq. 23 simplification boundary",
+                "sqrt(gamma)=0.75 from NASA Eq. 28, applied inside Eqs. 20/22"
+              ],
+              "applicable": false,
+              "circumferential_wave_count_n": null,
+              "continuous_circumferential_wave_count": 2.54479159743,
+              "correlated_critical_circumferential_stress_mpa": {
+                "unit": "MPa",
+                "value": 23.4448172566
+              },
+              "correlated_critical_pressure_mpa": {
+                "unit": "MPa",
+                "value": 0.464253807061
+              },
+              "correlation_factor_gamma": 0.5625,
+              "critical_aspect_ratio_beta": 4.81207321034,
+              "critical_buckling_coefficient": 32.6587279967,
+              "eq25_simplified_critical_pressure_mpa": {
+                "unit": "MPa",
+                "value": null
+              },
+              "gamma_z": 946.317518476,
+              "ideal_critical_pressure_mpa": {
+                "unit": "MPa",
+                "value": 0.615748428766
+              },
+              "regime": "short",
+              "source_equations": [
+                "NASA Eq. 21",
+                "NASA Eq. 22",
+                "NASA Eq. 28"
+              ],
+              "sqrt_correlation_factor": 0.75
+            },
+            {
+              "applicability_conditions": [
+                "gamma*Z > 100 for NASA Eq. 23",
+                "gamma*Z <= 11.8*(r/t)^2*(1-v^2) for the more-than-two-wave branch",
+                "sqrt(gamma)=0.75 from NASA Eq. 28"
+              ],
+              "applicable": true,
+              "circumferential_wave_count_n": null,
+              "continuous_circumferential_wave_count": 2.54479159743,
+              "correlated_critical_circumferential_stress_mpa": {
+                "unit": "MPa",
+                "value": 22.9569210996
+              },
+              "correlated_critical_pressure_mpa": {
+                "unit": "MPa",
+                "value": 0.454592497022
+              },
+              "correlation_factor_gamma": 0.5625,
+              "critical_aspect_ratio_beta": 4.81207321034,
+              "critical_buckling_coefficient": 31.9927652444,
+              "eq25_simplified_critical_pressure_mpa": {
+                "unit": "MPa",
+                "value": null
+              },
+              "gamma_z": 946.317518476,
+              "ideal_critical_pressure_mpa": {
+                "unit": "MPa",
+                "value": 0.606123329362
+              },
+              "regime": "moderate",
+              "source_equations": [
+                "NASA Eq. 23",
+                "NASA Eq. 24",
+                "NASA Eq. 28"
+              ],
+              "sqrt_correlation_factor": 0.75
+            },
+            {
+              "applicability_conditions": [
+                "gamma*Z >= 11.8*(r/t)^2*(1-v^2) for the oval n=2 branch",
+                "gamma=0.90 from NASA Eq. 29"
+              ],
+              "applicable": false,
+              "circumferential_wave_count_n": 2,
+              "continuous_circumferential_wave_count": 2.0,
+              "correlated_critical_circumferential_stress_mpa": {
+                "unit": "MPa",
+                "value": 6.93060836187
+              },
+              "correlated_critical_pressure_mpa": {
+                "unit": "MPa",
+                "value": 0.137239769542
+              },
+              "correlation_factor_gamma": 0.9,
+              "critical_aspect_ratio_beta": null,
+              "critical_buckling_coefficient": 9.65436628765,
+              "eq25_simplified_critical_pressure_mpa": {
+                "unit": "MPa",
+                "value": null
+              },
+              "gamma_z": 1514.10802956,
+              "ideal_critical_pressure_mpa": {
+                "unit": "MPa",
+                "value": 0.152488632824
+              },
+              "regime": "long",
+              "source_equations": [
+                "NASA Eq. 26",
+                "NASA Eq. 27",
+                "NASA Eq. 29"
+              ],
+              "sqrt_correlation_factor": 0.948683298051
+            }
+          ],
+          "capacity_status": "released",
+          "circumferential_line_load_n_per_mm": {
+            "unit": "N/mm",
+            "value": 5.05
+          },
+          "circumferential_wave_count_n": null,
+          "comparison_source_reference": "Roark's Formulas for Stress and Strain, 6th ed., Table 35 case 20, its theoretical pressure minimized over integer lobe counts and reduced by the table's 0.80 probable-minimum factor",
+          "continuous_circumferential_wave_count": 2.54479159743,
+          "correlated_critical_circumferential_stress_mpa": {
+            "unit": "MPa",
+            "value": 22.9569210996
+          },
+          "correlated_critical_pressure_mpa": {
+            "unit": "MPa",
+            "value": 0.454592497022
+          },
+          "correlation_factor_gamma": 0.5625,
+          "critical_aspect_ratio_beta": 4.81207321034,
+          "critical_buckling_coefficient": 31.9927652444,
+          "curvature_parameter_z": 1682.34225507,
+          "elastic_applicability": "within",
+          "elastic_applicability_limit_basis": "proportional_limit",
+          "elastic_applicability_limit_mpa": {
+            "unit": "MPa",
+            "value": 180.0
+          },
+          "elastic_modulus_mpa": {
+            "unit": "MPa",
+            "value": 70000.0
+          },
+          "external_pressure_mpa": {
+            "unit": "MPa",
+            "value": 0.1
+          },
+          "flexural_rigidity_n_mm": {
+            "unit": "N*mm",
+            "value": 6546.21628699
+          },
+          "geometry_mode_parameter": 47.6710370665,
+          "ideal_critical_pressure_mpa": {
+            "unit": "MPa",
+            "value": 0.606123329362
+          },
+          "line_load_sign_convention": "positive_compression_magnitude",
+          "load_case": "hydrostatic_closed_end",
+          "margin": 3.54592497022,
+          "model_id": "nasa_smooth_cylinder_external_pressure_buckling",
+          "model_version": "4.1.0",
+          "moderate_gamma_z_lower_boundary": 100.0,
+          "moderate_long_boundary_parameter": 26815.827745,
+          "moderate_long_overlap_end_z": 47672.5826578,
+          "moderate_long_overlap_start_z": 29795.3641611,
+          "notes": [
+            "The NASA equations assume a thin, circular, isotropic, unstiffened shell with uniform thickness, elastic response, membrane prebuckling, and simply supported ends.",
+            "Radius is the shell mid-surface radius; callers starting from an internal radius must add one-half the wall thickness.",
+            "Lateral pressure acts on the curved wall only. Hydrostatic pressure also acts on closed ends and produces axial line load p*r/2.",
+            "Circumferential and axial line loads are reported as positive compression magnitudes.",
+            "Longitudinal end restraint can increase theoretical capacity, and rotational restraint can affect short cylinders; those boundary-condition sensitivities are not credited.",
+            "NASA Eq. 28 states sqrt(gamma)=0.75 for Eqs. 23-25; because the source adds the gamma^2 term to Eqs. 20/22 and introduces Eq. 23 as their gamma*Z > 100 reduction, this model applies the same factor inside Eqs. 20/22 at every gamma*Z. gamma=0.90 belongs to Eqs. 26-27; the moderate/long overlap created by the two factors has no selection rule and stays withheld from capacity.",
+            "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
+            "Inelastic corrections in NASA Eqs. 30-32 are outside this model: they need secant and tangent moduli this model does not carry. The source calls plasticity factors for the biaxial hydrostatic state unavailable and directs that Eqs. 30-32 may be used for lack of better information; without those moduli, a correlated critical membrane stress above the proportional limit is an elastic upper bound reported as released_pending_plasticity, not a capacity; its ordinary margin is null.",
+            "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
+            "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
+            "elastic_applicability compares the applied working membrane stress p*r/t with the same limit the plasticity check applies to the correlated critical stress. 'exceeded' means every capacity at or above the applied pressure exceeds that limit too, at every unsupported length, because only wall thickness moves this stress: with a proportional limit supplied such a capacity is an elastic upper bound reported as released_pending_plasticity, and with only a yield strength it is withheld for the missing limit. It is a screen on applicability, not a capacity or a margin."
+          ],
+          "poisson_ratio": 0.33,
+          "proportional_limit_mpa": {
+            "unit": "MPa",
+            "value": 180.0
+          },
+          "radius_convention": "shell_mid_surface",
+          "regime": "moderate",
+          "release_gate_violations": [],
+          "roark_probable_minimum_factor": 0.8,
+          "roark_probable_minimum_lobes_n": 3,
+          "roark_probable_minimum_pressure_mpa": {
+            "unit": "MPa",
+            "value": 0.493316065764
+          },
+          "shell_mid_surface_radius_mm": {
+            "unit": "mm",
+            "value": 50.5
+          },
+          "shell_mid_surface_radius_over_thickness": 50.5,
+          "short_regime_gamma_z_boundary": 100.0,
+          "source_equations": [
+            "NASA Eq. 23",
+            "NASA Eq. 24",
+            "NASA Eq. 28"
+          ],
+          "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 3-5 and 17-29, pp. 22 and 26-29",
+          "sqrt_correlation_factor": 0.75,
+          "unsupported_length_mm": {
+            "unit": "mm",
+            "value": 300.0
+          },
+          "unsupported_length_over_radius": 5.94059405941,
+          "validity_violations": [],
+          "wall_thickness_mm": {
+            "unit": "mm",
+            "value": 1.0
+          },
+          "working_circumferential_membrane_stress_mpa": {
+            "unit": "MPa",
+            "value": 5.05
+          },
+          "yield_strength_mpa": {
+            "unit": "MPa",
+            "value": 250.0
+          }
+        },
+        "schema_version": "5.0.0"
+      },
+      "tube": {
+        "calculation_source": {
+          "function": "pv_calc.pressure_vessel.closed_end_tube_stress",
+          "model_id": "closed_end_tube_stress",
+          "model_version": "3.1.0",
+          "package_version": "0.1.0"
+        },
+        "material": {
+          "properties_used": {
+            "elastic_modulus": {
+              "unit": "MPa",
+              "value": 70000.0
+            },
+            "failure_category": "ductile_metal",
+            "poisson_ratio": 0.33,
+            "yield_strength": {
+              "unit": "MPa",
+              "value": 250.0
+            }
+          },
+          "source": {
+            "database": null,
+            "name": "Illustrative ductile metal",
+            "provenance": "Illustrative values for a composition example; not a qualified material record.",
+            "type": "explicit"
+          }
+        },
+        "model": "tube",
+        "result": {
+          "axial_length_change_mm": {
+            "unit": "mm",
+            "value": -0.00375250353607
+          },
+          "axial_length_mm": {
+            "unit": "mm",
+            "value": 300.0
+          },
+          "axial_strain": -1.25083451202e-05,
+          "branch": "thick",
+          "displacement_source_reference": "Boresi and Schmidt, Advanced Mechanics of Materials, 6th ed., 2003, Eq. (11.24), printed p. 396, for the closed-cylinder radial displacement and Eq. (11.15), printed p. 394, for the closed-cylinder axial strain, both at sections far from the end-cap junction",
+          "displacement_status": "released",
+          "displacement_validity_violations": [],
+          "elastic_modulus_mpa": {
+            "unit": "MPa",
+            "value": 70000.0
+          },
+          "end_condition": "closed",
+          "external_pressure_mpa": {
+            "unit": "MPa",
+            "value": 0.1
+          },
+          "external_radius_mm": {
+            "unit": "mm",
+            "value": 51.0
+          },
+          "failure_criterion": "von_mises_stress_vs_yield_strength",
+          "force_thick": false,
+          "governing_radius_mm": {
+            "unit": "mm",
+            "value": 50.0
+          },
+          "governing_stress_mpa": {
+            "unit": "MPa",
+            "value": 4.46045955494
+          },
+          "internal_radius_mm": {
+            "unit": "mm",
+            "value": 50.0
+          },
+          "load_case": "hydrostatic_closed_end",
+          "margin": 55.048036513,
+          "material_failure_category": "ductile_metal",
+          "maximum_absolute_strain": 6.14380480905e-05,
+          "maximum_radial_displacement_over_thickness": 0.00307190240453,
+          "mean_radius_mm": {
+            "unit": "mm",
+            "value": 50.5
+          },
+          "mean_radius_over_thickness": 50.5,
+          "model_id": "closed_end_tube_stress",
+          "model_version": "3.1.0",
+          "notes": [
+            "Closed ends transmit uniform external-pressure axial load.",
+            "Results apply away from the tube/endcap interface.",
+            "Compression is negative and tension is positive.",
+            "Lam\u00e9 stresses apply at every wall thickness; branch retains the legacy value 'thick', force_thick is a compatibility no-op, and the former thin-wall threshold is metadata only.",
+            "This result covers material failure under the category's own criterion: von Mises stress against yield strength for a ductile metal, maximum hoop stress against the working strength for a plastic or the ultimate compressive strength for a brittle material. Shell stability and end closures are separate checks.",
+            "Radial displacement and axial strain need an elastic modulus and a Poisson ratio; without both, every stress result is unchanged and displacement is withheld with its reason.",
+            "Radial displacement is positive outward, so external pressure gives a negative value, and each stress state carries the displacement at its own internal or external surface radius.",
+            "Axial strain is uniform through the wall and along the tube; the axial length change is that strain times the caller's gauge length, which is null when no length is supplied.",
+            "Displacement excludes tube/endcap junction effects, local restraint at closures, ovalization and initial out-of-roundness, instability, plasticity, and ring-frame restraint.",
+            "Deformation is withheld_applicability when maximum absolute radial displacement / wall thickness exceeds 1 or maximum absolute principal strain exceeds 0.01. These are pv-calc release screens, not source-prescribed Lam\u00e9 limits: the first conservatively extends the former DTMB thin-cylinder screen, while the second limits each omitted quadratic Green-strain term to 0.5% of its linear term. Raw displacement and strain values remain available for inspection. Passing these screens does not establish stability, material linearity, or solution accuracy.",
+            "When deformation screens pass but governing material stress exceeds the supplied strength, deformation remains available as elastic_estimate_material_limit; no plastic deformation is modeled."
+          ],
+          "poisson_ratio": 0.33,
+          "principal_stress_ordering": "descending_algebraic",
+          "source_reference": "Lam\u00e9 closed-end thick-cylinder stresses from Roark's Formulas for Stress and Strain, 6th ed., Table 32 cases 1a-1d",
+          "strength_mpa": {
+            "unit": "MPa",
+            "value": 250.0
+          },
+          "stress_sign_convention": "tension_positive",
+          "stress_states": [
+            {
+              "axial_stress_mpa": {
+                "unit": "MPa",
+                "value": -2.57524752475
+              },
+              "hoop_stress_mpa": {
+                "unit": "MPa",
+                "value": -5.1504950495
+              },
+              "principal_stresses_mpa": {
+                "unit": "MPa",
+                "value": [
+                  0.0,
+                  -2.57524752475,
+                  -5.1504950495
+                ]
+              },
+              "radial_displacement_mm": {
+                "unit": "mm",
+                "value": -0.00307190240453
+              },
+              "radial_stress_mpa": {
+                "unit": "MPa",
+                "value": 0.0
+              },
+              "radius_convention": "internal",
+              "radius_mm": {
+                "unit": "mm",
+                "value": 50.0
+              },
+              "von_mises_stress_mpa": {
+                "unit": "MPa",
+                "value": 4.46045955494
+              }
+            },
+            {
+              "axial_stress_mpa": {
+                "unit": "MPa",
+                "value": -2.57524752475
+              },
+              "hoop_stress_mpa": {
+                "unit": "MPa",
+                "value": -5.0504950495
+              },
+              "principal_stresses_mpa": {
+                "unit": "MPa",
+                "value": [
+                  -0.1,
+                  -2.57524752475,
+                  -5.0504950495
+                ]
+              },
+              "radial_displacement_mm": {
+                "unit": "mm",
+                "value": -0.00303644045262
+              },
+              "radial_stress_mpa": {
+                "unit": "MPa",
+                "value": -0.1
+              },
+              "radius_convention": "external",
+              "radius_mm": {
+                "unit": "mm",
+                "value": 51.0
+              },
+              "von_mises_stress_mpa": {
+                "unit": "MPa",
+                "value": 4.28725447418
+              }
+            }
+          ],
+          "theoretical_failure_pressure_mpa": {
+            "unit": "MPa",
+            "value": 5.6048036513
+          },
+          "thin_wall_threshold_mean_radius_over_thickness": 10.0,
+          "validity_violations": [],
+          "wall_thickness_mm": {
+            "unit": "mm",
+            "value": 1.0
+          }
+        },
+        "schema_version": "5.0.0"
+      }
+    },
+    "geometry": {
+      "axial_length": {
+        "unit": "mm",
+        "value": 300.0
+      },
+      "external_radius": {
+        "unit": "mm",
+        "value": 51.0
+      },
+      "internal_radius": {
+        "unit": "mm",
+        "value": 50.0
+      },
+      "shell_mid_surface_radius": {
+        "unit": "mm",
+        "value": 50.5
+      },
+      "unsupported_length": {
+        "unit": "mm",
+        "value": 300.0
+      },
+      "wall_thickness": {
+        "unit": "mm",
+        "value": 1.0
+      }
+    },
+    "load_case": "hydrostatic_closed_end",
+    "mass_properties": {
+      "components": [
+        {
+          "density": {
+            "unit": "kg/m^3",
+            "value": 2700.0
+          },
+          "id": "tube",
+          "solid_volume": {
+            "unit": "m^3",
+            "value": 9.51902574038e-05
+          },
+          "structural_mass": {
+            "unit": "kg",
+            "value": 0.25701369499
+          }
+        }
+      ],
+      "displaced_volume": {
+        "unit": "m^3",
+        "value": 0.0024513847476
+      },
+      "internal_geometric_volume": {
+        "unit": "m^3",
+        "value": 0.00235619449019
+      },
+      "payload_mass": {
+        "unit": "kg",
+        "value": 0.0
+      },
+      "payload_volume": {
+        "unit": "m^3",
+        "value": 0.0
+      },
+      "reasons": [],
+      "remaining_internal_volume": {
+        "unit": "m^3",
+        "value": 0.00235619449019
+      },
+      "solid_volume": {
+        "unit": "m^3",
+        "value": 9.51902574038e-05
+      },
+      "status": "calculated",
+      "structural_mass": {
+        "unit": "kg",
+        "value": 0.25701369499
+      },
+      "total_air_mass": {
+        "unit": "kg",
+        "value": 0.25701369499
+      },
+      "volume_basis": "The tube axial length spans two butt planes. Flat discs extend outward and add their solid/displaced volume but no cavity volume. Hemispheres extend outward and add their shell, outer-envelope, and inner-cavity volumes. There is no overlap, inserted spigot, groove, or joint hardware. Internal volume is geometric volume, not a guarantee that a payload shape fits. With no supplied closures, the closed tube envelope assumes massless, zero-thickness end planes; structural mass covers only the tube."
+    },
+    "model": "cylinder",
+    "schema_version": "5.0.0"
+  },
+  "cylinder_housing.json": {
+    "assessment": {
+      "checks": [
+        {
+          "applicability": "released",
+          "capacity": {
+            "unit": "MPa",
+            "value": 5.6048036513
+          },
+          "demand": {
+            "unit": "MPa",
+            "value": 0.1
+          },
+          "id": "cylindrical_shell_stress",
+          "margin": 55.048036513,
+          "reasons": [],
+          "required_margin": 0.0,
+          "status": "pass"
+        },
+        {
+          "applicability": "released",
+          "capacity": {
+            "unit": "MPa",
+            "value": 0.454592497022
+          },
+          "demand": {
+            "unit": "MPa",
+            "value": 0.1
+          },
+          "id": "smooth_cylinder_buckling",
+          "margin": 3.54592497022,
+          "reasons": [],
+          "required_margin": 0.0,
+          "status": "pass"
+        },
+        {
+          "applicability": "released",
+          "capacity": {
+            "unit": "MPa",
+            "value": 2.13333333333
+          },
+          "demand": {
+            "unit": "MPa",
+            "value": 0.1
+          },
+          "id": "closure_1.flat_endcap_bending",
+          "margin": 20.3333333333,
+          "reasons": [],
+          "required_margin": 0.0,
+          "status": "pass"
+        },
+        {
+          "applicability": "released",
+          "capacity": {
+            "unit": "mm",
+            "value": 0.1
+          },
+          "demand": {
+            "unit": "mm",
+            "value": 0.0233093261719
+          },
+          "id": "closure_1.center_deflection",
+          "margin": 3.29012830584,
+          "reasons": [],
+          "required_margin": 0.0,
+          "status": "pass"
+        },
+        {
+          "applicability": "released",
+          "capacity": {
+            "unit": "MPa",
+            "value": 9.7078046905
+          },
+          "demand": {
+            "unit": "MPa",
+            "value": 0.1
+          },
+          "id": "closure_1.seat_bearing",
+          "margin": 96.078046905,
+          "reasons": [
+            "Average bearing on the shared butt annulus, using the weaker uniaxial compressive allowance of tube and closure; local contact stresses and retention are not evaluated."
+          ],
+          "required_margin": 0.0,
+          "status": "pass"
+        },
+        {
+          "applicability": "released",
+          "capacity": {
+            "unit": "MPa",
+            "value": 9.61294424216
+          },
+          "demand": {
+            "unit": "MPa",
+            "value": 0.1
+          },
+          "id": "closure_2.hemispherical_shell_stress",
+          "margin": 95.1294424216,
+          "reasons": [],
+          "required_margin": 0.0,
+          "status": "pass"
+        },
+        {
+          "applicability": "released",
+          "capacity": {
+            "unit": "MPa",
+            "value": 5.02586762595
+          },
+          "demand": {
+            "unit": "MPa",
+            "value": 0.1
+          },
+          "id": "closure_2.hemisphere_buckling",
+          "margin": 49.2586762595,
+          "reasons": [],
+          "required_margin": 0.0,
+          "status": "pass"
+        },
+        {
+          "applicability": "released",
+          "capacity": {
+            "unit": "MPa",
+            "value": 9.7078046905
+          },
+          "demand": {
+            "unit": "MPa",
+            "value": 0.1
+          },
+          "id": "closure_2.seat_bearing",
+          "margin": 96.078046905,
+          "reasons": [
+            "Average bearing on the shared butt annulus, using the weaker uniaxial compressive allowance of tube and closure; local contact stresses and retention are not evaluated."
+          ],
+          "required_margin": 0.0,
+          "status": "pass"
+        }
+      ],
+      "governing_check": "closure_1.center_deflection",
+      "omissions": [
+        "Seals, leak tightness, closure retention, bolts, welds, and attachment strength.",
+        "Local joint stresses, grooves, penetrations, and shell/closure interaction.",
+        "Manufacturing imperfections, corrosion, fatigue, and pressure cycling.",
+        "Qualification of the assumed end-support and closure boundary conditions."
+      ],
+      "required_check_coverage": {
+        "complete": true,
+        "evaluated": [
+          "cylindrical_shell_stress",
+          "smooth_cylinder_buckling",
+          "closure_1.flat_endcap_bending",
+          "closure_1.center_deflection",
+          "closure_1.seat_bearing",
+          "closure_2.hemispherical_shell_stress",
+          "closure_2.hemisphere_buckling",
+          "closure_2.seat_bearing"
+        ],
+        "indeterminate": [],
+        "required": [
+          "cylindrical_shell_stress",
+          "smooth_cylinder_buckling",
+          "closure_1.flat_endcap_bending",
+          "closure_1.center_deflection",
+          "closure_1.seat_bearing",
+          "closure_2.hemispherical_shell_stress",
+          "closure_2.hemisphere_buckling",
+          "closure_2.seat_bearing"
+        ]
+      },
+      "scope": "Acceptance is limited to the requested, idealized component checks; it is not a housing qualification or a code-compliance determination.",
+      "status": "pass"
+    },
+    "assumptions": [
+      "The same uniform differential external pressure acts on a closed-end cylinder and all supplied closures; the interior is the zero-gauge reference.",
+      "Cylinder buckling uses simply supported circular ends separated by unsupported_length; stress uses the exact closed-end Lam\u00e9 solution away from junctions.",
+      "Each closure inherits the tube bore and outer radius. Plates use the requested idealized edge support; hemispherical buckling assumes a clamped equator. The assembly does not establish that its connections provide these restraints."
+    ],
+    "calculation_source": {
+      "function": "pv_calc.cylinder.evaluate_cylinder",
+      "model_id": "cylinder_assessment",
+      "model_version": "1.0.0",
+      "package_version": "0.1.0"
+    },
+    "components": {
+      "closures": [
+        {
+          "calculation_source": {
+            "function": "pv_calc.pressure_vessel.flat_circular_plate",
+            "model_id": "uniformly_loaded_flat_circular_plate",
+            "model_version": "4.1.0",
+            "package_version": "0.1.0"
+          },
+          "id": "closure_1",
+          "material": {
+            "properties_used": {
+              "elastic_modulus": {
+                "unit": "MPa",
+                "value": 70000.0
+              },
+              "failure_category": "ductile_metal",
+              "poisson_ratio": 0.33,
+              "yield_strength": {
+                "unit": "MPa",
+                "value": 250.0
+              }
+            },
+            "source": {
+              "database": null,
+              "name": "Illustrative ductile metal",
+              "provenance": "Illustrative values for a composition example; not a qualified material record.",
+              "type": "explicit"
+            }
+          },
+          "model": "plate",
+          "result": {
+            "bending_minimum_free_diameter_over_thickness": 10.0,
+            "bending_status": "released",
+            "boundary_condition": "fixed",
+            "compressive_strength_mpa": {
+              "unit": "MPa",
+              "value": null
+            },
+            "deflection_coefficient": 0.16708125,
+            "deflection_minimum_free_diameter_over_thickness": 20.0,
+            "deflection_status": "released",
+            "deflection_validity_violations": [],
+            "elastic_modulus_mpa": {
+              "unit": "MPa",
+              "value": 70000.0
+            },
+            "envelope_source_reference": "validation/fea/results/plate_sweep_fea_summary.json: mesh-converged CAX8R comparison swept over D_free/t and Poisson ratio, released against the 5% agreement budget",
+            "external_pressure_mpa": {
+              "unit": "MPa",
+              "value": 0.1
+            },
+            "failure_criterion": "surface_bending_stress_vs_yield_strength",
+            "flexural_rigidity_n_mm": {
+              "unit": "N*mm",
+              "value": 418957.842367
+            },
+            "free_diameter_mm": {
+              "unit": "mm",
+              "value": 100.0
+            },
+            "free_diameter_over_thickness": 25.0,
+            "free_radius_mm": {
+              "unit": "mm",
+              "value": 50.0
+            },
+            "governing_bending_direction": "radial",
+            "governing_bending_stress_mpa": {
+              "unit": "MPa",
+              "value": 11.71875
+            },
+            "load_type": "uniform_transverse_pressure",
+            "margin": 20.3333333333,
+            "material_failure_category": "ductile_metal",
+            "maximum_deflection_location": "center",
+            "maximum_deflection_mm": {
+              "unit": "mm",
+              "value": 0.0233093261719
+            },
+            "maximum_deflection_over_thickness": 0.00582733154297,
+            "maximum_radial_bending_stress_mpa": {
+              "unit": "MPa",
+              "value": 11.71875
+            },
+            "maximum_radial_stress_location": "free_diameter",
+            "maximum_tangential_bending_stress_mpa": {
+              "unit": "MPa",
+              "value": 7.79296875
+            },
+            "maximum_tangential_stress_location": "center",
+            "model_id": "uniformly_loaded_flat_circular_plate",
+            "model_version": "4.1.0",
+            "notes": [
+              "boundary_condition: fixed edge prevents radial rotation and transverse deflection while allowing radial displacement.",
+              "The free radius is half the plate free/unsupported diameter at the support or seal line.",
+              "Maximum radial and tangential values are absolute surface bending-stress magnitudes; the opposite plate surfaces carry equal tensile and compressive magnitudes in linear plate theory.",
+              "Transverse shear is the average on the support perimeter, tau = p * D_free / (4 * t), at the free-diameter support boundary.",
+              "Transverse shear is reported as plate response and does not replace the existing bending/yield gate.",
+              "With an outside radius, the seat bearing stress is the average over the annulus between the free and outside radii, reported as a positive compressive magnitude with its own failure pressure and margin; it is independent of thickness and does not enter the bending margin.",
+              "Bearing-contact distribution, attachment, seal compression, penetrations, and local edge details are not evaluated.",
+              "Kirchhoff theory omits transverse-shear deformation, so the center deflection is released on its own measured floor and is withheld before the bending/yield gate closes.",
+              "The w <= t/2 small-deflection limit is applied to a shear-corrected deflection estimate (Reissner kappa = 5/6), because the released Kirchhoff deflection is measurably below the three-dimensional value. The swept evidence found the estimate above the solved deflection at every solved case; between solved points, and beyond D_free/t = 40, that margin persisting is engineering judgment, not a bound.",
+              "The validity floors are evidenced for 0.05 <= poisson_ratio <= 0.35; outside that band both the bending margin and the deflection are withheld.",
+              "When governing bending stress exceeds the supplied material strength, the raw deflection is an elastic estimate and released_maximum_deflection_mm is null; geometric withholding takes precedence over the elastic_estimate_material_limit status."
+            ],
+            "outside_radius_mm": {
+              "unit": "mm",
+              "value": 51.0
+            },
+            "plate_thickness_mm": {
+              "unit": "mm",
+              "value": 4.0
+            },
+            "poisson_ratio": 0.33,
+            "poisson_ratio_evidence_band": [
+              0.05,
+              0.35
+            ],
+            "radial_bending_stress_coefficient": 0.75,
+            "released_maximum_deflection_mm": {
+              "unit": "mm",
+              "value": 0.0233093261719
+            },
+            "seat_bearing_stress_mpa": {
+              "unit": "MPa",
+              "value": 2.57524752475
+            },
+            "seat_margin": 96.078046905,
+            "seat_source_reference": "Equilibrium on the flat annular seat: the total pressure load on the closure's outside radius, p * pi * R_o^2, is carried by the annulus area pi * (R_o^2 - R_i^2) inside it, so the average bearing stress is sigma_seat = p * R_o^2 / (R_o^2 - R_i^2), compared to the material's uniaxial strength",
+            "shear_corrected_deflection_estimate_mm": {
+              "unit": "mm",
+              "value": 0.0240218261719
+            },
+            "shear_corrected_deflection_estimate_over_thickness": 0.00600545654297,
+            "source_equation_case": "Roark Table 24 case 10b",
+            "source_reference": "Roark's Formulas for Stress and Strain, 6th ed., Table 24 cases 10a-10b, p. 429; transverse shear is the average on the support perimeter from equilibrium, tau = p * D_free / (4 * t), the pressure load over the free area divided by the cylindrical area pi * D_free * t it crosses; the small-deflection gate's shear-corrected deflection estimate uses kappa = 5/6 from Reissner, J. Appl. Mech. 12 (1945) A69-A77",
+            "strength_mpa": {
+              "unit": "MPa",
+              "value": 250.0
+            },
+            "tangential_bending_stress_coefficient": 0.49875,
+            "theoretical_failure_pressure_mpa": {
+              "unit": "MPa",
+              "value": 2.13333333333
+            },
+            "theoretical_radial_failure_pressure_mpa": {
+              "unit": "MPa",
+              "value": 2.13333333333
+            },
+            "theoretical_seat_failure_pressure_mpa": {
+              "unit": "MPa",
+              "value": 9.7078046905
+            },
+            "theoretical_tangential_failure_pressure_mpa": {
+              "unit": "MPa",
+              "value": 3.20802005013
+            },
+            "transverse_shear_location": "free_diameter",
+            "transverse_shear_stress_mpa": {
+              "unit": "MPa",
+              "value": 0.625
+            },
+            "validity_violations": []
+          },
+          "schema_version": "5.0.0"
+        },
+        {
+          "calculation_source": {
+            "function": "pv_calc.pressure_vessel.hemispherical_head_external_pressure",
+            "model_id": "roark_nasa_hemispherical_head_external_pressure",
+            "model_version": "4.1.0",
+            "package_version": "0.1.0"
+          },
+          "id": "closure_2",
+          "material": {
+            "properties_used": {
+              "elastic_modulus": {
+                "unit": "MPa",
+                "value": 70000.0
+              },
+              "failure_category": "ductile_metal",
+              "poisson_ratio": 0.33,
+              "proportional_limit": {
+                "unit": "MPa",
+                "value": 180.0
+              },
+              "yield_strength": {
+                "unit": "MPa",
+                "value": 250.0
+              }
+            },
+            "source": {
+              "database": null,
+              "name": "Illustrative ductile metal",
+              "provenance": "Illustrative values for a composition example; not a qualified material record.",
+              "type": "explicit"
+            }
+          },
+          "model": "hemisphere",
+          "result": {
+            "branch": "thick",
+            "buckling_boundary_condition": "clamped_equator",
+            "buckling_capacity_status": "released",
+            "buckling_margin": 49.2586762595,
+            "buckling_source_reference": "NASA SP-8032, Buckling of Thin-Walled Doubly Curved Shells, sec. 4.2.1.1, Eqs. 1-4, pp. 4-6",
+            "buckling_validity_violations": [],
+            "classical_critical_pressure_mpa": {
+              "unit": "MPa",
+              "value": 33.5754181613
+            },
+            "displacement_source_reference": "Coreform IGA for Abaqus verification manual, Thick-walled spherical pressure vessel, section 6: exact Lam\u00e9 radial displacement under internal and external pressure; https://docs.coreform.com/cifa/verification-manual/problems/solid_mechanics/linear_elastic_stress/pressurized-sphere/pressurized-sphere.html. The manual cites Timoshenko and Goodier, Theory of Elasticity, 3rd ed. (1970). Implemented using spherical strain compatibility and three-dimensional Hooke's law: u(r) = r * ((1 - nu) * sigma_theta - nu * sigma_r) / E.",
+            "displacement_status": "released",
+            "displacement_validity_violations": [],
+            "elastic_modulus_mpa": {
+              "unit": "MPa",
+              "value": 70000.0
+            },
+            "external_pressure_mpa": {
+              "unit": "MPa",
+              "value": 0.1
+            },
+            "external_radius_mm": {
+              "unit": "mm",
+              "value": 51.0
+            },
+            "failure_criterion": "von_mises_stress_vs_yield_strength",
+            "force_thick": false,
+            "governing_radius_mm": {
+              "unit": "mm",
+              "value": 50.0
+            },
+            "governing_stress_mpa": {
+              "unit": "MPa",
+              "value": 2.60066004444
+            },
+            "half_included_angle_degrees": 90.0,
+            "included_angle_degrees": 180.0,
+            "internal_radius_mm": {
+              "unit": "mm",
+              "value": 50.0
+            },
+            "load_case": "uniform_external_pressure",
+            "material_failure_category": "ductile_metal",
+            "maximum_absolute_strain": 2.48920318539e-05,
+            "maximum_radial_displacement_over_thickness": 0.0012446015927,
+            "mean_radius_mm": {
+              "unit": "mm",
+              "value": 50.5
+            },
+            "mean_radius_over_thickness": 50.5,
+            "model_id": "roark_nasa_hemispherical_head_external_pressure",
+            "model_version": "4.1.0",
+            "nasa_candidate_critical_membrane_stress_mpa": {
+              "unit": "MPa",
+              "value": 126.903157555
+            },
+            "nasa_candidate_design_pressure_mpa": {
+              "unit": "MPa",
+              "value": 5.02586762595
+            },
+            "nasa_correlation_factor": 0.149688906384,
+            "nasa_geometry_parameter_lambda": 18.1734595769,
+            "nasa_minimum_lambda": 2.0,
+            "notes": [
+              "Uniform external pressure acts on a constant-thickness isotropic hemispherical head.",
+              "The radius input is internal; stresses and displacement use both wall surfaces, while both buckling comparisons use the shell mean radius.",
+              "Lam\u00e9 spherical stresses apply at every wall thickness; branch retains the legacy value 'thick' and force_thick is a compatibility no-op. The thin-shell threshold gates buckling only.",
+              "The NASA SP-8032 result assumes a clamped equator and a 180-degree included spherical cap.",
+              "The SP-8032 correlation is the source's lower bound to clamped-cap test data.",
+              "The release gate adopts mean-radius/thickness > 10 from the conventional thin-shell domain Roark states; NASA SP-8032 does not state that numeric cutoff.",
+              "Elastic buckling capacity requires a proportional limit at or above the NASA-correlated critical membrane stress; no inelastic correction is implemented.",
+              "The Roark probable-minimum pressure is reported only as a published comparator and does not set released capacity.",
+              "The seat bearing stress is the average over the flat equator annulus between the internal and external radii, reported as a positive compressive magnitude with its own failure pressure and margin; it does not enter the shell stress margin.",
+              "Radial displacement is derived from the same Lam\u00e9 stresses using spherical strain compatibility and three-dimensional Hooke's law. Each stress state carries the displacement at its own surface radius, positive outward, so external pressure gives a negative value.",
+              "Stress and displacement use the spherically symmetric elastic solution away from the equator; the clamped equator belongs to the buckling correlation.",
+              "The displacement holds away from the equator. A restrained equator suppresses it locally, so the released value is not the equator's radial closure and not a seal-gap estimate.",
+              "Displacement assumes small deformations and excludes junction analysis, plasticity, post-buckling deformation, and ring-stiffened service displacement.",
+              "Deformation is withheld_applicability when maximum absolute radial displacement / wall thickness exceeds 1 or maximum absolute principal strain exceeds 0.01. These are pv-calc release screens, not source-prescribed Lam\u00e9 limits: the first conservatively extends the former DTMB thin-cylinder screen, while the second limits each omitted quadratic Green-strain term to 0.5% of its linear term. Raw displacement and strain values remain available for inspection. Passing these screens does not establish stability, material linearity, or solution accuracy.",
+              "When deformation screens pass but governing material stress exceeds the supplied strength, displacement remains available as elastic_estimate_material_limit; no plastic deformation is modeled."
+            ],
+            "poisson_ratio": 0.33,
+            "principal_stress_ordering": "descending_algebraic",
+            "proportional_limit_mpa": {
+              "unit": "MPa",
+              "value": 180.0
+            },
+            "radius_convention": "internal_input_mean_surface_analysis",
+            "released_buckling_critical_membrane_stress_mpa": {
+              "unit": "MPa",
+              "value": 126.903157555
+            },
+            "released_buckling_pressure_mpa": {
+              "unit": "MPa",
+              "value": 5.02586762595
+            },
+            "roark_probable_minimum_coefficient": 0.365,
+            "roark_probable_minimum_pressure_mpa": {
+              "unit": "MPa",
+              "value": 10.0186256249
+            },
+            "seat_bearing_stress_mpa": {
+              "unit": "MPa",
+              "value": 2.57524752475
+            },
+            "seat_margin": 96.078046905,
+            "seat_source_reference": "Equilibrium on the flat annular seat: the total pressure load on the closure's outside radius, p * pi * R_o^2, is carried by the annulus area pi * (R_o^2 - R_i^2) inside it, so the average bearing stress is sigma_seat = p * R_o^2 / (R_o^2 - R_i^2), compared to the material's uniaxial strength",
+            "software_parity_source_reference": "Roark's Formulas for Stress and Strain, 6th ed., Table 35 case 22, p. 691, the table's probable-minimum external pressure for a thin spherical shell",
+            "strength_mpa": {
+              "unit": "MPa",
+              "value": 250.0
+            },
+            "stress_margin": 95.1294424216,
+            "stress_sign_convention": "tension_positive",
+            "stress_source_reference": "Roark's Formulas for Stress and Strain, 6th ed., Table 32 cases 2a-2b, p. 640",
+            "stress_states": [
+              {
+                "hoop_stress_mpa": {
+                  "unit": "MPa",
+                  "value": -2.60066004444
+                },
+                "meridional_stress_mpa": {
+                  "unit": "MPa",
+                  "value": -2.60066004444
+                },
+                "principal_stresses_mpa": {
+                  "unit": "MPa",
+                  "value": [
+                    0.0,
+                    -2.60066004444,
+                    -2.60066004444
+                  ]
+                },
+                "radial_displacement_mm": {
+                  "unit": "mm",
+                  "value": -0.0012446015927
+                },
+                "radial_stress_mpa": {
+                  "unit": "MPa",
+                  "value": 0.0
+                },
+                "radius_convention": "internal",
+                "radius_mm": {
+                  "unit": "mm",
+                  "value": 50.0
+                },
+                "von_mises_stress_mpa": {
+                  "unit": "MPa",
+                  "value": 2.60066004444
+                }
+              },
+              {
+                "hoop_stress_mpa": {
+                  "unit": "MPa",
+                  "value": -2.55066004444
+                },
+                "meridional_stress_mpa": {
+                  "unit": "MPa",
+                  "value": -2.55066004444
+                },
+                "principal_stresses_mpa": {
+                  "unit": "MPa",
+                  "value": [
+                    -0.1,
+                    -2.55066004444,
+                    -2.55066004444
+                  ]
+                },
+                "radial_displacement_mm": {
+                  "unit": "mm",
+                  "value": -0.00122104362455
+                },
+                "radial_stress_mpa": {
+                  "unit": "MPa",
+                  "value": -0.1
+                },
+                "radius_convention": "external",
+                "radius_mm": {
+                  "unit": "mm",
+                  "value": 51.0
+                },
+                "von_mises_stress_mpa": {
+                  "unit": "MPa",
+                  "value": 2.45066004444
+                }
+              }
+            ],
+            "theoretical_seat_failure_pressure_mpa": {
+              "unit": "MPa",
+              "value": 9.7078046905
+            },
+            "theoretical_stress_failure_pressure_mpa": {
+              "unit": "MPa",
+              "value": 9.61294424216
+            },
+            "thin_wall_threshold_mean_radius_over_thickness": 10.0,
+            "wall_thickness_mm": {
+              "unit": "mm",
+              "value": 1.0
+            }
+          },
+          "schema_version": "5.0.0"
+        }
+      ],
+      "smooth_buckling": {
+        "calculation_source": {
+          "function": "pv_calc.pressure_vessel.smooth_cylinder_external_pressure_buckling",
+          "model_id": "nasa_smooth_cylinder_external_pressure_buckling",
+          "model_version": "4.1.0",
+          "package_version": "0.1.0"
+        },
+        "material": {
+          "properties_used": {
+            "elastic_modulus": {
+              "unit": "MPa",
+              "value": 70000.0
+            },
+            "failure_category": "ductile_metal",
+            "poisson_ratio": 0.33,
+            "proportional_limit": {
+              "unit": "MPa",
+              "value": 180.0
+            },
+            "yield_strength": {
+              "unit": "MPa",
+              "value": 250.0
+            }
+          },
+          "source": {
+            "database": null,
+            "name": "Illustrative ductile metal",
+            "provenance": "Illustrative values for a composition example; not a qualified material record.",
+            "type": "explicit"
+          }
+        },
+        "model": "smooth-buckling",
+        "result": {
+          "axial_line_load_n_per_mm": {
+            "unit": "N/mm",
+            "value": 2.525
+          },
+          "boundary_assumptions": [
+            "Simply supported ends: zero radial deflection and zero bending moment.",
+            "Eqs. 20/22 use the source's continuous beta minimization with axial half-wave m=1.",
+            "Eq. 27 long-cylinder capacity is the axial-invariant oval mode n=2.",
+            "Unsupported length is the distance between the idealized circular end supports.",
+            "No capacity increase from longitudinal or rotational end restraint is credited."
+          ],
+          "boundary_condition": "simply_supported",
+          "candidates": [
+            {
+              "applicability_conditions": [
+                "gamma*Z <= 100, below the Eq. 23 simplification boundary",
+                "sqrt(gamma)=0.75 from NASA Eq. 28, applied inside Eqs. 20/22"
+              ],
+              "applicable": false,
+              "circumferential_wave_count_n": null,
+              "continuous_circumferential_wave_count": 2.54479159743,
+              "correlated_critical_circumferential_stress_mpa": {
+                "unit": "MPa",
+                "value": 23.4448172566
+              },
+              "correlated_critical_pressure_mpa": {
+                "unit": "MPa",
+                "value": 0.464253807061
+              },
+              "correlation_factor_gamma": 0.5625,
+              "critical_aspect_ratio_beta": 4.81207321034,
+              "critical_buckling_coefficient": 32.6587279967,
+              "eq25_simplified_critical_pressure_mpa": {
+                "unit": "MPa",
+                "value": null
+              },
+              "gamma_z": 946.317518476,
+              "ideal_critical_pressure_mpa": {
+                "unit": "MPa",
+                "value": 0.615748428766
+              },
+              "regime": "short",
+              "source_equations": [
+                "NASA Eq. 21",
+                "NASA Eq. 22",
+                "NASA Eq. 28"
+              ],
+              "sqrt_correlation_factor": 0.75
+            },
+            {
+              "applicability_conditions": [
+                "gamma*Z > 100 for NASA Eq. 23",
+                "gamma*Z <= 11.8*(r/t)^2*(1-v^2) for the more-than-two-wave branch",
+                "sqrt(gamma)=0.75 from NASA Eq. 28"
+              ],
+              "applicable": true,
+              "circumferential_wave_count_n": null,
+              "continuous_circumferential_wave_count": 2.54479159743,
+              "correlated_critical_circumferential_stress_mpa": {
+                "unit": "MPa",
+                "value": 22.9569210996
+              },
+              "correlated_critical_pressure_mpa": {
+                "unit": "MPa",
+                "value": 0.454592497022
+              },
+              "correlation_factor_gamma": 0.5625,
+              "critical_aspect_ratio_beta": 4.81207321034,
+              "critical_buckling_coefficient": 31.9927652444,
+              "eq25_simplified_critical_pressure_mpa": {
+                "unit": "MPa",
+                "value": null
+              },
+              "gamma_z": 946.317518476,
+              "ideal_critical_pressure_mpa": {
+                "unit": "MPa",
+                "value": 0.606123329362
+              },
+              "regime": "moderate",
+              "source_equations": [
+                "NASA Eq. 23",
+                "NASA Eq. 24",
+                "NASA Eq. 28"
+              ],
+              "sqrt_correlation_factor": 0.75
+            },
+            {
+              "applicability_conditions": [
+                "gamma*Z >= 11.8*(r/t)^2*(1-v^2) for the oval n=2 branch",
+                "gamma=0.90 from NASA Eq. 29"
+              ],
+              "applicable": false,
+              "circumferential_wave_count_n": 2,
+              "continuous_circumferential_wave_count": 2.0,
+              "correlated_critical_circumferential_stress_mpa": {
+                "unit": "MPa",
+                "value": 6.93060836187
+              },
+              "correlated_critical_pressure_mpa": {
+                "unit": "MPa",
+                "value": 0.137239769542
+              },
+              "correlation_factor_gamma": 0.9,
+              "critical_aspect_ratio_beta": null,
+              "critical_buckling_coefficient": 9.65436628765,
+              "eq25_simplified_critical_pressure_mpa": {
+                "unit": "MPa",
+                "value": null
+              },
+              "gamma_z": 1514.10802956,
+              "ideal_critical_pressure_mpa": {
+                "unit": "MPa",
+                "value": 0.152488632824
+              },
+              "regime": "long",
+              "source_equations": [
+                "NASA Eq. 26",
+                "NASA Eq. 27",
+                "NASA Eq. 29"
+              ],
+              "sqrt_correlation_factor": 0.948683298051
+            }
+          ],
+          "capacity_status": "released",
+          "circumferential_line_load_n_per_mm": {
+            "unit": "N/mm",
+            "value": 5.05
+          },
+          "circumferential_wave_count_n": null,
+          "comparison_source_reference": "Roark's Formulas for Stress and Strain, 6th ed., Table 35 case 20, its theoretical pressure minimized over integer lobe counts and reduced by the table's 0.80 probable-minimum factor",
+          "continuous_circumferential_wave_count": 2.54479159743,
+          "correlated_critical_circumferential_stress_mpa": {
+            "unit": "MPa",
+            "value": 22.9569210996
+          },
+          "correlated_critical_pressure_mpa": {
+            "unit": "MPa",
+            "value": 0.454592497022
+          },
+          "correlation_factor_gamma": 0.5625,
+          "critical_aspect_ratio_beta": 4.81207321034,
+          "critical_buckling_coefficient": 31.9927652444,
+          "curvature_parameter_z": 1682.34225507,
+          "elastic_applicability": "within",
+          "elastic_applicability_limit_basis": "proportional_limit",
+          "elastic_applicability_limit_mpa": {
+            "unit": "MPa",
+            "value": 180.0
+          },
+          "elastic_modulus_mpa": {
+            "unit": "MPa",
+            "value": 70000.0
+          },
+          "external_pressure_mpa": {
+            "unit": "MPa",
+            "value": 0.1
+          },
+          "flexural_rigidity_n_mm": {
+            "unit": "N*mm",
+            "value": 6546.21628699
+          },
+          "geometry_mode_parameter": 47.6710370665,
+          "ideal_critical_pressure_mpa": {
+            "unit": "MPa",
+            "value": 0.606123329362
+          },
+          "line_load_sign_convention": "positive_compression_magnitude",
+          "load_case": "hydrostatic_closed_end",
+          "margin": 3.54592497022,
+          "model_id": "nasa_smooth_cylinder_external_pressure_buckling",
+          "model_version": "4.1.0",
+          "moderate_gamma_z_lower_boundary": 100.0,
+          "moderate_long_boundary_parameter": 26815.827745,
+          "moderate_long_overlap_end_z": 47672.5826578,
+          "moderate_long_overlap_start_z": 29795.3641611,
+          "notes": [
+            "The NASA equations assume a thin, circular, isotropic, unstiffened shell with uniform thickness, elastic response, membrane prebuckling, and simply supported ends.",
+            "Radius is the shell mid-surface radius; callers starting from an internal radius must add one-half the wall thickness.",
+            "Lateral pressure acts on the curved wall only. Hydrostatic pressure also acts on closed ends and produces axial line load p*r/2.",
+            "Circumferential and axial line loads are reported as positive compression magnitudes.",
+            "Longitudinal end restraint can increase theoretical capacity, and rotational restraint can affect short cylinders; those boundary-condition sensitivities are not credited.",
+            "NASA Eq. 28 states sqrt(gamma)=0.75 for Eqs. 23-25; because the source adds the gamma^2 term to Eqs. 20/22 and introduces Eq. 23 as their gamma*Z > 100 reduction, this model applies the same factor inside Eqs. 20/22 at every gamma*Z. gamma=0.90 belongs to Eqs. 26-27; the moderate/long overlap created by the two factors has no selection rule and stays withheld from capacity.",
+            "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
+            "Inelastic corrections in NASA Eqs. 30-32 are outside this model: they need secant and tangent moduli this model does not carry. The source calls plasticity factors for the biaxial hydrostatic state unavailable and directs that Eqs. 30-32 may be used for lack of better information; without those moduli, a correlated critical membrane stress above the proportional limit is an elastic upper bound reported as released_pending_plasticity, not a capacity; its ordinary margin is null.",
+            "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
+            "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
+            "elastic_applicability compares the applied working membrane stress p*r/t with the same limit the plasticity check applies to the correlated critical stress. 'exceeded' means every capacity at or above the applied pressure exceeds that limit too, at every unsupported length, because only wall thickness moves this stress: with a proportional limit supplied such a capacity is an elastic upper bound reported as released_pending_plasticity, and with only a yield strength it is withheld for the missing limit. It is a screen on applicability, not a capacity or a margin."
+          ],
+          "poisson_ratio": 0.33,
+          "proportional_limit_mpa": {
+            "unit": "MPa",
+            "value": 180.0
+          },
+          "radius_convention": "shell_mid_surface",
+          "regime": "moderate",
+          "release_gate_violations": [],
+          "roark_probable_minimum_factor": 0.8,
+          "roark_probable_minimum_lobes_n": 3,
+          "roark_probable_minimum_pressure_mpa": {
+            "unit": "MPa",
+            "value": 0.493316065764
+          },
+          "shell_mid_surface_radius_mm": {
+            "unit": "mm",
+            "value": 50.5
+          },
+          "shell_mid_surface_radius_over_thickness": 50.5,
+          "short_regime_gamma_z_boundary": 100.0,
+          "source_equations": [
+            "NASA Eq. 23",
+            "NASA Eq. 24",
+            "NASA Eq. 28"
+          ],
+          "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 3-5 and 17-29, pp. 22 and 26-29",
+          "sqrt_correlation_factor": 0.75,
+          "unsupported_length_mm": {
+            "unit": "mm",
+            "value": 300.0
+          },
+          "unsupported_length_over_radius": 5.94059405941,
+          "validity_violations": [],
+          "wall_thickness_mm": {
+            "unit": "mm",
+            "value": 1.0
+          },
+          "working_circumferential_membrane_stress_mpa": {
+            "unit": "MPa",
+            "value": 5.05
+          },
+          "yield_strength_mpa": {
+            "unit": "MPa",
+            "value": 250.0
+          }
+        },
+        "schema_version": "5.0.0"
+      },
+      "tube": {
+        "calculation_source": {
+          "function": "pv_calc.pressure_vessel.closed_end_tube_stress",
+          "model_id": "closed_end_tube_stress",
+          "model_version": "3.1.0",
+          "package_version": "0.1.0"
+        },
+        "material": {
+          "properties_used": {
+            "elastic_modulus": {
+              "unit": "MPa",
+              "value": 70000.0
+            },
+            "failure_category": "ductile_metal",
+            "poisson_ratio": 0.33,
+            "yield_strength": {
+              "unit": "MPa",
+              "value": 250.0
+            }
+          },
+          "source": {
+            "database": null,
+            "name": "Illustrative ductile metal",
+            "provenance": "Illustrative values for a composition example; not a qualified material record.",
+            "type": "explicit"
+          }
+        },
+        "model": "tube",
+        "result": {
+          "axial_length_change_mm": {
+            "unit": "mm",
+            "value": -0.00375250353607
+          },
+          "axial_length_mm": {
+            "unit": "mm",
+            "value": 300.0
+          },
+          "axial_strain": -1.25083451202e-05,
+          "branch": "thick",
+          "displacement_source_reference": "Boresi and Schmidt, Advanced Mechanics of Materials, 6th ed., 2003, Eq. (11.24), printed p. 396, for the closed-cylinder radial displacement and Eq. (11.15), printed p. 394, for the closed-cylinder axial strain, both at sections far from the end-cap junction",
+          "displacement_status": "released",
+          "displacement_validity_violations": [],
+          "elastic_modulus_mpa": {
+            "unit": "MPa",
+            "value": 70000.0
+          },
+          "end_condition": "closed",
+          "external_pressure_mpa": {
+            "unit": "MPa",
+            "value": 0.1
+          },
+          "external_radius_mm": {
+            "unit": "mm",
+            "value": 51.0
+          },
+          "failure_criterion": "von_mises_stress_vs_yield_strength",
+          "force_thick": false,
+          "governing_radius_mm": {
+            "unit": "mm",
+            "value": 50.0
+          },
+          "governing_stress_mpa": {
+            "unit": "MPa",
+            "value": 4.46045955494
+          },
+          "internal_radius_mm": {
+            "unit": "mm",
+            "value": 50.0
+          },
+          "load_case": "hydrostatic_closed_end",
+          "margin": 55.048036513,
+          "material_failure_category": "ductile_metal",
+          "maximum_absolute_strain": 6.14380480905e-05,
+          "maximum_radial_displacement_over_thickness": 0.00307190240453,
+          "mean_radius_mm": {
+            "unit": "mm",
+            "value": 50.5
+          },
+          "mean_radius_over_thickness": 50.5,
+          "model_id": "closed_end_tube_stress",
+          "model_version": "3.1.0",
+          "notes": [
+            "Closed ends transmit uniform external-pressure axial load.",
+            "Results apply away from the tube/endcap interface.",
+            "Compression is negative and tension is positive.",
+            "Lam\u00e9 stresses apply at every wall thickness; branch retains the legacy value 'thick', force_thick is a compatibility no-op, and the former thin-wall threshold is metadata only.",
+            "This result covers material failure under the category's own criterion: von Mises stress against yield strength for a ductile metal, maximum hoop stress against the working strength for a plastic or the ultimate compressive strength for a brittle material. Shell stability and end closures are separate checks.",
+            "Radial displacement and axial strain need an elastic modulus and a Poisson ratio; without both, every stress result is unchanged and displacement is withheld with its reason.",
+            "Radial displacement is positive outward, so external pressure gives a negative value, and each stress state carries the displacement at its own internal or external surface radius.",
+            "Axial strain is uniform through the wall and along the tube; the axial length change is that strain times the caller's gauge length, which is null when no length is supplied.",
+            "Displacement excludes tube/endcap junction effects, local restraint at closures, ovalization and initial out-of-roundness, instability, plasticity, and ring-frame restraint.",
+            "Deformation is withheld_applicability when maximum absolute radial displacement / wall thickness exceeds 1 or maximum absolute principal strain exceeds 0.01. These are pv-calc release screens, not source-prescribed Lam\u00e9 limits: the first conservatively extends the former DTMB thin-cylinder screen, while the second limits each omitted quadratic Green-strain term to 0.5% of its linear term. Raw displacement and strain values remain available for inspection. Passing these screens does not establish stability, material linearity, or solution accuracy.",
+            "When deformation screens pass but governing material stress exceeds the supplied strength, deformation remains available as elastic_estimate_material_limit; no plastic deformation is modeled."
+          ],
+          "poisson_ratio": 0.33,
+          "principal_stress_ordering": "descending_algebraic",
+          "source_reference": "Lam\u00e9 closed-end thick-cylinder stresses from Roark's Formulas for Stress and Strain, 6th ed., Table 32 cases 1a-1d",
+          "strength_mpa": {
+            "unit": "MPa",
+            "value": 250.0
+          },
+          "stress_sign_convention": "tension_positive",
+          "stress_states": [
+            {
+              "axial_stress_mpa": {
+                "unit": "MPa",
+                "value": -2.57524752475
+              },
+              "hoop_stress_mpa": {
+                "unit": "MPa",
+                "value": -5.1504950495
+              },
+              "principal_stresses_mpa": {
+                "unit": "MPa",
+                "value": [
+                  0.0,
+                  -2.57524752475,
+                  -5.1504950495
+                ]
+              },
+              "radial_displacement_mm": {
+                "unit": "mm",
+                "value": -0.00307190240453
+              },
+              "radial_stress_mpa": {
+                "unit": "MPa",
+                "value": 0.0
+              },
+              "radius_convention": "internal",
+              "radius_mm": {
+                "unit": "mm",
+                "value": 50.0
+              },
+              "von_mises_stress_mpa": {
+                "unit": "MPa",
+                "value": 4.46045955494
+              }
+            },
+            {
+              "axial_stress_mpa": {
+                "unit": "MPa",
+                "value": -2.57524752475
+              },
+              "hoop_stress_mpa": {
+                "unit": "MPa",
+                "value": -5.0504950495
+              },
+              "principal_stresses_mpa": {
+                "unit": "MPa",
+                "value": [
+                  -0.1,
+                  -2.57524752475,
+                  -5.0504950495
+                ]
+              },
+              "radial_displacement_mm": {
+                "unit": "mm",
+                "value": -0.00303644045262
+              },
+              "radial_stress_mpa": {
+                "unit": "MPa",
+                "value": -0.1
+              },
+              "radius_convention": "external",
+              "radius_mm": {
+                "unit": "mm",
+                "value": 51.0
+              },
+              "von_mises_stress_mpa": {
+                "unit": "MPa",
+                "value": 4.28725447418
+              }
+            }
+          ],
+          "theoretical_failure_pressure_mpa": {
+            "unit": "MPa",
+            "value": 5.6048036513
+          },
+          "thin_wall_threshold_mean_radius_over_thickness": 10.0,
+          "validity_violations": [],
+          "wall_thickness_mm": {
+            "unit": "mm",
+            "value": 1.0
+          }
+        },
+        "schema_version": "5.0.0"
+      }
+    },
+    "geometry": {
+      "axial_length": {
+        "unit": "mm",
+        "value": 300.0
+      },
+      "external_radius": {
+        "unit": "mm",
+        "value": 51.0
+      },
+      "internal_radius": {
+        "unit": "mm",
+        "value": 50.0
+      },
+      "shell_mid_surface_radius": {
+        "unit": "mm",
+        "value": 50.5
+      },
+      "unsupported_length": {
+        "unit": "mm",
+        "value": 300.0
+      },
+      "wall_thickness": {
+        "unit": "mm",
+        "value": 1.0
+      }
+    },
+    "load_case": "hydrostatic_closed_end",
+    "mass_properties": {
+      "buoyant_force": {
+        "unit": "N",
+        "value": 27.7715294378
+      },
+      "components": [
+        {
+          "density": {
+            "unit": "kg/m^3",
+            "value": 2700.0
+          },
+          "id": "tube",
+          "solid_volume": {
+            "unit": "m^3",
+            "value": 9.51902574038e-05
+          },
+          "structural_mass": {
+            "unit": "kg",
+            "value": 0.25701369499
+          }
+        },
+        {
+          "density": {
+            "unit": "kg/m^3",
+            "value": 2700.0
+          },
+          "id": "closure_1",
+          "solid_volume": {
+            "unit": "m^3",
+            "value": 3.26851299679e-05
+          },
+          "structural_mass": {
+            "unit": "kg",
+            "value": 0.0882498509135
+          }
+        },
+        {
+          "density": {
+            "unit": "kg/m^3",
+            "value": 2700.0
+          },
+          "id": "closure_2",
+          "solid_volume": {
+            "unit": "m^3",
+            "value": 1.60242169284e-05
+          },
+          "structural_mass": {
+            "unit": "kg",
+            "value": 0.0432653857067
+          }
+        }
+      ],
+      "displaced_fluid_mass": {
+        "unit": "kg",
+        "value": 2.83094081935
+      },
+      "displaced_volume": {
+        "unit": "m^3",
+        "value": 0.00276189348229
+      },
+      "fluid_density": {
+        "unit": "kg/m^3",
+        "value": 1025.0
+      },
+      "gravity": {
+        "unit": "m/s^2",
+        "value": 9.81
+      },
+      "internal_geometric_volume": {
+        "unit": "m^3",
+        "value": 0.00261799387799
+      },
+      "net_submerged_mass": {
+        "unit": "kg",
+        "value": -1.94241188774
+      },
+      "payload_mass": {
+        "unit": "kg",
+        "value": 0.5
+      },
+      "payload_volume": {
+        "unit": "m^3",
+        "value": 0.0001
+      },
+      "reasons": [],
+      "remaining_internal_volume": {
+        "unit": "m^3",
+        "value": 0.00251799387799
+      },
+      "solid_volume": {
+        "unit": "m^3",
+        "value": 0.0001438996043
+      },
+      "status": "calculated",
+      "structural_mass": {
+        "unit": "kg",
+        "value": 0.38852893161
+      },
+      "total_air_mass": {
+        "unit": "kg",
+        "value": 0.88852893161
+      },
+      "volume_basis": "The tube axial length spans two butt planes. Flat discs extend outward and add their solid/displaced volume but no cavity volume. Hemispheres extend outward and add their shell, outer-envelope, and inner-cavity volumes. There is no overlap, inserted spigot, groove, or joint hardware. Internal volume is geometric volume, not a guarantee that a payload shape fits."
+    },
+    "model": "cylinder",
+    "schema_version": "5.0.0"
+  },
   "hemisphere_subsea_screen.json": {
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.hemispherical_head_external_pressure",
       "model_id": "roark_nasa_hemispherical_head_external_pressure",
-      "model_version": "4.0.0",
+      "model_version": "4.1.0",
       "package_version": "0.1.0"
     },
     "material": {
@@ -626,7 +2414,7 @@
       },
       "mean_radius_over_thickness": 40.0,
       "model_id": "roark_nasa_hemispherical_head_external_pressure",
-      "model_version": "4.0.0",
+      "model_version": "4.1.0",
       "nasa_candidate_critical_membrane_stress_mpa": {
         "unit": "MPa",
         "value": 160.376980109
@@ -856,7 +2644,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.flat_circular_plate",
       "model_id": "uniformly_loaded_flat_circular_plate",
-      "model_version": "4.0.0",
+      "model_version": "4.1.0",
       "package_version": "0.1.0"
     },
     "material": {
@@ -942,7 +2730,7 @@
       },
       "maximum_tangential_stress_location": "center",
       "model_id": "uniformly_loaded_flat_circular_plate",
-      "model_version": "4.0.0",
+      "model_version": "4.1.0",
       "notes": [
         "boundary_condition: simply-supported edge prevents transverse deflection while allowing radial rotation and displacement.",
         "The free radius is half the plate free/unsupported diameter at the support or seal line.",
@@ -1021,7 +2809,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.flat_circular_plate",
       "model_id": "uniformly_loaded_flat_circular_plate",
-      "model_version": "4.0.0",
+      "model_version": "4.1.0",
       "package_version": "0.1.0"
     },
     "material": {
@@ -1111,7 +2899,7 @@
       },
       "maximum_tangential_stress_location": "center",
       "model_id": "uniformly_loaded_flat_circular_plate",
-      "model_version": "4.0.0",
+      "model_version": "4.1.0",
       "notes": [
         "boundary_condition: simply-supported edge prevents transverse deflection while allowing radial rotation and displacement.",
         "The free radius is half the plate free/unsupported diameter at the support or seal line.",
@@ -1191,7 +2979,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.flat_circular_plate",
       "model_id": "uniformly_loaded_flat_circular_plate",
-      "model_version": "4.0.0",
+      "model_version": "4.1.0",
       "package_version": "0.1.0"
     },
     "material": {
@@ -1276,7 +3064,7 @@
       },
       "maximum_tangential_stress_location": "center",
       "model_id": "uniformly_loaded_flat_circular_plate",
-      "model_version": "4.0.0",
+      "model_version": "4.1.0",
       "notes": [
         "boundary_condition: fixed edge prevents radial rotation and transverse deflection while allowing radial displacement.",
         "The free radius is half the plate free/unsupported diameter at the support or seal line.",
@@ -1400,7 +3188,7 @@
         "value": 0.6
       },
       "operation": "plate_thickness_inverse_sizing",
-      "operation_version": "2.0.0",
+      "operation_version": "2.1.0",
       "plate_thickness_tolerance": {
         "unit": "mm",
         "value": 9.33127789285e-09
@@ -1456,7 +3244,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "3.0.0",
+      "model_version": "3.1.0",
       "package_version": "0.1.0"
     },
     "material": {
@@ -1929,7 +3717,7 @@
         "load_case": "hydrostatic_closed_end",
         "margin": null,
         "model_id": "nasa_smooth_cylinder_external_pressure_buckling",
-        "model_version": "4.0.0",
+        "model_version": "4.1.0",
         "moderate_gamma_z_lower_boundary": 100.0,
         "moderate_long_boundary_parameter": 145667.344866,
         "moderate_long_overlap_end_z": 258964.16865,
@@ -2059,7 +3847,7 @@
         }
       ],
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "3.0.0",
+      "model_version": "3.1.0",
       "notes": [
         "The 0.75 multiplier is NASA's recommendation immediately following Eq. 68; it is not tuned to DTMB.",
         "The shell radius is explicitly the shell mid-surface radius, consistent with the Eq. 82-91 reference surface.",
@@ -2147,7 +3935,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "3.0.0",
+      "model_version": "3.1.0",
       "package_version": "0.1.0"
     },
     "material": {
@@ -2620,7 +4408,7 @@
         "load_case": "hydrostatic_closed_end",
         "margin": null,
         "model_id": "nasa_smooth_cylinder_external_pressure_buckling",
-        "model_version": "4.0.0",
+        "model_version": "4.1.0",
         "moderate_gamma_z_lower_boundary": 100.0,
         "moderate_long_boundary_parameter": 145667.344866,
         "moderate_long_overlap_end_z": 258964.16865,
@@ -2750,7 +4538,7 @@
         }
       ],
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "3.0.0",
+      "model_version": "3.1.0",
       "notes": [
         "The 0.75 multiplier is NASA's recommendation immediately following Eq. 68; it is not tuned to DTMB.",
         "The shell radius is explicitly the shell mid-surface radius, consistent with the Eq. 82-91 reference surface.",
@@ -2838,7 +4626,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "3.0.0",
+      "model_version": "3.1.0",
       "package_version": "0.1.0"
     },
     "material": {
@@ -3311,7 +5099,7 @@
         "load_case": "hydrostatic_closed_end",
         "margin": null,
         "model_id": "nasa_smooth_cylinder_external_pressure_buckling",
-        "model_version": "4.0.0",
+        "model_version": "4.1.0",
         "moderate_gamma_z_lower_boundary": 100.0,
         "moderate_long_boundary_parameter": 145667.344866,
         "moderate_long_overlap_end_z": 258964.16865,
@@ -3441,7 +5229,7 @@
         }
       ],
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "3.0.0",
+      "model_version": "3.1.0",
       "notes": [
         "The 0.75 multiplier is NASA's recommendation immediately following Eq. 68; it is not tuned to DTMB.",
         "The shell radius is explicitly the shell mid-surface radius, consistent with the Eq. 82-91 reference surface.",
@@ -3529,7 +5317,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "3.0.0",
+      "model_version": "3.1.0",
       "package_version": "0.1.0"
     },
     "material": {
@@ -4002,7 +5790,7 @@
         "load_case": "hydrostatic_closed_end",
         "margin": null,
         "model_id": "nasa_smooth_cylinder_external_pressure_buckling",
-        "model_version": "4.0.0",
+        "model_version": "4.1.0",
         "moderate_gamma_z_lower_boundary": 100.0,
         "moderate_long_boundary_parameter": 145667.344866,
         "moderate_long_overlap_end_z": 258964.16865,
@@ -4132,7 +5920,7 @@
         }
       ],
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "3.0.0",
+      "model_version": "3.1.0",
       "notes": [
         "The 0.75 multiplier is NASA's recommendation immediately following Eq. 68; it is not tuned to DTMB.",
         "The shell radius is explicitly the shell mid-surface radius, consistent with the Eq. 82-91 reference surface.",
@@ -4220,7 +6008,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "3.0.0",
+      "model_version": "3.1.0",
       "package_version": "0.1.0"
     },
     "material": {
@@ -4693,7 +6481,7 @@
         "load_case": "hydrostatic_closed_end",
         "margin": null,
         "model_id": "nasa_smooth_cylinder_external_pressure_buckling",
-        "model_version": "4.0.0",
+        "model_version": "4.1.0",
         "moderate_gamma_z_lower_boundary": 100.0,
         "moderate_long_boundary_parameter": 145667.344866,
         "moderate_long_overlap_end_z": 258964.16865,
@@ -4823,7 +6611,7 @@
         }
       ],
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "3.0.0",
+      "model_version": "3.1.0",
       "notes": [
         "The 0.75 multiplier is NASA's recommendation immediately following Eq. 68; it is not tuned to DTMB.",
         "The shell radius is explicitly the shell mid-surface radius, consistent with the Eq. 82-91 reference surface.",
@@ -4911,7 +6699,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "3.0.0",
+      "model_version": "3.1.0",
       "package_version": "0.1.0"
     },
     "material": {
@@ -5384,7 +7172,7 @@
         "load_case": "hydrostatic_closed_end",
         "margin": null,
         "model_id": "nasa_smooth_cylinder_external_pressure_buckling",
-        "model_version": "4.0.0",
+        "model_version": "4.1.0",
         "moderate_gamma_z_lower_boundary": 100.0,
         "moderate_long_boundary_parameter": 145667.344866,
         "moderate_long_overlap_end_z": 258964.16865,
@@ -5514,7 +7302,7 @@
         }
       ],
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "3.0.0",
+      "model_version": "3.1.0",
       "notes": [
         "The 0.75 multiplier is NASA's recommendation immediately following Eq. 68; it is not tuned to DTMB.",
         "The shell radius is explicitly the shell mid-surface radius, consistent with the Eq. 82-91 reference surface.",
@@ -5602,7 +7390,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "3.0.0",
+      "model_version": "3.1.0",
       "package_version": "0.1.0"
     },
     "material": {
@@ -6075,7 +7863,7 @@
         "load_case": "hydrostatic_closed_end",
         "margin": null,
         "model_id": "nasa_smooth_cylinder_external_pressure_buckling",
-        "model_version": "4.0.0",
+        "model_version": "4.1.0",
         "moderate_gamma_z_lower_boundary": 100.0,
         "moderate_long_boundary_parameter": 145667.344866,
         "moderate_long_overlap_end_z": 258964.16865,
@@ -6205,7 +7993,7 @@
         }
       ],
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "3.0.0",
+      "model_version": "3.1.0",
       "notes": [
         "The 0.75 multiplier is NASA's recommendation immediately following Eq. 68; it is not tuned to DTMB.",
         "The shell radius is explicitly the shell mid-surface radius, consistent with the Eq. 82-91 reference surface.",
@@ -6293,7 +8081,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "3.0.0",
+      "model_version": "3.1.0",
       "package_version": "0.1.0"
     },
     "material": {
@@ -6766,7 +8554,7 @@
         "load_case": "hydrostatic_closed_end",
         "margin": null,
         "model_id": "nasa_smooth_cylinder_external_pressure_buckling",
-        "model_version": "4.0.0",
+        "model_version": "4.1.0",
         "moderate_gamma_z_lower_boundary": 100.0,
         "moderate_long_boundary_parameter": 145667.344866,
         "moderate_long_overlap_end_z": 258964.16865,
@@ -6896,7 +8684,7 @@
         }
       ],
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "3.0.0",
+      "model_version": "3.1.0",
       "notes": [
         "The 0.75 multiplier is NASA's recommendation immediately following Eq. 68; it is not tuned to DTMB.",
         "The shell radius is explicitly the shell mid-surface radius, consistent with the Eq. 82-91 reference surface.",
@@ -6984,7 +8772,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "3.0.0",
+      "model_version": "3.1.0",
       "package_version": "0.1.0"
     },
     "material": {
@@ -7457,7 +9245,7 @@
         "load_case": "hydrostatic_closed_end",
         "margin": null,
         "model_id": "nasa_smooth_cylinder_external_pressure_buckling",
-        "model_version": "4.0.0",
+        "model_version": "4.1.0",
         "moderate_gamma_z_lower_boundary": 100.0,
         "moderate_long_boundary_parameter": 145667.344866,
         "moderate_long_overlap_end_z": 258964.16865,
@@ -7587,7 +9375,7 @@
         }
       ],
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "3.0.0",
+      "model_version": "3.1.0",
       "notes": [
         "The 0.75 multiplier is NASA's recommendation immediately following Eq. 68; it is not tuned to DTMB.",
         "The shell radius is explicitly the shell mid-surface radius, consistent with the Eq. 82-91 reference surface.",
@@ -7675,7 +9463,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "3.0.0",
+      "model_version": "3.1.0",
       "package_version": "0.1.0"
     },
     "material": {
@@ -8148,7 +9936,7 @@
         "load_case": "hydrostatic_closed_end",
         "margin": null,
         "model_id": "nasa_smooth_cylinder_external_pressure_buckling",
-        "model_version": "4.0.0",
+        "model_version": "4.1.0",
         "moderate_gamma_z_lower_boundary": 100.0,
         "moderate_long_boundary_parameter": 145667.344866,
         "moderate_long_overlap_end_z": 258964.16865,
@@ -8278,7 +10066,7 @@
         }
       ],
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "3.0.0",
+      "model_version": "3.1.0",
       "notes": [
         "The 0.75 multiplier is NASA's recommendation immediately following Eq. 68; it is not tuned to DTMB.",
         "The shell radius is explicitly the shell mid-surface radius, consistent with the Eq. 82-91 reference surface.",
@@ -8366,7 +10154,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.smooth_cylinder_external_pressure_buckling",
       "model_id": "nasa_smooth_cylinder_external_pressure_buckling",
-      "model_version": "4.0.0",
+      "model_version": "4.1.0",
       "package_version": "0.1.0"
     },
     "material": {
@@ -8565,7 +10353,7 @@
       "load_case": "hydrostatic_closed_end",
       "margin": 215.346153846,
       "model_id": "nasa_smooth_cylinder_external_pressure_buckling",
-      "model_version": "4.0.0",
+      "model_version": "4.1.0",
       "moderate_gamma_z_lower_boundary": 100.0,
       "moderate_long_boundary_parameter": 4295.2,
       "moderate_long_overlap_end_z": 7635.91111111,
@@ -8635,7 +10423,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.smooth_cylinder_external_pressure_buckling",
       "model_id": "nasa_smooth_cylinder_external_pressure_buckling",
-      "model_version": "4.0.0",
+      "model_version": "4.1.0",
       "package_version": "0.1.0"
     },
     "material": {
@@ -8834,7 +10622,7 @@
       "load_case": "hydrostatic_closed_end",
       "margin": 12.382642396,
       "model_id": "nasa_smooth_cylinder_external_pressure_buckling",
-      "model_version": "4.0.0",
+      "model_version": "4.1.0",
       "moderate_gamma_z_lower_boundary": 100.0,
       "moderate_long_boundary_parameter": 107380.0,
       "moderate_long_overlap_end_z": 190897.777778,
@@ -8904,7 +10692,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.smooth_cylinder_external_pressure_buckling",
       "model_id": "nasa_smooth_cylinder_external_pressure_buckling",
-      "model_version": "4.0.0",
+      "model_version": "4.1.0",
       "package_version": "0.1.0"
     },
     "material": {
@@ -9103,7 +10891,7 @@
       "load_case": "lateral_only",
       "margin": 0.104872319466,
       "model_id": "nasa_smooth_cylinder_external_pressure_buckling",
-      "model_version": "4.0.0",
+      "model_version": "4.1.0",
       "moderate_gamma_z_lower_boundary": 100.0,
       "moderate_long_boundary_parameter": 107380.0,
       "moderate_long_overlap_end_z": 190897.777778,
@@ -9178,7 +10966,7 @@
         "calculation_source": {
           "function": "pv_calc.pressure_vessel.smooth_cylinder_external_pressure_buckling",
           "model_id": "nasa_smooth_cylinder_external_pressure_buckling",
-          "model_version": "4.0.0",
+          "model_version": "4.1.0",
           "package_version": "0.1.0"
         },
         "material": {
@@ -9377,7 +11165,7 @@
           "load_case": "hydrostatic_closed_end",
           "margin": 0.250000000897,
           "model_id": "nasa_smooth_cylinder_external_pressure_buckling",
-          "model_version": "4.0.0",
+          "model_version": "4.1.0",
           "moderate_gamma_z_lower_boundary": 100.0,
           "moderate_long_boundary_parameter": 6167.28227937,
           "moderate_long_overlap_end_z": 10964.0573856,
@@ -9447,7 +11235,7 @@
         "calculation_source": {
           "function": "pv_calc.pressure_vessel.closed_end_tube_stress",
           "model_id": "closed_end_tube_stress",
-          "model_version": "3.0.0",
+          "model_version": "3.1.0",
           "package_version": "0.1.0"
         },
         "material": {
@@ -9523,7 +11311,7 @@
           },
           "mean_radius_over_thickness": 23.9654293282,
           "model_id": "closed_end_tube_stress",
-          "model_version": "3.0.0",
+          "model_version": "3.1.0",
           "notes": [
             "Closed ends transmit uniform external-pressure axial load.",
             "Results apply away from the tube/endcap interface.",
@@ -9664,7 +11452,7 @@
       "governing_check_changes": [],
       "load_case": "hydrostatic_closed_end",
       "operation": "wall_thickness_inverse_sizing",
-      "operation_version": "3.0.0",
+      "operation_version": "3.1.0",
       "selected_check_margins": {
         "cylindrical_shell_stress": 4.77908273814,
         "smooth_cylinder_buckling": 0.250000000897
@@ -9768,7 +11556,7 @@
         "source_reference": "B. Lautrup, Physics of Continuous Matter, sec. 4.1 'Incompressible sea', p. 59, draft revision 7.7 of 2004-01-22: Eq. (4-3) p - p0 = rho0*g0*h for a fluid of constant density rho0 under constant gravity g0, and Eq. (4-4) p = p0 - rho0*g0*z in flat-earth coordinates with the surface at z = 0 and depth h = -z",
         "substituted_pressure": "design_external_pressure"
       },
-      "operation_version": "1.1.0",
+      "operation_version": "1.2.0",
       "points": [
         {
           "depth": {
@@ -9783,7 +11571,7 @@
             "calculation_source": {
               "function": "pv_calc.pressure_vessel.closed_end_tube_stress",
               "model_id": "closed_end_tube_stress",
-              "model_version": "3.0.0",
+              "model_version": "3.1.0",
               "package_version": "0.1.0"
             },
             "material": {
@@ -9862,7 +11650,7 @@
               },
               "mean_radius_over_thickness": 6.8829787234,
               "model_id": "closed_end_tube_stress",
-              "model_version": "3.0.0",
+              "model_version": "3.1.0",
               "notes": [
                 "Closed ends transmit uniform external-pressure axial load.",
                 "Results apply away from the tube/endcap interface.",
@@ -9987,7 +11775,7 @@
             "calculation_source": {
               "function": "pv_calc.pressure_vessel.closed_end_tube_stress",
               "model_id": "closed_end_tube_stress",
-              "model_version": "3.0.0",
+              "model_version": "3.1.0",
               "package_version": "0.1.0"
             },
             "material": {
@@ -10066,7 +11854,7 @@
               },
               "mean_radius_over_thickness": 6.8829787234,
               "model_id": "closed_end_tube_stress",
-              "model_version": "3.0.0",
+              "model_version": "3.1.0",
               "notes": [
                 "Closed ends transmit uniform external-pressure axial load.",
                 "Results apply away from the tube/endcap interface.",
@@ -10191,7 +11979,7 @@
             "calculation_source": {
               "function": "pv_calc.pressure_vessel.closed_end_tube_stress",
               "model_id": "closed_end_tube_stress",
-              "model_version": "3.0.0",
+              "model_version": "3.1.0",
               "package_version": "0.1.0"
             },
             "material": {
@@ -10270,7 +12058,7 @@
               },
               "mean_radius_over_thickness": 6.8829787234,
               "model_id": "closed_end_tube_stress",
-              "model_version": "3.0.0",
+              "model_version": "3.1.0",
               "notes": [
                 "Closed ends transmit uniform external-pressure axial load.",
                 "Results apply away from the tube/endcap interface.",
@@ -10403,7 +12191,7 @@
         },
         "type": "range"
       },
-      "operation_version": "1.1.0",
+      "operation_version": "1.2.0",
       "points": [
         {
           "external_pressure": {
@@ -10414,7 +12202,7 @@
             "calculation_source": {
               "function": "pv_calc.pressure_vessel.closed_end_tube_stress",
               "model_id": "closed_end_tube_stress",
-              "model_version": "3.0.0",
+              "model_version": "3.1.0",
               "package_version": "0.1.0"
             },
             "material": {
@@ -10493,7 +12281,7 @@
               },
               "mean_radius_over_thickness": 6.8829787234,
               "model_id": "closed_end_tube_stress",
-              "model_version": "3.0.0",
+              "model_version": "3.1.0",
               "notes": [
                 "Closed ends transmit uniform external-pressure axial load.",
                 "Results apply away from the tube/endcap interface.",
@@ -10610,7 +12398,7 @@
             "calculation_source": {
               "function": "pv_calc.pressure_vessel.closed_end_tube_stress",
               "model_id": "closed_end_tube_stress",
-              "model_version": "3.0.0",
+              "model_version": "3.1.0",
               "package_version": "0.1.0"
             },
             "material": {
@@ -10689,7 +12477,7 @@
               },
               "mean_radius_over_thickness": 6.8829787234,
               "model_id": "closed_end_tube_stress",
-              "model_version": "3.0.0",
+              "model_version": "3.1.0",
               "notes": [
                 "Closed ends transmit uniform external-pressure axial load.",
                 "Results apply away from the tube/endcap interface.",
@@ -10806,7 +12594,7 @@
             "calculation_source": {
               "function": "pv_calc.pressure_vessel.closed_end_tube_stress",
               "model_id": "closed_end_tube_stress",
-              "model_version": "3.0.0",
+              "model_version": "3.1.0",
               "package_version": "0.1.0"
             },
             "material": {
@@ -10885,7 +12673,7 @@
               },
               "mean_radius_over_thickness": 6.8829787234,
               "model_id": "closed_end_tube_stress",
-              "model_version": "3.0.0",
+              "model_version": "3.1.0",
               "notes": [
                 "Closed ends transmit uniform external-pressure axial load.",
                 "Results apply away from the tube/endcap interface.",
@@ -11001,7 +12789,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.closed_end_tube_stress",
       "model_id": "closed_end_tube_stress",
-      "model_version": "3.0.0",
+      "model_version": "3.1.0",
       "package_version": "0.1.0"
     },
     "material": {
@@ -11080,7 +12868,7 @@
       },
       "mean_radius_over_thickness": 6.8829787234,
       "model_id": "closed_end_tube_stress",
-      "model_version": "3.0.0",
+      "model_version": "3.1.0",
       "notes": [
         "Closed ends transmit uniform external-pressure axial load.",
         "Results apply away from the tube/endcap interface.",
@@ -11191,7 +12979,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.closed_end_tube_stress",
       "model_id": "closed_end_tube_stress",
-      "model_version": "3.0.0",
+      "model_version": "3.1.0",
       "package_version": "0.1.0"
     },
     "failure_depths": {
@@ -11355,7 +13143,7 @@
       },
       "mean_radius_over_thickness": 3.73728813559,
       "model_id": "closed_end_tube_stress",
-      "model_version": "3.0.0",
+      "model_version": "3.1.0",
       "notes": [
         "Closed ends transmit uniform external-pressure axial load.",
         "Results apply away from the tube/endcap interface.",
@@ -11467,7 +13255,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.closed_end_tube_stress",
       "model_id": "closed_end_tube_stress",
-      "model_version": "3.0.0",
+      "model_version": "3.1.0",
       "package_version": "0.1.0"
     },
     "material": {
@@ -11547,7 +13335,7 @@
       },
       "mean_radius_over_thickness": 8.26734930884,
       "model_id": "closed_end_tube_stress",
-      "model_version": "3.0.0",
+      "model_version": "3.1.0",
       "notes": [
         "Closed ends transmit uniform external-pressure axial load.",
         "Results apply away from the tube/endcap interface.",
@@ -11673,7 +13461,7 @@
       "evaluation_count": 32,
       "governing_location_changes": [],
       "operation": "wall_thickness_inverse_sizing",
-      "operation_version": "3.0.0",
+      "operation_version": "3.1.0",
       "selected_check_margins": {
         "cylindrical_shell_stress": 0.100000000398
       },

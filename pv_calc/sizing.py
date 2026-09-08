@@ -21,6 +21,8 @@ from pv_calc.contracts import (
     TUBE_SIZING_CHECK,
     TUBE_SIZING_CHECK_SET,
     DerivedBranchBoundary,
+    FixedCylinderRadius,
+    QuantityInput,
     ExcludedThicknessInterval,
     NormalizedThicknessBounds,
     PlateSizeRequest,
@@ -133,12 +135,115 @@ class _SizingSolution:
     """The thickness the shared solver selected, and its evidence."""
 
     selected: _SizingSample
-    solution_type: Literal["lower_bound", "branch_start", "interior_root"]
+    solution_type: Literal["lower_bound", "branch_start", "interior_root", "stock_candidate"]
     bracket: tuple[_SizingSample, _SizingSample] | None
     samples: tuple[_SizingSample, ...]
     bisection_iterations: int
     thickness_tolerance_mm: float
     excluded_intervals: tuple[tuple[_SizingSample, _SizingSample], ...]
+    stock_candidates: tuple[dict[str, Any], ...] = ()
+
+
+def _stock_values(values: list[QuantityInput] | None) -> list[float] | None:
+    if values is None:
+        return None
+    converted = [
+        _to_unit(value, "mm", f"inputs.stock_thicknesses.{index}")
+        for index, value in enumerate(values)
+    ]
+    if any(value <= 0 for value in converted):
+        raise CalcCliError("invalid_request", "stock thicknesses must be positive")
+    return converted
+
+
+def _fixed_radius(
+    inputs: FixedCylinderRadius, upper_bound_mm: float,
+) -> tuple[float | None, float | None]:
+    inner = (
+        _to_unit(inputs.internal_radius, "mm", "inputs.internal_radius")
+        if inputs.internal_radius is not None else None
+    )
+    outer = (
+        _to_unit(inputs.external_radius, "mm", "inputs.external_radius")
+        if inputs.external_radius is not None else None
+    )
+    radius = inner if inner is not None else outer
+    if radius is None or radius <= 0:
+        raise CalcCliError("invalid_request", "the fixed radius must be positive")
+    if outer is not None and upper_bound_mm >= outer:
+        raise CalcCliError(
+            "invalid_bounds",
+            "wall thickness upper bound must be smaller than external_radius to retain a positive bore",
+        )
+    return inner, outer
+
+
+def _positive_sizing_pressure(pressure_mpa: float) -> float:
+    if pressure_mpa <= 0:
+        raise CalcCliError("invalid_request", "sizing requires positive design pressure")
+    return pressure_mpa
+
+
+def _solve_stock_thickness(
+    *,
+    candidates_mm: list[float],
+    lower_bound_mm: float,
+    upper_bound_mm: float,
+    bounds_variable: str,
+    check_targets: Mapping[str, float],
+    evaluate: Callable[[float], _SizingSample],
+) -> _SizingSolution:
+    """Check every supplied stock size independently, retaining caller order.
+
+    No continuity, applicability, or monotonicity is inferred between stock
+    sizes. Out-of-bounds values remain visible but cannot be selected.
+    """
+    _validate_thickness_bounds(lower_bound_mm, upper_bound_mm, variable=bounds_variable)
+    rows: list[dict[str, Any]] = []
+    samples: list[_SizingSample] = []
+    passing: list[_SizingSample] = []
+    for index, thickness in enumerate(candidates_mm):
+        row: dict[str, Any] = {
+            "candidate_index": index,
+            "thickness": _quantity(thickness, "mm"),
+        }
+        if not lower_bound_mm <= thickness <= upper_bound_mm:
+            row["outcome"] = "outside_bounds"
+        else:
+            sample = evaluate(thickness)
+            samples.append(sample)
+            row["check_margins"] = sample.check_margins
+            row["states"] = sample.states
+            if not sample.eligible:
+                row["outcome"] = "unavailable"
+                row["details"] = sample.unavailable_details
+            elif _target_slack(sample, check_targets) < 0:
+                row["outcome"] = "fails_targets"
+            else:
+                row["outcome"] = "meets_targets"
+                passing.append(sample)
+        rows.append(row)
+    if not passing:
+        raise CalcCliError(
+            "no_reliable_solution",
+            "no supplied stock thickness has every required output and meets every target within bounds",
+            [{"stock_candidates": rows}],
+        )
+    selected = min(passing, key=lambda sample: sample.thickness_mm)
+    return _SizingSolution(
+        selected=selected,
+        solution_type="stock_candidate",
+        bracket=None,
+        samples=tuple(sorted(samples, key=lambda sample: sample.thickness_mm)),
+        bisection_iterations=0,
+        thickness_tolerance_mm=0.0,
+        excluded_intervals=(),
+        stock_candidates=tuple(rows),
+    )
+
+
+def _stock_metadata(solution: _SizingSolution) -> dict[str, Any]:
+    return {"stock_candidates": list(solution.stock_candidates)} if solution.stock_candidates else {}
 
 
 def _sizing_state_changes(
@@ -237,6 +342,7 @@ def _solve_thickness(
     partition_thicknesses: Sequence[float] | Callable[[], Sequence[float]],
     branch_label: str,
     failure_details: Callable[[tuple[_SizingSample, ...]], list[dict[str, Any]]],
+    stock_thicknesses_mm: list[float] | None = None,
 ) -> _SizingSolution:
     """Select the smallest model-eligible thickness that meets every target.
 
@@ -254,6 +360,15 @@ def _solve_thickness(
     and that assumption is checked against every evaluated sample before a
     solution is returned.
     """
+    if stock_thicknesses_mm is not None:
+        return _solve_stock_thickness(
+            candidates_mm=stock_thicknesses_mm,
+            lower_bound_mm=lower_bound_mm,
+            upper_bound_mm=upper_bound_mm,
+            bounds_variable=bounds_variable,
+            check_targets=check_targets,
+            evaluate=evaluate,
+        )
     _validate_thickness_bounds(
         lower_bound_mm,
         upper_bound_mm,
@@ -284,7 +399,7 @@ def _solve_thickness(
 
     lower_sample = sample(lower_bound_mm)
 
-    solution_type: Literal["lower_bound", "branch_start", "interior_root"]
+    solution_type: Literal["lower_bound", "branch_start", "interior_root", "stock_candidate"]
     bracket: tuple[_SizingSample, _SizingSample] | None = None
     bisection_iterations = 0
     excluded_intervals: list[tuple[_SizingSample, _SizingSample]] = []
@@ -463,6 +578,7 @@ def _tube_governing_location(
 
 
 def _tube_sizing_sample(result: TubeStressResult) -> _SizingSample:
+    assert result.margin is not None  # Sizing requires positive applied pressure.
     return _SizingSample(
         thickness_mm=result.wall_thickness_mm,
         branch=result.branch,
@@ -545,21 +661,28 @@ def _tube_sizing_error_details(
 def _solve_tube_wall_thickness(
     *,
     external_pressure_mpa: float,
-    internal_radius_mm: float,
+    internal_radius_mm: float | None,
     lower_bound_mm: float,
     upper_bound_mm: float,
     target_minimum_margin: float,
     material: ResolvedMaterial,
     force_thick: bool,
-) -> tuple[TubeStressResult, TubeSizingMetadata]:
+    external_radius_mm: float | None = None,
+    axial_length_mm: float | None = None,
+    stock_thicknesses_mm: list[float] | None = None,
+) -> tuple[TubeStressResult, TubeSizingMetadata, dict[str, Any]]:
     results: dict[float, TubeStressResult] = {}
 
     def evaluate(wall_thickness_mm: float) -> _SizingSample:
         try:
             result = _calculate_tube_result(
                 external_pressure_mpa=external_pressure_mpa,
-                internal_radius_mm=internal_radius_mm,
+                internal_radius_mm=(
+                    external_radius_mm - wall_thickness_mm
+                    if external_radius_mm is not None else cast(float, internal_radius_mm)
+                ),
                 wall_thickness_mm=wall_thickness_mm,
+                axial_length_mm=axial_length_mm,
                 material=material,
                 force_thick=force_thick,
             )
@@ -575,6 +698,7 @@ def _solve_tube_wall_thickness(
         lower_bound_mm=lower_bound_mm,
         upper_bound_mm=upper_bound_mm,
         bounds_variable="wall-thickness",
+        stock_thicknesses_mm=stock_thicknesses_mm,
         check_targets=dict.fromkeys(TUBE_SIZING_CHECK_SET, target_minimum_margin),
         evaluate=evaluate,
         partition_thicknesses=(),
@@ -611,7 +735,7 @@ def _solve_tube_wall_thickness(
         selected_check_margins=dict(solution.selected.check_margins),
         selected_minimum_margin=solution.selected.minimum_margin,
         solution_type=solution.solution_type,
-        algorithm="known_branch_partition_and_bisection",
+        algorithm=("stock_candidate_evaluation" if solution.stock_candidates else "known_branch_partition_and_bisection"),
         evaluation_count=len(solution.samples),
         bisection_iterations=solution.bisection_iterations,
         wall_thickness_tolerance=_millimeters(solution.thickness_tolerance_mm),
@@ -622,7 +746,7 @@ def _solve_tube_wall_thickness(
             state_name="governing_location",
         ),
     )
-    return results[solution.selected.thickness_mm], metadata
+    return results[solution.selected.thickness_mm], metadata, _stock_metadata(solution)
 
 
 def _evaluate_tube_size(request: TubeSizeRequest, materials_file: Path | None) -> dict[str, Any]:
@@ -637,17 +761,20 @@ def _evaluate_tube_size(request: TubeSizeRequest, materials_file: Path | None) -
         "mm",
         "inputs.wall_thickness_bounds.upper",
     )
-    result, sizing = _solve_tube_wall_thickness(
-        external_pressure_mpa=_to_unit(
+    internal_radius_mm, external_radius_mm = _fixed_radius(request.inputs, upper_bound_mm)
+    result, sizing, stock = _solve_tube_wall_thickness(
+        external_pressure_mpa=_positive_sizing_pressure(_to_unit(
             request.inputs.external_pressure,
             "MPa",
             "inputs.external_pressure",
+        )),
+        internal_radius_mm=internal_radius_mm,
+        external_radius_mm=external_radius_mm,
+        axial_length_mm=(
+            _to_unit(request.inputs.axial_length, "mm", "inputs.axial_length")
+            if request.inputs.axial_length is not None else None
         ),
-        internal_radius_mm=_to_unit(
-            request.inputs.internal_radius,
-            "mm",
-            "inputs.internal_radius",
-        ),
+        stock_thicknesses_mm=_stock_values(request.inputs.stock_thicknesses),
         lower_bound_mm=lower_bound_mm,
         upper_bound_mm=upper_bound_mm,
         target_minimum_margin=request.inputs.minimum_margin,
@@ -664,7 +791,7 @@ def _evaluate_tube_size(request: TubeSizeRequest, materials_file: Path | None) -
     response.update(
         {
             "operation": "size",
-            "sizing": sizing.model_dump(mode="json"),
+            "sizing": {**sizing.model_dump(mode="json"), **stock},
         }
     )
     return response
@@ -848,11 +975,11 @@ def _evaluate_plate_size(
     material = _resolve_material(request.material, materials_file)
     # Fail fast, before bounds validation: every sample reads these constants.
     material.elastic_constants_mpa("plate")
-    external_pressure_mpa = _to_unit(
+    external_pressure_mpa = _positive_sizing_pressure(_to_unit(
         request.inputs.external_pressure,
         "MPa",
         "inputs.external_pressure",
-    )
+    ))
     free_radius_mm = _to_unit(request.inputs.free_radius, "mm", "inputs.free_radius")
     lower_bound_mm = _to_unit(
         request.inputs.plate_thickness_bounds.lower,
@@ -894,6 +1021,10 @@ def _evaluate_plate_size(
             plate_thickness_mm=plate_thickness_mm,
             material=material,
             boundary_condition=boundary_condition,
+            outside_radius_mm=(
+                _to_unit(request.inputs.outside_radius, "mm", "inputs.outside_radius")
+                if request.inputs.outside_radius is not None else None
+            ),
         )
         try:
             # Admit only forward results that the final JSON response can emit.
@@ -988,6 +1119,7 @@ def _evaluate_plate_size(
         lower_bound_mm=lower_bound_mm,
         upper_bound_mm=upper_bound_mm,
         bounds_variable="plate-thickness",
+        stock_thicknesses_mm=_stock_values(request.inputs.stock_thicknesses),
         check_targets=check_targets,
         evaluate=evaluate,
         partition_thicknesses=partition,
@@ -1042,9 +1174,9 @@ def _evaluate_plate_size(
         ),
         selected_minimum_target_slack=_target_slack(selected, check_targets),
         solution_type=solution.solution_type,
-        selection_scope="model_eligible_thicknesses",
+        selection_scope="stock_candidates" if solution.stock_candidates else "model_eligible_thicknesses",
         excluded_thickness_intervals=_excluded_thickness_intervals(solution),
-        algorithm="known_branch_partition_and_bisection",
+        algorithm=("stock_candidate_evaluation" if solution.stock_candidates else "known_branch_partition_and_bisection"),
         evaluation_count=len(solution.samples),
         bisection_iterations=solution.bisection_iterations,
         plate_thickness_tolerance=_millimeters(solution.thickness_tolerance_mm),
@@ -1065,7 +1197,7 @@ def _evaluate_plate_size(
     response.update(
         {
             "operation": "size",
-            "sizing": metadata.model_dump(mode="json"),
+            "sizing": {**metadata.model_dump(mode="json"), **_stock_metadata(solution)},
         }
     )
     return response
@@ -1138,10 +1270,11 @@ def _smooth_buckling_regime_condition(
 
 def _smooth_buckling_branch_partition(
     *,
-    internal_radius_mm: float,
+    internal_radius_mm: float | None,
     lower_bound_mm: float,
     upper_bound_mm: float,
     buckling_at: Callable[[float], SmoothCylinderBucklingResult],
+    external_radius_mm: float | None = None,
 ) -> tuple[tuple[str, float], ...]:
     """Derive the wall thickness of every branch boundary that applies here.
 
@@ -1157,8 +1290,19 @@ def _smooth_buckling_branch_partition(
     These boundaries partition applicability as well
     as the capacity formula; no target is bracketed through a withheld band.
     """
-    thin_shell_mm = internal_radius_mm / (
-        SMOOTH_CYLINDER_MIN_RADIUS_THICKNESS_RATIO - 0.5
+    # At fixed OD, r = R_o - t/2. Across the thin-shell domain t < R_o:
+    # Z decreases because r*t rises, while gamma*Z/boundary ~ t/r^3 rises.
+    # Consequently the same sign-changing regime tests isolate every crossing.
+    # Hoop capacity rises as (t/r)^2 (long), t^(3/2)/sqrt(r) (moderate),
+    # and with logarithmic derivative (2 + q*t/r)/(1 + q) > 0 (short),
+    # where stationary membrane/bending ratio 0 <= q < 1/3. Pressure adds
+    # the increasing t/r factor. Exact fixed-OD Lamé stress decreases for
+    # t < R_o. Both margins therefore rise inside each released regime;
+    # the solver still splits at every discontinuity and withheld band.
+    thin_shell_mm = (
+        external_radius_mm / (SMOOTH_CYLINDER_MIN_RADIUS_THICKNESS_RATIO + 0.5)
+        if external_radius_mm is not None
+        else cast(float, internal_radius_mm) / (SMOOTH_CYLINDER_MIN_RADIUS_THICKNESS_RATIO - 0.5)
     )
     boundaries = [(_SMOOTH_BUCKLING_THIN_SHELL_BOUNDARY, thin_shell_mm)]
     for name, regime, boundary_field, sign in _SMOOTH_BUCKLING_REGIME_BOUNDARIES:
@@ -1206,6 +1350,7 @@ def _smooth_buckling_sizing_sample(
     tube: TubeStressResult,
     buckling: SmoothCylinderBucklingResult,
 ) -> _SizingSample:
+    assert tube.margin is not None  # Sizing requires positive applied pressure.
     check_margins = {
         TUBE_SIZING_CHECK: tube.margin,
         # The caller admits only released capacities, so the margin exists;
@@ -1343,16 +1488,11 @@ def _evaluate_smooth_buckling_size(
     material = _resolve_material(request.material, materials_file)
     # Fail fast, before bounds validation: every sample reads these constants.
     material.elastic_constants_mpa("smooth-buckling")
-    external_pressure_mpa = _to_unit(
+    external_pressure_mpa = _positive_sizing_pressure(_to_unit(
         request.inputs.external_pressure,
         "MPa",
         "inputs.external_pressure",
-    )
-    internal_radius_mm = _to_unit(
-        request.inputs.internal_radius,
-        "mm",
-        "inputs.internal_radius",
-    )
+    ))
     unsupported_length_mm = _to_unit(
         request.inputs.unsupported_length,
         "mm",
@@ -1368,7 +1508,9 @@ def _evaluate_smooth_buckling_size(
         "mm",
         "inputs.wall_thickness_bounds.upper",
     )
+    internal_radius_mm, external_radius_mm = _fixed_radius(request.inputs, upper_bound_mm)
     target_minimum_margin = request.inputs.minimum_margin
+    stock_thicknesses_mm = _stock_values(request.inputs.stock_thicknesses)
     # Checked before the boundaries are derived, because the derivation runs the
     # buckling kernel at thicknesses inside the bounds.
     _validate_thickness_bounds(
@@ -1388,7 +1530,11 @@ def _evaluate_smooth_buckling_size(
             external_pressure_mpa=external_pressure_mpa,
             # One cylinder: the buckling model's shell mid-surface radius is the
             # tube model's mean radius at this same wall thickness.
-            shell_mid_surface_radius_mm=internal_radius_mm + 0.5 * wall_thickness_mm,
+            shell_mid_surface_radius_mm=(
+                external_radius_mm - 0.5 * wall_thickness_mm
+                if external_radius_mm is not None
+                else cast(float, internal_radius_mm) + 0.5 * wall_thickness_mm
+            ),
             wall_thickness_mm=wall_thickness_mm,
             unsupported_length_mm=unsupported_length_mm,
             material=material,
@@ -1402,17 +1548,22 @@ def _evaluate_smooth_buckling_size(
         lower_bound_mm=lower_bound_mm,
         upper_bound_mm=upper_bound_mm,
         buckling_at=buckling_at,
-    )
+        external_radius_mm=external_radius_mm,
+    ) if stock_thicknesses_mm is None else ()
 
     def evaluate(wall_thickness_mm: float) -> _SizingSample:
         tube = _calculate_tube_result(
             external_pressure_mpa=external_pressure_mpa,
-            internal_radius_mm=internal_radius_mm,
+            internal_radius_mm=(
+                external_radius_mm - wall_thickness_mm
+                if external_radius_mm is not None else cast(float, internal_radius_mm)
+            ),
             wall_thickness_mm=wall_thickness_mm,
             material=material,
             force_thick=False,
         )
         buckling = buckling_at(wall_thickness_mm)
+        assert tube.margin is not None  # Sizing requires positive applied pressure.
         try:
             # Admit only forward results that the final JSON response can emit.
             _json_text(
@@ -1456,6 +1607,7 @@ def _evaluate_smooth_buckling_size(
         lower_bound_mm=lower_bound_mm,
         upper_bound_mm=upper_bound_mm,
         bounds_variable="wall-thickness",
+        stock_thicknesses_mm=stock_thicknesses_mm,
         check_targets=dict.fromkeys(
             SMOOTH_BUCKLING_SIZING_CHECK_SET,
             target_minimum_margin,
@@ -1490,7 +1642,10 @@ def _evaluate_smooth_buckling_size(
         variable="wall_thickness",
         declared_check_set=list(SMOOTH_BUCKLING_SIZING_CHECK_SET),
         load_case=SMOOTH_BUCKLING_SIZING_LOAD_CASE,
-        shell_mid_surface_radius_convention=SMOOTH_BUCKLING_SIZING_RADIUS_CONVENTION,
+        shell_mid_surface_radius_convention=(
+            "external_radius_minus_half_wall_thickness" if external_radius_mm is not None
+            else SMOOTH_BUCKLING_SIZING_RADIUS_CONVENTION
+        ),
         target_minimum_margin=target_minimum_margin,
         bounds=NormalizedThicknessBounds(
             lower=_millimeters(lower_bound_mm),
@@ -1507,9 +1662,9 @@ def _evaluate_smooth_buckling_size(
             SizingCheckName, selected.states["governing_check"]
         ),
         solution_type=solution.solution_type,
-        selection_scope="model_eligible_thicknesses",
+        selection_scope="stock_candidates" if solution.stock_candidates else "model_eligible_thicknesses",
         excluded_thickness_intervals=_excluded_thickness_intervals(solution),
-        algorithm="known_branch_partition_and_bisection",
+        algorithm=("stock_candidate_evaluation" if solution.stock_candidates else "known_branch_partition_and_bisection"),
         evaluation_count=len(solution.samples),
         bisection_iterations=solution.bisection_iterations,
         wall_thickness_tolerance=_millimeters(solution.thickness_tolerance_mm),
@@ -1552,5 +1707,5 @@ def _evaluate_smooth_buckling_size(
                 module="pv_calc.pressure_vessel",
             ),
         },
-        "sizing": metadata.model_dump(mode="json"),
+        "sizing": {**metadata.model_dump(mode="json"), **_stock_metadata(solution)},
     }

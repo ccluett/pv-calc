@@ -231,7 +231,7 @@ def test_hemisphere_elastic_gate_releases_at_and_withholds_below_proportional_li
 @pytest.mark.parametrize(
     ("changes", "message"),
     [
-        ({"external_pressure_mpa": 0.0}, "external_pressure_mpa must be finite and positive"),
+        ({"external_pressure_mpa": -1.0}, "external_pressure_mpa must be finite and non-negative"),
         ({"poisson_ratio": 0.5}, "poisson_ratio must be finite and between 0 and 0.5"),
         (
             {"proportional_limit_mpa": 300.0},

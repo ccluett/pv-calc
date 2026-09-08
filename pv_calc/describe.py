@@ -21,6 +21,7 @@ from pv_calc.contracts import (
     SMOOTH_BUCKLING_SIZING_LOAD_CASE,
     SMOOTH_BUCKLING_SIZING_RADIUS_CONVENTION,
     SWEEP_AXIS_VARIABLES,
+    SWEEP_GEOMETRY_VARIABLES,
     SWEEP_DEPTH_SUBSTITUTED_PRESSURE,
     SWEEP_OPERATION_VERSION,
     SWEEP_SWEPT_INPUT,
@@ -628,10 +629,11 @@ def _describe_model(
     else:
         raise CalcCliError(
             "unknown_model",
-            f"unknown model {model!r}; available describe targets are compare-materials, hemisphere, mass-properties, plate, ring-shell, smooth-buckling, sweep, and tube",
+            f"unknown model {model!r}; available describe targets are compare-materials, cylinder, hemisphere, mass-properties, plate, ring-shell, smooth-buckling, sweep, and tube",
             [
                 {
                     "available_models": [
+                        "cylinder",
                         "hemisphere",
                         "mass-properties",
                         "plate",
@@ -682,8 +684,8 @@ def _describe_model(
         },
         "known_omissions": omissions,
         "material_source_rule": (
-            "exactly one of a named entry from an explicit --materials-file"
-            " database or an explicit property record"
+            "exactly one of a named entry from the bundled reference database"
+            " (overridden by --materials-file) or an explicit property record"
         ),
         "model": model,
         "model_id": model_id,
@@ -725,6 +727,94 @@ def _describe_model(
         description["size_contract"] = _plate_size_contract(output_schema, size_cli_options or {})
     if model == "smooth-buckling":
         description["size_contract"] = _smooth_buckling_size_contract(size_cli_options or {})
+    return _workflow_contract(description)
+
+
+def _workflow_contract(description: dict[str, Any]) -> dict[str, Any]:
+    """Describe the API's depth alternative and the solver's discrete options."""
+    for contract in (description, description.get("size_contract", {})):
+        if not contract:
+            continue
+        input_contract = contract.get("input_contract", {})
+        schema = input_contract.get("json_schema", {})
+        physical_inputs = [
+            definition for definition in schema.get("$defs", {}).values()
+            if definition.get("properties", {}).get("external_pressure", {}).get("$ref")
+            == "#/$defs/QuantityInput"
+        ]
+        if not physical_inputs:
+            continue
+        for inputs in physical_inputs:
+            properties = inputs["properties"]
+            load_fields = ("depth", "fluid_density", "gravity", "design_factor")
+            for name in load_fields[:3]:
+                properties[name] = {"$ref": "#/$defs/QuantityInput"}
+            properties["design_factor"] = {"type": "number", "exclusiveMinimum": 0}
+            inputs["required"] = [name for name in inputs.get("required", []) if name != "external_pressure"]
+            inputs.setdefault("allOf", []).append({"oneOf": [
+                {"required": ["external_pressure"], "not": {"anyOf": [{"required": [name]} for name in load_fields]}},
+                {"required": list(load_fields), "not": {"required": ["external_pressure"]}},
+            ]})
+            if "stock_thicknesses" in properties:
+                contract["stock_selection"] = (
+                    "Optional stock_thicknesses restrict selection to listed candidates within "
+                    "the explicit bounds. Every candidate is checked, and sizing.stock_candidates "
+                    "retain failed, unavailable, and out-of-bounds outcomes."
+                )
+            if "external_radius" in properties:
+                inputs.setdefault("allOf", []).append({"oneOf": [
+                    {"required": ["internal_radius"], "properties": {
+                        "internal_radius": {"$ref": "#/$defs/QuantityInput"},
+                        "external_radius": {"type": "null"},
+                    }},
+                    {"required": ["external_radius"], "properties": {
+                        "external_radius": {"$ref": "#/$defs/QuantityInput"},
+                        "internal_radius": {"type": "null"},
+                    }},
+                ]})
+                contract["fixed_radius_rule"] = (
+                    "Exactly one non-null internal_radius or external_radius. A fixed outside "
+                    "radius gives internal_radius = external_radius - thickness at every candidate."
+                )
+                if "fixed_inputs" in contract:
+                    contract["fixed_inputs"] = [
+                        "internal_radius or external_radius" if name == "internal_radius" else name
+                        for name in contract["fixed_inputs"]
+                    ]
+        dimensions = input_contract["json_quantity_dimensions"]
+        for path in list(dimensions):
+            if path.endswith(".external_pressure"):
+                prefix = path.removesuffix("external_pressure")
+                dimensions.update({
+                    prefix + "depth": "length", prefix + "fluid_density": "density",
+                    prefix + "gravity": "acceleration",
+                })
+        input_contract["pressure_source_rule"] = (
+            "Each physical request accepts exactly one of external_pressure or depth with "
+            "fluid_density, gravity, and an explicit positive design_factor. Converted design "
+            "pressure drives the model; service/design pressures and source inputs are echoed "
+            "in loading. A sweep load axis replaces its base request's load."
+        )
+        output_contract = contract.setdefault("output_contract", {})
+        if description.get("operation") in ("sweep", "compare-materials"):
+            output_contract["nested_loading"] = (
+                "Depth-based request loading is retained inside each comparison response or "
+                "geometry-sweep point response. Pressure/depth sweeps use their axis load instead."
+            )
+        else:
+            output_contract.setdefault("optional_top_level_fields", {})["loading"] = (
+                "Depth conversion inputs, pressure reference, sources, and service/design pressures."
+            )
+    description["output_formats"] = {
+        "json": "Complete response; --json selects compact whitespace.",
+        "summary": "Structured check assessment, geometry, loading, and applicability reasons.",
+        "text": "Concise human-readable assessment.",
+        "csv": "Rows of checks with units, status, reasons, and batch coordinates.",
+    }
+    description["zero_load"] = (
+        "Forward pressure may be zero: demand/deformation are zero, capacities retain their "
+        "applicability rules, and capacity/demand margins are null. Sizing requires positive pressure."
+    )
     return description
 
 
@@ -892,10 +982,10 @@ def _smooth_buckling_size_contract(cli_options: Mapping[str, str]) -> dict[str, 
     return {
         "assumptions": [
             "One cylinder and one variable: the wall thickness, solved for"
-            " inside the caller's bounds, with the internal radius, unsupported"
+            " inside the caller's bounds, with the selected internal or external radius, unsupported"
             " length, pressure, and material held fixed.",
             "The buckling model's shell mid-surface radius is not an input. It"
-            " is internal_radius + wall_thickness / 2 at every candidate"
+            " is internal_radius + wall_thickness / 2, or external_radius - wall_thickness / 2, at every candidate"
             " thickness, which is the tube model's own mean radius, so both"
             " checks read the same cylinder.",
             "The load case is not an input either: the shell stress check has only"
@@ -984,6 +1074,10 @@ def _smooth_buckling_size_contract(cli_options: Mapping[str, str]) -> dict[str, 
         "shell_mid_surface_radius_convention": (
             SMOOTH_BUCKLING_SIZING_RADIUS_CONVENTION
         ),
+        "shell_mid_surface_radius_conventions_by_fixed_radius": {
+            "internal_radius": "internal_radius_plus_half_wall_thickness",
+            "external_radius": "external_radius_minus_half_wall_thickness",
+        },
         "varied_input": "wall_thickness",
         "failure": {
             "error_codes": [
@@ -999,15 +1093,14 @@ def _smooth_buckling_size_contract(cli_options: Mapping[str, str]) -> dict[str, 
 
 
 def _describe_sweep(cli_options: Mapping[str, str]) -> dict[str, Any]:
-    return {
+    return _workflow_contract({
         "assumptions": [
-            "The swept request is one complete forward request; its own"
-            f" {SWEEP_SWEPT_INPUT} is replaced at every point and is otherwise"
-            " unused.",
+            "The swept request is one complete forward request; the selected geometry"
+            " input or external_pressure is replaced at every point.",
             "Each point runs that model's single-point validation, material"
             " resolution, kernel, and serialization path, so a point response"
             " equals the response of the same single-point invocation.",
-            "The axis is exactly one variable: external pressure, or depth.",
+            "The axis is exactly one variable: external pressure, depth, or an allowlisted geometry input.",
             "A depth axis converts each depth with"
             " pv_calc.hydrostatics.external_pressure_from_depth and runs the"
             f" model at the {SWEEP_DEPTH_SUBSTITUTED_PRESSURE},"
@@ -1017,7 +1110,7 @@ def _describe_sweep(cli_options: Mapping[str, str]) -> dict[str, Any]:
             " interior held at zero gauge; no absolute pressure is formed.",
             "A list axis substitutes the caller's quantities unchanged, in the"
             " order given.",
-            "A range axis interpolates in MPa, or in m for a depth axis, as"
+            "A range axis interpolates in MPa, m for depth, or mm for geometry, as"
             " start*(1 - w) + stop*w with w = i/(count - 1), so the first and"
             " last points are exactly the requested endpoints.",
             "A withheld capacity is a normal point result. A point that cannot"
@@ -1051,7 +1144,7 @@ def _describe_sweep(cli_options: Mapping[str, str]) -> dict[str, Any]:
         "known_omissions": [
             "inverse operations: the swept request is a forward request",
             "adaptive sampling and interpolation between evaluated points",
-            "plotting, tabular export, and persisted output",
+            "plotting and managed persistence (CSV and ordinary shell redirection are available)",
             "multiprocessing: points are evaluated in order in one process",
             "absolute pressure, internal gas compression, layered fluids, and"
             " depth-varying density profiles on the depth axis",
@@ -1061,6 +1154,7 @@ def _describe_sweep(cli_options: Mapping[str, str]) -> dict[str, Any]:
         "output_contract": {
             "complete_single_point_response_per_point": True,
             "point_fields": {
+                "geometry": ["the named geometry quantity", "response"],
                 "depth": [
                     "depth",
                     "service_external_pressure",
@@ -1076,6 +1170,7 @@ def _describe_sweep(cli_options: Mapping[str, str]) -> dict[str, Any]:
                 "sweep",
             ],
             "sweep_fields": {
+                "geometry": ["axis", "operation_version", "points", "swept_input"],
                 "depth": [
                     "axis",
                     "depth_to_pressure",
@@ -1109,20 +1204,21 @@ def _describe_sweep(cli_options: Mapping[str, str]) -> dict[str, Any]:
         "supported_models": list(FORWARD_MODELS),
         "swept_input": SWEEP_SWEPT_INPUT,
         "axis_variables": list(SWEEP_AXIS_VARIABLES),
-    }
+        "geometry_variables": {name: list(fields) for name, fields in SWEEP_GEOMETRY_VARIABLES.items()},
+    })
 
 
 def _describe_material_comparison() -> dict[str, Any]:
-    return {
+    return _workflow_contract({
         "assumptions": [
-            "The compared request is one complete forward request; its own"
+            "The compared request is one complete forward or sizing request; its own"
             f" {COMPARE_MATERIALS_SUBSTITUTED_INPUT} is replaced for every"
             " listed material and is otherwise unused.",
             "Each entry runs that model's single-point validation, material"
             " resolution, kernel, and serialization path, so an entry equals"
             " the response of the same single-material invocation.",
-            "Every compared material is a named entry in the explicit"
-            " --materials-file database; the list carries no explicit property"
+            "Every compared material is a named entry in the bundled database or the explicit"
+            " --materials-file override; the list carries no explicit property"
             " records.",
             "Entries are returned in the caller's order, once per listed"
             " material, including repeats.",
@@ -1136,8 +1232,9 @@ def _describe_material_comparison() -> dict[str, Any]:
             "A withheld capacity is a normal entry result.",
         ],
         "entry_outcomes": {
+            "no_reliable_solution": "Sizing could not find an eligible candidate; message and solver details are retained.",
             "evaluated": (
-                "the complete forward response, and the mass-properties"
+                "the complete forward or sizing response, and the mass-properties"
                 " response when the request supplies its volume inputs"
             ),
             "invalid_material": (
@@ -1149,7 +1246,7 @@ def _describe_material_comparison() -> dict[str, Any]:
         "input_contract": {
             "cli_options": {
                 "--material": (
-                    "named --materials-file entry; repeat once per compared"
+                    "named bundled or --materials-file entry; repeat once per compared"
                     " material, in order"
                 ),
                 "--materials-file": (
@@ -1163,7 +1260,7 @@ def _describe_material_comparison() -> dict[str, Any]:
                 " --material options"
             ),
             "request_source_rule": (
-                "the compared forward request comes only from --input; the"
+                "the compared forward or sizing request comes only from --input; the"
                 " comparison adds no per-model options"
             ),
             "stdin": "use --input -",
@@ -1175,10 +1272,8 @@ def _describe_material_comparison() -> dict[str, Any]:
             " filled in from another property",
             "explicit property records in the compared list: every compared"
             " material is a named database entry",
-            "geometry, thickness, and load variation: exactly one fixed"
-            " request is compared, and pv-calc sweep varies the load",
-            "geometry resolution for mass properties: both volumes are the"
-            " caller's and are the same for every material",
+            "automatic material ranking and cost optimization",
+            "housing hardware mass: sized comparisons report only the modeled shell or disc mass",
         ],
         "operation": "compare-materials",
         "operation_version": COMPARE_MATERIALS_OPERATION_VERSION,
@@ -1190,8 +1285,11 @@ def _describe_material_comparison() -> dict[str, Any]:
                     "outcome",
                     "response",
                     "mass_properties (only with inputs.mass_properties)",
+                    "selected_geometry (sized comparisons)",
+                    "structural_mass (sized comparisons; unavailable when density/geometry is missing)",
                 ],
                 "invalid_material": ["material", "outcome", "message"],
+                "no_reliable_solution": ["material", "outcome", "message", "details"],
             },
             "entry_order": "the caller's inputs.materials order",
             "comparison_fields": [
@@ -1212,7 +1310,6 @@ def _describe_material_comparison() -> dict[str, Any]:
                 "invalid_request",
                 "material_source_conflict",
                 "missing_input",
-                "missing_materials_file",
                 "unknown_material",
             ],
             "exit_status": "nonzero",
@@ -1225,5 +1322,6 @@ def _describe_material_comparison() -> dict[str, Any]:
         },
         "schema_version": CALC_SCHEMA_VERSION,
         "substituted_input": COMPARE_MATERIALS_SUBSTITUTED_INPUT,
+        "supported_sizing_operations": {"tube": "size", "plate": "size", "smooth-buckling": "size"},
         "supported_models": list(FORWARD_MODELS),
-    }
+    })

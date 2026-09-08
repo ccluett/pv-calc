@@ -503,7 +503,7 @@ def test_roark_table35_matrix_spans_short_moderate_overlap_and_long():
     ("changes", "message"),
     [
         ({"load_case": "other"}, "load_case"),
-        ({"pressure": 0.0}, "external_pressure_mpa"),
+        ({"pressure": -1.0}, "external_pressure_mpa"),
         ({"poisson_ratio": 0.5}, "poisson_ratio"),
     ],
 )

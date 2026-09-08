@@ -10,6 +10,12 @@ from pathlib import Path
 from typing import Annotated, Any, Literal, NoReturn, overload
 
 import typer
+import yaml
+
+from pv_calc.api import _calculate_for_command, calculate
+from pv_calc.presentation import assess_response, render_csv, render_text, summarize_response
+from pv_calc.materials import list_materials, show_material
+from pv_calc.cylinder import describe_cylinder
 
 from pv_calc import __version__
 from pv_calc.contracts import (
@@ -25,7 +31,6 @@ from pv_calc.contracts import (
     SweepRequest,
     TubeRequest,
     TubeSizeRequest,
-    _validate_request,
 )
 from pv_calc.describe import (
     _describe_material_comparison,
@@ -33,22 +38,7 @@ from pv_calc.describe import (
     _describe_sweep,
 )
 from pv_calc.errors import CalcCliError
-from pv_calc.evaluate import (
-    _evaluate_hemisphere,
-    _evaluate_mass_properties,
-    _evaluate_material_comparison,
-    _evaluate_plate,
-    _evaluate_ring_shell,
-    _evaluate_smooth_buckling,
-    _evaluate_sweep,
-    _evaluate_tube,
-)
 from pv_calc.serialize import _json_text
-from pv_calc.sizing import (
-    _evaluate_plate_size,
-    _evaluate_smooth_buckling_size,
-    _evaluate_tube_size,
-)
 from pv_calc.units import (
     Q_,
     UNIT_EVALUATION_ERRORS,
@@ -114,9 +104,21 @@ def main(
     """
 
 
-def _emit(payload: dict[str, Any], *, compact: bool) -> None:
+def _emit(payload: dict[str, Any], *, compact: bool, output_format: str | None = None) -> None:
     try:
-        text = _json_text(payload, compact=compact)
+        output_format = output_format or "json"
+        if output_format not in {"json", "summary", "text", "csv"}:
+            raise CalcCliError("invalid_request", "--format must be json, summary, text, or csv")
+        if compact and output_format != "json":
+            raise CalcCliError("input_source_conflict", "--json requires --format json")
+        if output_format == "text":
+            text = render_text(payload)
+        elif output_format == "csv":
+            text = render_csv(payload)
+        elif output_format == "summary":
+            text = _json_text(summarize_response(payload), compact=False)
+        else:
+            text = _json_text(payload, compact=compact)
     except (TypeError, ValueError) as exc:
         raise CalcCliError(
             "unevaluable_model",
@@ -454,7 +456,7 @@ ShellMidSurfaceRadiusOption = Annotated[
 ]
 MaterialsFileOption = Annotated[
     Path | None,
-    typer.Option(help="Materials database read by --material; required with it."),
+    typer.Option(help="Override the bundled reference material database."),
 ]
 JsonOutputOption = Annotated[
     bool,
@@ -462,8 +464,20 @@ JsonOutputOption = Annotated[
 ]
 
 
+OutputFormatOption = Annotated[
+    str | None,
+    typer.Option("--format", help="Result format: json, summary, text, or csv."),
+]
+DepthOption = Annotated[str | None, typer.Option(help="Depth with unit, alternative to --external-pressure.")]
+DesignFactorOption = Annotated[str | None, typer.Option(help="Explicit pressure multiplier required with --depth.")]
+DepthFluidOption = Annotated[str | None, typer.Option("--fluid-density", help="Fluid density with unit for --depth.")]
+DepthGravityOption = Annotated[str | None, typer.Option("--gravity", help="Gravity with unit for --depth.")]
+ExternalRadiusOption = Annotated[str | None, typer.Option(help="Fixed outside radius with unit, alternative to --internal-radius when sizing.")]
+StockThicknessOption = Annotated[list[str] | None, typer.Option("--stock-thickness", help="Available thickness with unit; repeat to enumerate stock choices inside bounds.")]
+
+
 # The options every command reads beside its calculation and material values.
-_NON_REQUEST_OPTIONS = frozenset({"input_path", "materials_file", "json_output"})
+_NON_REQUEST_OPTIONS = frozenset({"input_path", "materials_file", "json_output", "output_format"})
 
 
 def _given_options(ctx: typer.Context, *, exclude: frozenset[str] = frozenset()) -> list[str]:
@@ -478,7 +492,7 @@ def _given_options(ctx: typer.Context, *, exclude: frozenset[str] = frozenset())
     return sorted(
         spellings.get(name, name)
         for name, value in ctx.params.items()
-        if name not in exclude and value is not None and value is not False
+        if name not in exclude and value is not None and value is not False and value != [] and value != ()
     )
 
 
@@ -517,6 +531,31 @@ def _submergence_from_options(fluid_density: str | None, gravity: str | None) ->
             "gravity": _quantity_from_option(gravity, "gravity"),
         }
     }
+
+
+def _depth_from_options(
+    raw: dict[str, Any], depth: str | None, fluid_density: str | None,
+    gravity: str | None, design_factor: str | None,
+) -> dict[str, Any]:
+    if depth is None:
+        if design_factor is not None:
+            raise CalcCliError("invalid_request", "--design-factor requires --depth")
+        if raw.get("operation") == "size" or raw.get("model") == "ring-shell":
+            unused = [name for name, value in (("--fluid-density", fluid_density), ("--gravity", gravity)) if value is not None]
+            if unused:
+                raise CalcCliError("invalid_request", f"{' and '.join(unused)} require --depth")
+        return raw
+    inputs = raw["inputs"]
+    if inputs.get("external_pressure") is not None:
+        raise CalcCliError("input_source_conflict", "choose --external-pressure or --depth")
+    inputs.pop("external_pressure", None)
+    inputs.update({
+        "depth": _quantity_from_option(depth, "depth"),
+        "fluid_density": _quantity_from_option(fluid_density, "fluid_density"),
+        "gravity": _quantity_from_option(gravity, "gravity"),
+        "design_factor": _number_from_option(design_factor, "design_factor"),
+    })
+    return raw
 
 
 def _minimum_margin_from_option(minimum_margin: str | None) -> float:
@@ -581,6 +620,9 @@ def tube(
     input_path: Annotated[str | None, typer.Option("--input", help="JSON request file, or '-' for stdin.")] = None,
     materials_file: MaterialsFileOption = None,
     json_output: JsonOutputOption = False,
+    output_format: OutputFormatOption = None,
+    depth: DepthOption = None,
+    design_factor: DesignFactorOption = None,
 ) -> None:
     """Calculate closed-end tube stress, material failure pressure, and displacement."""
     try:
@@ -606,7 +648,7 @@ def tube(
                         if axial_length is not None
                         else {}
                     ),
-                    **_submergence_from_options(fluid_density, gravity),
+                    **(_submergence_from_options(fluid_density, gravity) if depth is None else {}),
                 },
                 "material": _material_selection(
                     named_material=material,
@@ -620,8 +662,8 @@ def tube(
                     poisson_ratio=poisson_ratio,
                 ),
             }
-        request = _validate_request(TubeRequest, raw)
-        _emit(_evaluate_tube(request, materials_file), compact=json_output)
+        raw = _depth_from_options(raw, depth, fluid_density, gravity, design_factor)
+        _emit(_calculate_for_command(TubeRequest, raw, materials_file), compact=json_output, output_format=output_format)
     except CalcCliError as exc:
         _exit_with_error(exc)
 
@@ -671,6 +713,13 @@ def tube_size(
     ] = None,
     materials_file: MaterialsFileOption = None,
     json_output: JsonOutputOption = False,
+    output_format: OutputFormatOption = None,
+    depth: DepthOption = None,
+    design_factor: DesignFactorOption = None,
+    fluid_density: DepthFluidOption = None,
+    gravity: DepthGravityOption = None,
+    stock_thickness: StockThicknessOption = None,
+    external_radius: ExternalRadiusOption = None,
 ) -> None:
     """Find the minimum model-eligible wall thickness within explicit bounds."""
     try:
@@ -710,8 +759,15 @@ def tube_size(
                     poisson_ratio=poisson_ratio,
                 ),
             }
-        request = _validate_request(TubeSizeRequest, raw)
-        _emit(_evaluate_tube_size(request, materials_file), compact=json_output)
+        if external_radius is not None:
+            if raw["inputs"].get("internal_radius") is not None:
+                raise CalcCliError("input_source_conflict", "choose --internal-radius or --external-radius")
+            raw["inputs"].pop("internal_radius", None)
+            raw["inputs"]["external_radius"] = _quantity_from_option(external_radius, "external_radius")
+        if stock_thickness:
+            raw["inputs"]["stock_thicknesses"] = [_quantity_from_option(value, "stock_thickness") for value in stock_thickness]
+        raw = _depth_from_options(raw, depth, fluid_density, gravity, design_factor)
+        _emit(_calculate_for_command(TubeSizeRequest, raw, materials_file), compact=json_output, output_format=output_format)
     except CalcCliError as exc:
         _exit_with_error(exc)
 
@@ -751,6 +807,9 @@ def plate(
     input_path: Annotated[str | None, typer.Option("--input", help="JSON request file, or '-' for stdin.")] = None,
     materials_file: MaterialsFileOption = None,
     json_output: JsonOutputOption = False,
+    output_format: OutputFormatOption = None,
+    depth: DepthOption = None,
+    design_factor: DesignFactorOption = None,
 ) -> None:
     """Calculate a uniformly pressure-loaded flat circular plate."""
     try:
@@ -778,7 +837,7 @@ def plate(
                         if outside_radius is not None
                         else {}
                     ),
-                    **_submergence_from_options(fluid_density, gravity),
+                    **(_submergence_from_options(fluid_density, gravity) if depth is None else {}),
                 },
                 "material": _material_selection(
                     named_material=material,
@@ -793,8 +852,8 @@ def plate(
                     poisson_ratio=poisson_ratio,
                 ),
             }
-        request = _validate_request(PlateRequest, raw)
-        _emit(_evaluate_plate(request, materials_file), compact=json_output)
+        raw = _depth_from_options(raw, depth, fluid_density, gravity, design_factor)
+        _emit(_calculate_for_command(PlateRequest, raw, materials_file), compact=json_output, output_format=output_format)
     except CalcCliError as exc:
         _exit_with_error(exc)
 
@@ -859,6 +918,12 @@ def plate_size(
     ] = None,
     materials_file: MaterialsFileOption = None,
     json_output: JsonOutputOption = False,
+    output_format: OutputFormatOption = None,
+    depth: DepthOption = None,
+    design_factor: DesignFactorOption = None,
+    fluid_density: DepthFluidOption = None,
+    gravity: DepthGravityOption = None,
+    stock_thickness: StockThicknessOption = None,
 ) -> None:
     """Find the minimum plate thickness within explicit bounds."""
     try:
@@ -906,8 +971,10 @@ def plate_size(
                     poisson_ratio=poisson_ratio,
                 ),
             }
-        request = _validate_request(PlateSizeRequest, raw)
-        _emit(_evaluate_plate_size(request, materials_file), compact=json_output)
+        if stock_thickness:
+            raw["inputs"]["stock_thicknesses"] = [_quantity_from_option(value, "stock_thickness") for value in stock_thickness]
+        raw = _depth_from_options(raw, depth, fluid_density, gravity, design_factor)
+        _emit(_calculate_for_command(PlateSizeRequest, raw, materials_file), compact=json_output, output_format=output_format)
     except CalcCliError as exc:
         _exit_with_error(exc)
 
@@ -976,6 +1043,9 @@ def hemisphere(
     ] = None,
     materials_file: MaterialsFileOption = None,
     json_output: JsonOutputOption = False,
+    output_format: OutputFormatOption = None,
+    depth: DepthOption = None,
+    design_factor: DesignFactorOption = None,
 ) -> None:
     """Calculate hemispherical-head stress, material failure, external-pressure buckling, and displacement."""
     try:
@@ -1000,7 +1070,7 @@ def hemisphere(
                         wall_thickness,
                         "wall_thickness",
                     ),
-                    **_submergence_from_options(fluid_density, gravity),
+                    **(_submergence_from_options(fluid_density, gravity) if depth is None else {}),
                 },
                 "material": _material_selection(
                     named_material=material,
@@ -1015,8 +1085,8 @@ def hemisphere(
                     proportional_limit=proportional_limit,
                 ),
             }
-        request = _validate_request(HemisphereRequest, raw)
-        _emit(_evaluate_hemisphere(request, materials_file), compact=json_output)
+        raw = _depth_from_options(raw, depth, fluid_density, gravity, design_factor)
+        _emit(_calculate_for_command(HemisphereRequest, raw, materials_file), compact=json_output, output_format=output_format)
     except CalcCliError as exc:
         _exit_with_error(exc)
 
@@ -1080,6 +1150,9 @@ def smooth_buckling(
     ] = None,
     materials_file: MaterialsFileOption = None,
     json_output: JsonOutputOption = False,
+    output_format: OutputFormatOption = None,
+    depth: DepthOption = None,
+    design_factor: DesignFactorOption = None,
 ) -> None:
     """Calculate source-gated NASA smooth-cylinder external-pressure buckling."""
     try:
@@ -1111,7 +1184,7 @@ def smooth_buckling(
                         wall_thickness,
                         "wall_thickness",
                     ),
-                    **_submergence_from_options(fluid_density, gravity),
+                    **(_submergence_from_options(fluid_density, gravity) if depth is None else {}),
                 },
                 "material": _material_selection(
                     named_material=material,
@@ -1124,8 +1197,8 @@ def smooth_buckling(
                     proportional_limit=proportional_limit,
                 ),
             }
-        request = _validate_request(SmoothBucklingRequest, raw)
-        _emit(_evaluate_smooth_buckling(request, materials_file), compact=json_output)
+        raw = _depth_from_options(raw, depth, fluid_density, gravity, design_factor)
+        _emit(_calculate_for_command(SmoothBucklingRequest, raw, materials_file), compact=json_output, output_format=output_format)
     except CalcCliError as exc:
         _exit_with_error(exc)
 
@@ -1193,6 +1266,13 @@ def smooth_buckling_size(
     ] = None,
     materials_file: MaterialsFileOption = None,
     json_output: JsonOutputOption = False,
+    output_format: OutputFormatOption = None,
+    depth: DepthOption = None,
+    design_factor: DesignFactorOption = None,
+    fluid_density: DepthFluidOption = None,
+    gravity: DepthGravityOption = None,
+    stock_thickness: StockThicknessOption = None,
+    external_radius: ExternalRadiusOption = None,
 ) -> None:
     """Find the minimum wall thickness within explicit bounds for both checks."""
     try:
@@ -1236,11 +1316,15 @@ def smooth_buckling_size(
                     proportional_limit=proportional_limit,
                 ),
             }
-        request = _validate_request(SmoothBucklingSizeRequest, raw)
-        _emit(
-            _evaluate_smooth_buckling_size(request, materials_file),
-            compact=json_output,
-        )
+        if external_radius is not None:
+            if raw["inputs"].get("internal_radius") is not None:
+                raise CalcCliError("input_source_conflict", "choose --internal-radius or --external-radius")
+            raw["inputs"].pop("internal_radius", None)
+            raw["inputs"]["external_radius"] = _quantity_from_option(external_radius, "external_radius")
+        if stock_thickness:
+            raw["inputs"]["stock_thicknesses"] = [_quantity_from_option(value, "stock_thickness") for value in stock_thickness]
+        raw = _depth_from_options(raw, depth, fluid_density, gravity, design_factor)
+        _emit(_calculate_for_command(SmoothBucklingSizeRequest, raw, materials_file), compact=json_output, output_format=output_format)
     except CalcCliError as exc:
         _exit_with_error(exc)
 
@@ -1307,6 +1391,11 @@ def ring_shell(
     ] = None,
     materials_file: MaterialsFileOption = None,
     json_output: JsonOutputOption = False,
+    output_format: OutputFormatOption = None,
+    depth: DepthOption = None,
+    design_factor: DesignFactorOption = None,
+    fluid_density: DepthFluidOption = None,
+    gravity: DepthGravityOption = None,
 ) -> None:
     """Calculate NASA ring-stiffened shell external-pressure response."""
     try:
@@ -1358,8 +1447,8 @@ def ring_shell(
                     proportional_limit=proportional_limit,
                 ),
             }
-        request = _validate_request(RingShellRequest, raw)
-        _emit(_evaluate_ring_shell(request, materials_file), compact=json_output)
+        raw = _depth_from_options(raw, depth, fluid_density, gravity, design_factor)
+        _emit(_calculate_for_command(RingShellRequest, raw, materials_file), compact=json_output, output_format=output_format)
     except CalcCliError as exc:
         _exit_with_error(exc)
 
@@ -1400,6 +1489,7 @@ def mass_properties(
     ] = None,
     materials_file: MaterialsFileOption = None,
     json_output: JsonOutputOption = False,
+    output_format: OutputFormatOption = None,
 ) -> None:
     """Calculate submerged mass and buoyancy for resolved volumes."""
     try:
@@ -1431,8 +1521,7 @@ def mass_properties(
                     material_provenance=material_provenance,
                 ),
             }
-        request = _validate_request(MassPropertiesRequest, raw)
-        _emit(_evaluate_mass_properties(request, materials_file), compact=json_output)
+        _emit(_calculate_for_command(MassPropertiesRequest, raw, materials_file), compact=json_output, output_format=output_format)
     except CalcCliError as exc:
         _exit_with_error(exc)
 
@@ -1499,6 +1588,7 @@ def sweep(
     ] = None,
     materials_file: MaterialsFileOption = None,
     json_output: JsonOutputOption = False,
+    output_format: OutputFormatOption = None,
 ) -> None:
     """Run one forward request over an ordered external-pressure or depth axis."""
     try:
@@ -1536,8 +1626,7 @@ def sweep(
                     " --pressure/--depth options",
                 )
             raw = {**raw, "inputs": inputs}
-        request = _validate_request(SweepRequest, raw)
-        _emit(_evaluate_sweep(request, materials_file), compact=json_output)
+        _emit(_calculate_for_command(SweepRequest, raw, materials_file), compact=json_output, output_format=output_format)
     except CalcCliError as exc:
         _exit_with_error(exc)
 
@@ -1562,6 +1651,7 @@ def compare_materials(
     ] = None,
     materials_file: MaterialsFileOption = None,
     json_output: JsonOutputOption = False,
+    output_format: OutputFormatOption = None,
 ) -> None:
     """Run one fixed forward request against an ordered list of named materials."""
     try:
@@ -1589,11 +1679,169 @@ def compare_materials(
                 **raw,
                 "inputs": {**existing_inputs, "materials": material},
             }
-        request = _validate_request(MaterialComparisonRequest, raw)
-        _emit(
-            _evaluate_material_comparison(request, materials_file),
-            compact=json_output,
+        _emit(_calculate_for_command(MaterialComparisonRequest, raw, materials_file), compact=json_output, output_format=output_format)
+    except CalcCliError as exc:
+        _exit_with_error(exc)
+
+
+@app.command("run")
+def run_request(
+    input_path: Annotated[str | None, typer.Option("--input", help="Any versioned request JSON file, or '-' for stdin.")] = None,
+    materials_file: MaterialsFileOption = None,
+    json_output: JsonOutputOption = False,
+    output_format: OutputFormatOption = None,
+) -> None:
+    """Evaluate any forward, sizing, sweep, or material comparison request."""
+    try:
+        if input_path is None:
+            raise CalcCliError("missing_input", "run requires --input")
+        _emit(calculate(_read_json_input(input_path), materials_file=materials_file), compact=json_output, output_format=output_format)
+    except CalcCliError as exc:
+        _exit_with_error(exc)
+
+
+@app.command("check")
+def check_request(
+    input_path: Annotated[str | None, typer.Option("--input", help="Request JSON file, or '-' for stdin.")] = None,
+    checks: Annotated[list[str] | None, typer.Option("--check", help="Required check ID; repeat to select checks. Defaults to the request's checks.")] = None,
+    minimum_margin: Annotated[str | None, typer.Option(help="Additional minimum margin required on selected checks.")] = None,
+    materials_file: MaterialsFileOption = None,
+    json_output: JsonOutputOption = False,
+    output_format: OutputFormatOption = None,
+) -> None:
+    """Assess requested checks: exit 0 pass, 1 fail, 3 indeterminate, 2 input error."""
+    try:
+        if input_path is None:
+            raise CalcCliError("missing_input", "check requires --input")
+        response = calculate(_read_json_input(input_path), materials_file=materials_file)
+        assessment = assess_response(
+            response, required_checks=checks or None,
+            minimum_margin=_minimum_margin_from_option(minimum_margin),
         )
+        payload: dict[str, Any] = {key: response[key] for key in ("schema_version", "model", "operation", "loading") if key in response}
+        payload["assessment"] = assessment
+        _emit(payload, compact=json_output, output_format=output_format)
+        raise typer.Exit({"pass": 0, "fail": 1, "indeterminate": 3}[assessment["status"]])
+    except CalcCliError as exc:
+        _exit_with_error(exc)
+
+
+@app.command("cylinder")
+def cylinder(
+    ctx: typer.Context,
+    external_pressure: Annotated[str | None, typer.Option(help="Applied external pressure with unit.")] = None,
+    internal_radius: Annotated[str | None, typer.Option(help="Cylinder bore radius with unit.")] = None,
+    wall_thickness: Annotated[str | None, typer.Option(help="Cylinder wall thickness with unit.")] = None,
+    unsupported_length: Annotated[str | None, typer.Option(help="Length between idealized circular supports with unit.")] = None,
+    axial_length: Annotated[str | None, typer.Option(help="Physical tube length for volumes; defaults to unsupported length.")] = None,
+    minimum_margin: Annotated[str | None, typer.Option(help="Minimum required margin for the combined checks.")] = None,
+    material: MaterialOption = None,
+    elastic_modulus: Annotated[str | None, typer.Option(help="Explicit elastic modulus with unit.")] = None,
+    poisson_ratio: Annotated[str | None, typer.Option(help="Explicit Poisson ratio.")] = None,
+    yield_strength: Annotated[str | None, typer.Option(help="Explicit ductile-metal yield strength with unit.")] = None,
+    working_strength: WorkingStrengthOption = None,
+    ultimate_compressive_strength: UltimateCompressiveStrengthOption = None,
+    proportional_limit: Annotated[str | None, typer.Option(help="Proportional limit with unit for elastic buckling applicability.")] = None,
+    material_density: Annotated[str | None, typer.Option(help="Explicit material density with unit for mass.")] = None,
+    failure_category: FailureCategoryOption = None,
+    material_provenance: MaterialProvenanceOption = None,
+    depth: DepthOption = None,
+    design_factor: DesignFactorOption = None,
+    fluid_density: DepthFluidOption = None,
+    gravity: DepthGravityOption = None,
+    input_path: Annotated[str | None, typer.Option("--input", help="JSON request, including optional two-closure assembly and payload; '-' for stdin.")] = None,
+    materials_file: MaterialsFileOption = None,
+    json_output: JsonOutputOption = False,
+    output_format: OutputFormatOption = None,
+) -> None:
+    """Check a cylinder for shell stress and buckling using one geometry and load."""
+    try:
+        _ensure_file_input_is_exclusive(ctx)
+        if input_path is not None:
+            raw = _read_json_input(input_path)
+        else:
+            inputs = {
+                "external_pressure": _quantity_from_option(external_pressure, "external_pressure"),
+                "internal_radius": _quantity_from_option(internal_radius, "internal_radius"),
+                "wall_thickness": _quantity_from_option(wall_thickness, "wall_thickness"),
+                "unsupported_length": _quantity_from_option(unsupported_length, "unsupported_length"),
+                "minimum_margin": _minimum_margin_from_option(minimum_margin),
+            }
+            if axial_length is not None:
+                inputs["axial_length"] = _quantity_from_option(axial_length, "axial_length")
+            if depth is None:
+                inputs.update(_submergence_from_options(fluid_density, gravity))
+            raw = {
+                "schema_version": CALC_SCHEMA_VERSION, "model": "cylinder", "inputs": inputs,
+                "material": _material_selection(
+                    named_material=material, yield_strength=yield_strength,
+                    working_strength=working_strength,
+                    ultimate_compressive_strength=ultimate_compressive_strength,
+                    elastic_modulus=elastic_modulus, poisson_ratio=poisson_ratio,
+                    proportional_limit=proportional_limit, material_density=material_density,
+                    failure_category=failure_category, material_provenance=material_provenance,
+                ),
+            }
+        if raw.get("model") != "cylinder":
+            raise CalcCliError("invalid_request", "cylinder requires model='cylinder'")
+        raw = _depth_from_options(raw, depth, fluid_density, gravity, design_factor)
+        _emit(calculate(raw, materials_file=materials_file), compact=json_output, output_format=output_format)
+    except CalcCliError as exc:
+        _exit_with_error(exc)
+
+
+materials_app = typer.Typer(help="Inspect the bundled reference materials or an explicit database.")
+app.add_typer(materials_app, name="materials")
+
+
+def _emit_material(payload: dict[str, Any], compact: bool, output_format: str | None) -> None:
+    output_format = output_format or "json"
+    if output_format == "text":
+        if compact:
+            raise CalcCliError("input_source_conflict", "--json requires --format json")
+        records = payload.get("materials", [payload])
+        for record in records:
+            typer.echo(f"{record['name']} ({record['database']})")
+            for name, capability in record["capabilities"].items():
+                available = "available" if capability["available"] else "missing " + ", ".join(capability["missing_properties"])
+                typer.echo(f"  {name}: {available}")
+        if "properties" in payload:
+            typer.echo(_json_text(payload["properties"], compact=False))
+    elif output_format == "json":
+        typer.echo(_json_text(payload, compact=compact))
+    else:
+        raise CalcCliError("invalid_request", "materials supports --format json or text")
+
+
+@materials_app.command("list")
+def materials_list(
+    materials_file: MaterialsFileOption = None,
+    json_output: JsonOutputOption = False,
+    output_format: OutputFormatOption = None,
+) -> None:
+    """List material records and the calculation inputs each record supplies."""
+    try:
+        _emit_material({"materials": list_materials(materials_file)}, json_output, output_format)
+    except (OSError, ValueError, yaml.YAMLError) as exc:
+        _exit_with_error(CalcCliError("invalid_material_database", str(exc)))
+    except CalcCliError as exc:
+        _exit_with_error(exc)
+
+
+@materials_app.command("show")
+def materials_show(
+    name: str,
+    materials_file: MaterialsFileOption = None,
+    json_output: JsonOutputOption = False,
+    output_format: OutputFormatOption = None,
+) -> None:
+    """Show a material's properties, provenance, and input availability."""
+    try:
+        _emit_material(show_material(name, materials_file), json_output, output_format)
+    except KeyError:
+        _exit_with_error(CalcCliError("unknown_material", f"unknown material {name!r}", [{"available_materials": [item["name"] for item in list_materials(materials_file)]}]))
+    except (OSError, ValueError, yaml.YAMLError) as exc:
+        _exit_with_error(CalcCliError("invalid_material_database", str(exc)))
     except CalcCliError as exc:
         _exit_with_error(exc)
 
@@ -1610,6 +1858,8 @@ _OPTION_DIMENSIONS = {
     "displaced_volume": "volume",
     "elastic_modulus": "pressure",
     "external_pressure": "pressure",
+    "external_radius": "length",
+    "stock_thickness": "length",
     "fluid_density": "density",
     "free_radius": "length",
     "gravity": "acceleration",
@@ -1667,7 +1917,9 @@ def describe(
 ) -> None:
     """Describe a model's or operation's versioned machine-readable contract."""
     try:
-        if model == "sweep":
+        if model == "cylinder":
+            description = describe_cylinder(_dimensioned_options(cylinder))
+        elif model == "sweep":
             description = _describe_sweep(_dimensioned_options(sweep))
         elif model == "compare-materials":
             description = _describe_material_comparison()

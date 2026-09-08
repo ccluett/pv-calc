@@ -20,11 +20,9 @@ from pv_calc.cli import app
 PV_CALC_ROOT = Path(__file__).resolve().parents[1]
 EXAMPLES = PV_CALC_ROOT / "examples"
 BASELINE = Path(__file__).resolve().parent / "fixtures" / "pv_calc_golden.json"
-# There is no default material database, so an example that names materials
-# needs one passed, and the committed examples name only the shipped
-# pv-calc database at the package root. The option is inert for every example
-# that carries explicit property records, which is why it can be passed
-# unconditionally.
+# Exercise an explicit database override with a portable provenance path.
+# The root compatibility symlink points to the same bundled reference records.
+# The option is inert for examples carrying explicit property records.
 MATERIALS_FILE = PV_CALC_ROOT / "materials.yaml"
 MATERIALS_FILE_LABEL = "materials.yaml"
 

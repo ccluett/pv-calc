@@ -888,7 +888,8 @@ def test_mass_properties_material_source_rules_match_the_other_models() -> None:
         app,
         [*MASS_PROPERTIES_EXAMPLE_OPTIONS, "--material", "Al-6061-T6", "--json"],
     )
-    assert _error_payload(no_database)["error"]["code"] == "missing_materials_file"
+    assert no_database.exit_code == 0
+    assert json.loads(no_database.stdout)["material"]["source"]["database"] == "bundled:pv_calc/data/materials.yaml"
 
     with_file = runner.invoke(
         app,

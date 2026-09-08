@@ -61,7 +61,7 @@ def test_tube_size_uses_exact_stresses_and_returns_complete_forward_contract() -
     assert sizing["selected_check_margins"] == {
         "cylindrical_shell_stress": sizing["selected_minimum_margin"]
     }
-    assert sizing["operation_version"] == "3.0.0"
+    assert sizing["operation_version"] == "3.1.0"
     assert sizing["algorithm"] == "known_branch_partition_and_bisection"
     # From bore traction and closed-end equilibrium, VM(a) is
     # sqrt(3)*p*b^2/(b^2-a^2); solve that material criterion independently.
@@ -570,7 +570,7 @@ def test_cylinder_size_selection_and_bracket_match_independent_forward_runs() ->
     sizing = payload["sizing"]
     assert payload["model"] == "smooth-buckling"
     assert payload["operation"] == "size"
-    assert sizing["operation_version"] == "3.0.0"
+    assert sizing["operation_version"] == "3.1.0"
     assert sizing["algorithm"] == "known_branch_partition_and_bisection"
     assert sizing["solution_type"] == "interior_root"
     assert sizing["declared_check_set"] == [
@@ -1307,7 +1307,7 @@ def test_plate_size_bending_governed_matches_independent_forward_runs() -> None:
     sizing = payload["sizing"]
     assert payload["model"] == "plate"
     assert payload["operation"] == "size"
-    assert sizing["operation_version"] == "2.0.0"
+    assert sizing["operation_version"] == "2.1.0"
     assert sizing["solution_type"] == "interior_root"
     assert sizing["declared_check_set"] == ["flat_endcap_bending"]
     assert sizing["check_targets"] == {"flat_endcap_bending": 0.25}

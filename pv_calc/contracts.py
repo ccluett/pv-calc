@@ -33,17 +33,17 @@ from pv_calc.schemas import MaterialFailureCategory
 from pv_calc.units import Q_, dimensionless_factor, magnitude, unit_expression_problem
 
 CALC_SCHEMA_VERSION = "5.0.0"
-TUBE_SIZE_OPERATION_VERSION = "3.0.0"
+TUBE_SIZE_OPERATION_VERSION = "3.1.0"
 # The tube's material check under the category's own criterion, named for the
 # structural mode as the plate's flat_endcap_bending is; the selected forward
 # result's failure_criterion says which stress met which strength.
 TUBE_SIZING_CHECK: Final = "cylindrical_shell_stress"
 TUBE_SIZING_CHECK_SET: tuple[Literal["cylindrical_shell_stress"], ...] = (TUBE_SIZING_CHECK,)
-SMOOTH_BUCKLING_SIZE_OPERATION_VERSION = "3.0.0"
+SMOOTH_BUCKLING_SIZE_OPERATION_VERSION = "3.1.0"
 SMOOTH_BUCKLING_SIZING_CHECK_SET: tuple[
     Literal["cylindrical_shell_stress", "smooth_cylinder_buckling"], ...
 ] = (TUBE_SIZING_CHECK, "smooth_cylinder_buckling")
-PLATE_SIZE_OPERATION_VERSION = "2.0.0"
+PLATE_SIZE_OPERATION_VERSION = "2.1.0"
 # The plate's bending failure mode, and the caller's own serviceability limit.
 # The second is declared only when the request carries a maximum deflection.
 PLATE_SIZING_BENDING_CHECK = "flat_endcap_bending"
@@ -55,15 +55,26 @@ SMOOTH_BUCKLING_SIZING_LOAD_CASE: Final = "hydrostatic_closed_end"
 # One cylinder, one thickness: the buckling model's shell mid-surface radius is
 # the tube model's own mean radius at the same wall thickness.
 SMOOTH_BUCKLING_SIZING_RADIUS_CONVENTION: Final = "internal_radius_plus_half_wall_thickness"
-SWEEP_OPERATION_VERSION = "1.1.0"
+SWEEP_OPERATION_VERSION = "1.2.0"
 # The forward models both multi-point operations accept.
-FORWARD_MODELS = ("hemisphere", "plate", "ring-shell", "smooth-buckling", "tube")
+FORWARD_MODELS = ("cylinder", "hemisphere", "plate", "ring-shell", "smooth-buckling", "tube")
 SWEEP_SWEPT_INPUT = "inputs.external_pressure"
-SWEEP_AXIS_VARIABLES = ("depth", "external_pressure")
+SWEEP_AXIS_VARIABLES = ("depth", "external_pressure", "geometry")
+SWEEP_GEOMETRY_VARIABLES: dict[str, tuple[str, ...]] = {
+    "cylinder": ("internal_radius", "wall_thickness", "unsupported_length", "axial_length"),
+    "tube": ("internal_radius", "wall_thickness", "axial_length"),
+    "plate": ("free_radius", "plate_thickness", "outside_radius"),
+    "hemisphere": ("internal_radius", "wall_thickness"),
+    "smooth-buckling": ("shell_mid_surface_radius", "wall_thickness", "unsupported_length"),
+    "ring-shell": (
+        "shell_mid_surface_radius", "wall_thickness", "unsupported_length",
+        "ring_spacing", "ring_axial_width", "ring_radial_height",
+    ),
+}
 # A depth axis drives the model with the design differential external pressure,
 # not the service pressure; both are reported at every point.
 SWEEP_DEPTH_SUBSTITUTED_PRESSURE = "design_external_pressure"
-COMPARE_MATERIALS_OPERATION_VERSION = "1.0.0"
+COMPARE_MATERIALS_OPERATION_VERSION = "1.1.0"
 COMPARE_MATERIALS_SUBSTITUTED_INPUT = "request.material"
 MAX_BATCH_POINTS = 1_000
 
@@ -223,9 +234,21 @@ class ThicknessBounds(ContractModel):
     upper: Length
 
 
-class TubeSizeInputs(ContractModel):
+class FixedCylinderRadius(ContractModel):
+    internal_radius: Length | None = None
+    external_radius: Length | None = None
+
+    @model_validator(mode="after")
+    def exactly_one_fixed_radius(self) -> "FixedCylinderRadius":
+        if (self.internal_radius is None) == (self.external_radius is None):
+            raise ValueError("provide exactly one of internal_radius or external_radius")
+        return self
+
+
+class TubeSizeInputs(FixedCylinderRadius):
     external_pressure: Pressure
-    internal_radius: Length
+    axial_length: Length | None = None
+    stock_thicknesses: Annotated[list[Length], Field(min_length=1, max_length=MAX_BATCH_POINTS)] | None = None
     wall_thickness_bounds: ThicknessBounds
     minimum_margin: Annotated[float, Field(ge=0, allow_inf_nan=False)] = 0.0
     force_thick: bool = False
@@ -258,6 +281,8 @@ class PlateSizeInputs(ContractModel):
     plate_thickness_bounds: ThicknessBounds
     minimum_margin: Annotated[float, Field(ge=0, allow_inf_nan=False)] = 0.0
     maximum_deflection: Length | None = None
+    outside_radius: Length | None = None
+    stock_thicknesses: Annotated[list[Length], Field(min_length=1, max_length=MAX_BATCH_POINTS)] | None = None
 
 
 class TubeRequest(ContractModel):
@@ -321,19 +346,17 @@ class SmoothBucklingRequest(ContractModel):
     ]
 
 
-class SmoothBucklingSizeInputs(ContractModel):
+class SmoothBucklingSizeInputs(FixedCylinderRadius):
     """One cylinder, sized on wall thickness alone.
 
-    The internal radius, not the shell mid-surface radius, is the fixed one:
-    the mid-surface radius moves with the wall thickness being solved for, and
-    is ``internal_radius + wall_thickness / 2`` at every candidate, which is
-    the tube model's own mean radius. The load case is not an input, because
-    the shell stress check has only the closed-end hydrostatic one.
+    Fix exactly one of the internal or external radii. The shell mid-surface
+    follows the candidate thickness, so stress and buckling check one cylinder.
+    The load case is closed-end hydrostatic to match the shell stress check.
     """
 
     external_pressure: Pressure
-    internal_radius: Length
     unsupported_length: Length
+    stock_thicknesses: Annotated[list[Length], Field(min_length=1, max_length=MAX_BATCH_POINTS)] | None = None
     wall_thickness_bounds: ThicknessBounds
     minimum_margin: Annotated[float, Field(ge=0, allow_inf_nan=False)] = 0.0
 
@@ -456,10 +479,62 @@ class DepthSweepInputs(ContractModel):
     design_factor: Annotated[float, Field(gt=0, allow_inf_nan=False)]
 
 
+CylinderMaterial = Annotated[
+    NamedMaterialInput | ExplicitHemisphereMaterialInput,
+    Field(discriminator="type"),
+]
+Mass = Annotated[QuantityInput, Dimension("mass")]
+
+
+class PlateClosure(ContractModel):
+    model: Literal["plate"]
+    plate_thickness: Length
+    boundary_condition: Literal["fixed", "simply_supported"]
+    # Accepted for explicit geometry, but must match the cylinder's outer radius.
+    outside_radius: Length | None = None
+    maximum_deflection: Length | None = None
+    material: CylinderMaterial
+
+
+class HemisphereClosure(ContractModel):
+    model: Literal["hemisphere"]
+    # Defaults to the cylinder wall and must match it for this butt assembly.
+    wall_thickness: Length | None = None
+    material: CylinderMaterial
+
+
+Closure = Annotated[PlateClosure | HemisphereClosure, Field(discriminator="model")]
+
+
+class PayloadInputs(ContractModel):
+    mass: Mass | None = None
+    volume: Volume | None = None
+
+
+class CylinderInputs(ContractModel):
+    external_pressure: Pressure
+    internal_radius: Length
+    wall_thickness: Length
+    unsupported_length: Length
+    axial_length: Length | None = None
+    minimum_margin: Annotated[float, Field(ge=0, allow_inf_nan=False)] = 0.0
+    submergence: SubmergenceInputs | None = None
+    closures: Annotated[list[Closure], Field(min_length=2, max_length=2)] | None = None
+    payload: PayloadInputs | None = None
+
+
+class CylinderRequest(ContractModel):
+    schema_version: Literal["5.0.0"]
+    model: Literal["cylinder"]
+    inputs: CylinderInputs
+    material: CylinderMaterial
+
+
 # One complete forward request. The inverse tube sizing request is excluded
 # because it carries an `operation` field this union forbids.
 ForwardRequest = Annotated[
     TubeRequest
+    | CylinderRequest
     | PlateRequest
     | SmoothBucklingRequest
     | HemisphereRequest
@@ -469,22 +544,39 @@ ForwardRequest = Annotated[
 ]
 
 
+class GeometrySweepInputs(ContractModel):
+    geometry: Literal[
+        "internal_radius", "wall_thickness", "axial_length", "free_radius",
+        "plate_thickness", "outside_radius", "shell_mid_surface_radius",
+        "unsupported_length", "ring_spacing", "ring_axial_width", "ring_radial_height",
+    ]
+    axis: Annotated[SweepAxis, Dimension("length")]
+
+
 class SweepRequest(ContractModel):
     schema_version: Literal[CALC_SCHEMA_VERSION]  # type: ignore[valid-type]  # mypy has no Literal[<constant>]; pydantic reads it
     model: Literal["sweep"]
-    # Exactly one axis. The two blocks share no field name and both forbid
-    # extras, so the axis variable identifies the block without a tag field.
-    inputs: PressureSweepInputs | DepthSweepInputs
-    # The request's own inputs.external_pressure is replaced at every point.
+    # Exactly one axis. Each block forbids fields belonging to another axis.
+    inputs: PressureSweepInputs | DepthSweepInputs | GeometrySweepInputs
+    # Replace external_pressure for pressure/depth axes, or the named geometry input.
     request: ForwardRequest
+
+    @model_validator(mode="after")
+    def geometry_is_supported(self) -> "SweepRequest":
+        if isinstance(self.inputs, GeometrySweepInputs):
+            allowed = SWEEP_GEOMETRY_VARIABLES[self.request.model]
+            if self.inputs.geometry not in allowed:
+                raise ValueError(
+                    f"{self.request.model} geometry sweep supports {', '.join(allowed)}"
+                )
+        return self
 
 
 class MaterialComparisonInputs(ContractModel):
-    """The ordered material list, and the volumes mass properties would need.
+    """Ordered materials and optional fixed volumes for forward comparisons.
 
-    Without ``mass_properties`` an entry carries the forward result alone; with
-    it, the same volumes, fluid density, and gravity are used for every listed
-    material, so the entries differ only by the material.
+    Sizing comparisons derive structural mass from each selected geometry;
+    they do not accept fixed mass_properties volumes.
     """
 
     materials: Annotated[
@@ -499,11 +591,15 @@ class MaterialComparisonRequest(ContractModel):
     model: Literal["compare-materials"]
     inputs: MaterialComparisonInputs
     # The request's own `material` is replaced by every listed material.
-    request: ForwardRequest
+    request: Annotated[
+        ForwardRequest | TubeSizeRequest | PlateSizeRequest | SmoothBucklingSizeRequest,
+        OWN_CONTRACT,
+    ]
 
 
 RequestType = TypeVar(
     "RequestType",
+    CylinderRequest,
     TubeRequest,
     TubeSizeRequest,
     PlateRequest,
@@ -526,6 +622,15 @@ class MillimeterQuantity(ContractModel):
 class NormalizedThicknessBounds(ContractModel):
     lower: MillimeterQuantity
     upper: MillimeterQuantity
+
+
+class StockSizingCandidate(ContractModel):
+    candidate_index: Annotated[int, Field(ge=0)]
+    thickness: MillimeterQuantity
+    outcome: Literal["outside_bounds", "unavailable", "fails_targets", "meets_targets"]
+    check_margins: dict[str, FiniteFloat] | None = None
+    states: dict[str, str] | None = None
+    details: dict[str, Any] | None = None
 
 
 class TubeSizingPoint(ContractModel):
@@ -564,8 +669,12 @@ class TubeSizingMetadata(ContractModel):
     selected_wall_thickness: MillimeterQuantity
     selected_check_margins: dict[str, FiniteFloat]
     selected_minimum_margin: FiniteFloat
-    solution_type: Literal["lower_bound", "branch_start", "interior_root"]
-    algorithm: Literal["known_branch_partition_and_bisection"]
+    solution_type: Literal["lower_bound", "branch_start", "interior_root", "stock_candidate"]
+    algorithm: Literal["known_branch_partition_and_bisection", "stock_candidate_evaluation"]
+    stock_candidates: list[StockSizingCandidate] | None = Field(
+        default=None, exclude_if=lambda value: value is None,
+        description="Every supplied stock thickness, in caller order, with its independently evaluated outcome.",
+    )
     evaluation_count: Annotated[int, Field(ge=1)]
     bisection_iterations: Annotated[int, Field(ge=0)]
     wall_thickness_tolerance: MillimeterQuantity
@@ -643,7 +752,8 @@ class SmoothBucklingSizingMetadata(ContractModel):
     declared_check_set: list[SizingCheckName]
     load_case: Literal["hydrostatic_closed_end"]
     shell_mid_surface_radius_convention: Literal[
-        "internal_radius_plus_half_wall_thickness"
+        "internal_radius_plus_half_wall_thickness",
+        "external_radius_minus_half_wall_thickness",
     ]
     target_minimum_margin: Annotated[float, Field(ge=0, allow_inf_nan=False)]
     bounds: NormalizedThicknessBounds
@@ -652,14 +762,18 @@ class SmoothBucklingSizingMetadata(ContractModel):
     selected_check_margins: dict[str, FiniteFloat]
     selected_minimum_margin: FiniteFloat
     selected_governing_check: SizingCheckName
-    solution_type: Literal["lower_bound", "branch_start", "interior_root"]
-    selection_scope: Literal["model_eligible_thicknesses"]
+    solution_type: Literal["lower_bound", "branch_start", "interior_root", "stock_candidate"]
+    selection_scope: Literal["model_eligible_thicknesses", "stock_candidates"]
     excluded_thickness_intervals: list[ExcludedThicknessInterval] = Field(
         description="Intervals skipped below the selection because a required output is "
         "unavailable. Released checks retain their endpoint margins, including known failures. "
         "This is not a complete applicability map of the supplied bounds.",
     )
-    algorithm: Literal["known_branch_partition_and_bisection"]
+    algorithm: Literal["known_branch_partition_and_bisection", "stock_candidate_evaluation"]
+    stock_candidates: list[StockSizingCandidate] | None = Field(
+        default=None, exclude_if=lambda value: value is None,
+        description="Every supplied stock thickness, in caller order, with its independently evaluated outcome.",
+    )
     evaluation_count: Annotated[int, Field(ge=1)]
     bisection_iterations: Annotated[int, Field(ge=0)]
     wall_thickness_tolerance: MillimeterQuantity
@@ -720,14 +834,18 @@ class PlateSizingMetadata(ContractModel):
     selected_check_margins: dict[str, FiniteFloat]
     selected_governing_check: PlateSizingCheckName
     selected_minimum_target_slack: FiniteFloat
-    solution_type: Literal["lower_bound", "branch_start", "interior_root"]
-    selection_scope: Literal["model_eligible_thicknesses"]
+    solution_type: Literal["lower_bound", "branch_start", "interior_root", "stock_candidate"]
+    selection_scope: Literal["model_eligible_thicknesses", "stock_candidates"]
     excluded_thickness_intervals: list[ExcludedThicknessInterval] = Field(
         description="Intervals skipped below the selection because a required output is "
         "unavailable. Released checks retain their endpoint margins, including known failures. "
         "This is not a complete applicability map of the supplied bounds.",
     )
-    algorithm: Literal["known_branch_partition_and_bisection"]
+    algorithm: Literal["known_branch_partition_and_bisection", "stock_candidate_evaluation"]
+    stock_candidates: list[StockSizingCandidate] | None = Field(
+        default=None, exclude_if=lambda value: value is None,
+        description="Every supplied stock thickness, in caller order, with its independently evaluated outcome.",
+    )
     evaluation_count: Annotated[int, Field(ge=1)]
     bisection_iterations: Annotated[int, Field(ge=0)]
     plate_thickness_tolerance: MillimeterQuantity

@@ -9,6 +9,36 @@ model; both predate this changelog.
 
 ## [Unreleased]
 
+- Add `cylinder`, a combined closed-end stress and smooth-buckling assessment
+  using one geometry and material. Optional two-closure butt assemblies reuse
+  plate/hemisphere models and check common-annulus bearing, with per-closure
+  materials, optional deflection limits, payload volume, mass, and buoyancy.
+  Assessments retain known failures and missing required coverage separately;
+  seals, attachments, and actual boundary restraints remain outside the checks.
+- Add the public `pv_calc.api.calculate` entry point for forward, sizing, and
+  batch requests, plus `run --input` for generic CLI dispatch. Add concise
+  structured summaries, terminal reports, and CSV check rows through
+  `--format json|summary|text|csv`. Detailed JSON remains the default and
+  `--json` still only compacts whitespace.
+- Add `check --input`, optional repeated `--check ID`, and acceptance exit
+  codes: 0 pass, 1 fail, 3 indeterminate, and 2 invalid input. Ordinary
+  calculation commands keep their existing evaluation exit behavior.
+- Bundle the ten reference material records in `pv_calc/data/materials.yaml`
+  and use them by default. Keep root `materials.yaml` as a compatibility
+  symlink. Add `materials list/show` with provenance and input availability;
+  explicit database overrides remain authoritative.
+- Add geometric sweeps, fixed-outside-radius cylinder sizing, and optional
+  stock-thickness selection inside explicit bounds. Material comparisons can
+  size each material against the same requirements and report selected geometry
+  and structural mass when sufficient geometry and density are available.
+- Accept direct depth loads for ordinary forward and sizing requests using
+  explicit density, gravity, and design factor, including unchanged base
+  requests nested in comparisons and sweeps. A pressure/depth sweep axis takes
+  precedence over its base load. Support zero-pressure forward
+  cases and depth sweeps starting at zero: zero demand/deformation, finite
+  formula capacities, unchanged applicability gates, and null margins. Inverse
+  sizing continues to require positive design pressure. These workflow changes
+  add no pressure-vessel physics or new FEA evidence.
 - Use exact Lamé stresses for tube and hemisphere material checks at every
   thickness, including inverse sizing. The former membrane branch could
   overstate failure pressure near its cutoff by about 10.25% for tubes and
@@ -35,9 +65,10 @@ model; both predate this changelog.
   inventing missing margins. Distinguish model-inapplicable bounds from failed
   targets, exclude wholly ineligible intervals despite irrelevant regime
   changes, and scale bisection tolerance to the solution thickness.
-- Model versions: tube 3.0.0, hemisphere 4.0.0, plate 4.0.0, smooth buckling
-  4.0.0, ring shell 3.0.0 (nested smooth result). Sizing operation versions:
-  tube and smooth buckling 3.0.0, plate 2.0.0. Request schema remains 5.0.0.
+- Model versions: tube 3.1.0, hemisphere 4.1.0, plate 4.1.0, smooth buckling
+  4.1.0, ring shell 3.1.0 (nested smooth result); cylinder composition 1.0.0.
+  Sizing operation versions: tube and smooth buckling 3.1.0, plate 2.1.0.
+  Sweep 1.2.0 and material comparison 1.1.0. Request schema remains 5.0.0.
 
 ## [0.1.0] - 2026-08-28
 

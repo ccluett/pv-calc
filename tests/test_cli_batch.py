@@ -465,7 +465,7 @@ def test_sweep_axis_and_request_errors_use_the_cli_error_contract(
                         "type": "list",
                         "values": [
                             {"value": 1.0, "unit": "MPa"},
-                            {"value": 0.0, "unit": "MPa"},
+                            {"value": -1.0, "unit": "MPa"},
                         ],
                     },
                 ),
@@ -475,7 +475,7 @@ def test_sweep_axis_and_request_errors_use_the_cli_error_contract(
     payload = _error_payload(unevaluable)
     assert payload["error"]["code"] == "unevaluable_model"
     assert payload["error"]["details"][-1] == {
-        "external_pressure": {"unit": "MPa", "value": 0.0},
+        "external_pressure": {"unit": "MPa", "value": -1.0},
         "point_index": 1,
     }
 
@@ -593,7 +593,7 @@ def test_sweep_nonfinite_response_keeps_the_point_index(monkeypatch) -> None:
     responses = iter([{"finite": 1.0}, {"nonfinite": math.inf}])
     monkeypatch.setattr(
         evaluate,
-        "_evaluate_forward_request",
+        "_evaluate_single_request",
         lambda *_args, **_kwargs: next(responses),
     )
 
@@ -961,10 +961,10 @@ def test_comparison_list_and_database_errors_use_the_cli_error_contract(
         "material": "not-a-material",
     }
 
-    missing_database = runner.invoke(
+    bundled_database = runner.invoke(
         app, ["compare-materials", "--input", document, "--json"]
     )
-    assert _error_payload(missing_database)["error"]["code"] == "missing_materials_file"
+    assert bundled_database.exit_code == 0, bundled_database.output
 
     # An unreadable database is a property of the list, not of one record, so it
     # fails the whole comparison at the first entry that had to resolve from it.
@@ -1064,7 +1064,7 @@ def test_comparison_nonfinite_response_keeps_the_entry_index(monkeypatch) -> Non
     )
     monkeypatch.setattr(
         evaluate,
-        "_evaluate_forward_request",
+        "_evaluate_single_request",
         lambda *_args, **_kwargs: {"nonfinite": math.inf},
     )
 

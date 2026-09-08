@@ -1,0 +1,384 @@
+# The pv-calc material database. Every record carries its own `source`, and
+# nothing is stored that a source does not state or that the record's source
+# text does not show the derivation of.
+#
+# Strengths are specification minimums where a specification states one, and
+# the source text names the basis where none does. Two categories have no
+# specification minimum to quote: a plastic's `working_strength_mpa` is an
+# allowable the designer selects, so each plastic record carries a
+# `working_strength_source` giving the basis of the stored number and what
+# it does and does not cover; and the brittle record's ultimates are vendor
+# data sheet values, which for a glass are nominal figures for a
+# flaw-dominated property rather than material constants.
+#
+# These values are calculation inputs, not design allowables. None is a statistical
+# A-basis or B-basis allowable. None carries a temperature derating, a weld
+# or heat-affected-zone knockdown, a fatigue or notch correction, or an
+# environmental-cracking caveat, and the calculator applies no safety factor
+# of its own. Everything is room temperature unless a record says otherwise.
+# A design uses the governing code and its own qualified material data.
+#
+# `proportional_limit_mpa` is not a specification minimum: no consulted
+# handbook tabulates one, so a stored value is derived and
+# `proportional_limit_source` carries the derivation. Only Al-6061-T6 and
+# Ti-6Al-4V carry one. Every other metal is null because no compressive
+# Ramberg-Osgood shape was located for it in MIL-HDBK-5J, which SS-2507
+# postdates. The plastics are null because their stored allowable is a
+# long-term quantity that no elastic-limit criterion attaches to, and the
+# brittle record is null because releasing a buckling capacity for a
+# flaw-dominated material on an elastic screen would claim more than its
+# data sheet supports. A null limit withholds elastic buckling capacity
+# rather than defaulting it; that is intended, and is not to be patched with
+# a fraction of yield.
+#
+# Units are SI, MPa and kg/m^3. A source stating English units is converted
+# at 1 ksi = 6.894757 MPa, 1 Mpsi = 6894.757 MPa, and
+# 1 lb/in^3 = 27679.9047 kg/m^3, and each record states its own rounding.
+#
+# `ultimate_strength_mpa` and the `*_source` fields are not part of the
+# calculator's schema and are ignored by the loader. They are kept beside
+# the values that are read because a reviewer checking a record needs them.
+materials:
+  Al-6061-T6:
+    density_kg_per_m3: 2700
+    elastic_modulus_mpa: 68900
+    poisson_ratio: 0.33
+    yield_strength_mpa: 241
+    ultimate_strength_mpa: 262
+    proportional_limit_mpa: 183.4
+    failure_category: ductile_metal
+    proportional_limit_source: >-
+      Derived, not tabulated: MIL-HDBK-5J (31 January 2003) states no
+      proportional limit for this alloy. Shape is its typical compressive
+      Ramberg-Osgood exponent n = 28, the LT value on Figure 3.6.2.2.6(i)
+      (6061-T6 extrusion, room temperature, printed p. 3-283), which is
+      labeled TYPICAL and is not a design allowable; LT governs because hoop
+      is the transverse direction of an extruded tube. Anchor is the 241 MPa
+      specification-minimum yield stored above, so the basis is
+      minimum-anchored with a typical shape; Table 3.6.2.0(g) gives
+      Fcy(LT) = 35 ksi for extruded rod, bar, and shapes, the same 35 ksi, so
+      the tensile and compressive anchors coincide here. Criterion is the
+      stress at which the tangent modulus falls to 0.99 E, a pv-calc choice
+      because the handbook states none, giving 183.4 MPa = 0.761 x yield.
+      Scope: room temperature, compressive, extruded forms. An applicability
+      limit for reporting elastic buckling capacity, not a design allowable.
+    source: >-
+      ASTM B221 and ASTM B241 specification minimums for wrought aluminum
+      6061-T6 (extruded profiles and seamless extruded tube). Basis:
+      specification minimums, 38 ksi ultimate and 35 ksi yield, stored as
+      conversions at 1 ksi = 6.894757 MPa rounded to the nearest MPa; not
+      statistical design allowables. ASTM B209 6061-T651 plate carries the same 35 ksi yield
+      minimum at a higher 42 ksi ultimate, so the stored floors bound the
+      common wrought forms. Density, elastic modulus, and Poisson ratio are
+      not specification-governed; the stored 2700 kg/m3, 68900 MPa (average
+      of tension and compression), and estimated 0.33 are nominal values
+      from the ASM Aerospace Specification Metals / MatWeb data sheet
+      "Aluminum 6061-T6; 6061-T651" (asm.matweb.com). Temperature: room
+      temperature; no elevated-temperature derating is stored.
+  Al-7075-T6:
+    density_kg_per_m3: 2810
+    elastic_modulus_mpa: 71016
+    poisson_ratio: 0.33
+    yield_strength_mpa: 427
+    failure_category: ductile_metal
+    source: >-
+      ASTM B211 specification minimum for cold-finished 7075-T651 bar, 62 ksi
+      yield at 6.001 to 7.000 in diameter, stored as 427 MPa, the
+      1 ksi = 6.894757 MPa conversion rounded to the nearest MPa; not a
+      statistical design allowable. 7075-T6 has no
+      single minimum yield strength: it runs 54 to 73 ksi across product forms
+      and thickness bands, and 62 ksi is the lowest band ASTM B211 states for
+      this temper. It is therefore a conservative floor for smaller
+      cold-finished bar (66 ksi up thru 4.000 in), for ASTM B209 sheet and
+      plate over 0.040 to 2.000 in (67 to 69 ksi), for ASTM B210 drawn
+      seamless tube (66 ksi), and for ASTM B221 extrusions (68 to 73 ksi). It
+      is not conservative for thick sections: B209 plate at 3.501 to 4.000 in
+      is 54 ksi and ASTM B247 hand forgings at 5.001 to 6.000 in are 56 ksi,
+      so confirm the governing minimum for the actual form and thickness. The
+      73 ksi commonly quoted for this alloy is the Aluminum Association
+      typical value, not a minimum. Density, elastic modulus, and Poisson
+      ratio are not specification-governed; the stored 2810 kg/m3 is the
+      Association's metric pairing for 0.101 lb/in3, 71016 MPa is 10.3 Mpsi,
+      the tension modulus, the Association publishing 10.4 Mpsi as the average
+      of tension and compression, and 0.33 is its nominal Poisson ratio. No
+      proportional limit is recorded, so elastic buckling capacity stays
+      withheld. Temperature: room temperature; no elevated-temperature
+      derating is stored.
+  Ti-6Al-4V:
+    density_kg_per_m3: 4430
+    elastic_modulus_mpa: 113800
+    poisson_ratio: 0.34
+    yield_strength_mpa: 827
+    ultimate_strength_mpa: 896
+    proportional_limit_mpa: 602.0
+    failure_category: ductile_metal
+    proportional_limit_source: >-
+      Derived by the method and criterion recorded on the Al-6061-T6 entry.
+      Shape is Ramberg-Osgood n = 21 at room temperature, printed on
+      MIL-HDBK-5J Figures 5.4.1.1.6(b) and (c) for annealed Ti-6Al-4V
+      (printed p. 5-65), both labeled TYPICAL and both longitudinal; the
+      handbook prints no transverse compressive curve for this condition, so
+      using the longitudinal shape for the hoop direction is an unverified
+      substitution. Anchor is the 827 MPa specification-minimum yield stored
+      above. Unlike 6061-T6 the anchors do not coincide: Table 5.4.1.0(c1)
+      annealed bar gives Fcy(L) = 129 ksi against Fty(L) = 125 ksi in the same
+      column, so anchoring at the stored tensile minimum is the conservative
+      direction. Tangent modulus at 0.99 E gives 602.0 MPa = 0.728 x yield.
+      Scope: room temperature, compressive, annealed. An applicability limit,
+      not a design allowable.
+    source: >-
+      ASTM B348 specification minimums for Ti-6Al-4V (Grade 5, UNS R56400)
+      bar and billet, annealed; ASTM B265 Grade 5 sheet and plate states the
+      same minimums. Basis: specification minimums, 130 ksi ultimate and
+      120 ksi yield, stored as conversions at 1 ksi = 6.894757 MPa rounded
+      to the nearest MPa; not statistical design allowables. Density, elastic modulus, and
+      Poisson ratio are not specification-governed; the stored 4430 kg/m3,
+      113800 MPa, and 0.34 (rounded from 0.342) are nominal values from the
+      ASM Aerospace Specification Metals / MatWeb data sheet "Titanium
+      Ti-6Al-4V (Grade 5), Annealed" (asm.matweb.com, bassnum MTP641).
+      Temperature: room temperature; no elevated-temperature derating is
+      stored.
+  Ti-Grade-2:
+    density_kg_per_m3: 4512
+    elastic_modulus_mpa: 104800
+    poisson_ratio: 0.32
+    yield_strength_mpa: 276
+    ultimate_strength_mpa: 345
+    failure_category: ductile_metal
+    source: >-
+      ASTM B265 specification minimums for commercially pure titanium
+      Grade 2 (UNS R50400), annealed, as tabulated in the Rolled Alloys
+      data sheet "Titanium Grade 2/2H" (rolledalloys.com) column footnoted
+      "Minimum values per specification". Basis: specification minimums,
+      50 ksi ultimate and 40 ksi yield, stored as conversions at
+      1 ksi = 6.894757 MPa rounded to the nearest MPa; not statistical
+      design allowables. Grade 2H is dual-certified material with the same
+      40 ksi yield at a higher 58 ksi ultimate; only the Grade 2 minimums
+      are stored. Density, elastic
+      modulus, and Poisson ratio are not specification-governed; the stored
+      4512 kg/m3 (0.163 lb/in3), 104800 MPa (15.2e6 psi at 68 F), and 0.32
+      are the same sheet's nominal values. Temperature: room temperature;
+      no elevated-temperature derating is stored.
+  SS-316-316L:
+    density_kg_per_m3: 8027
+    elastic_modulus_mpa: 199948
+    poisson_ratio: 0.28
+    yield_strength_mpa: 207
+    ultimate_strength_mpa: 517
+    failure_category: ductile_metal
+    source: >-
+      ASTM A240 specification minimums for dual-certified austenitic
+      316/316L (UNS S31600/S31603), condition A (annealed), as tabulated in
+      the Rolled Alloys data sheet "316/316L" (rolledalloys.com) column
+      footnoted "Values are minimums for condition A". Basis: specification
+      minimums, 75 ksi ultimate and 30 ksi yield, stored as conversions at
+      1 ksi = 6.894757 MPa rounded to the nearest MPa; not statistical
+      design allowables. Controlled nitrogen lets dual-certified 316/316L meet
+      straight-grade 316 strength at 316L carbon, so these minimums depend
+      on that dual certification; single-certified 316L alone is lower
+      (70 ksi ultimate, 25 ksi yield). Density, elastic modulus, and
+      Poisson ratio are not specification-governed; the stored 8027 kg/m3
+      (0.29 lb/in3), 199948 MPa (29e6 psi at 68 F), and 0.28 are the same
+      sheet's nominal values. Temperature: room temperature; no
+      elevated-temperature derating is stored.
+  SS-2507:
+    density_kg_per_m3: 7797
+    elastic_modulus_mpa: 199948
+    poisson_ratio: 0.3
+    yield_strength_mpa: 552
+    ultimate_strength_mpa: 800
+    failure_category: ductile_metal
+    source: >-
+      ASTM A240 specification minimums for super-duplex 2507 (UNS S32750),
+      annealed, as tabulated in the Rolled Alloys data sheet "Alloy 2507"
+      (rolledalloys.com); ASTM A479 bar and A789/A790 tube and pipe state
+      the same minimums. Basis: specification minimums, 116 ksi ultimate
+      and 80 ksi yield, stored as conversions at 1 ksi = 6.894757 MPa
+      rounded to the nearest MPa; not statistical design allowables, and
+      well below the Carpenter Technology "CarTech Duplex 2507 Stainless"
+      datasheet's typical
+      126 ksi ultimate and 86 ksi yield for a 1.375 in annealed
+      longitudinal bar specimen. Density, elastic modulus, and Poisson
+      ratio are not specification-governed; the stored 7797 kg/m3 (0.2817
+      lb/in3), 199948 MPa (29.0e3 ksi), and 0.300 are that Carpenter
+      datasheet's nominal values (its specific gravity 7.82 implies 7820
+      kg/m3). Temperature: room temperature; no elevated-temperature
+      derating is stored.
+  Ni-625:
+    density_kg_per_m3: 8440
+    elastic_modulus_mpa: 207500
+    poisson_ratio: 0.278
+    yield_strength_mpa: 414
+    ultimate_strength_mpa: 827
+    failure_category: ductile_metal
+    source: >-
+      ASTM B443 Grade 1 specification minimums for the
+      nickel-chromium-molybdenum-niobium alloy 625 (UNS N06625) in
+      plate, sheet, and strip, annealed; ASTM B444 and B446 state the
+      same minimums for Grade 1 pipe, tube, and bar. Basis:
+      specification minimums, 120 ksi ultimate and 60 ksi yield (0.2
+      percent offset), stored as conversions at 1 ksi = 6.894757 MPa
+      rounded to the nearest MPa; not statistical design allowables.
+      Grade 1 is the annealed grade; Grade 2, the solution-annealed
+      grade intended for higher-temperature service, is weaker at 100
+      ksi ultimate and 40 ksi yield, so this record does not cover a
+      Grade 2 part. Density, elastic modulus, and Poisson ratio are not
+      specification-governed; the stored 8440 kg/m3 (8.44 g/cm3), 207500
+      MPa (207.5 GPa), and 0.278 are room-temperature nominal values
+      from the Special Metals publication "INCONEL alloy 625"
+      (specialmetals.com), Table 2 and the annealed row of Table 4, which
+      is the condition ASTM B443 Grade 1 covers; that table's moduli were
+      determined dynamically on 3/4 in hot-rolled rod. Rolled Alloys
+      publishes 0.308 for this alloy without stating a condition, between
+      Special Metals' 0.278 annealed and 0.312 solution-treated; the
+      stored 0.278 is the conservative end for both buckling and
+      displacement. Temperature: room temperature; alloy 625 is
+      used hot and its properties fall off with temperature, but no
+      derating is stored.
+  Acrylic-PMMA:
+    density_kg_per_m3: 1190
+    elastic_modulus_mpa: 2758
+    poisson_ratio: 0.35
+    working_strength_mpa: 10.3
+    ultimate_strength_mpa: 62.1
+    failure_category: plastic
+    working_strength_source: >-
+      Derived, not tabulated: ASME PVHO-1 states no allowable stress for
+      acrylic. It sets a window's design pressure instead, by dividing
+      the window's short-term critical pressure by a conversion factor,
+      which is 6 at the standard's room-temperature design condition and
+      larger at elevated temperature. The stored 10.3 MPa applies that
+      same factor of 6 to the 62.1 MPa short-term tensile minimum stored
+      above, giving 1500 psi = 10.34 MPa, rounded to 10.3. This is a
+      pv-calc calculation choice and not a PVHO-1 number: PVHO-1 divides a
+      pressure, and the calculator compares a stress, so the two agree
+      only where capacity is linear in pressure. The factor is what
+      carries creep, sustained and cyclic loading, and the
+      room-temperature restriction; acrylic creeps under sustained load
+      and loses strength above the standard's room-temperature
+      condition, so warmer or longer-held service needs a smaller
+      number, selected by the designer. The stored value is not a design
+      allowable or a substitute for designing a window to PVHO-1.
+    source: >-
+      ASME PVHO-1, Safety Standard for Pressure Vessels for Human
+      Occupancy, Section 2, which sets the minimum physical properties the
+      finished acrylic (PMMA) of a window must meet. Basis: specification
+      minimums, 9000 psi short-term tensile ultimate strength and
+      400000 psi tensile modulus of elasticity at 73 F, stored as
+      conversions at 1 ksi = 6.894757 MPa and 1 Mpsi = 6894.757 MPa,
+      rounded to 62.1 MPa and 2758 MPa; not typicals, since cast acrylic
+      commonly tests nearer 10000 psi, and not statistical design
+      allowables. Density is PVHO-1's required specific gravity of 1.19 by
+      ASTM D792, stored as 1190 kg/m3. PVHO-1 also requires a 15000 psi
+      minimum compressive yield strength, which is not stored because the
+      calculator compares a plastic to working_strength_mpa alone whatever
+      the sign of the stress, so storing the larger compressive number
+      would be the unconservative choice. Poisson ratio is not
+      specification-governed: the full text of ASME PVHO-1 states no
+      Poisson ratio for acrylic, so nothing overrides a handbook value. The
+      stored 0.35 is what Professional Plastics' "Mechanical Properties of
+      Plastic Materials" table publishes for PMMA, against a 0.35 to 0.40
+      spread in the wider literature; acrylic is viscoelastic and its
+      Poisson ratio rises with load duration and temperature, so 0.35 is
+      the short-term end, which is the regime this model covers. It is also
+      the largest Poisson ratio the flat-plate model's FEA sweep solved and
+      the top of its (0.05, 0.35) evidence band, so a larger stored value
+      would withhold both the bending margin and the deflection for the
+      acrylic window case. The spread costs little either way: at 0.40 the
+      simply-supported bending stress rises about 1.5 percent, the
+      governing fixed-edge radial coefficient is 3/4 and does not move with
+      Poisson ratio at all, and the deflection becomes smaller and so less
+      conservative. Scope: this record screens the stress in an acrylic
+      part. It is not a PVHO-1 window design, which has its own geometry,
+      seat, bearing, and conversion-factor rules that this calculator does
+      not implement.
+  PVC-1120:
+    density_kg_per_m3: 1400
+    elastic_modulus_mpa: 2758
+    poisson_ratio: 0.38
+    working_strength_mpa: 13.8
+    ultimate_strength_mpa: 48.3
+    failure_category: plastic
+    working_strength_source: >-
+      Tabulated, not derived here: 2000 psi at 73 F is the hydrostatic
+      design stress the compound designation itself names, the trailing 20
+      of PVC 1120 being that stress in hundreds of psi. It is half of the
+      4000 psi hydrostatic design basis listed for the compound, the other
+      half being the 0.5 design factor that ASTM D1785 applies to rate
+      Schedule 40 and 80 PVC pipe. Stored as 2 ksi x 6.894757 = 13.789 MPa,
+      rounded to 13.8. Unlike a short-term ultimate this already carries
+      creep: the design basis comes from a long-term regression of hoop
+      stress against time to failure under ASTM D2837, and the design
+      factor carries the rest. Two limits on reading it here. It is a
+      tensile hoop quantity from internal-pressure testing, so using it as
+      the allowable for the compressive hoop stress of an external-pressure
+      case is the conservative direction for stress but says nothing about
+      stability, which stays withheld. And it is stated at 73 F; PVC
+      derates steeply with temperature and no derating is stored. A
+      calculation input, not a design allowable.
+    source: >-
+      ASTM D1784 cell classification 12454 minimums for rigid poly(vinyl
+      chloride) compound, the classification ASTM D1785 requires of PVC
+      1120 pipe. Basis: specification minimums, 7000 psi tensile strength
+      (the third cell digit) and 400000 psi modulus of elasticity (the
+      fourth), stored as conversions at 1 ksi = 6.894757 MPa and
+      1 Mpsi = 6894.757 MPa, rounded to 48.3 MPa and 2758 MPa; these are
+      floors that qualifying compounds exceed, and are not statistical
+      design allowables. Density and Poisson ratio are not
+      specification-governed; the stored 1400 kg/m3 (specific gravity 1.40)
+      and 0.38 are vendor nominal values for cell class 12454 pipe
+      compound, both published at 73 F in the Westlake Pipe and Fittings
+      sheet "PVC and PVCO Pipe Engineering Properties", which also
+      reproduces the 7000 psi, 400000 psi, and 2000 psi values stored
+      above. That sheet names a governing standard for every other property
+      and names none for the Poisson ratio, so 0.38 is a vendor nominal
+      rather than a standards value. Vendors disagree: Spears
+      Manufacturing's "Physical Properties of PVC and CPVC Pipe" publishes
+      0.410 for the same cell class, beside typicals that exceed the
+      D1784 floors stored here. The stored 0.38 is the conservative end of
+      that pair for shell buckling. ASTM D1784 does not cell-classify
+      density, so no specification minimum exists for it. Temperature: 73 F, which is the temperature every
+      value above is stated at.
+  Glass-Fused-Silica:
+    density_kg_per_m3: 2200
+    elastic_modulus_mpa: 72700
+    poisson_ratio: 0.17
+    ultimate_tensile_strength_mpa: 48.3
+    ultimate_compressive_strength_mpa: 1103
+    failure_category: brittle
+    source: >-
+      Vendor data sheet values for fused silica, also sold as fused quartz;
+      no specification minimum is quoted because none governs these
+      properties. Density 2.20 g/cm3 and Young's modulus 72.7 GPa are the
+      room-temperature values of the Corning HPFS 7980 fused silica product
+      information sheet, stored as 2200 kg/m3 and 72700 MPa; Corning's
+      current all-grades brochure gives 73 GPa. The stored Poisson ratio
+      0.17 is the Heraeus "Properties of fused silica" and Momentive
+      Technologies value, not Corning's: both Corning sheets state 0.16.
+      Published Poisson ratios for this material run 0.16 to 0.17.
+      The stored strengths are the tensile 7000 psi and compressive
+      160000 psi that fused-quartz fabricators publish for the material
+      (Momentive Technologies, formerly GE Quartz, republished by Technical
+      Glass Products), converted at 1 ksi = 6.894757 MPa and rounded to
+      48.3 MPa and 1103 MPa. Corning's all-grades brochure publishes 54 MPa tensile and
+      1.14 GPa compressive and Heraeus about 50 and 1150 N/mm2, so both
+      stored values are the low end of the published spread. Read the
+      tensile
+      number with care: the strength of a glass in tension is not a
+      material constant. It is set by the surface flaw population, so it
+      falls with surface damage, with the area under stress, and with the
+      duration of the load, and it is degraded by water at the crack tip.
+      The stored 48.3 MPa is a nominal figure for well-finished stock and
+      is not a lower bound, and it is not a design stress: the same
+      Momentive table that gives 7000 psi recommends a design stress of
+      1000 psi, a factor of 7.0 below it, and Doyle, "Design strength of
+      optical glass" (Proc. SPIE 5176), puts rule-of-thumb glass design
+      strengths at 1000 to 1500 psi. The compressive number is far less
+      flaw-sensitive and is what the shell models read, but the flat-plate
+      model reads the tensile number, because a brittle plate bends its
+      convex face into tension. A flat window screened by this record is
+      therefore screened entirely on a flaw-dominated nominal, at about
+      seven times the fabricator design stress, and this calculator applies
+      no factor of its own. Treat a released plate margin on this record as
+      an order-of-magnitude screen only; a window is qualified by proof
+      test, not by this screen. Temperature: room temperature.

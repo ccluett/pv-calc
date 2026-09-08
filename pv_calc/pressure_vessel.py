@@ -80,7 +80,7 @@ SEAT_BEARING_STRESS_SOURCE = (
 
 
 TUBE_STRESS_MODEL_ID = "closed_end_tube_stress"
-TUBE_STRESS_MODEL_VERSION = "3.0.0"
+TUBE_STRESS_MODEL_VERSION = "3.1.0"
 # Retained as output metadata for callers of the former thin/thick model.
 # Lamé stress and displacement now apply at every radius/thickness ratio.
 TUBE_THIN_WALL_MEAN_RADIUS_RATIO = 10.0
@@ -142,7 +142,7 @@ TUBE_SCOPE_NOTES = (
 )
 
 HEMISPHERE_MODEL_ID = "roark_nasa_hemispherical_head_external_pressure"
-HEMISPHERE_MODEL_VERSION = "4.0.0"
+HEMISPHERE_MODEL_VERSION = "4.1.0"
 HEMISPHERE_THIN_WALL_MEAN_RADIUS_RATIO = 10.0
 HEMISPHERE_NASA_MINIMUM_LAMBDA = 2.0
 HEMISPHERE_ROARK_PROBABLE_MINIMUM_COEFFICIENT = 0.365
@@ -199,7 +199,7 @@ HEMISPHERE_SCOPE_NOTES = (
 )
 
 FLAT_CIRCULAR_PLATE_MODEL_ID = "uniformly_loaded_flat_circular_plate"
-FLAT_CIRCULAR_PLATE_MODEL_VERSION = "4.0.0"
+FLAT_CIRCULAR_PLATE_MODEL_VERSION = "4.1.0"
 
 FLAT_CIRCULAR_PLATE_ENVELOPE_SOURCE = (
     "validation/fea/results/plate_sweep_fea_summary.json: "
@@ -286,7 +286,7 @@ FLAT_CIRCULAR_PLATE_SCOPE_NOTES = (
 )
 
 SMOOTH_CYLINDER_BUCKLING_MODEL_ID = "nasa_smooth_cylinder_external_pressure_buckling"
-SMOOTH_CYLINDER_BUCKLING_MODEL_VERSION = "4.0.0"
+SMOOTH_CYLINDER_BUCKLING_MODEL_VERSION = "4.1.0"
 SMOOTH_CYLINDER_BUCKLING_SOURCE = (
     "NASA/SP-8007-2020/REV 2, Eqs. 3-5 and 17-29, pp. 22 and 26-29"
 )
@@ -386,7 +386,7 @@ class TubeStressResult:
     governing_radius_mm: float
     governing_stress_mpa: float
     theoretical_failure_pressure_mpa: float
-    margin: float
+    margin: float | None
     maximum_radial_displacement_over_thickness: float | None
     maximum_absolute_strain: float | None
     displacement_status: Literal[
@@ -449,10 +449,10 @@ class HemisphereResult:
     governing_radius_mm: float
     governing_stress_mpa: float
     theoretical_stress_failure_pressure_mpa: float
-    stress_margin: float
+    stress_margin: float | None
     seat_bearing_stress_mpa: float
     theoretical_seat_failure_pressure_mpa: float
-    seat_margin: float
+    seat_margin: float | None
     classical_critical_pressure_mpa: float
     nasa_geometry_parameter_lambda: float
     nasa_minimum_lambda: float
@@ -625,7 +625,7 @@ class SmoothCylinderBucklingResult:
 
 
 RING_SHELL_MODEL_ID = "nasa_ring_stiffened_shell_external_pressure"
-RING_SHELL_MODEL_VERSION = "3.0.0"
+RING_SHELL_MODEL_VERSION = "3.1.0"
 RING_SHELL_EQ64_ADJUSTMENT_FACTOR = 0.75
 RING_SHELL_MIN_RADIUS_THICKNESS_RATIO = 10.0
 RING_SHELL_DEFAULT_MAX_MODE_EVALUATIONS = 2_000_000
@@ -854,6 +854,19 @@ def _positive_finite(value: Any, name: str) -> float:
     return result
 
 
+def _non_negative_pressure(value: Any) -> float:
+    """Zero load is evaluable; its capacity/demand margin is undefined."""
+    if isinstance(value, bool):
+        raise ValueError("external_pressure_mpa must be numeric")
+    try:
+        result = float(value)
+    except (TypeError, ValueError) as exc:
+        raise ValueError("external_pressure_mpa must be numeric") from exc
+    if not math.isfinite(result) or result < 0.0:
+        raise ValueError("external_pressure_mpa must be finite and non-negative")
+    return result
+
+
 def _validated_failure_category(value: Any) -> MaterialFailureCategory:
     categories = get_args(MaterialFailureCategory)
     if value not in categories:
@@ -929,7 +942,7 @@ def _seat_bearing(
     outside_radius_mm: float,
     inside_radius_mm: float,
     strength_mpa: float,
-) -> tuple[float, float, float]:
+) -> tuple[float, float, float | None]:
     """Return the average seat bearing stress, its failure pressure, and margin.
 
     The pressure load on the closure's outside radius is carried by the flat
@@ -939,6 +952,11 @@ def _seat_bearing(
     bearing_stress = (
         pressure_mpa * outside_radius_mm**2 / (outside_radius_mm**2 - inside_radius_mm**2)
     )
+    if pressure_mpa == 0.0:
+        failure_pressure = strength_mpa * (
+            outside_radius_mm**2 - inside_radius_mm**2
+        ) / outside_radius_mm**2
+        return bearing_stress, failure_pressure, None
     margin = strength_mpa / bearing_stress - 1.0
     return bearing_stress, pressure_mpa * (margin + 1.0), margin
 
@@ -999,7 +1017,7 @@ def closed_end_tube_stress(
     the caller's gauge length. Without both elastic properties, displacement is
     withheld and the reason is reported.
     """
-    pressure = _positive_finite(external_pressure_mpa, "external_pressure_mpa")
+    pressure = _non_negative_pressure(external_pressure_mpa)
     internal_radius = _positive_finite(internal_radius_mm, "internal_radius_mm")
     thickness = _positive_finite(wall_thickness_mm, "wall_thickness_mm")
     category = _validated_failure_category(material_failure_category)
@@ -1080,8 +1098,15 @@ def closed_end_tube_stress(
     )
 
     governing, governing_stress = _shell_governing_state(states, category)
-    margin = strength / governing_stress - 1.0
-    failure_pressure = pressure * (margin + 1.0)
+    margin = strength / governing_stress - 1.0 if pressure > 0.0 else None
+    # Under unit pressure, the inner-surface stress magnitude is sqrt(3)*b²/(b²-a²)
+    # for von Mises and 2*b²/(b²-a²) for the maximum-hoop criterion.
+    failure_pressure = (
+        pressure * (margin + 1.0) if margin is not None else
+        strength * radius_squared_difference / (
+            (math.sqrt(3.0) if category == "ductile_metal" else 2.0) * external_radius**2
+        )
+    )
     if not missing_elastic_properties and governing_stress > strength:
         displacement_violations.append(SHELL_DISPLACEMENT_MATERIAL_LIMIT)
     return TubeStressResult(
@@ -1195,7 +1220,7 @@ def hemispherical_head_external_pressure(
     It is reported at the internal and external surfaces, positive outward,
     and applies away from the equator and its local restraint.
     """
-    pressure = _positive_finite(external_pressure_mpa, "external_pressure_mpa")
+    pressure = _non_negative_pressure(external_pressure_mpa)
     internal_radius = _positive_finite(internal_radius_mm, "internal_radius_mm")
     thickness = _positive_finite(wall_thickness_mm, "wall_thickness_mm")
     elastic_modulus = _positive_finite(elastic_modulus_mpa, "elastic_modulus_mpa")
@@ -1263,8 +1288,11 @@ def hemispherical_head_external_pressure(
     displacement_violations = list(deformation_violations)
     if governing_stress > strength:
         displacement_violations.append(SHELL_DISPLACEMENT_MATERIAL_LIMIT)
-    stress_margin = strength / governing_stress - 1.0
-    stress_failure_pressure = pressure * (stress_margin + 1.0)
+    stress_margin = strength / governing_stress - 1.0 if pressure > 0.0 else None
+    stress_failure_pressure = (
+        pressure * (stress_margin + 1.0) if stress_margin is not None else
+        strength * denominator / (1.5 * external_radius**3)
+    )
     seat_stress, seat_failure_pressure, seat_margin = _seat_bearing(
         pressure_mpa=pressure,
         outside_radius_mm=external_radius,
@@ -1335,7 +1363,10 @@ def hemispherical_head_external_pressure(
     capacity_released = not buckling_violations and nasa_candidate_pressure is not None
     released_pressure = nasa_candidate_pressure if capacity_released else None
     released_stress = nasa_candidate_stress if capacity_released else None
-    buckling_margin = released_pressure / pressure - 1.0 if released_pressure is not None else None
+    buckling_margin = (
+        released_pressure / pressure - 1.0
+        if released_pressure is not None and pressure > 0.0 else None
+    )
 
     return HemisphereResult(
         model_id=HEMISPHERE_MODEL_ID,
@@ -1442,7 +1473,7 @@ def flat_circular_plate(
     and outside radii, with its own failure pressure and margin; without it the
     three seat values are ``None``.
     """
-    pressure = _positive_finite(external_pressure_mpa, "external_pressure_mpa")
+    pressure = _non_negative_pressure(external_pressure_mpa)
     free_radius = _positive_finite(free_radius_mm, "free_radius_mm")
     thickness = _positive_finite(plate_thickness_mm, "plate_thickness_mm")
     elastic_modulus = _positive_finite(elastic_modulus_mpa, "elastic_modulus_mpa")
@@ -1524,8 +1555,14 @@ def flat_circular_plate(
         governing_direction = "tangential"
         governing_stress = tangential_stress
 
-    radial_failure_pressure = pressure * strength / radial_stress
-    tangential_failure_pressure = pressure * strength / tangential_stress
+    radial_failure_pressure = (
+        pressure * strength / radial_stress if pressure > 0.0 else
+        strength / (radial_coefficient * radius_thickness_squared)
+    )
+    tangential_failure_pressure = (
+        pressure * strength / tangential_stress if pressure > 0.0 else
+        strength / (tangential_coefficient * radius_thickness_squared)
+    )
     theoretical_failure_pressure = min(radial_failure_pressure, tangential_failure_pressure)
     seat_stress = seat_failure_pressure = seat_margin = None
     if outside_radius is not None:
@@ -1644,7 +1681,7 @@ def flat_circular_plate(
         theoretical_tangential_failure_pressure_mpa=tangential_failure_pressure,
         theoretical_failure_pressure_mpa=theoretical_failure_pressure,
         bending_status="released" if bending_released else "withheld_applicability",
-        margin=strength / governing_stress - 1.0 if bending_released else None,
+        margin=strength / governing_stress - 1.0 if bending_released and pressure > 0.0 else None,
         seat_bearing_stress_mpa=seat_stress,
         theoretical_seat_failure_pressure_mpa=seat_failure_pressure,
         seat_margin=seat_margin,
@@ -2178,7 +2215,7 @@ def smooth_cylinder_external_pressure_buckling(
     optional and, when given, only bounds the proportional limit; a plastic or
     brittle material has no yield strength to give.
     """
-    p_mpa = _positive_finite(external_pressure_mpa, "external_pressure_mpa")
+    p_mpa = _non_negative_pressure(external_pressure_mpa)
     r_mm = _positive_finite(
         shell_mid_surface_radius_mm,
         "shell_mid_surface_radius_mm",
@@ -2336,7 +2373,7 @@ def smooth_cylinder_external_pressure_buckling(
         correlated_stress = selected.correlated_critical_circumferential_stress_mpa
     margin = (
         correlated_pressure / p_mpa - 1.0
-        if capacity_status == "released" and correlated_pressure is not None
+        if capacity_status == "released" and correlated_pressure is not None and p_mpa > 0.0
         else None
     )
     # A correlated critical stress above the proportional limit makes that capacity an
@@ -2466,7 +2503,7 @@ def ring_stiffened_shell_external_pressure(
     global mode is screened against when no proportional limit is supplied.
     """
 
-    p_mpa = _positive_finite(external_pressure_mpa, "external_pressure_mpa")
+    p_mpa = _non_negative_pressure(external_pressure_mpa)
     r_mm = _positive_finite(
         shell_mid_surface_radius_mm,
         "shell_mid_surface_radius_mm",
@@ -2667,7 +2704,7 @@ def ring_stiffened_shell_external_pressure(
         advisory_mode, advisory_pressure, advisory_status = min(
             advisory_candidates, key=lambda item: item[1]
         )
-        advisory_margin = advisory_pressure / p_mpa - 1.0
+        advisory_margin = advisory_pressure / p_mpa - 1.0 if p_mpa > 0.0 else None
     else:
         advisory_mode = None
         advisory_status = None

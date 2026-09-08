@@ -6,7 +6,7 @@
 # their content instead.
 models:
   - model_id: closed_end_tube_stress
-    model_version: "3.0.0"
+    model_version: "3.1.0"
     maturity: verified_equation
     completeness: partial
     evidence:
@@ -69,7 +69,7 @@ models:
       - Service, material, fabrication, temperature, and inspection inputs remain design-use blockers.
 
   - model_id: uniformly_loaded_flat_circular_plate
-    model_version: "4.0.0"
+    model_version: "4.1.0"
     maturity: verified_equation
     completeness: partial
     evidence:
@@ -125,7 +125,7 @@ models:
       - Service, material, fabrication, temperature, and inspection inputs remain design-use blockers.
 
   - model_id: roark_nasa_hemispherical_head_external_pressure
-    model_version: "4.0.0"
+    model_version: "4.1.0"
     maturity: verified_equation
     completeness: partial
     evidence:
@@ -183,7 +183,7 @@ models:
       - No calibration or physical validation was performed; the result is advisory.
 
   - model_id: nasa_smooth_cylinder_external_pressure_buckling
-    model_version: "4.0.0"
+    model_version: "4.1.0"
     maturity: verified_equation
     completeness: partial
     evidence:
@@ -215,7 +215,7 @@ models:
       - Imperfection, cycling, environment, temperature, product-form, and fabrication inputs remain design-use blockers.
 
   - model_id: nasa_ring_stiffened_shell_external_pressure
-    model_version: "3.0.0"
+    model_version: "3.1.0"
     maturity: benchmark_compared
     completeness: partial
     evidence:

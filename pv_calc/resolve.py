@@ -20,7 +20,7 @@ from pv_calc.contracts import (
     _to_unit,
 )
 from pv_calc.errors import CalcCliError
-from pv_calc.materials import CalcMaterial, load_calc_materials
+from pv_calc.materials import BUNDLED_MATERIAL_DATABASE, CalcMaterial, load_calc_materials
 from pv_calc.schemas import MaterialFailureCategory
 
 
@@ -110,34 +110,37 @@ class ResolvedMassMaterial:
 # the size and the nanosecond mtime would be missed; no editor or filesystem
 # this package supports produces one.
 _LOADED_DATABASES: dict[tuple[Path, int, int], dict[str, CalcMaterial]] = {}
+_BUNDLED_DATABASE: dict[str, CalcMaterial] | None = None
 
 
 def _load_named_material(
     name: str,
     materials_file: Path | None,
 ) -> tuple[CalcMaterial, str]:
-    if materials_file is None:
-        raise CalcCliError(
-            "missing_materials_file",
-            "a named material requires --materials-file; there is no default database",
-        )
+    global _BUNDLED_DATABASE
+    database = str(materials_file) if materials_file is not None else BUNDLED_MATERIAL_DATABASE
     try:
-        stat = Path(materials_file).stat()
-        key = (Path(materials_file).resolve(), stat.st_mtime_ns, stat.st_size)
-        if key not in _LOADED_DATABASES:
-            _LOADED_DATABASES[key] = load_calc_materials(materials_file)
+        if materials_file is None:
+            if _BUNDLED_DATABASE is None:
+                _BUNDLED_DATABASE = load_calc_materials()
+            materials = _BUNDLED_DATABASE
+        else:
+            stat = Path(materials_file).stat()
+            key = (Path(materials_file).resolve(), stat.st_mtime_ns, stat.st_size)
+            if key not in _LOADED_DATABASES:
+                _LOADED_DATABASES[key] = load_calc_materials(materials_file)
+            materials = _LOADED_DATABASES[key]
     except (OSError, ValueError, YAMLError) as exc:
         raise CalcCliError("invalid_material_database", str(exc)) from exc
-    materials = _LOADED_DATABASES[key]
     try:
         material = materials[name]
     except KeyError as exc:
         raise CalcCliError(
             "unknown_material",
-            f"material {name!r} is not present in {materials_file}",
+            f"material {name!r} is not present in {database}",
             [{"available_materials": sorted(materials)}],
         ) from exc
-    return material, str(materials_file)
+    return material, database
 
 
 def _resolve_material(
