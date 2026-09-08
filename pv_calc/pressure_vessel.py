@@ -104,6 +104,18 @@ SHELL_DISPLACEMENT_MATERIAL_LIMIT = (
     "governing stress exceeds the supplied material strength; "
     "the displacement is an elastic formula estimate beyond the material limit"
 )
+# Project release screens, not universal limits of the Lamé solutions.
+SHELL_MAXIMUM_DISPLACEMENT_OVER_THICKNESS = 1.0
+SHELL_MAXIMUM_ABSOLUTE_STRAIN = 0.01
+SHELL_DEFORMATION_SCREEN_NOTE = (
+    "Deformation is withheld_applicability when maximum absolute radial displacement / "
+    "wall thickness exceeds 1 or maximum absolute principal strain exceeds 0.01. "
+    "These are pv-calc release screens, not source-prescribed Lamé limits: the first "
+    "conservatively extends the former DTMB thin-cylinder screen, while the second "
+    "limits each omitted quadratic Green-strain term to 0.5% of its linear term. "
+    "Raw displacement and strain values remain available for inspection. Passing "
+    "these screens does not establish stability, material linearity, or solution accuracy."
+)
 TUBE_SCOPE_NOTES = (
     "Closed ends transmit uniform external-pressure axial load.",
     "Results apply away from the tube/endcap interface.",
@@ -123,9 +135,9 @@ TUBE_SCOPE_NOTES = (
     "is supplied.",
     "Displacement excludes tube/endcap junction effects, local restraint at closures, "
     "ovalization and initial out-of-roundness, instability, plasticity, and ring-frame restraint.",
-    "The displacement equations assume small deformations; the closed-cylinder source states "
-    "no numeric deformation limit.",
-    "When the governing material stress exceeds the supplied strength, deformation remains "
+    SHELL_DEFORMATION_SCREEN_NOTE,
+    "When deformation screens pass but governing material stress exceeds the supplied strength, "
+    "deformation remains "
     "available as elastic_estimate_material_limit; no plastic deformation is modeled.",
 )
 
@@ -180,7 +192,9 @@ HEMISPHERE_SCOPE_NOTES = (
     "the released value is not the equator's radial closure and not a seal-gap estimate.",
     "Displacement assumes small deformations and excludes junction analysis, plasticity, "
     "post-buckling deformation, and ring-stiffened service displacement.",
-    "When the governing material stress exceeds the supplied strength, displacement remains "
+    SHELL_DEFORMATION_SCREEN_NOTE,
+    "When deformation screens pass but governing material stress exceeds the supplied strength, "
+    "displacement remains "
     "available as elastic_estimate_material_limit; no plastic deformation is modeled.",
 )
 
@@ -373,9 +387,12 @@ class TubeStressResult:
     governing_stress_mpa: float
     theoretical_failure_pressure_mpa: float
     margin: float
+    maximum_radial_displacement_over_thickness: float | None
+    maximum_absolute_strain: float | None
     displacement_status: Literal[
         "released",
         "withheld_missing_elastic_properties",
+        "withheld_applicability",
         "elastic_estimate_material_limit",
     ]
     displacement_validity_violations: tuple[str, ...]
@@ -449,7 +466,11 @@ class HemisphereResult:
     released_buckling_critical_membrane_stress_mpa: float | None
     buckling_margin: float | None
     buckling_validity_violations: tuple[str, ...]
-    displacement_status: Literal["released", "elastic_estimate_material_limit"]
+    maximum_radial_displacement_over_thickness: float
+    maximum_absolute_strain: float
+    displacement_status: Literal[
+        "released", "withheld_applicability", "elastic_estimate_material_limit"
+    ]
     displacement_validity_violations: tuple[str, ...]
     notes: tuple[str, ...]
 
@@ -867,6 +888,41 @@ def _principal_and_von_mises(
     return (s1, s2, s3), von_mises
 
 
+def _shell_deformation_screen(
+    states: Sequence[TubeStressState | HemisphereStressState],
+    thickness: float,
+    elastic_modulus: float,
+    poisson: float,
+) -> tuple[float, float, tuple[str, ...]]:
+    # In these Lamé fields |u| is convex and each strain is affine in 1/r^n;
+    # the maximum absolute displacement and strain therefore occur at a surface.
+    displacements = []
+    strains = []
+    for state in states:
+        assert state.radial_displacement_mm is not None
+        displacements.append(abs(state.radial_displacement_mm))
+        principal = state.principal_stresses_mpa
+        for i, stress in enumerate(principal):
+            strains.append(abs(
+                (stress - poisson * (principal[(i + 1) % 3] + principal[(i + 2) % 3]))
+                / elastic_modulus
+            ))
+    displacement_ratio = max(displacements) / thickness
+    maximum_strain = max(strains)
+    violations = []
+    if displacement_ratio > SHELL_MAXIMUM_DISPLACEMENT_OVER_THICKNESS:
+        violations.append(
+            "maximum absolute radial displacement exceeds one wall thickness; "
+            "outside the pv-calc conservative deformation release screen"
+        )
+    if maximum_strain > SHELL_MAXIMUM_ABSOLUTE_STRAIN:
+        violations.append(
+            "maximum absolute principal strain exceeds 0.01; "
+            "outside the pv-calc small-strain release screen"
+        )
+    return displacement_ratio, maximum_strain, tuple(violations)
+
+
 def _seat_bearing(
     *,
     pressure_mpa: float,
@@ -1009,6 +1065,14 @@ def closed_end_tube_stress(
         state_at(external_radius, "external"),
     )
 
+    displacement_ratio = maximum_strain = None
+    deformation_violations: tuple[str, ...] = ()
+    if elastic_modulus is not None and poisson is not None:
+        displacement_ratio, maximum_strain, deformation_violations = _shell_deformation_screen(
+            states, thickness, elastic_modulus, poisson
+        )
+        displacement_violations.extend(deformation_violations)
+
     axial_length_change = (
         axial_strain * axial_length
         if axial_strain is not None and axial_length is not None
@@ -1049,13 +1113,19 @@ def closed_end_tube_stress(
         governing_stress_mpa=governing_stress,
         theoretical_failure_pressure_mpa=failure_pressure,
         margin=margin,
+        maximum_radial_displacement_over_thickness=displacement_ratio,
+        maximum_absolute_strain=maximum_strain,
         displacement_status=(
             "released"
             if not displacement_violations
             else (
                 "withheld_missing_elastic_properties"
                 if missing_elastic_properties
-                else "elastic_estimate_material_limit"
+                else (
+                    "withheld_applicability"
+                    if deformation_violations
+                    else "elastic_estimate_material_limit"
+                )
             )
         ),
         displacement_validity_violations=tuple(displacement_violations),
@@ -1185,7 +1255,14 @@ def hemispherical_head_external_pressure(
         state_at(external_radius, "external"),
     )
 
+    displacement_ratio, maximum_strain, deformation_violations = _shell_deformation_screen(
+        stress_states, thickness, elastic_modulus, poisson
+    )
+
     governing, governing_stress = _shell_governing_state(stress_states, category)
+    displacement_violations = list(deformation_violations)
+    if governing_stress > strength:
+        displacement_violations.append(SHELL_DISPLACEMENT_MATERIAL_LIMIT)
     stress_margin = strength / governing_stress - 1.0
     stress_failure_pressure = pressure * (stress_margin + 1.0)
     seat_stress, seat_failure_pressure, seat_margin = _seat_bearing(
@@ -1317,12 +1394,14 @@ def hemispherical_head_external_pressure(
         released_buckling_critical_membrane_stress_mpa=released_stress,
         buckling_margin=buckling_margin,
         buckling_validity_violations=tuple(buckling_violations),
+        maximum_radial_displacement_over_thickness=displacement_ratio,
+        maximum_absolute_strain=maximum_strain,
         displacement_status=(
-            "elastic_estimate_material_limit" if governing_stress > strength else "released"
+            "withheld_applicability" if deformation_violations else (
+                "elastic_estimate_material_limit" if governing_stress > strength else "released"
+            )
         ),
-        displacement_validity_violations=(
-            (SHELL_DISPLACEMENT_MATERIAL_LIMIT,) if governing_stress > strength else ()
-        ),
+        displacement_validity_violations=tuple(displacement_violations),
         notes=(*HEMISPHERE_SCOPE_NOTES, *SHELL_CATEGORY_NOTES[category]),
     )
 

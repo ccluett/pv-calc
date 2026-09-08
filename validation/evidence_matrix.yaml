@@ -58,7 +58,11 @@ models:
         than the stress result does; all six are excluded.
       - >-
         The exact displacement equations assume small deformation and linear
-        elasticity. Exceeding the supplied material strength labels raw
+        elasticity. Project deformation release screens require maximum
+        absolute radial displacement/thickness <= 1 and maximum absolute
+        principal strain <= 0.01; exceeding either gives withheld_applicability
+        while retaining raw formula values. These are not universal Lamé
+        validity limits. Exceeding only the supplied material strength labels raw
         deformation as elastic_estimate_material_limit. Passing this strength
         screen alone does not establish proportional behavior or stability.
       - UnderPressure 4.60 version-stamped captures remain open.
@@ -164,7 +168,11 @@ models:
         the seat is the average bearing stress on the equator annulus only.
       - >-
         Radial displacement assumes small strain and linear elasticity.
-        Exceeding the supplied material strength labels it as
+        Project deformation release screens require maximum absolute radial
+        displacement/thickness <= 1 and maximum absolute principal strain
+        <= 0.01; exceeding either gives withheld_applicability with raw formula
+        values retained. These are not universal Lamé validity limits.
+        Exceeding only the supplied material strength labels it as
         elastic_estimate_material_limit; no post-failure behavior is modeled.
       - >-
         The displacement is the spherical solution away from the equator.

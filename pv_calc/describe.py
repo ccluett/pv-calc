@@ -116,9 +116,24 @@ from pv_calc.sizing import (
 # sees a nullable number, and has no way to learn when it is populated.
 _RESULT_FIELD_DESCRIPTIONS: dict[str, str] = {
     "displacement_status": (
-        "elastic_estimate_material_limit retains the elastic formula values when"
-        " governing material stress exceeds the supplied strength. The reasons"
-        " appear in displacement_validity_violations; no plastic deformation is modeled."
+        "released requires maximum_radial_displacement_over_thickness <= 1,"
+        " maximum_absolute_strain <= 0.01, and governing material stress no greater"
+        " than the supplied strength. Geometric screens take precedence as"
+        " withheld_applicability; material exceedance alone gives"
+        " elastic_estimate_material_limit. Both retain raw displacement and strain"
+        " formula values, with reasons in displacement_validity_violations. Missing"
+        " elastic properties give withheld_missing_elastic_properties and null"
+        " deformation values. These screens do not establish stability or material linearity."
+    ),
+    "maximum_radial_displacement_over_thickness": (
+        "Maximum absolute radial displacement over the wall, divided by wall thickness."
+        " Values > 1 withhold deformation release under a conservative pv-calc policy,"
+        " not a universal Lamé validity limit. Null when elastic properties are missing."
+    ),
+    "maximum_absolute_strain": (
+        "Maximum absolute principal linear strain over the wall, including radial"
+        " and tube axial strain. Values > 0.01 withhold deformation release under"
+        " the pv-calc small-strain screen. Null when elastic properties are missing."
     ),
     "deflection_status": (
         "released requires both geometric applicability and governing bending stress"

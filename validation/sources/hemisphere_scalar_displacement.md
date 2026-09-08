@@ -11,7 +11,7 @@ clamped-equator assumption belongs to the separate NASA buckling correlation.
 - [Coreform IGA verification manual, section 6](https://docs.coreform.com/cifa/verification-manual/problems/solid_mechanics/linear_elastic_stress/pressurized-sphere/pressurized-sphere.html)
   gives the Lamé radial displacement alongside radial and tangential stresses
   for a sphere with internal and external pressure. Its reference is
-  Timoshenko and Goodier, *Theory of Elasticity*, 3rd ed. (1970), is an
+  Timoshenko and Goodier, *Theory of Elasticity*, 3rd ed. (1970), an
   indirect citation through that manual. The shipped source reference names
   Coreform's explicit closed form; the tutorial below supports the derivation.
 - [IIT Kharagpur, Mechanics of Solids, tutorial 7, problem 8](https://facweb.iitkgp.ac.in/~jeevanjyoti/teaching/mechsolids/2024/ts/ts7.pdf)
@@ -62,6 +62,16 @@ plasticity, and ring-frame response. When the governing material stress
 exceeds the supplied strength, displacement remains an elastic formula value
 with `elastic_estimate_material_limit` and a reason. Passing that screen
 alone does not establish elastic behavior or stability.
+
+Deformation release also requires `maximum_radial_displacement_over_thickness
+<= 1` and `maximum_absolute_strain <= 0.01`. These are pv-calc screens, not
+limits prescribed by Coreform or Timoshenko and Goodier. The displacement
+screen conservatively extends the former DTMB thin-cylinder policy; the strain
+screen includes radial and both tangential strains. The
+[shared derivation and policy](tube_scalar_displacement.md#deformation-release-screens)
+explain their basis and limitations. Geometric exceedance takes precedence as
+`withheld_applicability`; raw displacement and all material/geometric reasons
+remain available. Buckling release and material margins are separate checks.
 
 Tests check surface traction, equatorial force balance, radial and tangential
 Hooke-law identities, the membrane limit, and continuity. The historical

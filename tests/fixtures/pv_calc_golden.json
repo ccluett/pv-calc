@@ -152,6 +152,8 @@
               "load_case": "hydrostatic_closed_end",
               "margin": 4.09660083847,
               "material_failure_category": "ductile_metal",
+              "maximum_absolute_strain": 0.000661718144242,
+              "maximum_radial_displacement_over_thickness": 0.00422373283559,
               "mean_radius_mm": {
                 "unit": "mm",
                 "value": 82.169
@@ -169,8 +171,8 @@
                 "Radial displacement is positive outward, so external pressure gives a negative value, and each stress state carries the displacement at its own internal or external surface radius.",
                 "Axial strain is uniform through the wall and along the tube; the axial length change is that strain times the caller's gauge length, which is null when no length is supplied.",
                 "Displacement excludes tube/endcap junction effects, local restraint at closures, ovalization and initial out-of-roundness, instability, plasticity, and ring-frame restraint.",
-                "The displacement equations assume small deformations; the closed-cylinder source states no numeric deformation limit.",
-                "When the governing material stress exceeds the supplied strength, deformation remains available as elastic_estimate_material_limit; no plastic deformation is modeled."
+                "Deformation is withheld_applicability when maximum absolute radial displacement / wall thickness exceeds 1 or maximum absolute principal strain exceeds 0.01. These are pv-calc release screens, not source-prescribed Lam\u00e9 limits: the first conservatively extends the former DTMB thin-cylinder screen, while the second limits each omitted quadratic Green-strain term to 0.5% of its linear term. Raw displacement and strain values remain available for inspection. Passing these screens does not establish stability, material linearity, or solution accuracy.",
+                "When deformation screens pass but governing material stress exceeds the supplied strength, deformation remains available as elastic_estimate_material_limit; no plastic deformation is modeled."
               ],
               "poisson_ratio": 0.33,
               "principal_stress_ordering": "descending_algebraic",
@@ -416,6 +418,8 @@
               "load_case": "hydrostatic_closed_end",
               "margin": 16.4891655329,
               "material_failure_category": "ductile_metal",
+              "maximum_absolute_strain": 0.000398237011195,
+              "maximum_radial_displacement_over_thickness": 0.00254193836933,
               "mean_radius_mm": {
                 "unit": "mm",
                 "value": 82.169
@@ -433,8 +437,8 @@
                 "Radial displacement is positive outward, so external pressure gives a negative value, and each stress state carries the displacement at its own internal or external surface radius.",
                 "Axial strain is uniform through the wall and along the tube; the axial length change is that strain times the caller's gauge length, which is null when no length is supplied.",
                 "Displacement excludes tube/endcap junction effects, local restraint at closures, ovalization and initial out-of-roundness, instability, plasticity, and ring-frame restraint.",
-                "The displacement equations assume small deformations; the closed-cylinder source states no numeric deformation limit.",
-                "When the governing material stress exceeds the supplied strength, deformation remains available as elastic_estimate_material_limit; no plastic deformation is modeled."
+                "Deformation is withheld_applicability when maximum absolute radial displacement / wall thickness exceeds 1 or maximum absolute principal strain exceeds 0.01. These are pv-calc release screens, not source-prescribed Lam\u00e9 limits: the first conservatively extends the former DTMB thin-cylinder screen, while the second limits each omitted quadratic Green-strain term to 0.5% of its linear term. Raw displacement and strain values remain available for inspection. Passing these screens does not establish stability, material linearity, or solution accuracy.",
+                "When deformation screens pass but governing material stress exceeds the supplied strength, deformation remains available as elastic_estimate_material_limit; no plastic deformation is modeled."
               ],
               "poisson_ratio": 0.34,
               "principal_stress_ordering": "descending_algebraic",
@@ -614,6 +618,8 @@
       },
       "load_case": "uniform_external_pressure",
       "material_failure_category": "ductile_metal",
+      "maximum_absolute_strain": 0.00121115382083,
+      "maximum_radial_displacement_over_thickness": 0.0478405759228,
       "mean_radius_mm": {
         "unit": "mm",
         "value": 101.265822785
@@ -646,7 +652,8 @@
         "Stress and displacement use the spherically symmetric elastic solution away from the equator; the clamped equator belongs to the buckling correlation.",
         "The displacement holds away from the equator. A restrained equator suppresses it locally, so the released value is not the equator's radial closure and not a seal-gap estimate.",
         "Displacement assumes small deformations and excludes junction analysis, plasticity, post-buckling deformation, and ring-stiffened service displacement.",
-        "When the governing material stress exceeds the supplied strength, displacement remains available as elastic_estimate_material_limit; no plastic deformation is modeled."
+        "Deformation is withheld_applicability when maximum absolute radial displacement / wall thickness exceeds 1 or maximum absolute principal strain exceeds 0.01. These are pv-calc release screens, not source-prescribed Lam\u00e9 limits: the first conservatively extends the former DTMB thin-cylinder screen, while the second limits each omitted quadratic Green-strain term to 0.5% of its linear term. Raw displacement and strain values remain available for inspection. Passing these screens does not establish stability, material linearity, or solution accuracy.",
+        "When deformation screens pass but governing material stress exceeds the supplied strength, displacement remains available as elastic_estimate_material_limit; no plastic deformation is modeled."
       ],
       "poisson_ratio": 0.33,
       "principal_stress_ordering": "descending_algebraic",
@@ -9508,6 +9515,8 @@
           "load_case": "hydrostatic_closed_end",
           "margin": 4.77908274229,
           "material_failure_category": "ductile_metal",
+          "maximum_absolute_strain": 0.000606556624363,
+          "maximum_radial_displacement_over_thickness": 0.0142331115917,
           "mean_radius_mm": {
             "unit": "mm",
             "value": 102.130794171
@@ -9525,8 +9534,8 @@
             "Radial displacement is positive outward, so external pressure gives a negative value, and each stress state carries the displacement at its own internal or external surface radius.",
             "Axial strain is uniform through the wall and along the tube; the axial length change is that strain times the caller's gauge length, which is null when no length is supplied.",
             "Displacement excludes tube/endcap junction effects, local restraint at closures, ovalization and initial out-of-roundness, instability, plasticity, and ring-frame restraint.",
-            "The displacement equations assume small deformations; the closed-cylinder source states no numeric deformation limit.",
-            "When the governing material stress exceeds the supplied strength, deformation remains available as elastic_estimate_material_limit; no plastic deformation is modeled."
+            "Deformation is withheld_applicability when maximum absolute radial displacement / wall thickness exceeds 1 or maximum absolute principal strain exceeds 0.01. These are pv-calc release screens, not source-prescribed Lam\u00e9 limits: the first conservatively extends the former DTMB thin-cylinder screen, while the second limits each omitted quadratic Green-strain term to 0.5% of its linear term. Raw displacement and strain values remain available for inspection. Passing these screens does not establish stability, material linearity, or solution accuracy.",
+            "When deformation screens pass but governing material stress exceeds the supplied strength, deformation remains available as elastic_estimate_material_limit; no plastic deformation is modeled."
           ],
           "poisson_ratio": 0.3,
           "principal_stress_ordering": "descending_algebraic",
@@ -9845,6 +9854,8 @@
               "load_case": "hydrostatic_closed_end",
               "margin": 8.91791413285,
               "material_failure_category": "ductile_metal",
+              "maximum_absolute_strain": null,
+              "maximum_radial_displacement_over_thickness": null,
               "mean_radius_mm": {
                 "unit": "mm",
                 "value": 82.169
@@ -9862,8 +9873,8 @@
                 "Radial displacement is positive outward, so external pressure gives a negative value, and each stress state carries the displacement at its own internal or external surface radius.",
                 "Axial strain is uniform through the wall and along the tube; the axial length change is that strain times the caller's gauge length, which is null when no length is supplied.",
                 "Displacement excludes tube/endcap junction effects, local restraint at closures, ovalization and initial out-of-roundness, instability, plasticity, and ring-frame restraint.",
-                "The displacement equations assume small deformations; the closed-cylinder source states no numeric deformation limit.",
-                "When the governing material stress exceeds the supplied strength, deformation remains available as elastic_estimate_material_limit; no plastic deformation is modeled."
+                "Deformation is withheld_applicability when maximum absolute radial displacement / wall thickness exceeds 1 or maximum absolute principal strain exceeds 0.01. These are pv-calc release screens, not source-prescribed Lam\u00e9 limits: the first conservatively extends the former DTMB thin-cylinder screen, while the second limits each omitted quadratic Green-strain term to 0.5% of its linear term. Raw displacement and strain values remain available for inspection. Passing these screens does not establish stability, material linearity, or solution accuracy.",
+                "When deformation screens pass but governing material stress exceeds the supplied strength, deformation remains available as elastic_estimate_material_limit; no plastic deformation is modeled."
               ],
               "poisson_ratio": null,
               "principal_stress_ordering": "descending_algebraic",
@@ -10047,6 +10058,8 @@
               "load_case": "hydrostatic_closed_end",
               "margin": 3.95895706643,
               "material_failure_category": "ductile_metal",
+              "maximum_absolute_strain": null,
+              "maximum_radial_displacement_over_thickness": null,
               "mean_radius_mm": {
                 "unit": "mm",
                 "value": 82.169
@@ -10064,8 +10077,8 @@
                 "Radial displacement is positive outward, so external pressure gives a negative value, and each stress state carries the displacement at its own internal or external surface radius.",
                 "Axial strain is uniform through the wall and along the tube; the axial length change is that strain times the caller's gauge length, which is null when no length is supplied.",
                 "Displacement excludes tube/endcap junction effects, local restraint at closures, ovalization and initial out-of-roundness, instability, plasticity, and ring-frame restraint.",
-                "The displacement equations assume small deformations; the closed-cylinder source states no numeric deformation limit.",
-                "When the governing material stress exceeds the supplied strength, deformation remains available as elastic_estimate_material_limit; no plastic deformation is modeled."
+                "Deformation is withheld_applicability when maximum absolute radial displacement / wall thickness exceeds 1 or maximum absolute principal strain exceeds 0.01. These are pv-calc release screens, not source-prescribed Lam\u00e9 limits: the first conservatively extends the former DTMB thin-cylinder screen, while the second limits each omitted quadratic Green-strain term to 0.5% of its linear term. Raw displacement and strain values remain available for inspection. Passing these screens does not establish stability, material linearity, or solution accuracy.",
+                "When deformation screens pass but governing material stress exceeds the supplied strength, deformation remains available as elastic_estimate_material_limit; no plastic deformation is modeled."
               ],
               "poisson_ratio": null,
               "principal_stress_ordering": "descending_algebraic",
@@ -10249,6 +10262,8 @@
               "load_case": "hydrostatic_closed_end",
               "margin": 2.30597137762,
               "material_failure_category": "ductile_metal",
+              "maximum_absolute_strain": null,
+              "maximum_radial_displacement_over_thickness": null,
               "mean_radius_mm": {
                 "unit": "mm",
                 "value": 82.169
@@ -10266,8 +10281,8 @@
                 "Radial displacement is positive outward, so external pressure gives a negative value, and each stress state carries the displacement at its own internal or external surface radius.",
                 "Axial strain is uniform through the wall and along the tube; the axial length change is that strain times the caller's gauge length, which is null when no length is supplied.",
                 "Displacement excludes tube/endcap junction effects, local restraint at closures, ovalization and initial out-of-roundness, instability, plasticity, and ring-frame restraint.",
-                "The displacement equations assume small deformations; the closed-cylinder source states no numeric deformation limit.",
-                "When the governing material stress exceeds the supplied strength, deformation remains available as elastic_estimate_material_limit; no plastic deformation is modeled."
+                "Deformation is withheld_applicability when maximum absolute radial displacement / wall thickness exceeds 1 or maximum absolute principal strain exceeds 0.01. These are pv-calc release screens, not source-prescribed Lam\u00e9 limits: the first conservatively extends the former DTMB thin-cylinder screen, while the second limits each omitted quadratic Green-strain term to 0.5% of its linear term. Raw displacement and strain values remain available for inspection. Passing these screens does not establish stability, material linearity, or solution accuracy.",
+                "When deformation screens pass but governing material stress exceeds the supplied strength, deformation remains available as elastic_estimate_material_limit; no plastic deformation is modeled."
               ],
               "poisson_ratio": null,
               "principal_stress_ordering": "descending_algebraic",
@@ -10470,6 +10485,8 @@
               "load_case": "hydrostatic_closed_end",
               "margin": 17.0802423211,
               "material_failure_category": "ductile_metal",
+              "maximum_absolute_strain": null,
+              "maximum_radial_displacement_over_thickness": null,
               "mean_radius_mm": {
                 "unit": "mm",
                 "value": 82.169
@@ -10487,8 +10504,8 @@
                 "Radial displacement is positive outward, so external pressure gives a negative value, and each stress state carries the displacement at its own internal or external surface radius.",
                 "Axial strain is uniform through the wall and along the tube; the axial length change is that strain times the caller's gauge length, which is null when no length is supplied.",
                 "Displacement excludes tube/endcap junction effects, local restraint at closures, ovalization and initial out-of-roundness, instability, plasticity, and ring-frame restraint.",
-                "The displacement equations assume small deformations; the closed-cylinder source states no numeric deformation limit.",
-                "When the governing material stress exceeds the supplied strength, deformation remains available as elastic_estimate_material_limit; no plastic deformation is modeled."
+                "Deformation is withheld_applicability when maximum absolute radial displacement / wall thickness exceeds 1 or maximum absolute principal strain exceeds 0.01. These are pv-calc release screens, not source-prescribed Lam\u00e9 limits: the first conservatively extends the former DTMB thin-cylinder screen, while the second limits each omitted quadratic Green-strain term to 0.5% of its linear term. Raw displacement and strain values remain available for inspection. Passing these screens does not establish stability, material linearity, or solution accuracy.",
+                "When deformation screens pass but governing material stress exceeds the supplied strength, deformation remains available as elastic_estimate_material_limit; no plastic deformation is modeled."
               ],
               "poisson_ratio": null,
               "principal_stress_ordering": "descending_algebraic",
@@ -10664,6 +10681,8 @@
               "load_case": "hydrostatic_closed_end",
               "margin": 8.04012116053,
               "material_failure_category": "ductile_metal",
+              "maximum_absolute_strain": null,
+              "maximum_radial_displacement_over_thickness": null,
               "mean_radius_mm": {
                 "unit": "mm",
                 "value": 82.169
@@ -10681,8 +10700,8 @@
                 "Radial displacement is positive outward, so external pressure gives a negative value, and each stress state carries the displacement at its own internal or external surface radius.",
                 "Axial strain is uniform through the wall and along the tube; the axial length change is that strain times the caller's gauge length, which is null when no length is supplied.",
                 "Displacement excludes tube/endcap junction effects, local restraint at closures, ovalization and initial out-of-roundness, instability, plasticity, and ring-frame restraint.",
-                "The displacement equations assume small deformations; the closed-cylinder source states no numeric deformation limit.",
-                "When the governing material stress exceeds the supplied strength, deformation remains available as elastic_estimate_material_limit; no plastic deformation is modeled."
+                "Deformation is withheld_applicability when maximum absolute radial displacement / wall thickness exceeds 1 or maximum absolute principal strain exceeds 0.01. These are pv-calc release screens, not source-prescribed Lam\u00e9 limits: the first conservatively extends the former DTMB thin-cylinder screen, while the second limits each omitted quadratic Green-strain term to 0.5% of its linear term. Raw displacement and strain values remain available for inspection. Passing these screens does not establish stability, material linearity, or solution accuracy.",
+                "When deformation screens pass but governing material stress exceeds the supplied strength, deformation remains available as elastic_estimate_material_limit; no plastic deformation is modeled."
               ],
               "poisson_ratio": null,
               "principal_stress_ordering": "descending_algebraic",
@@ -10858,6 +10877,8 @@
               "load_case": "hydrostatic_closed_end",
               "margin": 5.02674744036,
               "material_failure_category": "ductile_metal",
+              "maximum_absolute_strain": null,
+              "maximum_radial_displacement_over_thickness": null,
               "mean_radius_mm": {
                 "unit": "mm",
                 "value": 82.169
@@ -10875,8 +10896,8 @@
                 "Radial displacement is positive outward, so external pressure gives a negative value, and each stress state carries the displacement at its own internal or external surface radius.",
                 "Axial strain is uniform through the wall and along the tube; the axial length change is that strain times the caller's gauge length, which is null when no length is supplied.",
                 "Displacement excludes tube/endcap junction effects, local restraint at closures, ovalization and initial out-of-roundness, instability, plasticity, and ring-frame restraint.",
-                "The displacement equations assume small deformations; the closed-cylinder source states no numeric deformation limit.",
-                "When the governing material stress exceeds the supplied strength, deformation remains available as elastic_estimate_material_limit; no plastic deformation is modeled."
+                "Deformation is withheld_applicability when maximum absolute radial displacement / wall thickness exceeds 1 or maximum absolute principal strain exceeds 0.01. These are pv-calc release screens, not source-prescribed Lam\u00e9 limits: the first conservatively extends the former DTMB thin-cylinder screen, while the second limits each omitted quadratic Green-strain term to 0.5% of its linear term. Raw displacement and strain values remain available for inspection. Passing these screens does not establish stability, material linearity, or solution accuracy.",
+                "When deformation screens pass but governing material stress exceeds the supplied strength, deformation remains available as elastic_estimate_material_limit; no plastic deformation is modeled."
               ],
               "poisson_ratio": null,
               "principal_stress_ordering": "descending_algebraic",
@@ -11051,6 +11072,8 @@
       "load_case": "hydrostatic_closed_end",
       "margin": 8.04012116053,
       "material_failure_category": "ductile_metal",
+      "maximum_absolute_strain": null,
+      "maximum_radial_displacement_over_thickness": null,
       "mean_radius_mm": {
         "unit": "mm",
         "value": 82.169
@@ -11068,8 +11091,8 @@
         "Radial displacement is positive outward, so external pressure gives a negative value, and each stress state carries the displacement at its own internal or external surface radius.",
         "Axial strain is uniform through the wall and along the tube; the axial length change is that strain times the caller's gauge length, which is null when no length is supplied.",
         "Displacement excludes tube/endcap junction effects, local restraint at closures, ovalization and initial out-of-roundness, instability, plasticity, and ring-frame restraint.",
-        "The displacement equations assume small deformations; the closed-cylinder source states no numeric deformation limit.",
-        "When the governing material stress exceeds the supplied strength, deformation remains available as elastic_estimate_material_limit; no plastic deformation is modeled."
+        "Deformation is withheld_applicability when maximum absolute radial displacement / wall thickness exceeds 1 or maximum absolute principal strain exceeds 0.01. These are pv-calc release screens, not source-prescribed Lam\u00e9 limits: the first conservatively extends the former DTMB thin-cylinder screen, while the second limits each omitted quadratic Green-strain term to 0.5% of its linear term. Raw displacement and strain values remain available for inspection. Passing these screens does not establish stability, material linearity, or solution accuracy.",
+        "When deformation screens pass but governing material stress exceeds the supplied strength, deformation remains available as elastic_estimate_material_limit; no plastic deformation is modeled."
       ],
       "poisson_ratio": null,
       "principal_stress_ordering": "descending_algebraic",
@@ -11324,6 +11347,8 @@
       "load_case": "hydrostatic_closed_end",
       "margin": 3.16620553539,
       "material_failure_category": "plastic",
+      "maximum_absolute_strain": 0.000972812521219,
+      "maximum_radial_displacement_over_thickness": 0.0031492744331,
       "mean_radius_mm": {
         "unit": "mm",
         "value": 50.4063
@@ -11341,8 +11366,8 @@
         "Radial displacement is positive outward, so external pressure gives a negative value, and each stress state carries the displacement at its own internal or external surface radius.",
         "Axial strain is uniform through the wall and along the tube; the axial length change is that strain times the caller's gauge length, which is null when no length is supplied.",
         "Displacement excludes tube/endcap junction effects, local restraint at closures, ovalization and initial out-of-roundness, instability, plasticity, and ring-frame restraint.",
-        "The displacement equations assume small deformations; the closed-cylinder source states no numeric deformation limit.",
-        "When the governing material stress exceeds the supplied strength, deformation remains available as elastic_estimate_material_limit; no plastic deformation is modeled.",
+        "Deformation is withheld_applicability when maximum absolute radial displacement / wall thickness exceeds 1 or maximum absolute principal strain exceeds 0.01. These are pv-calc release screens, not source-prescribed Lam\u00e9 limits: the first conservatively extends the former DTMB thin-cylinder screen, while the second limits each omitted quadratic Green-strain term to 0.5% of its linear term. Raw displacement and strain values remain available for inspection. Passing these screens does not establish stability, material linearity, or solution accuracy.",
+        "When deformation screens pass but governing material stress exceeds the supplied strength, deformation remains available as elastic_estimate_material_limit; no plastic deformation is modeled.",
         "Plastic strength depends on service temperature and load duration (creep); the working strength is the designer's allowance for both, and the margin is against that allowance."
       ],
       "poisson_ratio": 0.38,
@@ -11514,6 +11539,8 @@
       "load_case": "hydrostatic_closed_end",
       "margin": 0.100000000398,
       "material_failure_category": "ductile_metal",
+      "maximum_absolute_strain": null,
+      "maximum_radial_displacement_over_thickness": null,
       "mean_radius_mm": {
         "unit": "mm",
         "value": 81.1051482668
@@ -11531,8 +11558,8 @@
         "Radial displacement is positive outward, so external pressure gives a negative value, and each stress state carries the displacement at its own internal or external surface radius.",
         "Axial strain is uniform through the wall and along the tube; the axial length change is that strain times the caller's gauge length, which is null when no length is supplied.",
         "Displacement excludes tube/endcap junction effects, local restraint at closures, ovalization and initial out-of-roundness, instability, plasticity, and ring-frame restraint.",
-        "The displacement equations assume small deformations; the closed-cylinder source states no numeric deformation limit.",
-        "When the governing material stress exceeds the supplied strength, deformation remains available as elastic_estimate_material_limit; no plastic deformation is modeled."
+        "Deformation is withheld_applicability when maximum absolute radial displacement / wall thickness exceeds 1 or maximum absolute principal strain exceeds 0.01. These are pv-calc release screens, not source-prescribed Lam\u00e9 limits: the first conservatively extends the former DTMB thin-cylinder screen, while the second limits each omitted quadratic Green-strain term to 0.5% of its linear term. Raw displacement and strain values remain available for inspection. Passing these screens does not establish stability, material linearity, or solution accuracy.",
+        "When deformation screens pass but governing material stress exceeds the supplied strength, deformation remains available as elastic_estimate_material_limit; no plastic deformation is modeled."
       ],
       "poisson_ratio": null,
       "principal_stress_ordering": "descending_algebraic",

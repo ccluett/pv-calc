@@ -59,9 +59,38 @@ establish proportional material behavior or stability below the strength.
 The solution assumes small strains, linear isotropic elasticity, uniform
 pressure and thickness, and the axial resultant of closed ends. It excludes
 junction bending, local closure restraint, ovalization, instability,
-plasticity, and ring-frame response. DTMB's displacement/thickness gate
-belonged to the former membrane implementation; no numerical counterpart is
-claimed for this exact linear solution.
+plasticity, and ring-frame response.
+
+### Deformation release screens
+
+Both exact shell models report `maximum_radial_displacement_over_thickness`
+and `maximum_absolute_strain`. Release requires `max |u| / t <= 1` and
+`max |epsilon_i| <= 0.01`. These numerical thresholds are pv-calc policy:
+
+- The displacement/thickness screen conservatively extends the former DTMB
+  thin-cylinder restriction to every thickness and to the sphere. DTMB does
+  not establish that extension. Uniform Lamé contraction can have `|u| > t`
+  while strains remain small; the screen may therefore withhold an otherwise
+  valid idealized result. It is not the plate's bending-deflection criterion.
+- The strain screen includes radial, circumferential, and axial strains.
+  For these radial fields the displacement gradient is diagonal, and each
+  Green strain is `epsilon_i + epsilon_i^2/2`. A 1% linear-strain limit bounds
+  the omitted quadratic term to 0.5% of its corresponding nonzero linear
+  term. This is a kinematic screen, not a source-prescribed threshold or a
+  bound on total solution error, and does not establish material linearity.
+
+Principal linear strains are calculated from each surface stress state using
+`epsilon_i = [sigma_i - nu*(sigma_j + sigma_k)]/E`. Each strain is affine in
+`1/r^2` (tube) or `1/r^3` (sphere), so its absolute maximum occurs at a surface.
+For the supported `0 < nu < 0.5`, `|u(r)|` is convex and also has its maximum
+at a surface. No interior sampling is needed.
+
+Exceeding either threshold gives `withheld_applicability`, with all geometric
+and material reasons retained in `displacement_validity_violations`. Raw
+radial displacement, axial strain, and length change remain formula estimates.
+Missing elastic properties still withhold the calculation entirely. These
+screens apply to deformation release; stress values and material margins
+remain separate linear-model results, not a nonlinear capacity prediction.
 
 `validation/tube_displacement_reference.py` preserves the independently
 transcribed membrane and Lamé equations. Current production comparisons

@@ -259,11 +259,28 @@ These are complete-sphere stress and displacement values used away from a
 hemisphere's equator; they do not solve junction bending or seal closure.
 The clamped-equator condition belongs to the NASA buckling correlation.
 
-All deformation formulas assume small strains and linear elasticity. If the
-computed governing material stress exceeds the supplied strength, tube and
+All deformation formulas assume small strains and linear elasticity. Tube and
+hemisphere results expose `maximum_radial_displacement_over_thickness` and
+`maximum_absolute_strain`. Deformation release requires the former to be at
+most 1 and the latter at most 0.01. Exceeding either gives
+`withheld_applicability` and a reason; raw radial displacement and tube axial
+deformation remain available as formula estimates.
+
+These are pv-calc release screens, not universal Lamé validity limits. The
+one-wall-thickness screen conservatively extends the former DTMB thin-cylinder
+restriction to both exact shell models. Uniform radial contraction can exceed
+a wall thickness while strains remain small, so this screen can withhold a
+valid idealized solution. The separate 1% strain screen includes all three
+principal strains and catches large strains in thick walls. At that threshold,
+each omitted quadratic Green-strain term is at most 0.5% of its corresponding
+linear term; this is not a bound on total stress or displacement error. See the
+[tube source record](../validation/sources/tube_scalar_displacement.md#deformation-release-screens)
+for the calculation. Neither screen replaces a stability or material check.
+
+If the computed governing material stress exceeds the supplied strength, tube and
 hemisphere displacements and plate deflection remain available as raw elastic
 formula values, with `elastic_estimate_material_limit` status and a reason.
-The plate's `released_maximum_deflection_mm` is then null. Geometric plate
+The plate's `released_maximum_deflection_mm` is then null. Geometric deformation
 gates retain precedence as `withheld_applicability`. A strength-based screen
 does not establish proportional behavior below yield, stability, or the
 response of a material after failure; it simply avoids presenting a known

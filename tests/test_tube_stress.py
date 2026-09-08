@@ -249,7 +249,9 @@ def test_thin_geometry_exact_displacement_satisfies_three_dimensional_hooke_law(
 
     assert result.branch == "thick"
     assert result.margin > 0.0
-    assert result.displacement_status == "released"
+    assert result.displacement_status == "withheld_applicability"
+    assert result.maximum_radial_displacement_over_thickness > 1.0
+    # Withheld formula values still satisfy the exact linear constitutive law.
     for state in result.stress_states:
         assert state.radial_displacement_mm == pytest.approx(
             state.radius_mm

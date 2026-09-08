@@ -18,6 +18,10 @@ model; both predate this changelog.
   Label tube, hemisphere, and plate deformation beyond the supplied material
   strength as `elastic_estimate_material_limit`; retain raw elastic formula
   values and withhold the plate's released deflection in that state.
+- Report maximum radial displacement/thickness and absolute principal strain
+  for both shells. Withhold deformation release above 1 wall thickness or 1%
+  strain, retaining raw formula values and all violation reasons. These are
+  explicit pv-calc screens, not universal Lamé validity limits.
 - Set the ordinary smooth-cylinder buckling margin to null for
   `released_pending_plasticity`, retaining the elastic candidate pressure.
 - Preserve relevant named-material working-strength and proportional-limit
