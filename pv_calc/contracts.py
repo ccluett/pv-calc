@@ -611,11 +611,13 @@ class DerivedBranchBoundary(ContractModel):
 
 
 class ExcludedThicknessInterval(ContractModel):
-    """An interval outside the released model, not a failed capacity check."""
+    """An interval lacking a required output; other checks may be known failures."""
 
     lower: MillimeterQuantity
     upper: MillimeterQuantity
     withheld_reasons: list[NonBlankString]
+    lower_check_margins: dict[str, FiniteFloat]
+    upper_check_margins: dict[str, FiniteFloat]
 
 
 class SmoothBucklingSizingMetadata(ContractModel):
@@ -637,8 +639,9 @@ class SmoothBucklingSizingMetadata(ContractModel):
     solution_type: Literal["lower_bound", "branch_start", "interior_root"]
     selection_scope: Literal["model_eligible_thicknesses"]
     excluded_thickness_intervals: list[ExcludedThicknessInterval] = Field(
-        description="Model-ineligible intervals skipped below the selected thickness; "
-        "this is not a complete applicability map of the supplied bounds.",
+        description="Intervals skipped below the selection because a required output is "
+        "unavailable. Released checks retain their endpoint margins, including known failures. "
+        "This is not a complete applicability map of the supplied bounds.",
     )
     algorithm: Literal["known_branch_partition_and_bisection"]
     evaluation_count: Annotated[int, Field(ge=1)]
@@ -704,8 +707,9 @@ class PlateSizingMetadata(ContractModel):
     solution_type: Literal["lower_bound", "branch_start", "interior_root"]
     selection_scope: Literal["model_eligible_thicknesses"]
     excluded_thickness_intervals: list[ExcludedThicknessInterval] = Field(
-        description="Model-ineligible intervals skipped below the selected thickness; "
-        "this is not a complete applicability map of the supplied bounds.",
+        description="Intervals skipped below the selection because a required output is "
+        "unavailable. Released checks retain their endpoint margins, including known failures. "
+        "This is not a complete applicability map of the supplied bounds.",
     )
     algorithm: Literal["known_branch_partition_and_bisection"]
     evaluation_count: Annotated[int, Field(ge=1)]

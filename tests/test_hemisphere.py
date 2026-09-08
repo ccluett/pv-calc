@@ -84,6 +84,8 @@ def test_hemisphere_displacement_matches_spherical_compatibility_and_hooke_law(
     assert result.displacement_validity_violations == ()
     assert result.displacement_source_reference is not None
     assert "Hooke's law" in result.displacement_source_reference
+    assert "docs.coreform.com/cifa/verification-manual/" in result.displacement_source_reference
+    assert "section 6" in result.displacement_source_reference
     assert [state.radius_convention for state in result.stress_states] == ["internal", "external"]
     for state in result.stress_states:
         radius = state.radius_mm

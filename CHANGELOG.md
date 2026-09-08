@@ -24,7 +24,9 @@ model; both predate this changelog.
   derivations in optional `material.property_sources` output.
 - Search model-eligible portions of sizing bounds, including when an endpoint
   is outside applicability. Report excluded intervals and verify the selected
-  forward checks; no solution is inferred inside withheld regions.
+  forward checks; no solution is inferred inside withheld regions. Exclusions
+  retain released endpoint margins so a known material failure remains visible
+  when another required output is unavailable.
 - Model versions: tube 3.0.0, hemisphere 4.0.0, plate 4.0.0, smooth buckling
   4.0.0, ring shell 3.0.0 (nested smooth result). Sizing operation versions:
   tube and smooth buckling 3.0.0, plate 2.0.0. Request schema remains 5.0.0.

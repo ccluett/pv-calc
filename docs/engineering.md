@@ -74,9 +74,13 @@ by 6.77% under hydrostatic pressure. Such a solution is reported as `branch_star
 with no false continuous bracket across the jump.
 
 "Smallest" means smallest among thicknesses the model can evaluate for the
-requested checks. Intervals skipped below the selection are reported; nothing
-is inferred about the physical adequacy of those thicknesses. A missing proportional limit or no
-eligible thickness meeting the targets returns `no_reliable_solution`. The
+requested checks. An excluded interval lacks a required output; this does not
+mean every check is unavailable. Its `lower_check_margins` and
+`upper_check_margins` retain independently released endpoint checks, including
+negative bending or tube-stress margins. Missing outputs are not inferred.
+Adding a deflection constraint can exclude a plate interval without changing
+its known bending failure. A missing proportional limit or no eligible thickness
+meeting the targets returns `no_reliable_solution`. The
 selected forward checks must be released and meet every target. These operations
 add no physical equation and have no separate evidence-matrix rows.
 

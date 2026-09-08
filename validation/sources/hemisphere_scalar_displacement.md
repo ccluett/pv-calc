@@ -11,7 +11,9 @@ clamped-equator assumption belongs to the separate NASA buckling correlation.
 - [Coreform IGA verification manual, section 6](https://docs.coreform.com/cifa/verification-manual/problems/solid_mechanics/linear_elastic_stress/pressurized-sphere/pressurized-sphere.html)
   gives the Lamé radial displacement alongside radial and tangential stresses
   for a sphere with internal and external pressure. Its reference is
-  Timoshenko and Goodier, *Theory of Elasticity*, 3rd ed. (1970).
+  Timoshenko and Goodier, *Theory of Elasticity*, 3rd ed. (1970), is an
+  indirect citation through that manual. The shipped source reference names
+  Coreform's explicit closed form; the tutorial below supports the derivation.
 - [IIT Kharagpur, Mechanics of Solids, tutorial 7, problem 8](https://facweb.iitkgp.ac.in/~jeevanjyoti/teaching/mechsolids/2024/ts/ts7.pdf)
   states the spherical strain-displacement relations and generalized Hooke's
   law used below.

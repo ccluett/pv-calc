@@ -581,7 +581,7 @@
         "unit": "MPa",
         "value": 52.6751020575
       },
-      "displacement_source_reference": "Derived from the Lam\u00e9 spherical stresses in Roark's Formulas for Stress and Strain, 6th ed., Table 32 cases 2a-2b, p. 640, using spherical strain compatibility epsilon_theta = u/r and isotropic three-dimensional Hooke's law: u(r) = r * ((1 - nu) * sigma_theta - nu * sigma_r) / E; the strain relation and constitutive assumption are stated in IIT Kharagpur, Mechanics of Solids (ME21203), Tutorial Sheet 7 (2024), problem 8, p. 3",
+      "displacement_source_reference": "Coreform IGA for Abaqus verification manual, Thick-walled spherical pressure vessel, section 6: exact Lam\u00e9 radial displacement under internal and external pressure; https://docs.coreform.com/cifa/verification-manual/problems/solid_mechanics/linear_elastic_stress/pressurized-sphere/pressurized-sphere.html. The manual cites Timoshenko and Goodier, Theory of Elasticity, 3rd ed. (1970). Implemented using spherical strain compatibility and three-dimensional Hooke's law: u(r) = r * ((1 - nu) * sigma_theta - nu * sigma_r) / E.",
       "displacement_status": "released",
       "displacement_validity_violations": [],
       "elastic_modulus_mpa": {
@@ -1372,9 +1372,15 @@
             "unit": "mm",
             "value": 6.0
           },
+          "lower_check_margins": {
+            "flat_endcap_bending": -0.4
+          },
           "upper": {
             "unit": "mm",
             "value": 7.74596669241
+          },
+          "upper_check_margins": {
+            "flat_endcap_bending": -1.11022302463e-16
           },
           "withheld_reasons": [
             "governing bending stress exceeds the supplied material strength; the deflection is an elastic formula estimate beyond the material limit"

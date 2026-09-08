@@ -1008,6 +1008,13 @@ def test_cylinder_size_names_a_capacity_that_is_pending_plasticity() -> None:
     diagnostics = payload["error"]["details"][0]["lower_evaluation"]
     assert diagnostics["capacity_status"] == "released_pending_plasticity"
     assert diagnostics["buckling_regime"] == "short"
+    forward = _forward_cylinder_responses(
+        external_pressure="2 MPa", internal_radius_mm=100.0,
+        unsupported_length="150 mm", wall_thickness_mm=8.0,
+    )
+    assert diagnostics["check_margins"] == {
+        "cylindrical_shell_stress": forward["tube"]["result"]["margin"],
+    }
     assert any(
         "elastic upper bound pending validation" in reason
         for reason in diagnostics["withheld_reasons"]
@@ -1496,6 +1503,44 @@ def test_plate_size_searches_between_applicability_limits() -> None:
     )
 
 
+@pytest.mark.parametrize("limit", [None, "0.6 mm", "60 mm"])
+def test_plate_sizing_keeps_known_bending_failure_when_deflection_is_unavailable(limit) -> None:
+    lower = _forward_plate_result(plate_thickness_mm=6.0)["result"]
+    assert lower["bending_status"] == "released"
+    assert lower["margin"] == pytest.approx(-0.4)
+    result = runner.invoke(
+        app, _plate_size_args(
+            lower="6 mm", upper="9.5 mm", minimum_margin="0.25",
+            maximum_deflection=limit,
+        ),
+    )
+    assert result.exit_code == 0, result.output
+    metadata = json.loads(result.stdout)["sizing"]
+    if limit is None:
+        assert metadata["excluded_thickness_intervals"] == []
+    else:
+        (excluded,) = metadata["excluded_thickness_intervals"]
+        assert excluded["lower"] == {"unit": "mm", "value": 6.0}
+        assert excluded["lower_check_margins"] == {"flat_endcap_bending": lower["margin"]}
+        assert excluded["upper_check_margins"]["flat_endcap_bending"] < 0.0
+        assert any("material strength" in reason for reason in excluded["withheld_reasons"])
+    assert metadata["selected_minimum_target_slack"] >= 0.0
+
+    # Entirely failing bounds must also retain the same known margin in the
+    # refusal, whether or not the request needs the unavailable deflection.
+    refused = runner.invoke(
+        app, _plate_size_args(
+            lower="6 mm", upper="7 mm", minimum_margin="0.25",
+            maximum_deflection=limit,
+        ),
+    )
+    error = _error_payload(refused)["error"]
+    assert error["code"] == "no_reliable_solution"
+    assert error["details"][0]["lower_evaluation"]["check_margins"] == {
+        "flat_endcap_bending": lower["margin"],
+    }
+
+
 def test_plate_size_excludes_material_and_applicability_limits_before_sizing_deflection() -> None:
     lower = _forward_plate_result(plate_thickness_mm=4.0)["result"]
     assert lower["bending_status"] == "withheld_applicability"
@@ -1522,6 +1567,13 @@ def test_plate_size_excludes_material_and_applicability_limits_before_sizing_def
     assert payload["result"]["released_maximum_deflection_mm"]["value"] <= 0.6
     assert metadata["selected_minimum_target_slack"] >= 0.0
     assert metadata["excluded_thickness_intervals"]
+    # A geometric exclusion has no released bending verdict. A later
+    # material-limit exclusion does, and must preserve that known failure.
+    assert metadata["excluded_thickness_intervals"][0]["lower_check_margins"] == {}
+    assert any(
+        interval["lower_check_margins"].get("flat_endcap_bending", 0.0) < 0.0
+        for interval in metadata["excluded_thickness_intervals"]
+    )
 
     # Requiring a deflection too small to reach before its thickness floor
     # remains a refusal; the invalid thicker formula is not a fallback.

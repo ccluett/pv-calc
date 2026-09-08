@@ -791,7 +791,8 @@ def _plate_size_contract(
             "Only model-eligible thicknesses are searched. The evidence floor"
             " limits thickness above; the small-deflection gate limits it below."
             " A deflection constraint also requires the material strength not"
-            " be exceeded. Exclusions below the selection are reported, and an ineligible"
+            " be exceeded. Exclusions below the selection retain any released"
+            " endpoint check margins, including known bending failures. An ineligible"
             " bound does not prevent finding a valid interior solution.",
         ],
         "command": "pv-calc plate size",
@@ -896,8 +897,9 @@ def _smooth_buckling_size_contract(cli_options: Mapping[str, str]) -> dict[str, 
             "A smooth-cylinder capacity that is withheld, or released only as"
             " an elastic upper bound pending plasticity, is not a sizing margin."
             " Such intervals are excluded; those below the selection are reported."
-            " The smallest eligible thickness meeting every target is selected; the solver makes no"
-            " physical adequacy claim about excluded thicknesses.",
+            " Released tube-stress margins remain visible at the excluded endpoints."
+            " The smallest eligible thickness meeting every target is selected; missing"
+            " buckling capacities are not inferred.",
             "Exact Lame tube stress and released buckling are checked at the"
             " selected thickness. The governing check is calculated from the"
             " material category's own strength and reported rather than assumed.",

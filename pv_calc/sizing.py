@@ -87,7 +87,8 @@ class _SizingSample:
     states: dict[str, str]
     check_margins: dict[str, float]
     # Withheld formula values never enter the target calculation. The details
-    # explain why this thickness is outside the released model's search domain.
+    # explain which required outputs are unavailable. Any released check
+    # margins remain available for reporting, including known failures.
     unavailable_details: dict[str, Any] | None = None
 
     @property
@@ -246,7 +247,8 @@ def _solve_thickness(
     failing and passing ends, which is bisected.
     Known applicability boundaries also partition the domain. A wholly
     withheld interval is excluded, never used as a failing target bracket.
-    Nothing is inferred about its physical capacity.
+    Missing outputs are not inferred; any independently released check
+    margins are retained in the exclusion report.
     The slack against those targets is only assumed monotonic inside a branch,
     and that assumption is checked against every evaluated sample before a
     solution is returned.
@@ -333,8 +335,8 @@ def _solve_thickness(
             # target where the branch below it closed short of one, and there is
             # no root to bracket. Earlier model-eligible intervals failed, and
             # the slack rises inside each branch, so this is the smallest
-            # eligible thickness meeting the targets. Excluded intervals have
-            # unknown physical capacity and are reported separately.
+            # eligible thickness meeting the targets. Excluded intervals lack
+            # a required output but may also have a known failed check.
             if slack(interval_lower) >= 0.0:
                 opening_sample = interval_lower
                 break
@@ -411,6 +413,8 @@ def _excluded_thickness_intervals(solution: _SizingSolution) -> list[ExcludedThi
                 for sample in (lower, upper)
                 for reason in (sample.unavailable_details or {}).get("withheld_reasons", ())
             )),
+            lower_check_margins=dict(lower.check_margins),
+            upper_check_margins=dict(upper.check_margins),
         )
         for lower, upper in solution.excluded_intervals
     ]
@@ -754,6 +758,10 @@ def _plate_withheld_details(
             "free_diameter_over_thickness": result.free_diameter_over_thickness,
             "withheld_outputs": list(withheld),
             "withheld_reasons": list(reasons),
+            "check_margins": (
+                {PLATE_SIZING_BENDING_CHECK: result.margin}
+                if result.margin is not None else {}
+            ),
             "bending_minimum_free_diameter_over_thickness": (
                 result.bending_minimum_free_diameter_over_thickness
             ),
@@ -909,7 +917,10 @@ def _evaluate_plate_size(
                     and result.governing_bending_stress_mpa > result.strength_mpa,
                 )),
                 states={},
-                check_margins={},
+                check_margins=(
+                    {PLATE_SIZING_BENDING_CHECK: result.margin}
+                    if result.margin is not None else {}
+                ),
                 unavailable_details=_plate_withheld_details(
                     result, withheld=withheld, reasons=reasons,
                 )[0],
@@ -1405,12 +1416,13 @@ def _evaluate_smooth_buckling_size(
                 thickness_mm=wall_thickness_mm,
                 branch=f"{buckling.regime}/{buckling.capacity_status}",
                 states={"tube_branch": tube.branch, "buckling_regime": buckling.regime},
-                check_margins={},
+                check_margins={TUBE_SIZING_CHECK: tube.margin},
                 unavailable_details={
                     "wall_thickness": _quantity(wall_thickness_mm, "mm"),
                     "buckling_regime": buckling.regime,
                     "capacity_status": buckling.capacity_status,
                     "withheld_reasons": reasons,
+                    "check_margins": {TUBE_SIZING_CHECK: tube.margin},
                 },
             )
         evaluations[wall_thickness_mm] = (tube, buckling)

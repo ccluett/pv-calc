@@ -146,12 +146,13 @@ HEMISPHERE_SOFTWARE_PARITY_SOURCE = (
     "probable-minimum external pressure for a thin spherical shell"
 )
 HEMISPHERE_LAME_DISPLACEMENT_SOURCE = (
-    "Derived from the Lamé spherical stresses in Roark's Formulas for Stress and Strain, "
-    "6th ed., Table 32 cases 2a-2b, p. 640, using spherical strain compatibility "
-    "epsilon_theta = u/r and isotropic three-dimensional Hooke's law: "
-    "u(r) = r * ((1 - nu) * sigma_theta - nu * sigma_r) / E; "
-    "the strain relation and constitutive assumption are stated in IIT Kharagpur, "
-    "Mechanics of Solids (ME21203), Tutorial Sheet 7 (2024), problem 8, p. 3"
+    "Coreform IGA for Abaqus verification manual, Thick-walled spherical pressure vessel, "
+    "section 6: exact Lamé radial displacement under internal and external pressure; "
+    "https://docs.coreform.com/cifa/verification-manual/problems/solid_mechanics/"
+    "linear_elastic_stress/pressurized-sphere/pressurized-sphere.html. "
+    "The manual cites Timoshenko and Goodier, Theory of Elasticity, 3rd ed. (1970). "
+    "Implemented using spherical strain compatibility and three-dimensional Hooke's law: "
+    "u(r) = r * ((1 - nu) * sigma_theta - nu * sigma_r) / E."
 )
 HEMISPHERE_SCOPE_NOTES = (
     "Uniform external pressure acts on a constant-thickness isotropic hemispherical head.",
