@@ -42,11 +42,13 @@ class CalcMaterial(BaseModel):
     source: str
     yield_strength_mpa: float | None = None
     working_strength_mpa: float | None = None
+    working_strength_source: str | None = None
     ultimate_tensile_strength_mpa: float | None = None
     ultimate_compressive_strength_mpa: float | None = None
     elastic_modulus_mpa: float | None = None
     poisson_ratio: float | None = None
     proportional_limit_mpa: float | None = None
+    proportional_limit_source: str | None = None
     density_kg_per_m3: float | None = None
 
     @field_validator(
@@ -92,10 +94,10 @@ class CalcMaterial(BaseModel):
             raise ValueError("poisson_ratio must be between 0 and 0.5")
         return value
 
-    @field_validator("source")
+    @field_validator("source", "working_strength_source", "proportional_limit_source")
     @classmethod
-    def source_present(cls, value: str) -> str:
-        if not value.strip():
+    def source_present(cls, value: str | None) -> str | None:
+        if value is not None and not value.strip():
             raise ValueError("source must not be empty")
         return value
 

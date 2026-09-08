@@ -39,11 +39,13 @@ class ResolvedMaterial:
     failure_category: MaterialFailureCategory
     yield_strength_mpa: float | None = None
     working_strength_mpa: float | None = None
+    working_strength_source: str | None = None
     ultimate_tensile_strength_mpa: float | None = None
     ultimate_compressive_strength_mpa: float | None = None
     elastic_modulus_mpa: float | None = None
     poisson_ratio: float | None = None
     proportional_limit_mpa: float | None = None
+    proportional_limit_source: str | None = None
     density_kg_per_m3: float | None = None
 
     def strengths_mpa(self) -> dict[str, float]:
@@ -165,11 +167,13 @@ def _resolve_material(
             failure_category=named.failure_category,
             yield_strength_mpa=named.yield_strength_mpa,
             working_strength_mpa=named.working_strength_mpa,
+            working_strength_source=named.working_strength_source,
             ultimate_tensile_strength_mpa=named.ultimate_tensile_strength_mpa,
             ultimate_compressive_strength_mpa=named.ultimate_compressive_strength_mpa,
             elastic_modulus_mpa=named.elastic_modulus_mpa,
             poisson_ratio=named.poisson_ratio,
             proportional_limit_mpa=named.proportional_limit_mpa,
+            proportional_limit_source=named.proportional_limit_source,
             density_kg_per_m3=named.density_kg_per_m3,
         )
     properties = material.properties
@@ -188,6 +192,8 @@ def _resolve_material(
         provenance=material.provenance,
         failure_category=properties.failure_category,
         **strengths,
+        working_strength_source=None,
+        proportional_limit_source=None,
         elastic_modulus_mpa=(
             _to_unit(elastic_modulus, "MPa", "material.properties.elastic_modulus")
             if elastic_modulus is not None

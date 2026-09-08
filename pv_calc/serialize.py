@@ -280,6 +280,7 @@ def _material_payload(
     ],
 ) -> dict[str, Any]:
     properties: dict[str, Any]
+    property_sources: dict[str, str] = {}
     if isinstance(material, ResolvedMassMaterial):
         properties = {"density": _quantity(material.density_kg_per_m3, "kg/m^3")}
     else:
@@ -304,7 +305,17 @@ def _material_payload(
                 material.proportional_limit_mpa,
                 "MPa",
             )
-    return {
+        property_sources = {
+            name: source
+            for name, source in (
+                ("working_strength", material.working_strength_source),
+                ("proportional_limit", material.proportional_limit_source),
+            )
+            if source is not None
+            and name in properties
+            and properties[name]["value"] is not None
+        }
+    payload = {
         "source": {
             "type": material.source_type,
             "name": material.name,
@@ -313,6 +324,9 @@ def _material_payload(
         },
         "properties_used": properties,
     }
+    if property_sources:
+        payload["property_sources"] = property_sources
+    return payload
 
 
 def _calculation_source(
