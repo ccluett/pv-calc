@@ -80,7 +80,9 @@ SEAT_BEARING_STRESS_SOURCE = (
 
 
 TUBE_STRESS_MODEL_ID = "closed_end_tube_stress"
-TUBE_STRESS_MODEL_VERSION = "2.0.0"
+TUBE_STRESS_MODEL_VERSION = "3.0.0"
+# Retained as output metadata for callers of the former thin/thick model.
+# Lamé stress and displacement now apply at every radius/thickness ratio.
 TUBE_THIN_WALL_MEAN_RADIUS_RATIO = 10.0
 TUBE_THIN_SOURCE = "Roark's Formulas for Stress and Strain, 6th ed., Table 28 case 1c"
 TUBE_THICK_SOURCE = (
@@ -113,8 +115,8 @@ TUBE_SCOPE_NOTES = (
     "Closed ends transmit uniform external-pressure axial load.",
     "Results apply away from the tube/endcap interface.",
     "Compression is negative and tension is positive.",
-    "The documented branch switch is discrete: at mean-radius/thickness = 10, the thick-wall "
-    "equivalent stress is 10.25% above the thin-wall limiting value.",
+    "Lamé stresses apply at every wall thickness; branch retains the legacy value 'thick', "
+    "force_thick is a compatibility no-op, and the former thin-wall threshold is metadata only.",
     "This result covers material failure under the category's own criterion: von Mises stress "
     "against yield strength for a ductile metal, maximum hoop stress against the working strength "
     "for a plastic or the ultimate compressive strength for a brittle material. Shell stability "
@@ -122,20 +124,18 @@ TUBE_SCOPE_NOTES = (
     "Radial displacement and axial strain need an elastic modulus and a Poisson ratio; without "
     "both, every stress result is unchanged and displacement is withheld with its reason.",
     "Radial displacement is positive outward, so external pressure gives a negative value, and "
-    "each stress state carries the displacement at its own radius: the median surface on the "
-    "thin branch, the internal and external surfaces on the thick branch.",
-    "Axial strain is uniform through the wall and along the tube in both branches; the axial "
+    "each stress state carries the displacement at its own internal or external surface radius.",
+    "Axial strain is uniform through the wall and along the tube; the axial "
     "length change is that strain times the caller's gauge length, which is null when no length "
     "is supplied.",
     "Displacement excludes tube/endcap junction effects, local restraint at closures, "
     "ovalization and initial out-of-roundness, instability, plasticity, and ring-frame restraint.",
-    "The displacement equations assume small deformations. On the thin branch, displacement is "
-    "withheld when its absolute radial value exceeds the wall thickness, the explicit reliability "
-    "limit stated by DTMB 1497; no unsourced counterpart is imposed on the thick branch.",
+    "The displacement equations assume small deformations; the closed-cylinder source states "
+    "no numeric deformation limit.",
 )
 
 HEMISPHERE_MODEL_ID = "roark_nasa_hemispherical_head_external_pressure"
-HEMISPHERE_MODEL_VERSION = "3.0.0"
+HEMISPHERE_MODEL_VERSION = "4.0.0"
 HEMISPHERE_THIN_WALL_MEAN_RADIUS_RATIO = 10.0
 HEMISPHERE_NASA_MINIMUM_LAMBDA = 2.0
 HEMISPHERE_ROARK_PROBABLE_MINIMUM_COEFFICIENT = 0.365
@@ -160,14 +160,20 @@ HEMISPHERE_MEMBRANE_DISPLACEMENT_SOURCE = (
     "hemispherical bulkheads of the analyzed vessel, citing Timoshenko and "
     "Woinowsky-Krieger, Theory of Plates and Shells, 1959, pp. 481-485"
 )
-HEMISPHERE_DISPLACEMENT_MISSING_THICK_SOURCE = (
-    "the released displacement equation is a thin-shell membrane result; no consulted "
-    "primary source states a radial displacement for the thick-sphere branch, and none is "
-    "derived here"
+HEMISPHERE_LAME_DISPLACEMENT_SOURCE = (
+    "Derived from the Lamé spherical stresses in Roark's Formulas for Stress and Strain, "
+    "6th ed., Table 32 cases 2a-2b, p. 640, using spherical strain compatibility "
+    "epsilon_theta = u/r and isotropic three-dimensional Hooke's law: "
+    "u(r) = r * ((1 - nu) * sigma_theta - nu * sigma_r) / E; "
+    "the strain relation and constitutive assumption are stated in IIT Kharagpur, "
+    "Mechanics of Solids (ME21203), Tutorial Sheet 7 (2024), problem 8, p. 3"
 )
 HEMISPHERE_SCOPE_NOTES = (
     "Uniform external pressure acts on a constant-thickness isotropic hemispherical head.",
-    "The radius input is internal; thin stress and both buckling comparisons use the shell mean radius.",
+    "The radius input is internal; stresses and displacement use both wall surfaces, while "
+    "both buckling comparisons use the shell mean radius.",
+    "Lamé spherical stresses apply at every wall thickness; branch retains the legacy value "
+    "'thick' and force_thick is a compatibility no-op. The thin-shell threshold gates buckling only.",
     "The NASA SP-8032 result assumes a clamped equator and a 180-degree included spherical cap.",
     "The SP-8032 correlation is the source's lower bound to clamped-cap test data.",
     "The release gate adopts mean-radius/thickness > 10 from the conventional thin-shell "
@@ -179,16 +185,15 @@ HEMISPHERE_SCOPE_NOTES = (
     "The seat bearing stress is the average over the flat equator annulus between the internal "
     "and external radii, reported as a positive compressive magnitude with its own failure "
     "pressure and margin; it does not enter the shell stress margin.",
-    "Radial displacement is released on the thin branch only, at that branch's own median-surface "
-    "radius, and is positive outward, so external pressure gives a negative value.",
-    "The source states that displacement in the same equation as the membrane stress reported "
-    "here, so it carries that stress's idealization and no further assumption; the clamped "
-    "equator belongs to the buckling correlation and not to either of them.",
+    "Radial displacement is derived from the same Lamé stresses using spherical strain "
+    "compatibility and three-dimensional Hooke's law. Each stress state carries the displacement "
+    "at its own surface radius, positive outward, so external pressure gives a negative value.",
+    "Stress and displacement use the spherically symmetric elastic solution away from the "
+    "equator; the clamped equator belongs to the buckling correlation.",
     "The displacement holds away from the equator. A restrained equator suppresses it locally, so "
     "the released value is not the equator's radial closure and not a seal-gap estimate.",
-    "The thick-sphere branch withholds displacement with its reason. Displacement fields, junction "
-    "analysis, post-buckling deformation, and ring-stiffened service displacement are outside "
-    "this result.",
+    "Displacement assumes small deformations and excludes junction analysis, plasticity, "
+    "post-buckling deformation, and ring-stiffened service displacement.",
 )
 
 FLAT_CIRCULAR_PLATE_MODEL_ID = "uniformly_loaded_flat_circular_plate"
@@ -359,7 +364,7 @@ class TubeStressResult:
     end_condition: TubeEndCondition
     stress_sign_convention: StressSignConvention
     principal_stress_ordering: PrincipalStressOrdering
-    branch: Literal["thin", "thick"]
+    branch: Literal["thick"]
     force_thick: bool
     thin_wall_threshold_mean_radius_over_thickness: float
     internal_radius_mm: float
@@ -408,7 +413,7 @@ class HemisphereResult:
     stress_source_reference: str
     buckling_source_reference: str
     software_parity_source_reference: str
-    displacement_source_reference: str | None
+    displacement_source_reference: str
     seat_source_reference: str
     material_failure_category: MaterialFailureCategory
     failure_criterion: ShellFailureCriterion
@@ -417,7 +422,7 @@ class HemisphereResult:
     radius_convention: Literal["internal_input_mean_surface_analysis"]
     stress_sign_convention: StressSignConvention
     principal_stress_ordering: PrincipalStressOrdering
-    branch: Literal["thin", "thick"]
+    branch: Literal["thick"]
     force_thick: bool
     thin_wall_threshold_mean_radius_over_thickness: float
     internal_radius_mm: float
@@ -453,7 +458,7 @@ class HemisphereResult:
     released_buckling_critical_membrane_stress_mpa: float | None
     buckling_margin: float | None
     buckling_validity_violations: tuple[str, ...]
-    displacement_status: Literal["released", "withheld_missing_thick_branch_source"]
+    displacement_status: Literal["released"]
     displacement_validity_violations: tuple[str, ...]
     notes: tuple[str, ...]
 
@@ -929,9 +934,9 @@ def closed_end_tube_stress(
 ) -> TubeStressResult:
     """Calculate closed-end tube stress, material failure pressure, and displacement.
 
-    Numeric inputs are explicitly MPa and mm. The thin branch applies only when
-    mean-radius/thickness is greater than 10; the thick Lamé branch is used at
-    or below 10 or when ``force_thick`` is true.
+    Numeric inputs are explicitly MPa and mm. The exact Lamé solution applies
+    at every wall thickness. ``branch`` retains the legacy value ``"thick"``;
+    ``force_thick`` remains accepted and echoed as a compatibility no-op.
 
     ``strength_mpa`` is the uniaxial strength the category's criterion compares
     against: the yield strength of a ``ductile_metal``, read against the von
@@ -940,7 +945,7 @@ def closed_end_tube_stress(
     largest hoop stress magnitude. The result names the criterion applied.
 
     ``elastic_modulus_mpa`` and ``poisson_ratio`` are optional and change no
-    stress result. Supplied together they release the branch's radial
+    stress result. Supplied together they release the exact radial
     displacement, positive outward and reported at each stress state's own
     radius, and its axial strain, positive in extension and uniform through
     the wall; ``axial_length_mm`` converts that strain to a length change over
@@ -978,86 +983,40 @@ def closed_end_tube_stress(
     external_radius = internal_radius + thickness
     mean_radius = internal_radius + 0.5 * thickness
     radius_ratio = mean_radius / thickness
-    branch: Literal["thin", "thick"] = (
-        "thick" if force_thick or radius_ratio <= TUBE_THIN_WALL_MEAN_RADIUS_RATIO else "thin"
-    )
-
+    # Factoring the difference avoids subtracting nearly equal squared radii
+    # as the wall thins. Lamé's solution has no thin-wall branch boundary.
+    radius_squared_difference = thickness * (external_radius + internal_radius)
+    lame_a = -pressure * external_radius**2 / radius_squared_difference
+    lame_b = lame_a * internal_radius**2
     axial_strain: float | None = None
-    if branch == "thin":
-        hoop_stress = -pressure * mean_radius / thickness
-        median_displacement: float | None = None
-        if elastic_modulus is not None and poisson is not None:
-            # DTMB 1497 Eq. [5] at the median surface, and Eq. [A7] with the
-            # membrane resultants N_x = -p*R/2 and N_phi = -p*R.
-            candidate_displacement = (
-                -pressure * mean_radius**2 * (1.0 - poisson / 2.0)
-                / (elastic_modulus * thickness)
-            )
-            candidate_axial_strain = (
-                -pressure * mean_radius * (1.0 - 2.0 * poisson)
-                / (2.0 * elastic_modulus * thickness)
-            )
-            if abs(candidate_displacement) > thickness:
-                displacement_violations.append(
-                    TUBE_DISPLACEMENT_EXCEEDS_THICKNESS
-                )
-            else:
-                median_displacement = candidate_displacement
-                axial_strain = candidate_axial_strain
-        states: tuple[TubeStressState, ...] = (
-            _tube_stress_state(
-                radius_mm=mean_radius,
-                radius_convention="mean",
-                radial_stress_mpa=0.0,
-                hoop_stress_mpa=hoop_stress,
-                axial_stress_mpa=0.5 * hoop_stress,
-                radial_displacement_mm=median_displacement,
-            ),
+    if elastic_modulus is not None and poisson is not None:
+        # Boresi and Schmidt Eq. (11.15) with no temperature change and no
+        # separately applied axial load.
+        axial_strain = (1.0 - 2.0 * poisson) * lame_a / elastic_modulus
+
+    def displacement_at(radius: float) -> float | None:
+        # Boresi and Schmidt Eq. (11.24) under external pressure only.
+        if elastic_modulus is None or poisson is None:
+            return None
+        return (
+            (1.0 - 2.0 * poisson) * lame_a * radius
+            + (1.0 + poisson) * lame_b / radius
+        ) / elastic_modulus
+
+    def state_at(radius: float, convention: StressStateRadiusConvention) -> TubeStressState:
+        return _tube_stress_state(
+            radius_mm=radius,
+            radius_convention=convention,
+            radial_stress_mpa=lame_a - lame_b / radius**2,
+            hoop_stress_mpa=lame_a + lame_b / radius**2,
+            axial_stress_mpa=lame_a,
+            radial_displacement_mm=displacement_at(radius),
         )
-        source = TUBE_THIN_SOURCE
-        displacement_source = TUBE_THIN_DISPLACEMENT_SOURCE
-    else:
-        radius_squared_difference = external_radius**2 - internal_radius**2
-        lame_a = -pressure * external_radius**2 / radius_squared_difference
-        lame_b = -pressure * internal_radius**2 * external_radius**2 / radius_squared_difference
-        if elastic_modulus is not None and poisson is not None:
-            # Boresi and Schmidt Eq. (11.15) with no temperature change and no
-            # separately applied axial load.
-            axial_strain = (
-                -(1.0 - 2.0 * poisson) * pressure * external_radius**2
-                / (elastic_modulus * radius_squared_difference)
-            )
 
-        def displacement_at(radius: float) -> float | None:
-            # Boresi and Schmidt Eq. (11.24) under external pressure only.
-            if elastic_modulus is None or poisson is None:
-                return None
-            return (
-                -pressure
-                * radius
-                * (
-                    (1.0 - 2.0 * poisson) * external_radius**2
-                    + (1.0 + poisson) * internal_radius**2 * external_radius**2 / radius**2
-                )
-                / (elastic_modulus * radius_squared_difference)
-            )
-
-        def state_at(radius: float, convention: StressStateRadiusConvention) -> TubeStressState:
-            return _tube_stress_state(
-                radius_mm=radius,
-                radius_convention=convention,
-                radial_stress_mpa=lame_a - lame_b / radius**2,
-                hoop_stress_mpa=lame_a + lame_b / radius**2,
-                axial_stress_mpa=lame_a,
-                radial_displacement_mm=displacement_at(radius),
-            )
-
-        states = (
-            state_at(internal_radius, "internal"),
-            state_at(external_radius, "external"),
-        )
-        source = TUBE_THICK_SOURCE
-        displacement_source = TUBE_THICK_DISPLACEMENT_SOURCE
+    states = (
+        state_at(internal_radius, "internal"),
+        state_at(external_radius, "external"),
+    )
 
     axial_length_change = (
         axial_strain * axial_length
@@ -1071,15 +1030,15 @@ def closed_end_tube_stress(
     return TubeStressResult(
         model_id=TUBE_STRESS_MODEL_ID,
         model_version=TUBE_STRESS_MODEL_VERSION,
-        source_reference=source,
-        displacement_source_reference=displacement_source,
+        source_reference=TUBE_THICK_SOURCE,
+        displacement_source_reference=TUBE_THICK_DISPLACEMENT_SOURCE,
         material_failure_category=category,
         failure_criterion=SHELL_FAILURE_CRITERION[category],
         load_case="hydrostatic_closed_end",
         end_condition="closed",
         stress_sign_convention="tension_positive",
         principal_stress_ordering="descending_algebraic",
-        branch=branch,
+        branch="thick",
         force_thick=force_thick,
         thin_wall_threshold_mean_radius_over_thickness=TUBE_THIN_WALL_MEAN_RADIUS_RATIO,
         internal_radius_mm=internal_radius,
@@ -1152,9 +1111,10 @@ def hemispherical_head_external_pressure(
 ) -> HemisphereResult:
     """Calculate hemispherical-head stress, material failure, buckling, and displacement.
 
-    Numeric inputs are explicitly MPa and mm. Stress uses Roark's thin-shell
-    branch only when mean-radius/thickness is greater than 10 and otherwise
-    uses the thick-sphere Lamé branch. Buckling capacity is released only when
+    Numeric inputs are explicitly MPa and mm. Stress and displacement use the
+    exact spherical Lamé solution at every wall thickness. ``branch`` retains
+    the legacy value ``"thick"``; ``force_thick`` is an echoed compatibility
+    no-op. Buckling capacity is released only when
     the NASA SP-8032 clamped-cap recommendation is in its stated ``lambda > 2``
     range, the geometry remains in the thin-shell domain, and the correlated
     response remains elastic.
@@ -1167,11 +1127,10 @@ def hemispherical_head_external_pressure(
     proportional limit may not exceed its yield strength; no ordering is
     asserted for the other categories.
 
-    The thin branch also reports the membrane radial displacement that its
-    source states in the same equation as the membrane stress, at the median
-    surface and positive outward, so external pressure gives a negative value.
-    It applies away from the equator; the thick branch withholds it, because
-    no consulted source states a thick-sphere displacement.
+    Radial displacement follows from spherical strain compatibility and the
+    three-dimensional isotropic Hooke law applied to the same Lamé stresses.
+    It is reported at the internal and external surfaces, positive outward,
+    and applies away from the equator and its local restraint.
     """
     pressure = _positive_finite(external_pressure_mpa, "external_pressure_mpa")
     internal_radius = _positive_finite(internal_radius_mm, "internal_radius_mm")
@@ -1199,64 +1158,39 @@ def hemispherical_head_external_pressure(
     external_radius = internal_radius + thickness
     mean_radius = internal_radius + thickness / 2.0
     radius_ratio = mean_radius / thickness
-    branch: Literal["thin", "thick"] = (
-        "thick"
-        if force_thick or radius_ratio <= HEMISPHERE_THIN_WALL_MEAN_RADIUS_RATIO
-        else "thin"
+    # Factor b^3 - a^3 so the exact solution also remains well conditioned
+    # at geometries formerly sent to the membrane approximation.
+    denominator = thickness * (
+        external_radius**2 + external_radius * internal_radius + internal_radius**2
     )
+    lame_a = -pressure * external_radius**3 / denominator
+    lame_b = lame_a * internal_radius**3
 
-    displacement_source: str | None
-    displacement_violations: tuple[str, ...]
-    if branch == "thin":
-        membrane_stress = -pressure * mean_radius / (2.0 * thickness)
-        # NASA TM-4579 Eq. (5), the membrane radial displacement stated with
-        # the membrane stress above, signed for external pressure.
-        membrane_displacement = (
-            -pressure
-            * mean_radius**2
-            * (1.0 - poisson)
-            / (2.0 * elastic_modulus * thickness)
+    def state_at(
+        radius: float,
+        convention: StressStateRadiusConvention,
+    ) -> HemisphereStressState:
+        radial_stress = lame_a - lame_b / radius**3
+        tangential_stress = lame_a + lame_b / (2.0 * radius**3)
+        # Spherical symmetry gives epsilon_theta = epsilon_phi = u/r.
+        # The 3D Hooke law then gives u/r = ((1-nu)*sigma_theta - nu*sigma_r)/E.
+        radial_displacement = (
+            radius * ((1.0 - poisson) * tangential_stress - poisson * radial_stress)
+            / elastic_modulus
         )
-        stress_states: tuple[HemisphereStressState, ...] = (
-            _hemisphere_stress_state(
-                radius_mm=mean_radius,
-                radius_convention="mean",
-                radial_stress_mpa=0.0,
-                meridional_stress_mpa=membrane_stress,
-                hoop_stress_mpa=membrane_stress,
-                radial_displacement_mm=membrane_displacement,
-            ),
+        return _hemisphere_stress_state(
+            radius_mm=radius,
+            radius_convention=convention,
+            radial_stress_mpa=radial_stress,
+            meridional_stress_mpa=tangential_stress,
+            hoop_stress_mpa=tangential_stress,
+            radial_displacement_mm=radial_displacement,
         )
-        stress_source = HEMISPHERE_THIN_STRESS_SOURCE
-        displacement_source = HEMISPHERE_MEMBRANE_DISPLACEMENT_SOURCE
-        displacement_violations = ()
-    else:
-        denominator = external_radius**3 - internal_radius**3
-        lame_a = -pressure * external_radius**3 / denominator
-        lame_b = lame_a * internal_radius**3
 
-        def state_at(
-            radius: float,
-            convention: StressStateRadiusConvention,
-        ) -> HemisphereStressState:
-            radial_stress = lame_a - lame_b / radius**3
-            tangential_stress = lame_a + lame_b / (2.0 * radius**3)
-            return _hemisphere_stress_state(
-                radius_mm=radius,
-                radius_convention=convention,
-                radial_stress_mpa=radial_stress,
-                meridional_stress_mpa=tangential_stress,
-                hoop_stress_mpa=tangential_stress,
-                radial_displacement_mm=None,
-            )
-
-        stress_states = (
-            state_at(internal_radius, "internal"),
-            state_at(external_radius, "external"),
-        )
-        stress_source = HEMISPHERE_THICK_STRESS_SOURCE
-        displacement_source = None
-        displacement_violations = (HEMISPHERE_DISPLACEMENT_MISSING_THICK_SOURCE,)
+    stress_states = (
+        state_at(internal_radius, "internal"),
+        state_at(external_radius, "external"),
+    )
 
     governing, governing_stress = _shell_governing_state(stress_states, category)
     stress_margin = strength / governing_stress - 1.0
@@ -1336,10 +1270,10 @@ def hemispherical_head_external_pressure(
     return HemisphereResult(
         model_id=HEMISPHERE_MODEL_ID,
         model_version=HEMISPHERE_MODEL_VERSION,
-        stress_source_reference=stress_source,
+        stress_source_reference=HEMISPHERE_THICK_STRESS_SOURCE,
         buckling_source_reference=HEMISPHERE_BUCKLING_SOURCE,
         software_parity_source_reference=HEMISPHERE_SOFTWARE_PARITY_SOURCE,
-        displacement_source_reference=displacement_source,
+        displacement_source_reference=HEMISPHERE_LAME_DISPLACEMENT_SOURCE,
         seat_source_reference=SEAT_BEARING_STRESS_SOURCE,
         material_failure_category=category,
         failure_criterion=SHELL_FAILURE_CRITERION[category],
@@ -1348,7 +1282,7 @@ def hemispherical_head_external_pressure(
         radius_convention="internal_input_mean_surface_analysis",
         stress_sign_convention="tension_positive",
         principal_stress_ordering="descending_algebraic",
-        branch=branch,
+        branch="thick",
         force_thick=force_thick,
         thin_wall_threshold_mean_radius_over_thickness=(
             HEMISPHERE_THIN_WALL_MEAN_RADIUS_RATIO
@@ -1390,12 +1324,8 @@ def hemispherical_head_external_pressure(
         released_buckling_critical_membrane_stress_mpa=released_stress,
         buckling_margin=buckling_margin,
         buckling_validity_violations=tuple(buckling_violations),
-        displacement_status=(
-            "released"
-            if not displacement_violations
-            else "withheld_missing_thick_branch_source"
-        ),
-        displacement_validity_violations=displacement_violations,
+        displacement_status="released",
+        displacement_validity_violations=(),
         notes=(*HEMISPHERE_SCOPE_NOTES, *SHELL_CATEGORY_NOTES[category]),
     )
 

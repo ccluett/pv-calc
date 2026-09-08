@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import math
+from dataclasses import replace
 
 import pytest
 
@@ -31,21 +32,27 @@ def _released_case(**changes):
     return hemispherical_head_external_pressure(**inputs)
 
 
-def test_thin_hemisphere_reports_biaxial_von_mises_and_released_nasa_capacity() -> None:
+def test_thin_hemisphere_reports_exact_surface_stress_and_released_nasa_capacity() -> None:
     result = _released_case()
 
     assert result.model_id == HEMISPHERE_MODEL_ID
     assert result.model_version == HEMISPHERE_MODEL_VERSION
-    assert result.branch == "thin"
+    assert result.branch == "thick"
     assert result.mean_radius_over_thickness == 40.0
-    assert len(result.stress_states) == 1
+    assert len(result.stress_states) == 2
     state = result.stress_states[0]
-    assert state.radial_stress_mpa == 0.0
-    assert state.meridional_stress_mpa == -120.0
-    assert state.hoop_stress_mpa == -120.0
-    assert state.von_mises_stress_mpa == 120.0
-    assert result.theoretical_stress_failure_pressure_mpa == pytest.approx(13.8)
-    assert result.stress_margin == pytest.approx(1.3)
+    assert state.radius_convention == "internal"
+    assert state.radial_stress_mpa == pytest.approx(0.0, abs=1.0e-12)
+    # a/b = 79/81. The traction-free bore has equal tangential stresses;
+    # its von Mises stress is their compressive magnitude.
+    bore_stress = 9.0 * 81.0**3 / (81.0**3 - 79.0**3)
+    assert state.meridional_stress_mpa == pytest.approx(-bore_stress)
+    assert state.hoop_stress_mpa == pytest.approx(-bore_stress)
+    assert state.von_mises_stress_mpa == pytest.approx(bore_stress)
+    assert result.theoretical_stress_failure_pressure_mpa == pytest.approx(
+        6.0 * 276.0 / bore_stress
+    )
+    assert result.stress_margin == pytest.approx(276.0 / bore_stress - 1.0)
 
     expected_classical = (
         2.0 * 68_900.0 / math.sqrt(3.0 * (1.0 - 0.33**2)) / 40.0**2
@@ -62,39 +69,46 @@ def test_thin_hemisphere_reports_biaxial_von_mises_and_released_nasa_capacity() 
     assert result.buckling_validity_violations == ()
 
 
-def test_thin_hemisphere_releases_the_membrane_displacement_at_the_median_surface() -> None:
-    """NASA TM-4579 Eq. (5), signed for external pressure and positive outward.
-
-    The source states the displacement on the same line as the membrane stress
-    this branch already reports, so the released value is checked both against
-    the literal equation and against that stress through the biaxial Hooke's
-    law the two share.
-    """
-    result = _released_case()
-    state = result.stress_states[0]
-    mean_radius = 100.0 + 0.5 * (100.0 / 39.5)
-    thickness = 100.0 / 39.5
+@pytest.mark.parametrize("thickness", [100.0 / 39.5, 25.0])
+def test_hemisphere_displacement_matches_spherical_compatibility_and_hooke_law(
+    thickness: float,
+) -> None:
+    result = _released_case(wall_thickness_mm=thickness)
+    inner_radius = 100.0
+    outer_radius = inner_radius + thickness
+    pressure = 6.0
+    poisson = 0.33
+    modulus = 68_900.0
 
     assert result.displacement_status == "released"
     assert result.displacement_validity_violations == ()
     assert result.displacement_source_reference is not None
-    assert "NASA Technical Memorandum 4579" in result.displacement_source_reference
-    assert state.radius_convention == "mean"
-    assert state.radial_displacement_mm == pytest.approx(
-        -6.0 * mean_radius**2 * (1.0 - 0.33) / (2.0 * 68_900.0 * thickness),
-        rel=1.0e-12,
-    )
-    # The same value is the median radius times the circumferential strain of
-    # the reported equal-biaxial membrane stress.
-    assert state.radial_displacement_mm == pytest.approx(
-        mean_radius * state.hoop_stress_mpa * (1.0 - 0.33) / 68_900.0,
-        rel=1.0e-12,
-    )
-    assert state.radial_displacement_mm < 0.0
+    assert "Hooke's law" in result.displacement_source_reference
+    assert [state.radius_convention for state in result.stress_states] == ["internal", "external"]
+    for state in result.stress_states:
+        radius = state.radius_mm
+        # Exact spherical elasticity: u = C1*r + C2/r^2, with the constants
+        # set by zero bore traction and -p external traction. This independent
+        # expression does not reconstruct displacement from reported stress.
+        expected = (
+            -pressure * outer_radius**3
+            / (modulus * (outer_radius**3 - inner_radius**3))
+            * ((1.0 - 2.0 * poisson) * radius
+               + (1.0 + poisson) * inner_radius**3 / (2.0 * radius**2))
+        )
+        assert state.radial_displacement_mm == pytest.approx(expected, rel=1.0e-12)
+        assert state.radial_displacement_mm == pytest.approx(
+            radius
+            * (state.hoop_stress_mpa
+               - poisson * (state.meridional_stress_mpa + state.radial_stress_mpa))
+            / modulus,
+            rel=1.0e-12,
+        )
+        assert state.radial_displacement_mm < 0.0
 
 
 def test_hemisphere_displacement_scales_with_pressure_thickness_and_poisson() -> None:
-    """Eq. (5) is linear in pressure, grows as the wall thins, and carries (1 - nu)."""
+    """The exact bore displacement is linear in pressure and carries (1 - nu)."""
     base = _released_case()
     doubled_pressure = _released_case(external_pressure_mpa=12.0)
     assert doubled_pressure.stress_states[0].radial_displacement_mm == pytest.approx(
@@ -102,7 +116,7 @@ def test_hemisphere_displacement_scales_with_pressure_thickness_and_poisson() ->
     )
 
     thinner = _released_case(wall_thickness_mm=100.0 / 79.0)
-    assert thinner.branch == "thin"
+    assert thinner.branch == "thick"
     assert thinner.stress_states[0].radial_displacement_mm < (
         base.stress_states[0].radial_displacement_mm
     )
@@ -114,22 +128,14 @@ def test_hemisphere_displacement_scales_with_pressure_thickness_and_poisson() ->
     )
 
 
-def test_thick_hemisphere_withholds_displacement_with_its_reason() -> None:
-    result = _released_case(force_thick=True)
+def test_hemisphere_force_thick_is_an_echoed_compatibility_noop() -> None:
+    default = _released_case()
+    forced = _released_case(force_thick=True)
 
-    assert result.branch == "thick"
-    assert result.displacement_status == "withheld_missing_thick_branch_source"
-    assert result.displacement_source_reference is None
-    assert result.displacement_validity_violations == (
-        "the released displacement equation is a thin-shell membrane result; no consulted "
-        "primary source states a radial displacement for the thick-sphere branch, and none is "
-        "derived here",
-    )
-    assert [state.radius_convention for state in result.stress_states] == [
-        "internal",
-        "external",
-    ]
-    assert all(state.radial_displacement_mm is None for state in result.stress_states)
+    assert default.branch == "thick"
+    assert default.force_thick is False
+    assert forced.force_thick is True
+    assert replace(forced, force_thick=False) == default
 
 
 def test_thick_hemisphere_reproduces_the_published_stress_and_invalid_buckling() -> None:
@@ -164,7 +170,7 @@ def test_thick_hemisphere_reproduces_the_published_stress_and_invalid_buckling()
         "must be > 10" in violation
         for violation in result.buckling_validity_violations
     )
-    assert result.displacement_status == "withheld_missing_thick_branch_source"
+    assert result.displacement_status == "released"
 
 
 def test_hemisphere_seat_is_the_pressure_load_over_the_equator_annulus() -> None:
@@ -248,7 +254,7 @@ def test_hemisphere_categories_select_the_criterion_and_share_the_seat_strength(
     assert plastic.failure_criterion == "maximum_hoop_stress_vs_working_strength"
     assert brittle.failure_criterion == "maximum_hoop_stress_vs_ultimate_compressive_strength"
     assert ductile.failure_criterion == "von_mises_stress_vs_yield_strength"
-    # Thin branch: |hoop| equals the biaxial von Mises stress, so the plastic
+    # At the traction-free bore, |hoop| equals the von Mises stress, so the plastic
     # margin equals the ductile one at the same strength.
     assert plastic.governing_stress_mpa == pytest.approx(ductile.governing_stress_mpa)
     assert plastic.stress_margin == pytest.approx(ductile.stress_margin)

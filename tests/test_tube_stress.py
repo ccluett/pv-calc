@@ -6,7 +6,6 @@ from dataclasses import replace
 import pytest
 
 from pv_calc.pressure_vessel import (
-    TUBE_DISPLACEMENT_EXCEEDS_THICKNESS,
     TUBE_DISPLACEMENT_MISSING_MODULUS,
     TUBE_DISPLACEMENT_MISSING_POISSON,
     TUBE_THIN_WALL_MEAN_RADIUS_RATIO,
@@ -17,7 +16,7 @@ from pv_calc.pressure_vessel import (
 PSI_TO_MPA = 0.006894757293168361
 INCH_TO_MM = 25.4
 
-# One thin-branch and one thick-branch geometry, both closed-end under
+# One thin-wall and one thick-wall geometry, both closed-end under
 # external pressure, reused by the displacement tests below.
 THIN_GEOMETRY = {"internal_radius_mm": 100.0, "wall_thickness_mm": 5.0}
 THICK_GEOMETRY = {"internal_radius_mm": 55.0, "wall_thickness_mm": 22.0}
@@ -90,7 +89,7 @@ def test_brittle_tube_compares_hoop_stress_to_the_supplied_compressive_strength(
         abs(brittle.stress_states[0].hoop_stress_mpa)
     )
     # Every stress state is identical; only the comparison differs, and on the
-    # thin branch |hoop| exceeds von Mises, so the brittle margin is the smaller.
+    # bore |hoop| exceeds von Mises, so the brittle margin is the smaller.
     assert brittle.stress_states == ductile.stress_states
     assert brittle.margin < ductile.margin
     assert any("compression" in note for note in brittle.notes)
@@ -124,7 +123,7 @@ def test_lame_stresses_match_independent_closed_end_equations() -> None:
     assert result.governing_stress_mpa == pytest.approx(expected_inner_vm)
 
 
-def test_thin_branch_uses_mean_radius_and_force_thick_is_available() -> None:
+def test_thin_geometry_uses_exact_surface_stress_and_force_thick_is_a_noop() -> None:
     inputs = {
         "external_pressure_mpa": 2.0,
         "internal_radius_mm": 100.0,
@@ -132,18 +131,21 @@ def test_thin_branch_uses_mean_radius_and_force_thick_is_available() -> None:
         "strength_mpa": 276.0,
         "material_failure_category": "ductile_metal",
     }
-    thin = closed_end_tube_stress(**inputs)
-    thick = closed_end_tube_stress(**inputs, force_thick=True)
+    default = closed_end_tube_stress(**inputs)
+    forced = closed_end_tube_stress(**inputs, force_thick=True)
 
-    assert thin.branch == "thin"
-    assert thin.stress_states[0].radius_convention == "mean"
-    assert thin.stress_states[0].hoop_stress_mpa == pytest.approx(-2.0 * 102.5 / 5.0)
-    assert thin.stress_states[0].axial_stress_mpa == pytest.approx(-2.0 * 102.5 / 10.0)
-    assert thick.branch == "thick"
-    assert {state.radius_convention for state in thick.stress_states} == {"internal", "external"}
+    assert default.branch == "thick"
+    assert default.force_thick is False
+    assert forced.force_thick is True
+    assert replace(forced, force_thick=False) == default
+    assert default.stress_states[0].radius_convention == "internal"
+    assert default.stress_states[0].hoop_stress_mpa == pytest.approx(
+        -4.0 * 105.0**2 / (105.0**2 - 100.0**2)
+    )
+    assert {state.radius_convention for state in default.stress_states} == {"internal", "external"}
 
 
-def test_branch_boundary_and_unsupported_material_are_explicit() -> None:
+def test_former_branch_boundary_is_continuous_and_unsupported_material_is_explicit() -> None:
     at_threshold = closed_end_tube_stress(
         external_pressure_mpa=1.0,
         internal_radius_mm=9.5,
@@ -160,13 +162,11 @@ def test_branch_boundary_and_unsupported_material_are_explicit() -> None:
         strength_mpa=100.0,
         material_failure_category="ductile_metal",
     )
-    assert just_above_threshold.branch == "thin"
-    assert (
-        at_threshold.governing_stress_mpa
-        / (math.sqrt(3.0) * 5.0)
-        == pytest.approx(1.1025)
+    assert just_above_threshold.branch == "thick"
+    assert just_above_threshold.governing_stress_mpa == pytest.approx(
+        at_threshold.governing_stress_mpa, rel=2.0e-7
     )
-    assert any("branch switch is discrete" in note for note in at_threshold.notes)
+    assert not any("branch switch is discrete" in note for note in at_threshold.notes)
 
     with pytest.raises(ValueError, match="material_failure_category must be one of"):
         closed_end_tube_stress(
@@ -235,7 +235,7 @@ def test_displacement_is_withheld_with_a_reason_and_changes_no_stress() -> None:
     )
 
 
-def test_thin_displacement_is_withheld_past_the_source_limit() -> None:
+def test_thin_geometry_exact_displacement_satisfies_three_dimensional_hooke_law() -> None:
     result = closed_end_tube_stress(
         external_pressure_mpa=25.0,
         internal_radius_mm=99.5,
@@ -247,44 +247,20 @@ def test_thin_displacement_is_withheld_past_the_source_limit() -> None:
         axial_length_mm=500.0,
     )
 
-    assert result.branch == "thin"
+    assert result.branch == "thick"
     assert result.margin > 0.0
-    assert result.displacement_status == "withheld_applicability"
-    assert result.displacement_validity_violations == (
-        TUBE_DISPLACEMENT_EXCEEDS_THICKNESS,
-    )
-    assert result.stress_states[0].radial_displacement_mm is None
-    assert result.axial_strain is None
-    assert result.axial_length_change_mm is None
-
-
-def test_thin_displacement_source_limit_is_strictly_greater_than_thickness() -> None:
-    # These values make the production equation u = -p mm exactly, avoiding a
-    # rounded constructed boundary. DTMB's wording is "exceeds", so equality
-    # is released and the next representable pressure is withheld.
-    common = {
-        "internal_radius_mm": 15.5,
-        "wall_thickness_mm": 1.0,
-        "strength_mpa": 1_000.0,
-        "material_failure_category": "ductile_metal",
-        "elastic_modulus_mpa": 224.0,
-        "poisson_ratio": 0.25,
-    }
-
-    below = closed_end_tube_stress(
-        external_pressure_mpa=math.nextafter(1.0, 0.0), **common
-    )
-    at_limit = closed_end_tube_stress(external_pressure_mpa=1.0, **common)
-    above = closed_end_tube_stress(
-        external_pressure_mpa=math.nextafter(1.0, math.inf), **common
-    )
-
-    assert below.displacement_status == "released"
-    assert below.stress_states[0].radial_displacement_mm is not None
-    assert at_limit.displacement_status == "released"
-    assert at_limit.stress_states[0].radial_displacement_mm == -1.0
-    assert above.displacement_status == "withheld_applicability"
-    assert above.stress_states[0].radial_displacement_mm is None
+    assert result.displacement_status == "released"
+    for state in result.stress_states:
+        assert state.radial_displacement_mm == pytest.approx(
+            state.radius_mm
+            * (state.hoop_stress_mpa - 0.3 * (state.radial_stress_mpa + state.axial_stress_mpa))
+            / 200_000.0
+        )
+        assert result.axial_strain == pytest.approx(
+            (state.axial_stress_mpa - 0.3 * (state.radial_stress_mpa + state.hoop_stress_mpa))
+            / 200_000.0
+        )
+    assert result.axial_length_change_mm == pytest.approx(result.axial_strain * 500.0)
 
 
 @pytest.mark.parametrize("geometry", [THIN_GEOMETRY, THICK_GEOMETRY])
@@ -311,13 +287,9 @@ def test_external_pressure_moves_the_wall_inward_and_shortens_the_tube(
     assert result.axial_length_change_mm < 0.0
 
 
-@pytest.mark.parametrize(
-    ("geometry", "expected_branch"),
-    [(THIN_GEOMETRY, "thin"), (THICK_GEOMETRY, "thick")],
-)
-def test_displacement_matches_the_transcribed_branch_equations(
+@pytest.mark.parametrize("geometry", [THIN_GEOMETRY, THICK_GEOMETRY])
+def test_displacement_matches_the_transcribed_closed_cylinder_equations(
     geometry: dict[str, float],
-    expected_branch: str,
 ) -> None:
     pressure = 2.0
     modulus = ELASTIC["elastic_modulus_mpa"]
@@ -325,7 +297,6 @@ def test_displacement_matches_the_transcribed_branch_equations(
     internal_radius = geometry["internal_radius_mm"]
     thickness = geometry["wall_thickness_mm"]
     external_radius = internal_radius + thickness
-    mean_radius = internal_radius + thickness / 2.0
 
     result = closed_end_tube_stress(
         external_pressure_mpa=pressure,
@@ -334,34 +305,24 @@ def test_displacement_matches_the_transcribed_branch_equations(
         **geometry,
         **ELASTIC,
     )
-    assert result.branch == expected_branch
+    assert result.branch == "thick"
 
-    if expected_branch == "thin":
-        # DTMB 1497 Eq. [5] at the median surface, and Eq. [A7] with
-        # N_x = -p*R/2 and N_phi = -p*R.
-        assert result.stress_states[0].radial_displacement_mm == pytest.approx(
-            -pressure * mean_radius**2 * (1.0 - poisson / 2.0) / (modulus * thickness)
-        )
-        assert result.axial_strain == pytest.approx(
-            -pressure * mean_radius * (1.0 - 2.0 * poisson) / (2.0 * modulus * thickness)
-        )
-    else:
-        # Boresi and Schmidt Eqs. (11.24) and (11.15) with p_1 = 0 and P = 0.
-        area_term = external_radius**2 - internal_radius**2
-        for state in result.stress_states:
-            radius = state.radius_mm
-            assert state.radial_displacement_mm == pytest.approx(
-                -pressure
-                * radius
-                * (
-                    (1.0 - 2.0 * poisson) * external_radius**2
-                    + (1.0 + poisson) * internal_radius**2 * external_radius**2 / radius**2
-                )
-                / (modulus * area_term)
+    # Boresi and Schmidt Eqs. (11.24) and (11.15) with p_1 = 0 and P = 0.
+    area_term = external_radius**2 - internal_radius**2
+    for state in result.stress_states:
+        radius = state.radius_mm
+        assert state.radial_displacement_mm == pytest.approx(
+            -pressure
+            * radius
+            * (
+                (1.0 - 2.0 * poisson) * external_radius**2
+                + (1.0 + poisson) * internal_radius**2 * external_radius**2 / radius**2
             )
-        assert result.axial_strain == pytest.approx(
-            -(1.0 - 2.0 * poisson) * pressure * external_radius**2 / (modulus * area_term)
+            / (modulus * area_term)
         )
+    assert result.axial_strain == pytest.approx(
+        -(1.0 - 2.0 * poisson) * pressure * external_radius**2 / (modulus * area_term)
+    )
 
 
 @pytest.mark.parametrize("geometry", [THIN_GEOMETRY, THICK_GEOMETRY])
@@ -395,60 +356,36 @@ def test_displacement_scales_linearly_with_pressure_and_inversely_with_modulus(
             )
 
 
-@pytest.mark.parametrize("radius_ratio", [10.0, 20.0, 100.0])
-def test_the_two_branches_agree_to_the_thin_wall_approximation_error(
+@pytest.mark.parametrize("radius_ratio", [20.0, 100.0, 10_000.0])
+def test_exact_stress_and_displacement_approach_the_thin_wall_limit(
     radius_ratio: float,
 ) -> None:
-    """Both branches at one geometry, compared at the accuracy thin-wall has.
-
-    ``force_thick`` evaluates the same tube on the other branch, so the only
-    difference is the idealization. Dividing the two transcribed closed forms
-    leaves ratios free of the Poisson ratio: ``b^2 / r_m^2`` for the axial
-    strain and ``a b^2 / r_m^3`` for the internal-surface displacement. At the
-    released ``r_m/t = 10`` switch those are 1.1025 -- the same 10.25% step the
-    result already documents for the equivalent stress -- and 1.047375.
-    """
+    """Surface values converge to DTMB 1497's membrane displacement and strain."""
     thickness = 1.0
     mean_radius = radius_ratio * thickness
     internal_radius = mean_radius - thickness / 2.0
-    external_radius = mean_radius + thickness / 2.0
+    # Keep the stress finite and elastic as the radius/thickness ratio grows.
+    pressure = 1.0 / radius_ratio
     inputs = {
-        "external_pressure_mpa": 1.0,
+        "external_pressure_mpa": pressure,
         "internal_radius_mm": internal_radius,
         "wall_thickness_mm": thickness,
         "strength_mpa": 276.0,
         "material_failure_category": "ductile_metal",
         **ELASTIC,
     }
-    # r_m/t = 10 is on the thick side of the released switch, so the thin
-    # branch has to be reached from just above it.
-    thin = closed_end_tube_stress(
-        **{**inputs, "internal_radius_mm": internal_radius * (1.0 + 1.0e-12)}
+    exact = closed_end_tube_stress(**inputs)
+    poisson = ELASTIC["poisson_ratio"]
+    modulus = ELASTIC["elastic_modulus_mpa"]
+    membrane_displacement = (
+        -pressure * mean_radius**2 * (1.0 - poisson / 2.0) / (modulus * thickness)
     )
-    thick = closed_end_tube_stress(**inputs, force_thick=True)
-    assert thin.branch == "thin"
-    assert thick.branch == "thick"
-
-    thin_state = thin.stress_states[0]
-    internal_state, external_state = thick.stress_states
-    assert thin_state.radius_convention == "mean"
-    assert internal_state.radius_convention == "internal"
-
-    assert thick.axial_strain / thin.axial_strain == pytest.approx(
-        external_radius**2 / mean_radius**2, rel=1.0e-9
-    )
-    assert internal_state.radial_displacement_mm / thin_state.radial_displacement_mm == (
-        pytest.approx(internal_radius * external_radius**2 / mean_radius**3, rel=1.0e-9)
-    )
-    # The thin value is bracketed by the two thick surface values, and the
-    # whole spread closes like the wall thins.
-    assert (
-        internal_state.radial_displacement_mm
-        < thin_state.radial_displacement_mm
-        < external_state.radial_displacement_mm
+    membrane_axial_strain = (
+        -pressure * mean_radius * (1.0 - 2.0 * poisson) / (2.0 * modulus * thickness)
     )
     thinness = thickness / mean_radius
-    assert abs(
-        internal_state.radial_displacement_mm / thin_state.radial_displacement_mm - 1.0
-    ) < thinness
-    assert abs(thick.axial_strain / thin.axial_strain - 1.0) < 1.5 * thinness
+    for state in exact.stress_states:
+        assert abs(state.radial_displacement_mm / membrane_displacement - 1.0) < thinness
+    assert abs(exact.axial_strain / membrane_axial_strain - 1.0) < 1.5 * thinness
+    membrane_vm = math.sqrt(3.0) * pressure * mean_radius / (2.0 * thickness)
+    assert abs(exact.governing_stress_mpa / membrane_vm - 1.0) < 1.5 * thinness
