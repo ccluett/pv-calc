@@ -9,12 +9,21 @@ The package version is defined in `pv_calc/__init__.py` and read by
 through PyPI trusted publishing. The `pypi` GitHub environment and the matching
 PyPI trusted-publisher entry must already exist.
 
+To prepare a local release candidate, use a version such as `0.2.0rc1`,
+complete the metadata and snapshot updates below, run the tests, and build
+with `uv build`. Inspect the wheel and source archive, then install the wheel
+in a clean environment and exercise the CLI from outside the checkout.
+Stop before tagging or pushing until publication is intended; the `v*`
+workflow also matches prerelease tags.
+
 1. Confirm `main` is green.
 2. Set `__version__` in `pv_calc/__init__.py` and `version` in
    `CITATION.cff` (with `date-released`), and turn the `## [Unreleased]`
    block in `CHANGELOG.md` into `## [X.Y.Z] - YYYY-MM-DD`, leaving a fresh
    empty `## [Unreleased]` above it.
-3. Regenerate the golden snapshot with
+3. Refresh the local editable installation with
+   `uv sync --extra test --reinstall-package pv-calc`, then regenerate the
+   golden snapshot with
    `uv run python tests/test_pv_calc_golden.py` and review the diff. Every
    response carries `package_version`, so a version bump changes the snapshot.
    Record any other response changes in the changelog.

@@ -9,6 +9,8 @@ model; both predate this changelog.
 
 ## [Unreleased]
 
+## [0.2.0rc1] - 2026-09-08
+
 - Add `cylinder`, a combined closed-end stress and smooth-buckling assessment
   using one geometry and material. Optional two-closure butt assemblies reuse
   plate/hemisphere models and check common-annulus bearing, with per-closure
