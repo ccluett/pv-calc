@@ -107,9 +107,9 @@ TUBE_DISPLACEMENT_MISSING_MODULUS = (
 TUBE_DISPLACEMENT_MISSING_POISSON = (
     "poisson_ratio is required to calculate radial displacement and axial strain"
 )
-TUBE_DISPLACEMENT_EXCEEDS_THICKNESS = (
-    "absolute radial displacement exceeds wall_thickness_mm; DTMB 1497 states its "
-    "thin-shell results are not likely reliable beyond that limit"
+SHELL_DISPLACEMENT_MATERIAL_LIMIT = (
+    "governing stress exceeds the supplied material strength; "
+    "the displacement is an elastic formula estimate beyond the material limit"
 )
 TUBE_SCOPE_NOTES = (
     "Closed ends transmit uniform external-pressure axial load.",
@@ -132,6 +132,8 @@ TUBE_SCOPE_NOTES = (
     "ovalization and initial out-of-roundness, instability, plasticity, and ring-frame restraint.",
     "The displacement equations assume small deformations; the closed-cylinder source states "
     "no numeric deformation limit.",
+    "When the governing material stress exceeds the supplied strength, deformation remains "
+    "available as elastic_estimate_material_limit; no plastic deformation is modeled.",
 )
 
 HEMISPHERE_MODEL_ID = "roark_nasa_hemispherical_head_external_pressure"
@@ -194,6 +196,8 @@ HEMISPHERE_SCOPE_NOTES = (
     "the released value is not the equator's radial closure and not a seal-gap estimate.",
     "Displacement assumes small deformations and excludes junction analysis, plasticity, "
     "post-buckling deformation, and ring-stiffened service displacement.",
+    "When the governing material stress exceeds the supplied strength, displacement remains "
+    "available as elastic_estimate_material_limit; no plastic deformation is modeled.",
 )
 
 FLAT_CIRCULAR_PLATE_MODEL_ID = "uniformly_loaded_flat_circular_plate"
@@ -385,7 +389,7 @@ class TubeStressResult:
     displacement_status: Literal[
         "released",
         "withheld_missing_elastic_properties",
-        "withheld_applicability",
+        "elastic_estimate_material_limit",
     ]
     displacement_validity_violations: tuple[str, ...]
     axial_strain: float | None
@@ -458,7 +462,7 @@ class HemisphereResult:
     released_buckling_critical_membrane_stress_mpa: float | None
     buckling_margin: float | None
     buckling_validity_violations: tuple[str, ...]
-    displacement_status: Literal["released"]
+    displacement_status: Literal["released", "elastic_estimate_material_limit"]
     displacement_validity_violations: tuple[str, ...]
     notes: tuple[str, ...]
 
@@ -1027,6 +1031,8 @@ def closed_end_tube_stress(
     governing, governing_stress = _shell_governing_state(states, category)
     margin = strength / governing_stress - 1.0
     failure_pressure = pressure * (margin + 1.0)
+    if not missing_elastic_properties and governing_stress > strength:
+        displacement_violations.append(SHELL_DISPLACEMENT_MATERIAL_LIMIT)
     return TubeStressResult(
         model_id=TUBE_STRESS_MODEL_ID,
         model_version=TUBE_STRESS_MODEL_VERSION,
@@ -1062,7 +1068,7 @@ def closed_end_tube_stress(
             else (
                 "withheld_missing_elastic_properties"
                 if missing_elastic_properties
-                else "withheld_applicability"
+                else "elastic_estimate_material_limit"
             )
         ),
         displacement_validity_violations=tuple(displacement_violations),
@@ -1324,8 +1330,12 @@ def hemispherical_head_external_pressure(
         released_buckling_critical_membrane_stress_mpa=released_stress,
         buckling_margin=buckling_margin,
         buckling_validity_violations=tuple(buckling_violations),
-        displacement_status="released",
-        displacement_validity_violations=(),
+        displacement_status=(
+            "elastic_estimate_material_limit" if governing_stress > strength else "released"
+        ),
+        displacement_validity_violations=(
+            (SHELL_DISPLACEMENT_MATERIAL_LIMIT,) if governing_stress > strength else ()
+        ),
         notes=(*HEMISPHERE_SCOPE_NOTES, *SHELL_CATEGORY_NOTES[category]),
     )
 
