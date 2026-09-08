@@ -420,6 +420,7 @@ def test_pending_plasticity_inter_ring_bound_governs_the_advisory_minimum():
     )
 
     assert screened.inter_ring_shell_buckling.capacity_status == "released_pending_plasticity"
+    assert screened.inter_ring_shell_buckling.margin is None
     assert screened.advisory_candidate_modes == (
         "global_eq64_with_eq91_ring_torsion",
         "inter_ring_smooth_shell",

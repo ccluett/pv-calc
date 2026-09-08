@@ -192,7 +192,7 @@ HEMISPHERE_SCOPE_NOTES = (
 )
 
 FLAT_CIRCULAR_PLATE_MODEL_ID = "uniformly_loaded_flat_circular_plate"
-FLAT_CIRCULAR_PLATE_MODEL_VERSION = "3.0.0"
+FLAT_CIRCULAR_PLATE_MODEL_VERSION = "4.0.0"
 
 FLAT_CIRCULAR_PLATE_ENVELOPE_SOURCE = (
     "validation/fea/results/plate_sweep_fea_summary.json: "
@@ -276,7 +276,7 @@ FLAT_CIRCULAR_PLATE_SCOPE_NOTES = (
 )
 
 SMOOTH_CYLINDER_BUCKLING_MODEL_ID = "nasa_smooth_cylinder_external_pressure_buckling"
-SMOOTH_CYLINDER_BUCKLING_MODEL_VERSION = "3.0.0"
+SMOOTH_CYLINDER_BUCKLING_MODEL_VERSION = "4.0.0"
 SMOOTH_CYLINDER_BUCKLING_SOURCE = (
     "NASA/SP-8007-2020/REV 2, Eqs. 3-5 and 17-29, pp. 22 and 26-29"
 )
@@ -318,7 +318,7 @@ SMOOTH_CYLINDER_SCOPE_NOTES = (
     "biaxial hydrostatic state unavailable and directs that Eqs. 30-32 may be used for lack "
     "of better information; without those moduli, a correlated critical membrane stress above "
     "the proportional limit is an elastic upper bound reported as released_pending_plasticity, "
-    "not a capacity.",
+    "not a capacity; its ordinary margin is null.",
     "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released "
     "capacity follows the printed 0.855 coefficient in Eq. 24.",
     "The Roark probable-minimum pressure and its lobe count are reported only as a published "
@@ -496,7 +496,9 @@ class FlatCircularPlateResult:
     maximum_deflection_over_thickness: float
     shear_corrected_deflection_estimate_mm: float
     shear_corrected_deflection_estimate_over_thickness: float
-    deflection_status: Literal["released", "withheld_applicability"]
+    deflection_status: Literal[
+        "released", "elastic_estimate_material_limit", "withheld_applicability"
+    ]
     released_maximum_deflection_mm: float | None
     deflection_validity_violations: tuple[str, ...]
     bending_minimum_free_diameter_over_thickness: float
@@ -606,7 +608,7 @@ class SmoothCylinderBucklingResult:
 
 
 RING_SHELL_MODEL_ID = "nasa_ring_stiffened_shell_external_pressure"
-RING_SHELL_MODEL_VERSION = "2.0.0"
+RING_SHELL_MODEL_VERSION = "3.0.0"
 RING_SHELL_EQ64_ADJUSTMENT_FACTOR = 0.75
 RING_SHELL_MIN_RADIUS_THICKNESS_RATIO = 10.0
 RING_SHELL_DEFAULT_MAX_MODE_EVALUATIONS = 2_000_000
@@ -1570,7 +1572,17 @@ def flat_circular_plate(
     # merely a gate on the stress result, so it withholds the deflection too.
     if estimate_thickness_ratio > 0.5:
         deflection_violations.append(small_deflection_violation)
-    deflection_released = not deflection_violations
+    deflection_status: Literal[
+        "released", "elastic_estimate_material_limit", "withheld_applicability"
+    ] = "withheld_applicability" if deflection_violations else "released"
+    if governing_stress > strength:
+        deflection_violations.append(
+            "governing bending stress exceeds the supplied material strength; "
+            "the deflection is an elastic formula estimate beyond the material limit"
+        )
+        if deflection_status == "released":
+            deflection_status = "elastic_estimate_material_limit"
+    deflection_released = deflection_status == "released"
     # The Kirchhoff stresses and their theoretical failure pressures are
     # published as the formula's own values; the margin is the verdict, and
     # like the released deflection it is withheld outside the evidence.
@@ -1613,7 +1625,7 @@ def flat_circular_plate(
         maximum_deflection_over_thickness=deflection_thickness_ratio,
         shear_corrected_deflection_estimate_mm=shear_corrected_deflection,
         shear_corrected_deflection_estimate_over_thickness=estimate_thickness_ratio,
-        deflection_status="released" if deflection_released else "withheld_applicability",
+        deflection_status=deflection_status,
         released_maximum_deflection_mm=(
             maximum_deflection if deflection_released else None
         ),
@@ -2316,7 +2328,11 @@ def smooth_cylinder_external_pressure_buckling(
     if capacity_status_not_withheld(capacity_status) and selected is not None:
         correlated_pressure = selected.correlated_critical_pressure_mpa
         correlated_stress = selected.correlated_critical_circumferential_stress_mpa
-    margin = correlated_pressure / p_mpa - 1.0 if correlated_pressure is not None else None
+    margin = (
+        correlated_pressure / p_mpa - 1.0
+        if capacity_status == "released" and correlated_pressure is not None
+        else None
+    )
     # A correlated critical stress above the proportional limit makes that capacity an
     # elastic upper bound, so applying the same test to the working stress p*r/t says,
     # with no buckling result, whether every capacity at or above p is such a bound at
