@@ -8,27 +8,34 @@ from typing import Any, Literal
 
 from pv_calc.contracts import (
     CALC_SCHEMA_VERSION,
+    CylinderRequest,
     COMPARE_MATERIALS_OPERATION_VERSION,
     COMPARE_MATERIALS_SUBSTITUTED_INPUT,
     SWEEP_DEPTH_SUBSTITUTED_PRESSURE,
     SWEEP_OPERATION_VERSION,
     SWEEP_SWEPT_INPUT,
     DepthSweepInputs,
+    GeometrySweepInputs,
+    FORWARD_MODELS,
     HemisphereInputs,
     HemisphereRequest,
     MassPropertiesRequest,
+    NamedMaterialInput,
     MaterialComparisonRequest,
     PlateInputs,
     PlateRequest,
+    PlateSizeRequest,
     QuantityInput,
     RingShellRequest,
     SmoothBucklingInputs,
     SmoothBucklingRequest,
+    SmoothBucklingSizeRequest,
     SweepAxisList,
     SweepAxisRange,
     SweepRequest,
     TubeInputs,
     TubeRequest,
+    TubeSizeRequest,
     _quantity,
     _to_unit,
     _validate_request,
@@ -631,12 +638,33 @@ def _axis_quantities(
     return quantities
 
 
-def _evaluate_forward_request(
+def _evaluate_single_request(
     model: str,
     payload: dict[str, Any],
     materials_file: Path | None,
 ) -> dict[str, Any]:
-    """Run one forward payload through its model's single-point path."""
+    """Validate and evaluate one forward or sizing request."""
+    if model not in (*FORWARD_MODELS, "mass-properties"):
+        raise CalcCliError("unknown_model", f"unknown model {model!r}")
+    if payload.get("operation") == "size":
+        # Local import keeps the pure forward kernels available to sizing.
+        from pv_calc.sizing import (
+            _evaluate_plate_size, _evaluate_smooth_buckling_size, _evaluate_tube_size,
+        )
+
+        if model == "tube":
+            return _evaluate_tube_size(_validate_request(TubeSizeRequest, payload), materials_file)
+        if model == "plate":
+            return _evaluate_plate_size(_validate_request(PlateSizeRequest, payload), materials_file)
+        if model == "smooth-buckling":
+            return _evaluate_smooth_buckling_size(
+                _validate_request(SmoothBucklingSizeRequest, payload), materials_file,
+            )
+        raise CalcCliError("invalid_request", f"{model} does not support sizing")
+    if model == "cylinder":
+        from pv_calc.cylinder import evaluate_cylinder
+
+        return evaluate_cylinder(_validate_request(CylinderRequest, payload), materials_file)
     if model == "tube":
         return _evaluate_tube(_validate_request(TubeRequest, payload), materials_file)
     if model == "plate":
@@ -651,10 +679,9 @@ def _evaluate_forward_request(
             _validate_request(SmoothBucklingRequest, payload),
             materials_file,
         )
-    return _evaluate_ring_shell(
-        _validate_request(RingShellRequest, payload),
-        materials_file,
-    )
+    if model == "ring-shell":
+        return _evaluate_ring_shell(_validate_request(RingShellRequest, payload), materials_file)
+    return _evaluate_mass_properties(_validate_request(MassPropertiesRequest, payload), materials_file)
 
 
 def _design_pressure_from_depth(
@@ -705,22 +732,32 @@ def _evaluate_sweep(request: SweepRequest, materials_file: Path | None) -> dict[
         depth_inputs: DepthSweepInputs | None = inputs
         axis: SweepAxisList | SweepAxisRange = inputs.depth
         axis_variable = "depth"
+    elif isinstance(inputs, GeometrySweepInputs):
+        depth_inputs = None
+        axis = inputs.axis
+        axis_variable = inputs.geometry
     else:
         depth_inputs = None
         axis = inputs.external_pressure
         axis_variable = "external_pressure"
+    geometry_axis = isinstance(inputs, GeometrySweepInputs)
+    substituted_input = axis_variable if geometry_axis else "external_pressure"
     depth_to_pressure: dict[str, Any] | None = None
     points: list[dict[str, Any]] = []
     for index, value in enumerate(
         _axis_quantities(
             axis,
-            unit="m" if depth_inputs is not None else "MPa",
+            unit="m" if depth_inputs is not None else "mm" if geometry_axis else "MPa",
             field_name=f"inputs.{axis_variable}",
         )
     ):
         axis_value = value.model_dump(mode="json")
         point: dict[str, Any] = {axis_variable: axis_value}
         try:
+            if geometry_axis:
+                # Lists preserve caller units, but must still be lengths even
+                # for optional fields a particular calculation may not use.
+                _to_unit(value, "mm", f"inputs.{axis_variable}")
             if depth_inputs is not None:
                 converted = _design_pressure_from_depth(depth_inputs, value)
                 if depth_to_pressure is None:
@@ -736,9 +773,9 @@ def _evaluate_sweep(request: SweepRequest, materials_file: Path | None) -> dict[
                 pressure = axis_value
             payload = {
                 **base,
-                "inputs": {**base["inputs"], "external_pressure": pressure},
+                "inputs": {**base["inputs"], substituted_input: pressure},
             }
-            point["response"] = _evaluate_forward_request(
+            point["response"] = _evaluate_single_request(
                 base["model"],
                 payload,
                 materials_file,
@@ -757,7 +794,7 @@ def _evaluate_sweep(request: SweepRequest, materials_file: Path | None) -> dict[
         "axis": axis.model_dump(mode="json"),
         "operation_version": SWEEP_OPERATION_VERSION,
         "points": points,
-        "swept_input": SWEEP_SWEPT_INPUT,
+        "swept_input": f"inputs.{substituted_input}" if geometry_axis else SWEEP_SWEPT_INPUT,
     }
     if depth_to_pressure is not None:
         sweep["depth_to_pressure"] = depth_to_pressure
@@ -767,6 +804,71 @@ def _evaluate_sweep(request: SweepRequest, materials_file: Path | None) -> dict[
         "schema_version": CALC_SCHEMA_VERSION,
         "sweep": sweep,
     }
+
+
+def _sized_design_properties(
+    request: TubeSizeRequest | PlateSizeRequest | SmoothBucklingSizeRequest,
+    response: dict[str, Any],
+    material: ResolvedMaterial,
+) -> dict[str, Any]:
+    """Geometry and structural mass of this material's selected design.
+
+    Shell mass excludes closures and payload. A plate needs its disc outside
+    radius; a tube needs its physical axial length. Missing geometry or density
+    withholds mass alone and never discards an otherwise valid sizing result.
+    """
+    result = (
+        response["selected_results"]["tube"]["result"]
+        if isinstance(request, SmoothBucklingSizeRequest) else response["result"]
+    )
+    geometry: dict[str, Any]
+    volume_m3: float | None = None
+    reason: str | None = None
+    if isinstance(request, PlateSizeRequest):
+        geometry = {
+            "free_radius": result["free_radius_mm"],
+            "plate_thickness": result["plate_thickness_mm"],
+        }
+        thickness = result["plate_thickness_mm"]["value"]
+        basis = "solid disc pi*outside_radius^2*plate_thickness"
+        if request.inputs.outside_radius is None:
+            reason = "inputs.outside_radius is required for plate structural mass"
+        else:
+            radius = _to_unit(request.inputs.outside_radius, "mm", "inputs.outside_radius")
+            geometry["outside_radius"] = _quantity(radius, "mm")
+            volume_m3 = math.pi * radius**2 * thickness / 1.0e9
+    else:
+        inner = result["internal_radius_mm"]["value"]
+        thickness = result["wall_thickness_mm"]["value"]
+        outer = inner + thickness
+        geometry = {
+            "internal_radius": _quantity(inner, "mm"),
+            "external_radius": _quantity(outer, "mm"),
+            "wall_thickness": _quantity(thickness, "mm"),
+        }
+        basis = "cylindrical shell pi*(external_radius^2-internal_radius^2)*length; closures and payload excluded"
+        length = (
+            request.inputs.unsupported_length
+            if isinstance(request, SmoothBucklingSizeRequest) else request.inputs.axial_length
+        )
+        if length is None:
+            reason = "inputs.axial_length is required for tube structural mass"
+        else:
+            length_mm = _to_unit(length, "mm", "inputs.length")
+            geometry["unsupported_length" if isinstance(request, SmoothBucklingSizeRequest) else "axial_length"] = _quantity(length_mm, "mm")
+            volume_m3 = math.pi * (outer**2 - inner**2) * length_mm / 1.0e9
+    density = material.density_kg_per_m3
+    if density is None:
+        reason = "; ".join(filter(None, (reason, "material density is unavailable")))
+    mass: dict[str, Any] = {
+        "status": "available" if reason is None else "unavailable",
+        "mass": _quantity(volume_m3 * density if volume_m3 is not None and density is not None else None, "kg"),
+        "material_density": _quantity(density, "kg/m^3"),
+        "basis": basis,
+    }
+    if reason is not None:
+        mass["reason"] = reason
+    return {"selected_geometry": geometry, "structural_mass": mass}
 
 
 def _evaluate_material_comparison(
@@ -779,16 +881,30 @@ def _evaluate_material_comparison(
         if request.inputs.mass_properties is not None
         else None
     )
+    sizing_request = isinstance(request.request, (TubeSizeRequest, PlateSizeRequest, SmoothBucklingSizeRequest))
+    if sizing_request and mass_inputs is not None:
+        raise CalcCliError(
+            "invalid_request",
+            "sized material comparisons derive structural mass from selected geometry; omit inputs.mass_properties",
+        )
     entries: list[dict[str, Any]] = []
     for index, name in enumerate(request.inputs.materials):
         material = {"type": "named", "name": name}
         entry: dict[str, Any] = {"material": name, "outcome": "evaluated"}
         try:
-            entry["response"] = _evaluate_forward_request(
+            entry["response"] = _evaluate_single_request(
                 base["model"],
                 {**base, "material": material},
                 materials_file,
             )
+            if isinstance(request.request, (TubeSizeRequest, PlateSizeRequest, SmoothBucklingSizeRequest)):
+                selected_request = request.request.model_copy(
+                    update={"material": NamedMaterialInput(type="named", name=name)},
+                )
+                entry.update(_sized_design_properties(
+                    selected_request, entry["response"],
+                    _resolve_material(selected_request.material, materials_file),
+                ))
             if mass_inputs is not None:
                 entry["mass_properties"] = _evaluate_mass_properties(
                     _validate_request(
@@ -804,24 +920,24 @@ def _evaluate_material_comparison(
                 )
             _ensure_json_representable(entry)
         except CalcCliError as exc:
-            if exc.code != "invalid_material":
-                # Every other failure is a property of the request or of the
-                # database rather than of one listed material, so it fails the
-                # whole comparison with its own code, message, and position.
+            if exc.code != "invalid_material" and not (sizing_request and exc.code in {"no_reliable_solution", "unknown_material"}):
+                # Request/database failures still fail the entire comparison.
+                # Sized comparisons retain unavailable capacities and unknown
+                # material names as per-entry outcomes so other designs survive.
                 raise CalcCliError(
                     exc.code,
                     exc.message,
                     [*exc.details, {"entry_index": index, "material": name}],
                 ) from exc
-            # A record lacking a property the requested calculations read
-            # carries that model's own invalid_material outcome and no result,
-            # exactly as a single-material invocation would report it. The
-            # remaining entries are unaffected.
+            # Preserve the calculation's own material or sizing error while
+            # allowing the remaining listed materials to be evaluated.
             entry = {
                 "material": name,
                 "message": exc.message,
-                "outcome": "invalid_material",
+                "outcome": exc.code,
             }
+            if exc.details:
+                entry["details"] = exc.details
         entries.append(entry)
     return {
         "comparison": {

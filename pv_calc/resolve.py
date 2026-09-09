@@ -20,7 +20,7 @@ from pv_calc.contracts import (
     _to_unit,
 )
 from pv_calc.errors import CalcCliError
-from pv_calc.materials import CalcMaterial, load_calc_materials
+from pv_calc.materials import BUNDLED_MATERIAL_DATABASE, CalcMaterial, load_calc_materials
 from pv_calc.schemas import MaterialFailureCategory
 
 
@@ -39,11 +39,13 @@ class ResolvedMaterial:
     failure_category: MaterialFailureCategory
     yield_strength_mpa: float | None = None
     working_strength_mpa: float | None = None
+    working_strength_source: str | None = None
     ultimate_tensile_strength_mpa: float | None = None
     ultimate_compressive_strength_mpa: float | None = None
     elastic_modulus_mpa: float | None = None
     poisson_ratio: float | None = None
     proportional_limit_mpa: float | None = None
+    proportional_limit_source: str | None = None
     density_kg_per_m3: float | None = None
 
     def strengths_mpa(self) -> dict[str, float]:
@@ -108,34 +110,37 @@ class ResolvedMassMaterial:
 # the size and the nanosecond mtime would be missed; no editor or filesystem
 # this package supports produces one.
 _LOADED_DATABASES: dict[tuple[Path, int, int], dict[str, CalcMaterial]] = {}
+_BUNDLED_DATABASE: dict[str, CalcMaterial] | None = None
 
 
 def _load_named_material(
     name: str,
     materials_file: Path | None,
 ) -> tuple[CalcMaterial, str]:
-    if materials_file is None:
-        raise CalcCliError(
-            "missing_materials_file",
-            "a named material requires --materials-file; there is no default database",
-        )
+    global _BUNDLED_DATABASE
+    database = str(materials_file) if materials_file is not None else BUNDLED_MATERIAL_DATABASE
     try:
-        stat = Path(materials_file).stat()
-        key = (Path(materials_file).resolve(), stat.st_mtime_ns, stat.st_size)
-        if key not in _LOADED_DATABASES:
-            _LOADED_DATABASES[key] = load_calc_materials(materials_file)
+        if materials_file is None:
+            if _BUNDLED_DATABASE is None:
+                _BUNDLED_DATABASE = load_calc_materials()
+            materials = _BUNDLED_DATABASE
+        else:
+            stat = Path(materials_file).stat()
+            key = (Path(materials_file).resolve(), stat.st_mtime_ns, stat.st_size)
+            if key not in _LOADED_DATABASES:
+                _LOADED_DATABASES[key] = load_calc_materials(materials_file)
+            materials = _LOADED_DATABASES[key]
     except (OSError, ValueError, YAMLError) as exc:
         raise CalcCliError("invalid_material_database", str(exc)) from exc
-    materials = _LOADED_DATABASES[key]
     try:
         material = materials[name]
     except KeyError as exc:
         raise CalcCliError(
             "unknown_material",
-            f"material {name!r} is not present in {materials_file}",
+            f"material {name!r} is not present in {database}",
             [{"available_materials": sorted(materials)}],
         ) from exc
-    return material, str(materials_file)
+    return material, database
 
 
 def _resolve_material(
@@ -165,11 +170,13 @@ def _resolve_material(
             failure_category=named.failure_category,
             yield_strength_mpa=named.yield_strength_mpa,
             working_strength_mpa=named.working_strength_mpa,
+            working_strength_source=named.working_strength_source,
             ultimate_tensile_strength_mpa=named.ultimate_tensile_strength_mpa,
             ultimate_compressive_strength_mpa=named.ultimate_compressive_strength_mpa,
             elastic_modulus_mpa=named.elastic_modulus_mpa,
             poisson_ratio=named.poisson_ratio,
             proportional_limit_mpa=named.proportional_limit_mpa,
+            proportional_limit_source=named.proportional_limit_source,
             density_kg_per_m3=named.density_kg_per_m3,
         )
     properties = material.properties
@@ -188,6 +195,8 @@ def _resolve_material(
         provenance=material.provenance,
         failure_category=properties.failure_category,
         **strengths,
+        working_strength_source=None,
+        proportional_limit_source=None,
         elastic_modulus_mpa=(
             _to_unit(elastic_modulus, "MPa", "material.properties.elastic_modulus")
             if elastic_modulus is not None

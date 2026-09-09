@@ -342,8 +342,10 @@ def test_source_based_thin_tube_and_proportional_limit_gates():
         for item in missing_limit.validity_violations
     )
     assert at_limit.capacity_status == "released"
+    assert at_limit.margin is not None
     assert below_limit.capacity_status == "released_pending_plasticity"
     assert below_limit.correlated_critical_pressure_mpa is not None
+    assert below_limit.margin is None
     assert any("exceeds the supplied proportional limit" in item for item in below_limit.notes)
 
     # Withheld on another gate, the exceedance is one more violation, and the
@@ -501,7 +503,7 @@ def test_roark_table35_matrix_spans_short_moderate_overlap_and_long():
     ("changes", "message"),
     [
         ({"load_case": "other"}, "load_case"),
-        ({"pressure": 0.0}, "external_pressure_mpa"),
+        ({"pressure": -1.0}, "external_pressure_mpa"),
         ({"poisson_ratio": 0.5}, "poisson_ratio"),
     ],
 )

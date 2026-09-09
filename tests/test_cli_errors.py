@@ -221,12 +221,12 @@ def test_malformed_or_unevaluable_input_returns_structured_error(
                 "--wall-thickness",
                 "1 mm",
                 "--material",
-                "Al-6061-T6",
+                "not-a-bundled-material",
                 "--json",
             ],
             None,
-            "missing_materials_file",
-            "requires --materials-file",
+            "unknown_material",
+            "not present",
         ),
         (
             ["tube", "--input", "-", "--json"],
@@ -253,7 +253,7 @@ def test_malformed_or_unevaluable_input_returns_structured_error(
             ],
             None,
             "unevaluable_model",
-            "external_pressure_mpa must be finite and positive",
+            "external_pressure_mpa must be finite and non-negative",
         ),
         (
             [

@@ -3,6 +3,10 @@
 from __future__ import annotations
 
 import json
+import os
+import subprocess
+import sys
+import zipfile
 from pathlib import Path
 
 import pytest
@@ -10,7 +14,10 @@ from pydantic import ValidationError
 
 from pv_calc.cli import app
 from pv_calc.contracts import CALC_SCHEMA_VERSION
-from pv_calc.materials import CalcMaterial, load_calc_materials
+from pv_calc.materials import (
+    BUNDLED_MATERIAL_DATABASE, CalcMaterial, list_materials, load_calc_materials,
+    material_capabilities, show_material,
+)
 from pv_calc.units import Q_, magnitude
 
 from _cli_helpers import (
@@ -54,6 +61,173 @@ def test_named_material_returns_only_values_used_by_model() -> None:
         "poisson_ratio": 0.33,
         "yield_strength": {"unit": "MPa", "value": 241.0},
     }
+    # The plate does not read the database's derived proportional limit.
+    assert "property_sources" not in material
+
+
+def test_bundled_materials_work_outside_checkout_and_explicit_override_wins(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.chdir(tmp_path)
+    records = list_materials()
+    assert len(records) == 10
+    assert all(record["database"] == BUNDLED_MATERIAL_DATABASE for record in records)
+    aluminium = show_material("Al-6061-T6")
+    assert aluminium["properties"]["proportional_limit_source"].startswith("Derived, not tabulated")
+    assert aluminium["capabilities"]["cylinder"]["available"]
+    other = show_material("Al-7075-T6")
+    assert other["capabilities"]["smooth_cylinder_buckling_capacity"] == {
+        "available": False, "missing_properties": ["proportional_limit_mpa"],
+    }
+    options = ["tube", "--external-pressure", "1MPa", "--internal-radius", "50mm",
+               "--wall-thickness", "1mm", "--material", "Al-6061-T6", "--json"]
+    result = runner.invoke(app, options)
+    assert result.exit_code == 0, result.output
+    assert json.loads(result.stdout)["material"]["source"]["database"] == BUNDLED_MATERIAL_DATABASE
+    database = tmp_path / "override.yaml"
+    database.write_text("materials:\n  Al-6061-T6:\n    source: Local override\n    failure_category: ductile_metal\n    yield_strength_mpa: 123\n")
+    override = runner.invoke(app, [*options, "--materials-file", str(database)])
+    assert override.exit_code == 0, override.output
+    assert json.loads(override.stdout)["result"]["strength_mpa"]["value"] == 123
+    database.unlink()
+    missing = runner.invoke(app, [*options, "--materials-file", str(database)])
+    assert _error_payload(missing)["error"]["code"] == "invalid_material_database"
+
+
+def test_material_capability_availability_is_per_calculation() -> None:
+    material = CalcMaterial(source="Density only", density_kg_per_m3=2700)
+    capabilities = material_capabilities(material)
+    assert capabilities["mass_properties"]["available"]
+    assert not capabilities["tube_stress"]["available"]
+    assert not capabilities["smooth_cylinder_buckling_capacity"]["available"]
+
+
+def test_bundled_materials_are_readable_from_an_installed_zip_package(tmp_path: Path) -> None:
+    """No repository-relative path or real data-file path is required."""
+    package = Path(__file__).resolve().parents[1] / "pv_calc"
+    archive = tmp_path / "package.zip"
+    with zipfile.ZipFile(archive, "w") as target:
+        for path in [*package.glob("*.py"), package / "data" / "materials.yaml"]:
+            target.write(path, path.relative_to(package.parent))
+    script = (
+        "import pv_calc; from pv_calc.materials import load_calc_materials; "
+        "assert '.zip/' in pv_calc.__file__; "
+        "assert load_calc_materials()['Al-6061-T6'].yield_strength_mpa == 241; "
+        "from pv_calc.resolve import _load_named_material; "
+        "assert _load_named_material('Al-6061-T6', None)[1].startswith('bundled:')"
+    )
+    result = subprocess.run([sys.executable, "-c", script], cwd=tmp_path,
+                            env={**os.environ, "PYTHONPATH": str(archive)}, capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
+
+
+@pytest.mark.parametrize(
+    "model_options",
+    [
+        ["smooth-buckling", "--shell-mid-surface-radius", "100 mm",
+         "--wall-thickness", "1 mm", "--unsupported-length", "100 mm",
+         "--load-case", "lateral_only"],
+        ["hemisphere", "--internal-radius", "100 mm", "--wall-thickness", "1 mm"],
+        ["ring-shell", "--shell-mid-surface-radius", "100 mm",
+         "--wall-thickness", "1 mm", "--unsupported-length", "100 mm",
+         "--ring-spacing", "10 mm", "--ring-axial-width", "2 mm",
+         "--ring-radial-height", "2 mm", "--ring-location", "internal"],
+    ],
+    ids=["smooth-buckling", "hemisphere", "ring-shell"],
+)
+def test_named_proportional_limit_keeps_its_derivation(model_options: list[str]) -> None:
+    result = runner.invoke(
+        app,
+        [*model_options, "--external-pressure", "0.1 MPa",
+         "--material", "Al-6061-T6", "--materials-file", str(MATERIALS_FILE), "--json"],
+    )
+    assert result.exit_code == 0, result.output
+    material = json.loads(result.stdout)["material"]
+    assert material["properties_used"]["proportional_limit"] == {
+        "unit": "MPa", "value": 183.4,
+    }
+    sources = material["property_sources"]
+    assert sources == {
+        "proportional_limit": load_calc_materials(MATERIALS_FILE)[
+            "Al-6061-T6"
+        ].proportional_limit_source,
+    }
+    derivation = sources["proportional_limit"]
+    assert "typical compressive Ramberg-Osgood exponent n = 28" in derivation
+    assert "tangent modulus falls to 0.99 E, a pv-calc choice" in derivation
+    assert "not a design allowable" in derivation
+    assert material["source"]["provenance"].startswith("ASTM B221 and ASTM B241")
+
+
+@pytest.mark.parametrize(
+    "model_options",
+    [
+        ["tube", "--internal-radius", "100 mm", "--wall-thickness", "10 mm"],
+        ["plate", "--free-radius", "50 mm", "--plate-thickness", "10 mm",
+         "--boundary-condition", "fixed"],
+        ["hemisphere", "--internal-radius", "100 mm", "--wall-thickness", "1 mm"],
+    ],
+    ids=["tube", "plate", "hemisphere"],
+)
+def test_named_working_strength_keeps_its_derivation(model_options: list[str]) -> None:
+    result = runner.invoke(
+        app,
+        [*model_options, "--external-pressure", "0.1 MPa",
+         "--material", "Acrylic-PMMA", "--materials-file", str(MATERIALS_FILE), "--json"],
+    )
+    assert result.exit_code == 0, result.output
+    material = json.loads(result.stdout)["material"]
+    assert material["properties_used"]["working_strength"] == {
+        "unit": "MPa", "value": 10.3,
+    }
+    sources = material["property_sources"]
+    assert sources == {
+        "working_strength": load_calc_materials(MATERIALS_FILE)[
+            "Acrylic-PMMA"
+        ].working_strength_source,
+    }
+    derivation = sources["working_strength"]
+    assert "same factor of 6 to the 62.1 MPa short-term tensile minimum" in derivation
+    assert "pv-calc calculation choice and not a PVHO-1 number" in derivation
+    assert "not a design allowable" in derivation
+    assert material["source"]["provenance"].startswith("ASME PVHO-1")
+
+
+@pytest.mark.parametrize("material_name", ["Al-6061-T6", "Acrylic-PMMA"])
+def test_mass_properties_omit_unused_strength_derivations(material_name: str) -> None:
+    result = runner.invoke(
+        app,
+        ["mass-properties", "--solid-volume", "2.5 L", "--displaced-volume", "6 L",
+         "--fluid-density", "1025 kg/m^3", "--gravity", "9.81 m/s^2",
+         "--material", material_name, "--materials-file", str(MATERIALS_FILE), "--json"],
+    )
+    assert result.exit_code == 0, result.output
+    material = json.loads(result.stdout)["material"]
+    assert set(material["properties_used"]) == {"density"}
+    assert "property_sources" not in material
+
+
+def test_derivation_without_a_property_value_is_not_reported(tmp_path: Path) -> None:
+    database = tmp_path / "materials.yaml"
+    database.write_text(
+        "materials:\n"
+        "  Elastic-only:\n"
+        "    failure_category: ductile_metal\n"
+        "    elastic_modulus_mpa: 70000\n"
+        "    poisson_ratio: 0.33\n"
+        "    proportional_limit_source: A derivation without its limit\n"
+        "    source: Elastic properties only\n",
+        encoding="utf-8",
+    )
+    result = runner.invoke(
+        app,
+        ["smooth-buckling", "--external-pressure", "0.1 MPa",
+         "--shell-mid-surface-radius", "100 mm", "--wall-thickness", "1 mm",
+         "--unsupported-length", "100 mm", "--load-case", "lateral_only",
+         "--material", "Elastic-only", "--materials-file", str(database), "--json"],
+    )
+    assert result.exit_code == 0, result.output
+    material = json.loads(result.stdout)["material"]
+    assert material["properties_used"]["proportional_limit"]["value"] is None
+    assert "property_sources" not in material
 
 
 def test_calc_material_database_carries_only_what_a_model_reads(tmp_path: Path) -> None:
@@ -182,6 +356,7 @@ def test_plastic_tube_options_and_json_agree_and_report_the_working_strength() -
     assert json.loads(from_options.stdout) == json.loads(from_json.stdout)
 
     payload = json.loads(from_json.stdout)
+    assert "property_sources" not in payload["material"]
     assert payload["material"]["properties_used"] == {
         "elastic_modulus": {"unit": "MPa", "value": pytest.approx(350_000 * 0.006894757293168361)},
         "failure_category": "plastic",
@@ -363,6 +538,7 @@ def test_buckling_requires_no_strength_and_the_stress_models_ask_at_the_point_of
     no_yield = runner.invoke(app, ["smooth-buckling", *geometry, "--load-case", "lateral_only", *explicit])
     assert no_yield.exit_code == 0, no_yield.output
     assert json.loads(no_yield.stdout)["result"]["yield_strength_mpa"] == {"unit": "MPa", "value": None}
+    assert "property_sources" not in json.loads(no_yield.stdout)["material"]
     foreign = {
         "schema_version": CALC_SCHEMA_VERSION,
         "model": "ring-shell",
@@ -410,9 +586,11 @@ def test_buckling_reads_no_strength_and_every_category_sizes(tmp_path: Path) -> 
         "  Acetal:\n"
         "    failure_category: plastic\n"
         "    working_strength_mpa: 20.7\n"
+        "    working_strength_source: Project working strength for this test\n"
         "    elastic_modulus_mpa: 2830\n"
         "    poisson_ratio: 0.35\n"
         "    proportional_limit_mpa: 30\n"
+        "    proportional_limit_source: Project elastic limit for this test\n"
         "    source: \"Manual acetal record with a working strength raised to 3 ksi\"\n",
         encoding="utf-8",
     )
@@ -440,6 +618,9 @@ def test_buckling_reads_no_strength_and_every_category_sizes(tmp_path: Path) -> 
         "proportional_limit": {"unit": "MPa", "value": 30.0},
     }
     assert smooth_payload["result"]["yield_strength_mpa"] == {"unit": "MPa", "value": None}
+    assert smooth_payload["material"]["property_sources"] == {
+        "proportional_limit": "Project elastic limit for this test",
+    }
 
     # The cylinder sizing operations size the plastic under the shell stress
     # check, whose criterion the selected forward result names.
@@ -456,6 +637,9 @@ def test_buckling_reads_no_strength_and_every_category_sizes(tmp_path: Path) -> 
     )
     assert tube_size.exit_code == 0, tube_size.output
     tube_size_payload = json.loads(tube_size.stdout)
+    assert tube_size_payload["material"]["property_sources"] == {
+        "working_strength": "Project working strength for this test",
+    }
     assert tube_size_payload["sizing"]["declared_check_set"] == ["cylindrical_shell_stress"]
     assert set(tube_size_payload["sizing"]["selected_check_margins"]) == {"cylindrical_shell_stress"}
     assert tube_size_payload["result"]["failure_criterion"] == "maximum_hoop_stress_vs_working_strength"
@@ -464,6 +648,8 @@ def test_buckling_reads_no_strength_and_every_category_sizes(tmp_path: Path) -> 
     # A plastic's working strength is not ordered against its proportional
     # limit, so unlike a ductile metal its shell stress can govern the coupled
     # search: at 3 MPa working strength the governing check crosses over.
+    # Exact surface hoop stress needs 9.5445 mm here; the former 9 mm upper
+    # bound could satisfy only the approximate membrane check.
     coupled = runner.invoke(
         app,
         [
@@ -472,7 +658,7 @@ def test_buckling_reads_no_strength_and_every_category_sizes(tmp_path: Path) -> 
             "--internal-radius", "100 mm",
             "--unsupported-length", "700 mm",
             "--wall-thickness-lower", "2 mm",
-            "--wall-thickness-upper", "9 mm",
+            "--wall-thickness-upper", "10 mm",
             "--minimum-margin", "0.25",
             "--failure-category", "plastic",
             "--working-strength", "3 MPa",
@@ -637,6 +823,8 @@ def test_calc_material_loader_ignores_fields_the_models_never_read() -> None:
     assert not hasattr(material, "some_future_field")
     assert material.yield_strength_mpa == 276.0
     assert material.elastic_modulus_mpa is None
+    assert material.working_strength_source is None
+    assert material.proportional_limit_source is None
     # Density is read now that the mass-properties operation consumes it.
     assert material.density_kg_per_m3 == 2700.0
 
@@ -654,6 +842,8 @@ def test_calc_material_still_enforces_the_properties_it_reads() -> None:
         {"density_kg_per_m3": 0},
         {"density_kg_per_m3": True},
         {"source": "   "},
+        {"working_strength_source": "   "},
+        {"proportional_limit_source": "\n\t"},
         {"failure_category": "unobtainium"},
     ):
         with pytest.raises(ValidationError):

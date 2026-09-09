@@ -28,7 +28,7 @@ NON_RING_COVERAGE_INVENTORY = [
         "provenance": "independent_equation",
     },
     {
-        "case_id": "tube_thin_mean_radius_and_branch_boundary",
+        "case_id": "tube_exact_surfaces_and_former_branch_boundary",
         "artifacts": ["tests/test_tube_stress.py"],
         "provenance": "independent_equation",
     },
@@ -54,7 +54,7 @@ NON_RING_COVERAGE_INVENTORY = [
         "provenance": "independent_equation",
     },
     {
-        "case_id": "hemisphere_membrane_radial_displacement",
+        "case_id": "hemisphere_historical_membrane_radial_displacement",
         "artifacts": [
             "validation/hemisphere_displacement_reference.py",
             "validation/sources/hemisphere_scalar_displacement.md",
@@ -63,6 +63,38 @@ NON_RING_COVERAGE_INVENTORY = [
             "tests/test_cli_forward.py",
         ],
         "provenance": "independent_equation",
+    },
+    {
+        "case_id": "shell_exact_stress_force_balance_and_compatibility",
+        "artifacts": ["tests/test_exact_shell_stress.py"],
+        "provenance": "independent_equation",
+    },
+    {
+        "case_id": "hemisphere_exact_radial_displacement",
+        "artifacts": [
+            "validation/sources/hemisphere_scalar_displacement.md",
+            "tests/test_hemisphere.py",
+            "tests/test_exact_shell_stress.py",
+            "tests/test_independent_reference_parity.py",
+        ],
+        "provenance": "independent_equation",
+    },
+    {
+        "case_id": "elastic_output_material_limit_policy",
+        "artifacts": [
+            "tests/test_elastic_output_semantics.py",
+            "tests/test_independent_reference_parity.py",
+        ],
+        "provenance": "release_policy",
+    },
+    {
+        "case_id": "shell_small_deformation_release_policy",
+        "artifacts": [
+            "validation/sources/tube_scalar_displacement.md",
+            "validation/sources/hemisphere_scalar_displacement.md",
+            "tests/test_shell_deformation_gates.py",
+        ],
+        "provenance": "release_policy",
     },
     {
         "case_id": "hemisphere_underpressure_manual_example",

@@ -6,19 +6,19 @@
 # their content instead.
 models:
   - model_id: closed_end_tube_stress
-    model_version: "2.0.0"
+    model_version: "3.1.0"
     maturity: verified_equation
     completeness: partial
     evidence:
       - category: independent_equation
         source: validation/non_ring_reference.md
         status: >-
-          complete for stress; displacement is re-derived separately in
-          validation/tube_displacement_reference.py, which transcribes DTMB 1497
-          Eq. [5] with Eqs. [A7]-[A10] and Boresi and Schmidt Eqs. (11.24) and
-          (11.15) and is compared against production in
-          tests/test_independent_reference_parity.py at the 1e-9 relative
-          limit
+          complete for stress; exact displacement is compared with the
+          Boresi and Schmidt Eqs. (11.24) and (11.15) transcription in
+          validation/tube_displacement_reference.py at the 1e-9 relative limit.
+          Historical membrane references remain unchanged; current comparisons
+          select their exact branches. Equilibrium, constitutive, continuity,
+          and thin-limit tests are in tests/test_exact_shell_stress.py.
       - category: software_parity
         source: tests/test_tube_stress.py
         status: >-
@@ -31,7 +31,8 @@ models:
         status: >-
           Roark/Lame stress equations transcribed in docs/engineering.md; the
           displacement and axial-strain equations, their conventions, surfaces,
-          and end-condition assumptions are recorded per branch here
+          and end-condition assumptions are recorded here, with the former
+          membrane branch retained as a historical comparison
       - category: experiment
         source: docs/engineering.md
         status: not required for equation verification
@@ -56,17 +57,19 @@ models:
         ovalization, instability, plasticity, and ring-frame restraint no more
         than the stress result does; all six are excluded.
       - >-
-        The displacement equations are small-deformation and linearly elastic.
-        DTMB 1497 states its results are not likely reliable once a shell
-        element's radial displacement exceeds the wall thickness; the thin
-        branch withholds deformation beyond that explicit boundary. Equality
-        remains released. No unsourced numeric gate is imposed on the thick
-        branch.
+        The exact displacement equations assume small deformation and linear
+        elasticity. Project deformation release screens require maximum
+        absolute radial displacement/thickness <= 1 and maximum absolute
+        principal strain <= 0.01; exceeding either gives withheld_applicability
+        while retaining raw formula values. These are not universal Lamé
+        validity limits. Exceeding only the supplied material strength labels raw
+        deformation as elastic_estimate_material_limit. Passing this strength
+        screen alone does not establish proportional behavior or stability.
       - UnderPressure 4.60 version-stamped captures remain open.
       - Service, material, fabrication, temperature, and inspection inputs remain design-use blockers.
 
   - model_id: uniformly_loaded_flat_circular_plate
-    model_version: "3.0.0"
+    model_version: "4.1.0"
     maturity: verified_equation
     completeness: partial
     evidence:
@@ -122,19 +125,18 @@ models:
       - Service, material, fabrication, temperature, and inspection inputs remain design-use blockers.
 
   - model_id: roark_nasa_hemispherical_head_external_pressure
-    model_version: "3.0.0"
+    model_version: "4.1.0"
     maturity: verified_equation
     completeness: partial
     evidence:
       - category: independent_equation
         source: validation/non_ring_reference.md
         status: >-
-          complete for stress and buckling; the thin-branch membrane
-          displacement is re-derived separately in
-          validation/hemisphere_displacement_reference.py, which transcribes
-          NASA TM-4579 Eq. (5) and is compared against production in
-          tests/test_independent_reference_parity.py at the 1e-9 relative
-          limit
+          complete for stress and buckling using the historical reference's
+          exact stress branch. Exact spherical displacement is checked against
+          the published closed form and radial/tangential strain compatibility;
+          validation/hemisphere_displacement_reference.py preserves NASA
+          TM-4579 Eq. (5) as a membrane-limit comparator.
       - category: software_parity
         source: validation/published/underpressure_hemisphere_example.md
         status: >-
@@ -143,9 +145,9 @@ models:
       - category: published_theory
         source: validation/sources/nasa_sp8032_hemisphere_external_pressure.md
         status: >-
-          Roark stress and NASA SP-8032 Eqs. 1-4 transcribed; the membrane
-          displacement equation, its conventions, its meridional location, and
-          the thick-branch withholding are recorded in
+          Roark stress and NASA SP-8032 Eqs. 1-4 transcribed; exact spherical
+          displacement, its Hooke-law derivation, published closed form,
+          membrane limit, and surface conventions are recorded in
           validation/sources/hemisphere_scalar_displacement.md
       - category: experiment
         source: validation/sources/nasa_sp8032_hemisphere_external_pressure.md
@@ -156,7 +158,7 @@ models:
     important_limitations:
       - >-
         Constant-thickness isotropic hemisphere under uniform external
-        pressure. The buckling correlation uses a clamped equator; the membrane
+        pressure. The buckling correlation uses a clamped equator; the spherical
         stress and displacement apply away from the equator and do not claim
         that boundary condition.
       - Buckling capacity is withheld outside the thin-shell and NASA lambda gates or without elastic proportional-limit support.
@@ -165,12 +167,15 @@ models:
         imperfections, residual stress, and plastic interaction are absent;
         the seat is the average bearing stress on the equator annulus only.
       - >-
-        Radial displacement is released on the thin branch only. The
-        thick-sphere branch withholds it because no consulted primary source
-        states a thick-sphere displacement; that is a recorded evidence gap,
-        not a claim that the quantity does not exist.
+        Radial displacement assumes small strain and linear elasticity.
+        Project deformation release screens require maximum absolute radial
+        displacement/thickness <= 1 and maximum absolute principal strain
+        <= 0.01; exceeding either gives withheld_applicability with raw formula
+        values retained. These are not universal Lamé validity limits.
+        Exceeding only the supplied material strength labels it as
+        elastic_estimate_material_limit; no post-failure behavior is modeled.
       - >-
-        The released displacement is the membrane value away from the equator.
+        The displacement is the spherical solution away from the equator.
         It is not the equator's radial closure and not a seal-gap estimate, and
         the equator boundary layer, displacement fields, post-buckling
         deformation, and ring-stiffened service displacement are all outside it.
@@ -178,7 +183,7 @@ models:
       - No calibration or physical validation was performed; the result is advisory.
 
   - model_id: nasa_smooth_cylinder_external_pressure_buckling
-    model_version: "3.0.0"
+    model_version: "4.1.0"
     maturity: verified_equation
     completeness: partial
     evidence:
@@ -204,13 +209,13 @@ models:
     important_limitations:
       - The moderate/long factor overlap withholds capacity.
       - Released capacity requires a source-traceable proportional limit; a correlated
-        critical membrane stress above it releases an elastic upper bound only.
+        critical membrane stress above it retains an elastic upper bound with a null margin.
       - Inelastic corrections, end-restraint credit, and physical validation are absent.
       - UnderPressure 4.60 version-stamped captures remain open.
       - Imperfection, cycling, environment, temperature, product-form, and fabrication inputs remain design-use blockers.
 
   - model_id: nasa_ring_stiffened_shell_external_pressure
-    model_version: "2.0.0"
+    model_version: "3.1.0"
     maturity: benchmark_compared
     completeness: partial
     evidence:
