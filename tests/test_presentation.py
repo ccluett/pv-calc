@@ -61,6 +61,38 @@ def test_elastic_estimates_never_become_capacities(release_status: str) -> None:
     assert summary["assessment"]["governing_check"] is None
 
 
+@pytest.mark.parametrize("model", ["cylinder", "smooth-buckling"])
+@pytest.mark.parametrize("pressure", [1.0, 92.35134])
+def test_pending_pressure_is_visible_without_deciding_buckling_acceptance(
+    model: str, pressure: float,
+) -> None:
+    wall = 152.4 / 10.55
+    radius_input = (
+        {"internal_radius": _q(152.4 - wall, "mm")}
+        if model == "cylinder" else {
+            "shell_mid_surface_radius": _q(152.4 - wall / 2.0, "mm"),
+            "load_case": "hydrostatic_closed_end",
+        }
+    )
+    response = calculate({
+        "schema_version": CALC_SCHEMA_VERSION, "model": model,
+        "material": {"type": "named", "name": "Ti-6Al-4V"},
+        "inputs": {"external_pressure": _q(pressure), "wall_thickness": _q(wall, "mm"),
+                   "unsupported_length": _q(609.6, "mm"), **radius_input},
+    })
+    original = deepcopy(response)
+    summary = summarize_response(response)
+    estimate = summary["outputs"]["elastic_buckling_estimate"]
+    assert estimate["status"] == "released_pending_plasticity"
+    assert estimate["value"]["value"] == pytest.approx(63.685456731934785)
+    check = next(c for c in summary["assessment"]["checks"] if c["id"] == "smooth_cylinder_buckling")
+    assert check["status"] == "indeterminate"
+    assert check["capacity"]["value"] is None
+    assert check["margin"] is None
+    assert "elastic_buckling_estimate: released_pending_plasticity | 63.6855 MPa" in render_text(response)
+    assert response == original
+
+
 def test_known_failure_takes_precedence_over_missing_requested_check() -> None:
     response = _example("tube", "tube_9_0401_ksi.json")
     response["result"].update(governing_stress_mpa=_q(500), strength_mpa=_q(200), margin=-0.6)

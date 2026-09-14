@@ -327,6 +327,18 @@ def summarize_response(
             outputs[prefix] = {"status": result[f"{prefix}_status"], "reasons": result.get(f"{prefix}_validity_violations", [])}
             if prefix == "deflection":
                 outputs[prefix]["value"] = result.get("released_maximum_deflection_mm")
+    if payload.get("model") == "cylinder":
+        buckling = payload.get("components", {}).get("smooth_buckling", {}).get("result", {})
+    elif payload.get("model") == "smooth-buckling":
+        buckling = result
+    else:
+        buckling = {}
+    if buckling.get("capacity_status") == "released_pending_plasticity":
+        outputs["elastic_buckling_estimate"] = {
+            "status": buckling["capacity_status"],
+            "value": deepcopy(buckling.get("correlated_critical_pressure_mpa")),
+            "reasons": [],
+        }
     if outputs:
         summary["outputs"] = outputs
     mass = _mass_summary(payload)

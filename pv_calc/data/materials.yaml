@@ -21,23 +21,21 @@
 # `proportional_limit_mpa` is not a specification minimum: no consulted
 # handbook tabulates one, so a stored value is derived and
 # `proportional_limit_source` carries the derivation. Only Al-6061-T6 and
-# Ti-6Al-4V carry one. Every other metal is null because no compressive
-# Ramberg-Osgood shape was located for it in MIL-HDBK-5J, which SS-2507
-# postdates. The plastics are null because their stored allowable is a
-# long-term quantity that no elastic-limit criterion attaches to, and the
-# brittle record is null because releasing a buckling capacity for a
-# flaw-dominated material on an elastic screen would claim more than its
-# data sheet supports. A null limit withholds elastic buckling capacity
-# rather than defaulting it; that is intended, and is not to be patched with
-# a fraction of yield.
+# Ti-6Al-4V carry one. The other metals have no adopted compressive curve.
+# MIL-HDBK-5J does contain 7075 curves, but their product form, direction,
+# and thickness must match the application. The plastics are null because
+# their stored allowable is a long-term quantity that no elastic-limit
+# criterion attaches to. The brittle record is null because releasing
+# buckling capacity for a flaw-dominated material on an elastic screen
+# would claim more than its data sheet supports. A null limit withholds
+# elastic buckling capacity rather than defaulting to a fraction of yield.
 #
 # Units are SI, MPa and kg/m^3. A source stating English units is converted
 # at 1 ksi = 6.894757 MPa, 1 Mpsi = 6894.757 MPa, and
 # 1 lb/in^3 = 27679.9047 kg/m^3, and each record states its own rounding.
 #
-# `ultimate_strength_mpa` and the `*_source` fields are not part of the
-# calculator's schema and are ignored by the loader. They are kept beside
-# the values that are read because a reviewer checking a record needs them.
+# `ultimate_strength_mpa` is ignored by the loader. `source`,
+# `working_strength_source`, and `proportional_limit_source` are read.
 materials:
   Al-6061-T6:
     density_kg_per_m3: 2700
@@ -48,8 +46,8 @@ materials:
     proportional_limit_mpa: 183.4
     failure_category: ductile_metal
     proportional_limit_source: >-
-      Derived, not tabulated: MIL-HDBK-5J (31 January 2003) states no
-      proportional limit for this alloy. Shape is its typical compressive
+      Derived, not tabulated: this value uses a pv-calc elastic-accuracy
+      criterion. Shape is the MIL-HDBK-5J (31 January 2003) typical compressive
       Ramberg-Osgood exponent n = 28, the LT value on Figure 3.6.2.2.6(i)
       (6061-T6 extrusion, room temperature, printed p. 3-283), which is
       labeled TYPICAL and is not a design allowable; LT governs because hoop
@@ -58,8 +56,9 @@ materials:
       minimum-anchored with a typical shape; Table 3.6.2.0(g) gives
       Fcy(LT) = 35 ksi for extruded rod, bar, and shapes, the same 35 ksi, so
       the tensile and compressive anchors coincide here. Criterion is the
-      stress at which the tangent modulus falls to 0.99 E, a pv-calc choice
-      because the handbook states none, giving 183.4 MPa = 0.761 x yield.
+      stress at which the tangent modulus falls to 0.99 E, a pv-calc choice,
+      giving 183.4 MPa = 0.761 x yield. This differs from the handbook's
+      0.0001 plastic-strain convention in Section 1.4.4.2, printed p. 1-9.
       Scope: room temperature, compressive, extruded forms. An applicability
       limit for reporting elastic buckling capacity, not a design allowable.
     source: >-
@@ -115,7 +114,7 @@ materials:
     proportional_limit_source: >-
       Derived by the method and criterion recorded on the Al-6061-T6 entry.
       Shape is Ramberg-Osgood n = 21 at room temperature, printed on
-      MIL-HDBK-5J Figures 5.4.1.1.6(b) and (c) for annealed Ti-6Al-4V
+      MIL-HDBK-5J Figures 5.4.1.1.6(b) and (c) for annealed Ti-6Al-4V extrusion
       (printed p. 5-65), both labeled TYPICAL and both longitudinal; the
       handbook prints no transverse compressive curve for this condition, so
       using the longitudinal shape for the hoop direction is an unverified

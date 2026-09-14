@@ -9,6 +9,11 @@ model; both predate this changelog.
 
 ## [Unreleased]
 
+- Show the existing pending-plasticity pressure as an elastic estimate in
+  smooth-buckling and cylinder summary/text output, retaining null acceptance
+  capacity and margin. Correct the documented buckling envelope and material
+  source explanations; calculation equations and material values are unchanged.
+
 ## [0.2.0] - 2026-09-09
 
 - Add `cylinder`, a combined closed-end stress and smooth-buckling assessment

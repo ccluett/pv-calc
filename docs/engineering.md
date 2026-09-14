@@ -96,8 +96,9 @@ closed-end differential pressure drive both `cylindrical_shell_stress` and
 `axial_length` defaults to the unsupported length and cannot be shorter.
 Detailed kernel responses remain under `components`. `assessment.checks`
 reports unit-bearing demand and released capacity, margin, required margin,
-applicability, and reasons for each check. An elastic upper bound pending
-plasticity is not an acceptance capacity.
+applicability, and reasons for each check. Pending-plasticity pressures appear
+as elastic estimates in `components` and summary/text output, never as
+acceptance capacity or margin.
 
 An optional `inputs.closures` array must contain exactly two closures. Each
 specifies its own named or explicit material and either `model: plate` with
@@ -151,11 +152,11 @@ operations require exactly one fixed radius: `internal_radius` or
 `external_radius - wall_thickness / 2` and the bore is
 `external_radius - wall_thickness`. The upper wall bound must be smaller than
 the fixed outside radius, retaining a positive bore.
-The search partitions the bounds at the NASA regime boundaries and limits
-those intervals to the thin-shell and proportional-limit domains. Only
-`capacity_status="released"` supplies a sizing margin. Withheld overlap and
-inelastic estimates are excluded, so an invalid upper bound does not prevent
-finding an eligible solution below it.
+Only `capacity_status="released"` supplies a sizing margin. The search excludes
+the correlation overlap, `R_mid/t <= 10`, and critical membrane stress above
+the proportional limit. See the
+[coverage investigation](../validation/external_pressure_coverage.md) for the
+resulting geometry and material-data bounds.
 
 The `pv-calc plate size` operation contract is 2.1.0. It sizes one plate with
 fixed free radius, pressure, edge condition, and material for a bending margin
@@ -356,18 +357,15 @@ statistical A-basis or B-basis allowables and have no temperature derating,
 weld or heat-affected-zone knockdown, fatigue or notch correction, or
 environmental-cracking adjustment. The calculator applies no safety factor.
 
-`proportional_limit_mpa` is not a specification minimum, and no consulted
-handbook tabulates one, so only Al-6061-T6 and Ti-6Al-4V carry a value; each
-is derived, and its `proportional_limit_source` records the MIL-HDBK-5J
-compressive Ramberg-Osgood shape used, the specification-minimum yield it is
-anchored at, and the tangent-modulus-at-0.99-E criterion, which is this
-project's choice because the handbook states none. Every other record is null:
-no compressive Ramberg-Osgood shape was located for the remaining metals, the
-plastics' stored allowable is a long-term quantity that no elastic-limit
-criterion attaches to, and releasing a buckling capacity for a flaw-dominated
-glass on an elastic screen would claim more than its data sheet supports. A
-null limit withholds elastic buckling capacity rather than defaulting it, which
-is what the hemisphere and smooth-cylinder buckling models require of it.
+Only Al-6061-T6 and Ti-6Al-4V carry `proportional_limit_mpa`. Their source
+fields record typical MIL-HDBK-5J compressive Ramberg-Osgood shapes anchored
+at specification-minimum yield, using this project's `E_tan = 0.99 E` screen.
+That screen differs from the handbook's proportional-limit convention of
+0.0001 plastic strain (Section 1.4.4.2, p. 1-9). The remaining metals have no
+adopted compressive curve; 7075 curves do exist in the handbook, but vary
+with product form, direction, and thickness. Plastics' long-term allowables
+and glass's flaw-dependent strength do not establish these elastic limits.
+A null limit withholds elastic buckling capacity rather than defaulting it.
 
 Named-material responses preserve these two derivations in
 `material.property_sources`, keyed by `working_strength` and `proportional_limit`
@@ -443,18 +441,15 @@ ovalization, buckling, plasticity, and ring-frame deformation remain excluded.
 
 Where a source gives no rule, capacity is withheld instead of guessed:
 
-- Smooth buckling withholds only the moderate/long overlap, where `gamma=0.5625`
+- Smooth buckling withholds the moderate/long overlap, where `gamma=0.5625`
   in Eqs. 23-25 and `gamma=0.90` in Eqs. 26-27 both apply and NASA gives no
   selection or blending rule. The short region is not withheld: NASA/SP-8007-2020
-  Rev 2 states that "The term `gamma^2` has been added to Eq. 20 and Eq. 22 as a
-  correction for the difference between theory and test", and introduces Eq. 23
-  as what those reduce to "For `gamma*Z > 100`", so Eq. 28's factor belongs
-  inside the general equations rather than only in their simplification. Eqs.
-  20/22 are minimized over `beta` at every `gamma*Z`, which is what Figure 4-3
-  plots. Eq. 24 remains the released capacity above `gamma*Z = 100`, where the
-  source prescribes it; it understates the exact minimum at that boundary by
-  about 7% for `hydrostatic_closed_end` and about 14% for `lateral_only`, and
-  that step is reported rather than smoothed.
+  Rev 2 inserts `gamma^2` in Eqs. 20/22 and introduces Eq. 23 as their
+  `gamma*Z > 100` reduction; this model therefore applies Eq. 28's factor
+  inside Eqs. 20/22 as well. Eq. 24 understates their minimum at that boundary
+  by about 7% for hydrostatic pressure and 14% for lateral pressure; the
+  transition remains a step. The separate `R_mid/t > 10` gate is this
+  project's Roark thin-tube convention, not a numeric NASA limit.
 - Smooth and hemisphere buckling require a source-traceable proportional limit;
   no fraction of yield strength is substituted. The hemisphere additionally
   withholds capacity when the correlated critical membrane stress exceeds that
