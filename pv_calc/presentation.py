@@ -330,7 +330,10 @@ def summarize_response(
     if payload.get("model") == "cylinder":
         buckling = payload.get("components", {}).get("smooth_buckling", {}).get("result", {})
     elif payload.get("model") == "smooth-buckling":
-        buckling = result
+        buckling = payload.get(
+            "result",
+            payload.get("selected_results", {}).get("smooth-buckling", {}).get("result", {}),
+        )
     else:
         buckling = {}
     if buckling.get("capacity_status") == "released_pending_plasticity":

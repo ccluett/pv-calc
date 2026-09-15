@@ -1299,6 +1299,13 @@ def _smooth_buckling_branch_partition(
     # the increasing t/r factor. Exact fixed-OD Lamé stress decreases for
     # t < R_o. Both margins therefore rise inside each released regime;
     # the solver still splits at every discontinuity and withheld band.
+    # The inelastic correction preserves that within-branch direction. At a
+    # fixed trial stress eta is independent of geometry in Eqs. 30, 31, and 32;
+    # in the interpolated band, increasing thickness lowers gamma*Z and moves
+    # eta toward the larger Eq. 30 factor. At a fixed pressure, stress p*r/t
+    # also falls as thickness rises. Thus the corrected capacity rises within
+    # a branch even though eta evaluated at the solved critical stress can
+    # itself decrease as the solution moves to a higher pressure.
     thin_shell_mm = (
         external_radius_mm / (SMOOTH_CYLINDER_MIN_RADIUS_THICKNESS_RATIO + 0.5)
         if external_radius_mm is not None
@@ -1318,8 +1325,12 @@ def _smooth_buckling_branch_partition(
         )
         if thickness_mm is not None:
             boundaries.append((name, thickness_mm))
-    proportional_limit = buckling_at(lower_bound_mm).proportional_limit_mpa
-    if proportional_limit is not None:
+    lowest = buckling_at(lower_bound_mm)
+    proportional_limit = lowest.proportional_limit_mpa
+    # A complete compressive curve corrects the capacity continuously through
+    # the proportional limit, so that limit no longer starts a withheld band
+    # and is not a branch boundary. Without a curve it still is one.
+    if lowest.ramberg_osgood_n is None and proportional_limit is not None:
         for regime in ("short", "moderate", "long"):
             def condition(thickness_mm: float) -> float:
                 candidate = next(

@@ -39,7 +39,7 @@ TUBE_SIZE_OPERATION_VERSION = "3.1.0"
 # result's failure_criterion says which stress met which strength.
 TUBE_SIZING_CHECK: Final = "cylindrical_shell_stress"
 TUBE_SIZING_CHECK_SET: tuple[Literal["cylindrical_shell_stress"], ...] = (TUBE_SIZING_CHECK,)
-SMOOTH_BUCKLING_SIZE_OPERATION_VERSION = "3.1.0"
+SMOOTH_BUCKLING_SIZE_OPERATION_VERSION = "4.0.0"
 SMOOTH_BUCKLING_SIZING_CHECK_SET: tuple[
     Literal["cylindrical_shell_stress", "smooth_cylinder_buckling"], ...
 ] = (TUBE_SIZING_CHECK, "smooth_cylinder_buckling")
@@ -174,7 +174,30 @@ class HemisphereMaterialProperties(PlateMaterialProperties):
     proportional_limit: Pressure | None = None
 
 
-class BucklingMaterialProperties(HemisphereMaterialProperties):
+class CylinderMaterialProperties(HemisphereMaterialProperties):
+    """Properties for a shell whose smooth-cylinder bay may be corrected."""
+
+    ramberg_osgood_n: Annotated[float, Field(gt=1, allow_inf_nan=False)] | None = None
+    compressive_proof_stress: Pressure | None = None
+
+    @model_validator(mode="after")
+    def compressive_curve_is_supported(self) -> "CylinderMaterialProperties":
+        curve = (self.ramberg_osgood_n, self.compressive_proof_stress)
+        if any(value is not None for value in curve) and None in curve:
+            raise ValueError(
+                "ramberg_osgood_n and compressive_proof_stress must be given together"
+            )
+        if self.compressive_proof_stress is not None:
+            if self.failure_category != "ductile_metal":
+                raise ValueError(
+                    "ramberg_osgood_n and compressive_proof_stress apply only to ductile_metal"
+                )
+            if self.compressive_proof_stress.value <= 0:
+                raise ValueError("compressive_proof_stress must be positive")
+        return self
+
+
+class BucklingMaterialProperties(CylinderMaterialProperties):
     """The smooth-buckling and ring-shell record: no strength is required.
 
     Buckling reads the elastic constants and the proportional limit; a yield
@@ -197,6 +220,10 @@ class ExplicitPlateMaterialInput(ExplicitTubeMaterialInput):
 
 class ExplicitHemisphereMaterialInput(ExplicitTubeMaterialInput):
     properties: HemisphereMaterialProperties
+
+
+class ExplicitCylinderMaterialInput(ExplicitTubeMaterialInput):
+    properties: CylinderMaterialProperties
 
 
 class ExplicitBucklingMaterialInput(ExplicitTubeMaterialInput):
@@ -366,10 +393,10 @@ class SmoothBucklingSizeRequest(ContractModel):
     model: Literal["smooth-buckling"]
     operation: Literal["size"]
     inputs: SmoothBucklingSizeInputs
-    # The sizing operation's shell stress check reads the strength, so its record
-    # is the hemisphere's strict one, not the forward buckling record.
+    # The sizing operation's shell stress check reads the strength, while its
+    # smooth-cylinder check may also read the compressive curve.
     material: Annotated[
-        NamedMaterialInput | ExplicitHemisphereMaterialInput,
+        NamedMaterialInput | ExplicitCylinderMaterialInput,
         Field(discriminator="type"),
     ]
 
@@ -480,6 +507,10 @@ class DepthSweepInputs(ContractModel):
 
 
 CylinderMaterial = Annotated[
+    NamedMaterialInput | ExplicitCylinderMaterialInput,
+    Field(discriminator="type"),
+]
+ClosureMaterial = Annotated[
     NamedMaterialInput | ExplicitHemisphereMaterialInput,
     Field(discriminator="type"),
 ]
@@ -493,14 +524,14 @@ class PlateClosure(ContractModel):
     # Accepted for explicit geometry, but must match the cylinder's outer radius.
     outside_radius: Length | None = None
     maximum_deflection: Length | None = None
-    material: CylinderMaterial
+    material: ClosureMaterial
 
 
 class HemisphereClosure(ContractModel):
     model: Literal["hemisphere"]
     # Defaults to the cylinder wall and must match it for this butt assembly.
     wall_thickness: Length | None = None
-    material: CylinderMaterial
+    material: ClosureMaterial
 
 
 Closure = Annotated[PlateClosure | HemisphereClosure, Field(discriminator="model")]

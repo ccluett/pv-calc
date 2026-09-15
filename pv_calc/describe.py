@@ -144,9 +144,27 @@ _RESULT_FIELD_DESCRIPTIONS: dict[str, str] = {
         " as withheld_applicability."
     ),
     "correlated_critical_pressure_mpa": (
-        "Retained as an elastic estimate when capacity_status is"
-        " released_pending_plasticity. The ordinary margin is null unless the"
-        " enclosing result's capacity_status is released."
+        "Correlated critical pressure. Smooth-cylinder results include any supplied"
+        " material correction; their regime candidates retain elastic pressures."
+        " A pending value is an estimate and has no ordinary margin."
+    ),
+    "plasticity_factor": (
+        "NASA/SP-8007-2020/REV 2 Eq. 30-32 multiplier applied to the selected"
+        " smooth-cylinder candidate; null without a curve or when capacity is withheld."
+    ),
+    "secant_modulus_at_critical_stress_mpa": (
+        "Ramberg-Osgood secant modulus at the released corrected critical stress."
+    ),
+    "tangent_modulus_at_critical_stress_mpa": (
+        "Ramberg-Osgood tangent modulus at the released corrected critical stress."
+    ),
+    "ramberg_osgood_n": (
+        "Compressive Ramberg-Osgood exponent used for the smooth-cylinder correction,"
+        " or null when no curve was supplied."
+    ),
+    "compressive_proof_stress_mpa": (
+        "0.2% offset compressive proof stress anchoring the Ramberg-Osgood curve, or"
+        " null when no curve was supplied."
     ),
     "eq25_simplified_critical_pressure_mpa": (
         "NASA/SP-8007-2020/REV 2 Eq. 25, printed p. 27, which that source states only "
@@ -162,9 +180,10 @@ _RESULT_FIELD_DESCRIPTIONS: dict[str, str] = {
         "plasticity check applies to the correlated critical stress. 'exceeded' means "
         "every capacity at or above the applied pressure exceeds that limit too, at "
         "every unsupported length, because only wall thickness moves this stress: with "
-        "a proportional limit supplied such a capacity is an elastic upper bound "
-        "reported as released_pending_plasticity, and with only a yield strength it is "
-        "withheld for the missing limit. "
+        "a proportional limit but no compressive curve such a capacity is an elastic "
+        "upper bound reported as released_pending_plasticity. A complete curve applies "
+        "the inelastic correction; without either curve or proportional limit, capacity "
+        "is withheld. "
         "'undetermined' means neither a proportional limit nor a yield strength was "
         "supplied. It never withholds a result and never sets a margin."
     ),
@@ -309,6 +328,20 @@ _BUCKLING_STRENGTH_CONTRACTS = {
         "role": "ductile_metal only; read to bound the proportional limit",
     },
 }
+_COMPRESSIVE_CURVE_CONTRACTS = {
+    "ramberg_osgood_n": {
+        "dimensionless": True,
+        "exclusive_minimum": 1,
+        "optional": True,
+        "role": "ductile_metal compressive-curve exponent; paired with compressive_proof_stress",
+    },
+    "compressive_proof_stress": {
+        "dimension": "pressure",
+        "normalized_unit": "MPa",
+        "optional": True,
+        "role": "ductile_metal 0.2% offset compressive-curve anchor; paired with ramberg_osgood_n",
+    },
+}
 # The strength each category must carry, per model family: a shell reads the
 # category's first strength; the plate also reads a brittle tensile strength.
 _SHELL_STRENGTH_BY_CATEGORY = {
@@ -317,6 +350,16 @@ _SHELL_STRENGTH_BY_CATEGORY = {
 _PLATE_STRENGTH_BY_CATEGORY = {
     category: list(names) for category, names in CATEGORY_STRENGTHS.items()
 }
+
+
+def _smooth_buckling_capacity_release_evidence() -> dict[str, Any]:
+    return {
+        "one_of": [
+            ["proportional_limit"],
+            ["ramberg_osgood_n", "compressive_proof_stress"],
+        ],
+        "curve_failure_category": "ductile_metal",
+    }
 
 
 def _describe_model(
@@ -491,16 +534,14 @@ def _describe_model(
             "continuous-aspect-ratio short Eqs. 19-22 with sqrt(gamma)=0.75 inside",
             "moderate Eqs. 23-25 with sqrt(gamma)=0.75",
             "long oval Eqs. 26-27 with gamma=0.90 and n=2",
-            "moderate/long correlation-overlap, thin-tube, and explicit "
-            "proportional-limit release gates",
+            "moderate/long correlation-overlap and thin-tube release gates",
+            "optional Ramberg-Osgood inelastic correction from NASA Eqs. 30-32",
             "Roark case-20 probable-minimum comparator and lobe count",
         ]
         omissions = [
             "released capacity in the moderate/long correlation overlap, where NASA gives no "
             "rule between gamma=0.5625 in Eqs. 23-25 and gamma=0.90 in Eqs. 26-27",
-            "inelastic Esec/Etan corrections from NASA Eqs. 30-32, so a correlated critical "
-            "membrane stress above the proportional limit releases an elastic upper bound as "
-            "released_pending_plasticity with a null ordinary margin",
+            "an inelastic correction without a complete, direction-appropriate compressive curve",
             "rings, cutouts, penetrations, fabrication effects, and nonuniform loading",
             "end-restraint capacity increases and safety factors",
         ]
@@ -512,8 +553,10 @@ def _describe_model(
             "proportional_limit": {
                 "dimension": "pressure",
                 "normalized_unit": "MPa",
-                "role": "required elastic applicability limit for released capacity",
+                "optional": True,
+                "role": "elastic release limit; alternative to a complete compressive curve",
             },
+            **_COMPRESSIVE_CURVE_CONTRACTS,
         }
         request_type = SmoothBucklingRequest
         output_schema = _unitized_result_schema(
@@ -543,13 +586,15 @@ def _describe_model(
             "The physical ring is one non-overlapping solid rectangle.",
             "The global result uses NASA Eqs. 64-65 and 82-91, including exact rectangular-ring torsion.",
             "The 0.75 global pressure multiplier is source-recommended and not user-adjustable.",
-            "The inter-ring calculation is an advisory isolated smooth bay over ring center spacing.",
+            "The inter-ring calculation is an advisory isolated smooth bay over ring center"
+            " spacing; a supplied compressive curve corrects this bay only.",
         ]
         checks = [
             "solid rectangular A_r, centroidal I_r, eccentricity, and exact Saint-Venant J_r",
             "NASA Eq. 64/65 global pressure before and after the separate Eq. 91 torsion term",
             "expanding integer m,n search with stability, frontier, bounds, and termination evidence",
             "source-gated advisory isolated-bay smooth-shell buckling",
+            "optional NASA Eq. 30-32 inelastic correction of the inter-ring bay only",
             "the global capacity's implied membrane stress against the proportional limit or yield strength",
             "advisory minimum over every mode that produced a pressure, tagged when it is an elastic upper bound",
             "machine-readable implemented, advisory, not-applicable, and external-blocker dispositions",
@@ -584,6 +629,7 @@ def _describe_model(
                     " to the yield strength"
                 ),
             },
+            **_COMPRESSIVE_CURVE_CONTRACTS,
         }
         request_type = RingShellRequest
         output_schema = _unitized_result_schema(
@@ -658,8 +704,15 @@ def _describe_model(
         required_material_properties["strength_by_failure_category"] = _SHELL_STRENGTH_BY_CATEGORY
     if model == "plate":
         required_material_properties["strength_by_failure_category"] = _PLATE_STRENGTH_BY_CATEGORY
+    if model == "smooth-buckling":
+        for name in ("proportional_limit", *_COMPRESSIVE_CURVE_CONTRACTS):
+            required_material_properties.pop(name)
+        required_material_properties["capacity_release_evidence"] = (
+            _smooth_buckling_capacity_release_evidence()
+        )
     if model == "ring-shell":
-        required_material_properties.pop("proportional_limit")
+        for name in ("proportional_limit", *_COMPRESSIVE_CURVE_CONTRACTS):
+            required_material_properties.pop(name)
     if model == "tube":
         # Elastic properties are reported in properties_used because the model
         # reads them, but a stress-only record is complete without them.
@@ -695,9 +748,9 @@ def _describe_model(
                 "properties_used": material_properties,
                 "source_fields": ["type", "name", "database", "provenance"],
                 "property_sources": (
-                    "Optional map of stored working_strength and proportional_limit"
-                    " derivations, included only when that property has a value in"
-                    " properties_used. Omitted without an applicable stored derivation."
+                    "Optional map of stored working_strength, proportional_limit, and"
+                    " compressive_stress_strain sources, included only when the described"
+                    " property is present in properties_used."
                 ),
             },
             "required_top_level_fields": [
@@ -992,8 +1045,9 @@ def _smooth_buckling_size_contract(cli_options: Mapping[str, str]) -> dict[str, 
             " the closed-end hydrostatic one, so the buckling check uses the"
             " matching hydrostatic_closed_end case.",
             "The bounds are partitioned at the buckling model's thin-shell"
-            " limit, the four NASA regime boundaries, and each regime's"
-            " proportional-limit crossing. Their"
+            " limit and the four NASA regime boundaries. A proportional limit"
+            " supplied without a complete compressive curve also partitions"
+            " them at each regime's proportional-limit crossing. Boundary"
             " thicknesses are solved for rather than assumed, because they"
             " depend on the correlation factor gamma and on the mid-surface"
             " radius that moves with the thickness.",
@@ -1049,15 +1103,11 @@ def _smooth_buckling_size_contract(cli_options: Mapping[str, str]) -> dict[str, 
             "minimum": 0.0,
         },
         "operation_version": SMOOTH_BUCKLING_SIZE_OPERATION_VERSION,
-        # Beyond the forward model's requirements: the shell stress check reads
-        # the category's strength, and the buckling capacity the proportional limit.
+        # Beyond the forward model's requirements, the shell stress check reads
+        # the category's strength. Buckling accepts either elastic evidence or a curve.
         "required_material_properties": {
             "strength_by_failure_category": _SHELL_STRENGTH_BY_CATEGORY,
-            "proportional_limit": {
-                "dimension": "pressure",
-                "normalized_unit": "MPa",
-                "role": "required to release buckling capacity, so required for any solution",
-            },
+            "capacity_release_evidence": _smooth_buckling_capacity_release_evidence(),
         },
         "output_contract": {
             "complete_forward_contract_at_selected_thickness": True,

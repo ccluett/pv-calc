@@ -35,7 +35,8 @@
 # 1 lb/in^3 = 27679.9047 kg/m^3, and each record states its own rounding.
 #
 # `ultimate_strength_mpa` is ignored by the loader. `source`,
-# `working_strength_source`, and `proportional_limit_source` are read.
+# `working_strength_source`, `proportional_limit_source`, and
+# `compressive_stress_strain_source` are read.
 materials:
   Al-6061-T6:
     density_kg_per_m3: 2700
@@ -44,23 +45,24 @@ materials:
     yield_strength_mpa: 241
     ultimate_strength_mpa: 262
     proportional_limit_mpa: 183.4
+    ramberg_osgood_n: 28
+    compressive_proof_stress_mpa: 241
     failure_category: ductile_metal
+    compressive_stress_strain_source: >-
+      MIL-HDBK-5J (31 January 2003), Section 9.8.4.1.2: strain = s/E +
+      0.002 (s/s0)^n, anchored at 0.2% compression proof stress s0.
+      Figure 3.6.2.2.6(i), printed p. 3-283, supplies the typical LT
+      compressive exponent n = 28 for room-temperature 6061-T6 extrusion;
+      LT is the hoop direction of an extruded tube. Table 3.6.2.0(g) gives
+      Fcy(LT) = 35 ksi for extruded rod, bar, and shapes, rounded to
+      241 MPa, matching the stored tensile minimum. A minimum anchor with
+      a typical shape, not a statistical design allowable.
     proportional_limit_source: >-
-      Derived, not tabulated: this value uses a pv-calc elastic-accuracy
-      criterion. Shape is the MIL-HDBK-5J (31 January 2003) typical compressive
-      Ramberg-Osgood exponent n = 28, the LT value on Figure 3.6.2.2.6(i)
-      (6061-T6 extrusion, room temperature, printed p. 3-283), which is
-      labeled TYPICAL and is not a design allowable; LT governs because hoop
-      is the transverse direction of an extruded tube. Anchor is the 241 MPa
-      specification-minimum yield stored above, so the basis is
-      minimum-anchored with a typical shape; Table 3.6.2.0(g) gives
-      Fcy(LT) = 35 ksi for extruded rod, bar, and shapes, the same 35 ksi, so
-      the tensile and compressive anchors coincide here. Criterion is the
-      stress at which the tangent modulus falls to 0.99 E, a pv-calc choice,
-      giving 183.4 MPa = 0.761 x yield. This differs from the handbook's
-      0.0001 plastic-strain convention in Section 1.4.4.2, printed p. 1-9.
-      Scope: room temperature, compressive, extruded forms. An applicability
-      limit for reporting elastic buckling capacity, not a design allowable.
+      Derived from the compressive curve above at tangent modulus 0.99 E:
+      183.4 MPa = 0.761 x yield. This pv-calc elastic-accuracy criterion
+      differs from MIL-HDBK-5J's 0.0001 plastic-strain convention in
+      Section 1.4.4.2, printed p. 1-9. It screens elastic buckling capacity;
+      it is not a design allowable.
     source: >-
       ASTM B221 and ASTM B241 specification minimums for wrought aluminum
       6061-T6 (extruded profiles and seamless extruded tube). Basis:
@@ -110,21 +112,24 @@ materials:
     yield_strength_mpa: 827
     ultimate_strength_mpa: 896
     proportional_limit_mpa: 602.0
+    ramberg_osgood_n: 21
+    compressive_proof_stress_mpa: 827
     failure_category: ductile_metal
+    compressive_stress_strain_source: >-
+      MIL-HDBK-5J (31 January 2003), Section 9.8.4.1.2 curve convention.
+      Figures 5.4.1.1.6(b) and (c), printed p. 5-65, supply typical
+      longitudinal compressive n = 21 for room-temperature annealed
+      extrusion. Using this shape for hoop compression and for this record's
+      bar, billet, sheet, and plate forms remains unverified. The 827 MPa
+      tensile minimum is a substitute compression anchor, not a measured
+      proof stress. Table 5.4.1.0(c1) annealed bar gives Fcy(L) = 129 ksi
+      against Fty(L) = 125 ksi; lowering the anchor lowers this assumed
+      curve, but does not validate the direction or product-form substitutions.
     proportional_limit_source: >-
-      Derived by the method and criterion recorded on the Al-6061-T6 entry.
-      Shape is Ramberg-Osgood n = 21 at room temperature, printed on
-      MIL-HDBK-5J Figures 5.4.1.1.6(b) and (c) for annealed Ti-6Al-4V extrusion
-      (printed p. 5-65), both labeled TYPICAL and both longitudinal; the
-      handbook prints no transverse compressive curve for this condition, so
-      using the longitudinal shape for the hoop direction is an unverified
-      substitution. Anchor is the 827 MPa specification-minimum yield stored
-      above. Unlike 6061-T6 the anchors do not coincide: Table 5.4.1.0(c1)
-      annealed bar gives Fcy(L) = 129 ksi against Fty(L) = 125 ksi in the same
-      column, so anchoring at the stored tensile minimum is the conservative
-      direction. Tangent modulus at 0.99 E gives 602.0 MPa = 0.728 x yield.
-      Scope: room temperature, compressive, annealed. An applicability limit,
-      not a design allowable.
+      Derived from the assumed compressive curve above using the same
+      pv-calc 0.99 E tangent-modulus screen as Al-6061-T6:
+      602.0 MPa = 0.728 x yield. An elastic applicability limit, not a
+      design allowable; the curve's direction and product-form limitations apply.
     source: >-
       ASTM B348 specification minimums for Ti-6Al-4V (Grade 5, UNS R56400)
       bar and billet, annealed; ASTM B265 Grade 5 sheet and plate states the

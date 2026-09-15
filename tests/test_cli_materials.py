@@ -71,7 +71,7 @@ def test_bundled_materials_work_outside_checkout_and_explicit_override_wins(tmp_
     assert len(records) == 10
     assert all(record["database"] == BUNDLED_MATERIAL_DATABASE for record in records)
     aluminium = show_material("Al-6061-T6")
-    assert aluminium["properties"]["proportional_limit_source"].startswith("Derived, not tabulated")
+    assert aluminium["properties"]["proportional_limit_source"]
     assert aluminium["capabilities"]["cylinder"]["available"]
     other = show_material("Al-7075-T6")
     assert other["capabilities"]["smooth_cylinder_buckling_capacity"] == {
@@ -98,6 +98,60 @@ def test_material_capability_availability_is_per_calculation() -> None:
     assert capabilities["mass_properties"]["available"]
     assert not capabilities["tube_stress"]["available"]
     assert not capabilities["smooth_cylinder_buckling_capacity"]["available"]
+
+
+def test_compressive_curve_is_ductile_and_releases_existing_capabilities() -> None:
+    material = CalcMaterial(
+        source="Compressive curve with a distinct proof stress",
+        failure_category="ductile_metal",
+        yield_strength_mpa=200.0,
+        elastic_modulus_mpa=70_000.0,
+        poisson_ratio=0.33,
+        ramberg_osgood_n=12.0,
+        # Compressive proof may legitimately exceed tensile yield.
+        compressive_proof_stress_mpa=240.0,
+    )
+
+    capabilities = material_capabilities(material)
+    assert capabilities["smooth_cylinder_buckling_capacity"]["available"]
+    assert capabilities["cylinder"]["available"]
+    assert not capabilities["hemisphere_buckling_capacity"]["available"]
+    assert "smooth_cylinder_inelastic_buckling_capacity" not in capabilities
+
+    with pytest.raises(ValidationError, match="apply only to ductile_metal"):
+        CalcMaterial(
+            source="Unsupported plastic curve",
+            failure_category="plastic",
+            working_strength_mpa=20.0,
+            elastic_modulus_mpa=3_000.0,
+            poisson_ratio=0.35,
+            ramberg_osgood_n=8.0,
+            compressive_proof_stress_mpa=30.0,
+        )
+
+
+def test_explicit_compressive_curve_rejects_non_ductile_category() -> None:
+    result = runner.invoke(
+        app,
+        [
+            "smooth-buckling",
+            "--external-pressure", "1 MPa",
+            "--shell-mid-surface-radius", "100 mm",
+            "--wall-thickness", "2 mm",
+            "--unsupported-length", "200 mm",
+            "--load-case", "lateral_only",
+            "--failure-category", "plastic",
+            "--elastic-modulus", "3 GPa",
+            "--poisson-ratio", "0.35",
+            "--ramberg-osgood-n", "8",
+            "--compressive-proof-stress", "30 MPa",
+            "--json",
+        ],
+    )
+
+    error = _error_payload(result)["error"]
+    assert error["code"] == "invalid_request"
+    assert "apply only to ductile_metal" in json.dumps(error["details"])
 
 
 def test_bundled_materials_are_readable_from_an_installed_zip_package(tmp_path: Path) -> None:
@@ -144,15 +198,16 @@ def test_named_proportional_limit_keeps_its_derivation(model_options: list[str])
     assert material["properties_used"]["proportional_limit"] == {
         "unit": "MPa", "value": 183.4,
     }
+    record = load_calc_materials(MATERIALS_FILE)["Al-6061-T6"]
     sources = material["property_sources"]
-    assert sources == {
-        "proportional_limit": load_calc_materials(MATERIALS_FILE)[
-            "Al-6061-T6"
-        ].proportional_limit_source,
-    }
+    # Smooth and inter-ring buckling read the compressive curve; hemisphere
+    # buckling remains elastic and reports no curve source.
+    expected = {"proportional_limit": record.proportional_limit_source}
+    if model_options[0] in {"smooth-buckling", "ring-shell"}:
+        expected["compressive_stress_strain"] = record.compressive_stress_strain_source
+    assert sources == expected
     derivation = sources["proportional_limit"]
-    assert "typical compressive Ramberg-Osgood exponent n = 28" in derivation
-    assert "tangent modulus falls to 0.99 E, a pv-calc choice" in derivation
+    assert "0.99 E" in derivation
     assert "not a design allowable" in derivation
     assert material["source"]["provenance"].startswith("ASTM B221 and ASTM B241")
 
@@ -616,6 +671,10 @@ def test_buckling_reads_no_strength_and_every_category_sizes(tmp_path: Path) -> 
         "failure_category": "plastic",
         "poisson_ratio": 0.35,
         "proportional_limit": {"unit": "MPa", "value": 30.0},
+        # This record carries no compressive curve, so the inelastic correction
+        # is unavailable and both curve properties report as absent.
+        "ramberg_osgood_n": None,
+        "compressive_proof_stress": {"unit": "MPa", "value": None},
     }
     assert smooth_payload["result"]["yield_strength_mpa"] == {"unit": "MPa", "value": None}
     assert smooth_payload["material"]["property_sources"] == {

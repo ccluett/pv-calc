@@ -12,6 +12,7 @@ from pv_calc.contracts import (
     CATEGORY_STRENGTHS,
     STRENGTH_FIELDS,
     ExplicitBucklingMaterialInput,
+    ExplicitCylinderMaterialInput,
     ExplicitHemisphereMaterialInput,
     ExplicitMassMaterialInput,
     ExplicitPlateMaterialInput,
@@ -46,6 +47,9 @@ class ResolvedMaterial:
     poisson_ratio: float | None = None
     proportional_limit_mpa: float | None = None
     proportional_limit_source: str | None = None
+    ramberg_osgood_n: float | None = None
+    compressive_proof_stress_mpa: float | None = None
+    compressive_stress_strain_source: str | None = None
     density_kg_per_m3: float | None = None
 
     def strengths_mpa(self) -> dict[str, float]:
@@ -149,6 +153,7 @@ def _resolve_material(
         | ExplicitTubeMaterialInput
         | ExplicitPlateMaterialInput
         | ExplicitHemisphereMaterialInput
+        | ExplicitCylinderMaterialInput
         | ExplicitBucklingMaterialInput
     ),
     materials_file: Path | None,
@@ -177,11 +182,15 @@ def _resolve_material(
             poisson_ratio=named.poisson_ratio,
             proportional_limit_mpa=named.proportional_limit_mpa,
             proportional_limit_source=named.proportional_limit_source,
+            ramberg_osgood_n=named.ramberg_osgood_n,
+            compressive_proof_stress_mpa=named.compressive_proof_stress_mpa,
+            compressive_stress_strain_source=named.compressive_stress_strain_source,
             density_kg_per_m3=named.density_kg_per_m3,
         )
     properties = material.properties
     elastic_modulus = getattr(properties, "elastic_modulus", None)
     proportional_limit = getattr(properties, "proportional_limit", None)
+    compressive_proof_stress = getattr(properties, "compressive_proof_stress", None)
     density = properties.density
     strengths = {
         f"{name}_mpa": _to_unit(quantity, "MPa", f"material.properties.{name}")
@@ -197,6 +206,17 @@ def _resolve_material(
         **strengths,
         working_strength_source=None,
         proportional_limit_source=None,
+        compressive_stress_strain_source=None,
+        ramberg_osgood_n=getattr(properties, "ramberg_osgood_n", None),
+        compressive_proof_stress_mpa=(
+            _to_unit(
+                compressive_proof_stress,
+                "MPa",
+                "material.properties.compressive_proof_stress",
+            )
+            if compressive_proof_stress is not None
+            else None
+        ),
         elastic_modulus_mpa=(
             _to_unit(elastic_modulus, "MPa", "material.properties.elastic_modulus")
             if elastic_modulus is not None

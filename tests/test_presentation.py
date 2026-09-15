@@ -61,6 +61,21 @@ def test_elastic_estimates_never_become_capacities(release_status: str) -> None:
     assert summary["assessment"]["governing_check"] is None
 
 
+def _uncorrected_titanium() -> dict:
+    """Exercise the proportional-limit screen without the bundled curve."""
+    return {
+        "type": "explicit",
+        "name": "Ti-6Al-4V without a compressive curve",
+        "properties": {
+            "failure_category": "ductile_metal",
+            "yield_strength": _q(827.0),
+            "elastic_modulus": _q(113800.0),
+            "poisson_ratio": 0.34,
+            "proportional_limit": _q(602.0),
+        },
+    }
+
+
 @pytest.mark.parametrize("model", ["cylinder", "smooth-buckling"])
 @pytest.mark.parametrize("pressure", [1.0, 92.35134])
 def test_pending_pressure_is_visible_without_deciding_buckling_acceptance(
@@ -76,7 +91,7 @@ def test_pending_pressure_is_visible_without_deciding_buckling_acceptance(
     )
     response = calculate({
         "schema_version": CALC_SCHEMA_VERSION, "model": model,
-        "material": {"type": "named", "name": "Ti-6Al-4V"},
+        "material": _uncorrected_titanium(),
         "inputs": {"external_pressure": _q(pressure), "wall_thickness": _q(wall, "mm"),
                    "unsupported_length": _q(609.6, "mm"), **radius_input},
     })
@@ -91,6 +106,30 @@ def test_pending_pressure_is_visible_without_deciding_buckling_acceptance(
     assert check["margin"] is None
     assert "elastic_buckling_estimate: released_pending_plasticity | 63.6855 MPa" in render_text(response)
     assert response == original
+
+
+@pytest.mark.parametrize("model", ["cylinder", "smooth-buckling"])
+def test_compressive_curve_replaces_the_pending_estimate_with_a_capacity(model: str) -> None:
+    wall = 152.4 / 10.55
+    radius_input = (
+        {"internal_radius": _q(152.4 - wall, "mm")}
+        if model == "cylinder" else {
+            "shell_mid_surface_radius": _q(152.4 - wall / 2.0, "mm"),
+            "load_case": "hydrostatic_closed_end",
+        }
+    )
+    response = calculate({
+        "schema_version": CALC_SCHEMA_VERSION, "model": model,
+        "material": {"type": "named", "name": "Ti-6Al-4V"},
+        "inputs": {"external_pressure": _q(92.35134), "wall_thickness": _q(wall, "mm"),
+                   "unsupported_length": _q(609.6, "mm"), **radius_input},
+    })
+    summary = summarize_response(response)
+    assert "elastic_buckling_estimate" not in summary.get("outputs", {})
+    check = next(c for c in summary["assessment"]["checks"] if c["id"] == "smooth_cylinder_buckling")
+    assert check["capacity"]["value"] == pytest.approx(62.7161928406424)
+    assert check["margin"] is not None
+    assert check["status"] == "fail"
 
 
 def test_known_failure_takes_precedence_over_missing_requested_check() -> None:
@@ -203,9 +242,9 @@ def test_existing_cylinder_assessment_can_be_retargeted_without_mutation() -> No
     assert response == original
 
 
-@pytest.mark.parametrize(("target", "expected"), [(0.2, "pass"), (1.1, "fail")])
+@pytest.mark.parametrize(("offset", "expected"), [(-1.0e-9, "pass"), (1.0e-9, "fail")])
 def test_cylinder_boundary_status_is_unchanged_by_summary_or_check_retarget(
-    target: float, expected: str,
+    offset: float, expected: str,
 ) -> None:
     request = {
         "schema_version": CALC_SCHEMA_VERSION, "model": "cylinder",
@@ -214,7 +253,9 @@ def test_cylinder_boundary_status_is_unchanged_by_summary_or_check_retarget(
         "material": {"type": "named", "name": "Al-6061-T6"},
     }
     capacity = calculate(request)["assessment"]["checks"][1]["capacity"]["value"]
-    request["inputs"]["external_pressure"] = _q(capacity / (1 + target))
+    # Straddle the target to avoid testing the last bit of division rounding.
+    request["inputs"]["external_pressure"] = _q(capacity / 2.1)
+    target = 1.1 + offset
     base = calculate(request)
     # Raising the target uses the same capacity-demand comparison as native
     # cylinder evaluation at that target, without a numerical tolerance.

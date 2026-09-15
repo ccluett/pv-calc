@@ -276,6 +276,8 @@ def _material_selection(
     elastic_modulus: str | None = None,
     poisson_ratio: str | None = None,
     proportional_limit: str | None = None,
+    ramberg_osgood_n: str | None = None,
+    compressive_proof_stress: str | None = None,
     material_density: str | None = None,
 ) -> dict[str, Any]:
     strengths = {
@@ -293,6 +295,8 @@ def _material_selection(
             elastic_modulus,
             poisson_ratio,
             proportional_limit,
+            ramberg_osgood_n,
+            compressive_proof_stress,
             material_density,
         ),
     )
@@ -317,6 +321,17 @@ def _material_selection(
         properties["proportional_limit"] = _quantity_from_option(
             proportional_limit,
             "proportional_limit",
+        )
+    # The contract rejects half a curve, so pass through whatever was given and
+    # let it produce the ordinary invalid_request rather than repeating the rule.
+    if ramberg_osgood_n is not None:
+        properties["ramberg_osgood_n"] = _number_from_option(
+            ramberg_osgood_n, "ramberg_osgood_n"
+        )
+    if compressive_proof_stress is not None:
+        properties["compressive_proof_stress"] = _quantity_from_option(
+            compressive_proof_stress,
+            "compressive_proof_stress",
         )
     if material_density is not None:
         properties["density"] = _quantity_from_option(material_density, "material_density")
@@ -474,6 +489,14 @@ DepthFluidOption = Annotated[str | None, typer.Option("--fluid-density", help="F
 DepthGravityOption = Annotated[str | None, typer.Option("--gravity", help="Gravity with unit for --depth.")]
 ExternalRadiusOption = Annotated[str | None, typer.Option(help="Fixed outside radius with unit, alternative to --internal-radius when sizing.")]
 StockThicknessOption = Annotated[list[str] | None, typer.Option("--stock-thickness", help="Available thickness with unit; repeat to enumerate stock choices inside bounds.")]
+RambergOsgoodNOption = Annotated[
+    str | None,
+    typer.Option(help="Compressive Ramberg-Osgood exponent; requires --compressive-proof-stress."),
+]
+CompressiveProofStressOption = Annotated[
+    str | None,
+    typer.Option(help="0.2% offset compressive proof stress with unit; requires --ramberg-osgood-n."),
+]
 
 
 # The options every command reads beside its calculation and material values.
@@ -1139,9 +1162,11 @@ def smooth_buckling(
     proportional_limit: Annotated[
         str | None,
         typer.Option(
-            help="Explicit source-traceable proportional limit required for released capacity."
+            help="Source-traceable proportional limit; alternative to a complete compressive curve."
         ),
     ] = None,
+    ramberg_osgood_n: RambergOsgoodNOption = None,
+    compressive_proof_stress: CompressiveProofStressOption = None,
     failure_category: FailureCategoryOption = None,
     material_provenance: MaterialProvenanceOption = None,
     input_path: Annotated[
@@ -1195,6 +1220,8 @@ def smooth_buckling(
                     elastic_modulus=elastic_modulus,
                     poisson_ratio=poisson_ratio,
                     proportional_limit=proportional_limit,
+                    ramberg_osgood_n=ramberg_osgood_n,
+                    compressive_proof_stress=compressive_proof_stress,
                 ),
             }
         raw = _depth_from_options(raw, depth, fluid_density, gravity, design_factor)
@@ -1255,9 +1282,11 @@ def smooth_buckling_size(
     proportional_limit: Annotated[
         str | None,
         typer.Option(
-            help="Explicit source-traceable proportional limit required for released capacity."
+            help="Source-traceable proportional limit; alternative to a complete compressive curve."
         ),
     ] = None,
+    ramberg_osgood_n: RambergOsgoodNOption = None,
+    compressive_proof_stress: CompressiveProofStressOption = None,
     failure_category: FailureCategoryOption = None,
     material_provenance: MaterialProvenanceOption = None,
     input_path: Annotated[
@@ -1314,6 +1343,8 @@ def smooth_buckling_size(
                     elastic_modulus=elastic_modulus,
                     poisson_ratio=poisson_ratio,
                     proportional_limit=proportional_limit,
+                    ramberg_osgood_n=ramberg_osgood_n,
+                    compressive_proof_stress=compressive_proof_stress,
                 ),
             }
         if external_radius is not None:
@@ -1383,6 +1414,8 @@ def ring_shell(
         str | None,
         typer.Option(help="Optional explicit proportional limit for the inter-ring gate."),
     ] = None,
+    ramberg_osgood_n: RambergOsgoodNOption = None,
+    compressive_proof_stress: CompressiveProofStressOption = None,
     failure_category: FailureCategoryOption = None,
     material_provenance: MaterialProvenanceOption = None,
     input_path: Annotated[
@@ -1445,6 +1478,8 @@ def ring_shell(
                     elastic_modulus=elastic_modulus,
                     poisson_ratio=poisson_ratio,
                     proportional_limit=proportional_limit,
+                    ramberg_osgood_n=ramberg_osgood_n,
+                    compressive_proof_stress=compressive_proof_stress,
                 ),
             }
         raw = _depth_from_options(raw, depth, fluid_density, gravity, design_factor)
@@ -1742,6 +1777,8 @@ def cylinder(
     working_strength: WorkingStrengthOption = None,
     ultimate_compressive_strength: UltimateCompressiveStrengthOption = None,
     proportional_limit: Annotated[str | None, typer.Option(help="Proportional limit with unit for elastic buckling applicability.")] = None,
+    ramberg_osgood_n: RambergOsgoodNOption = None,
+    compressive_proof_stress: CompressiveProofStressOption = None,
     material_density: Annotated[str | None, typer.Option(help="Explicit material density with unit for mass.")] = None,
     failure_category: FailureCategoryOption = None,
     material_provenance: MaterialProvenanceOption = None,
@@ -1778,7 +1815,9 @@ def cylinder(
                     working_strength=working_strength,
                     ultimate_compressive_strength=ultimate_compressive_strength,
                     elastic_modulus=elastic_modulus, poisson_ratio=poisson_ratio,
-                    proportional_limit=proportional_limit, material_density=material_density,
+                    proportional_limit=proportional_limit, ramberg_osgood_n=ramberg_osgood_n,
+                    compressive_proof_stress=compressive_proof_stress,
+                    material_density=material_density,
                     failure_category=failure_category, material_provenance=material_provenance,
                 ),
             }
@@ -1861,6 +1900,7 @@ _OPTION_DIMENSIONS = {
     "external_radius": "length",
     "stock_thickness": "length",
     "fluid_density": "density",
+    "compressive_proof_stress": "pressure",
     "free_radius": "length",
     "gravity": "acceleration",
     "internal_radius": "length",

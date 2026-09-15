@@ -286,9 +286,9 @@ FLAT_CIRCULAR_PLATE_SCOPE_NOTES = (
 )
 
 SMOOTH_CYLINDER_BUCKLING_MODEL_ID = "nasa_smooth_cylinder_external_pressure_buckling"
-SMOOTH_CYLINDER_BUCKLING_MODEL_VERSION = "4.1.0"
+SMOOTH_CYLINDER_BUCKLING_MODEL_VERSION = "5.0.0"
 SMOOTH_CYLINDER_BUCKLING_SOURCE = (
-    "NASA/SP-8007-2020/REV 2, Eqs. 3-5 and 17-29, pp. 22 and 26-29"
+    "NASA/SP-8007-2020/REV 2, Eqs. 3-5, 17-29 and 30-32, pp. 22 and 26-29"
 )
 SMOOTH_CYLINDER_ROARK_OVERLAP_SOURCE = (
     "Roark's Formulas for Stress and Strain, 6th ed., Table 35 case 20, its theoretical "
@@ -301,10 +301,13 @@ SMOOTH_CYLINDER_LONG_GAMMA = 0.90
 SMOOTH_CYLINDER_SHORT_GAMMA_Z_LIMIT = 100.0
 SMOOTH_CYLINDER_MORE_THAN_TWO_WAVE_COEFFICIENT = 11.8
 SMOOTH_CYLINDER_MIN_RADIUS_THICKNESS_RATIO = 10.0
+SMOOTH_CYLINDER_PLASTICITY_EQ30_GAMMA_Z_LIMIT = 5.0
+SMOOTH_CYLINDER_PLASTICITY_RELATIVE_TOLERANCE = 1.0e-12
 SMOOTH_CYLINDER_PLASTICITY_PENDING_REASON = (
     "correlated critical circumferential membrane stress {stress:.6g} MPa exceeds the "
-    "supplied proportional limit {limit:.6g} MPa; NASA inelastic corrections are not "
-    "implemented, so this capacity is an elastic upper bound pending validation"
+    "supplied proportional limit {limit:.6g} MPa; no complete compressive curve was "
+    "supplied for the NASA correction, so this capacity is an elastic upper bound "
+    "pending validation"
 )
 SMOOTH_CYLINDER_SCOPE_NOTES = (
     "The NASA equations assume a thin, circular, isotropic, unstiffened shell with uniform "
@@ -323,25 +326,22 @@ SMOOTH_CYLINDER_SCOPE_NOTES = (
     "stays withheld from capacity.",
     "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube "
     "domain Roark states; NASA does not state that numeric cutoff.",
-    "Inelastic corrections in NASA Eqs. 30-32 are outside this model: they need secant and "
-    "tangent moduli this model does not carry. The source calls plasticity factors for the "
-    "biaxial hydrostatic state unavailable and directs that Eqs. 30-32 may be used for lack "
-    "of better information; without those moduli, a correlated critical membrane stress above "
-    "the proportional limit is an elastic upper bound reported as released_pending_plasticity, "
-    "not a capacity; its ordinary margin is null.",
+    "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving "
+    "p = p_elastic*eta(p*r/t) by bisection. NASA permits these lateral-pressure factors "
+    "for hydrostatic loading when biaxial factors are unavailable, and recommends linear "
+    "interpolation in Z for 5 < gamma*Z < 100. The corrected pressure, stress, and buckling "
+    "coefficient include eta; ideal pressure and regime candidates remain elastic.",
+    "Without a curve, a critical stress above the proportional limit retains an elastic "
+    "estimate as released_pending_plasticity with a null margin. Material strength remains "
+    "a separate check; the composed cylinder evaluates both stress and buckling.",
     "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released "
     "capacity follows the printed 0.855 coefficient in Eq. 24.",
     "The Roark probable-minimum pressure and its lobe count are reported only as a published "
     "comparator at the mid-surface radius and set no released capacity or margin. It does not "
     "reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long "
     "length: it is Roark's own probable-minimum value, not a capacity.",
-    "elastic_applicability compares the applied working membrane stress p*r/t with the same limit "
-    "the plasticity check applies to the correlated critical stress. 'exceeded' means every "
-    "capacity at or above the applied pressure exceeds that limit too, at every unsupported "
-    "length, because only wall thickness moves this stress: with a proportional limit supplied "
-    "such a capacity is an elastic upper bound reported as released_pending_plasticity, and with "
-    "only a yield strength it is withheld for the missing limit. It is a screen on "
-    "applicability, not a capacity or a margin.",
+    "elastic_applicability compares applied membrane stress p*r/t with the proportional "
+    "limit, falling back to yield strength. It sets neither capacity nor margin.",
 )
 
 
@@ -585,6 +585,11 @@ class SmoothCylinderBucklingResult:
     poisson_ratio: float
     yield_strength_mpa: float | None
     proportional_limit_mpa: float | None
+    ramberg_osgood_n: float | None
+    compressive_proof_stress_mpa: float | None
+    plasticity_factor: float | None
+    secant_modulus_at_critical_stress_mpa: float | None
+    tangent_modulus_at_critical_stress_mpa: float | None
     flexural_rigidity_n_mm: float
     curvature_parameter_z: float
     geometry_mode_parameter: float
@@ -625,7 +630,7 @@ class SmoothCylinderBucklingResult:
 
 
 RING_SHELL_MODEL_ID = "nasa_ring_stiffened_shell_external_pressure"
-RING_SHELL_MODEL_VERSION = "3.1.0"
+RING_SHELL_MODEL_VERSION = "4.0.0"
 RING_SHELL_EQ64_ADJUSTMENT_FACTOR = 0.75
 RING_SHELL_MIN_RADIUS_THICKNESS_RATIO = 10.0
 RING_SHELL_DEFAULT_MAX_MODE_EVALUATIONS = 2_000_000
@@ -1917,6 +1922,209 @@ def _smooth_long_candidate(
     )
 
 
+def _ramberg_osgood_stiffness_ratios(
+    stress_mpa: float,
+    *,
+    elastic_modulus_mpa: float,
+    ramberg_osgood_n: float,
+    compressive_proof_stress_mpa: float,
+) -> tuple[float, float, float]:
+    """Return ``E_sec/E``, ``E_tan/E``, and ``E_tan/E_sec`` stably.
+
+    For ``x = 0.002 E/s0 (s/s0)^(n-1)``, the three ratios are
+    ``1/(1+x)``, ``1/(1+n*x)``, and ``(1+x)/(1+n*x)``. Log space avoids
+    constructing a high-exponent curve's very large trial power.
+    """
+    e_mpa = _positive_finite(elastic_modulus_mpa, "elastic_modulus_mpa")
+    n = _positive_finite(ramberg_osgood_n, "ramberg_osgood_n")
+    if n <= 1.0:
+        raise ValueError("ramberg_osgood_n must be > 1")
+    s0 = _positive_finite(
+        compressive_proof_stress_mpa, "compressive_proof_stress_mpa"
+    )
+    if isinstance(stress_mpa, bool):
+        raise ValueError("stress_mpa must be numeric")
+    s = float(stress_mpa)
+    if not math.isfinite(s) or s < 0.0:
+        raise ValueError("stress_mpa must be finite and non-negative")
+    if s == 0.0:
+        return 1.0, 1.0, 1.0
+
+    log_x = (
+        math.log(0.002)
+        + math.log(e_mpa)
+        - math.log(s0)
+        + (n - 1.0) * (math.log(s) - math.log(s0))
+    )
+    if log_x >= 0.0:
+        inverse_x = math.exp(-log_x)
+        secant_ratio = inverse_x / (1.0 + inverse_x)
+        tangent_ratio = inverse_x / (n + inverse_x)
+        tangent_over_secant = (1.0 + inverse_x) / (n + inverse_x)
+    else:
+        x = math.exp(log_x)
+        secant_ratio = 1.0 / (1.0 + x)
+        tangent_ratio = 1.0 / (1.0 + n * x)
+        tangent_over_secant = (1.0 + x) / (1.0 + n * x)
+    return secant_ratio, tangent_ratio, tangent_over_secant
+
+
+def ramberg_osgood_moduli(
+    stress_mpa: float,
+    *,
+    elastic_modulus_mpa: float,
+    ramberg_osgood_n: float,
+    compressive_proof_stress_mpa: float,
+) -> tuple[float, float]:
+    """Return ``(secant, tangent)`` moduli of the 0.2% Ramberg-Osgood curve.
+
+    Both moduli equal ``E`` at zero stress. At extreme stresses a modulus may
+    round to zero after its stiffness ratio falls below the floating-point
+    range; the plasticity factor remains well defined in that limit.
+    """
+    secant_ratio, tangent_ratio, _ = _ramberg_osgood_stiffness_ratios(
+        stress_mpa,
+        elastic_modulus_mpa=elastic_modulus_mpa,
+        ramberg_osgood_n=ramberg_osgood_n,
+        compressive_proof_stress_mpa=compressive_proof_stress_mpa,
+    )
+    return (
+        elastic_modulus_mpa * secant_ratio,
+        elastic_modulus_mpa * tangent_ratio,
+    )
+
+
+def smooth_cylinder_plasticity_factor(
+    stress_mpa: float,
+    *,
+    elastic_modulus_mpa: float,
+    ramberg_osgood_n: float,
+    compressive_proof_stress_mpa: float,
+    gamma_z: float,
+    more_than_two_wave_boundary: float,
+) -> tuple[float, str]:
+    """Return ``(eta, basis)`` from NASA Eqs. 30-32 at a critical stress.
+
+    NASA states Eq. 30 for ``gamma*Z < 5``, Eq. 31 for
+    ``100 < gamma*Z < 11.8 (r/t)^2 (1-v^2)``, and Eq. 32 above that boundary,
+    with no factor available for ``5 < gamma*Z < 100``; there the source
+    directs linear interpolation in ``Z`` between Eq. 30 and Eq. 31. Each
+    caller holds ``gamma`` fixed inside one branch, so interpolating linearly
+    in ``gamma*Z`` is the same interpolation the source asks for in ``Z``.
+    """
+    gamma_z_value = _positive_finite(gamma_z, "gamma_z")
+    wave_boundary = _positive_finite(
+        more_than_two_wave_boundary,
+        "more_than_two_wave_boundary",
+    )
+    secant_ratio, _, tangent_over_secant = _ramberg_osgood_stiffness_ratios(
+        stress_mpa,
+        elastic_modulus_mpa=elastic_modulus_mpa,
+        ramberg_osgood_n=ramberg_osgood_n,
+        compressive_proof_stress_mpa=compressive_proof_stress_mpa,
+    )
+
+    def eq30() -> float:
+        return secant_ratio * (
+            0.5 + 0.5 * math.sqrt(0.25 + 0.75 * tangent_over_secant)
+        )
+
+    def eq31() -> float:
+        return secant_ratio * math.sqrt(
+            math.sqrt(tangent_over_secant)
+            * (0.25 + 0.75 * tangent_over_secant)
+        )
+
+    def eq32() -> float:
+        return secant_ratio * (0.25 + 0.75 * tangent_over_secant)
+
+    if gamma_z_value > wave_boundary:
+        return eq32(), "NASA Eq. 32"
+    if gamma_z_value <= SMOOTH_CYLINDER_PLASTICITY_EQ30_GAMMA_Z_LIMIT:
+        return eq30(), "NASA Eq. 30"
+    if gamma_z_value >= SMOOTH_CYLINDER_SHORT_GAMMA_Z_LIMIT:
+        return eq31(), "NASA Eq. 31"
+    span = (
+        SMOOTH_CYLINDER_SHORT_GAMMA_Z_LIMIT
+        - SMOOTH_CYLINDER_PLASTICITY_EQ30_GAMMA_Z_LIMIT
+    )
+    weight = (
+        gamma_z_value - SMOOTH_CYLINDER_PLASTICITY_EQ30_GAMMA_Z_LIMIT
+    ) / span
+    return (
+        (1.0 - weight) * eq30() + weight * eq31(),
+        "NASA Eqs. 30-31 interpolated in Z",
+    )
+
+
+def solve_inelastic_critical_pressure(
+    *,
+    elastic_critical_pressure_mpa: float,
+    radius_over_thickness: float,
+    elastic_modulus_mpa: float,
+    ramberg_osgood_n: float,
+    compressive_proof_stress_mpa: float,
+    gamma_z: float,
+    more_than_two_wave_boundary: float,
+) -> tuple[float, str]:
+    """Bracketed solve of ``p = p_elastic * eta(p * r/t)``.
+
+    ``eta`` is 1 at zero stress and decreases as stress rises, so the residual
+    ``p - p_elastic*eta(p*r/t)`` is negative at ``p=0`` and non-negative at
+    ``p=p_elastic``. That brackets a root on ``[0, p_elastic]`` for every
+    admissible curve, which is why this bisects rather than iterating the fixed
+    point: the fixed-point form can oscillate, including for the preserved
+    16-inch interpolation case.
+    """
+    p_elastic = _positive_finite(
+        elastic_critical_pressure_mpa, "elastic_critical_pressure_mpa"
+    )
+    ratio = _positive_finite(radius_over_thickness, "radius_over_thickness")
+
+    def eta(pressure: float) -> tuple[float, str]:
+        return smooth_cylinder_plasticity_factor(
+            pressure * ratio,
+            elastic_modulus_mpa=elastic_modulus_mpa,
+            ramberg_osgood_n=ramberg_osgood_n,
+            compressive_proof_stress_mpa=compressive_proof_stress_mpa,
+            gamma_z=gamma_z,
+            more_than_two_wave_boundary=more_than_two_wave_boundary,
+        )
+
+    def residual(pressure: float) -> float:
+        return pressure - p_elastic * eta(pressure)[0]
+
+    if residual(p_elastic) <= 0.0:
+        # eta >= 1 at the elastic pressure, so the curve is elastic over the
+        # whole interval and the elastic pressure is already the answer.
+        return p_elastic, eta(p_elastic)[1]
+    # residual(0) = -p_elastic < 0 and residual(p_elastic) > 0 bracket the root,
+    # and `lower` only ever moves to a point whose residual is still <= 0.
+    lower = 0.0
+    upper = p_elastic
+    for _ in range(128):
+        midpoint = lower + (upper - lower) / 2.0
+        if math.isclose(
+            lower,
+            upper,
+            rel_tol=SMOOTH_CYLINDER_PLASTICITY_RELATIVE_TOLERANCE,
+            abs_tol=1.0e-15,
+        ):
+            break
+        if midpoint <= lower or midpoint >= upper:
+            break
+        if residual(midpoint) > 0.0:
+            upper = midpoint
+        else:
+            lower = midpoint
+    else:
+        raise ValueError("inelastic critical pressure solve did not converge")
+    pressure = lower + (upper - lower) / 2.0
+    if not math.isfinite(pressure) or pressure <= 0.0:
+        raise ValueError("inelastic critical pressure must be finite and positive")
+    return pressure, eta(pressure)[1]
+
+
 def _roark_case20_probable_minimum(
     *,
     elastic_modulus_mpa: float,
@@ -2208,12 +2416,19 @@ def smooth_cylinder_external_pressure_buckling(
     load_case: PressureLoadCase,
     proportional_limit_mpa: float | None = None,
     yield_strength_mpa: float | None = None,
+    ramberg_osgood_n: float | None = None,
+    compressive_proof_stress_mpa: float | None = None,
 ) -> SmoothCylinderBucklingResult:
-    """Calculate elastic external-pressure buckling of a smooth cylinder.
+    """Calculate external-pressure buckling of a smooth cylinder.
 
-    Buckling reads the elastic constants only. ``yield_strength_mpa`` is
-    optional and, when given, only bounds the proportional limit; a plastic or
-    brittle material has no yield strength to give.
+    ``yield_strength_mpa`` is optional and, when given, only bounds the
+    proportional limit; a plastic or brittle material has no yield strength to
+    give. Supplying a complete compressive curve -- ``ramberg_osgood_n`` with
+    ``compressive_proof_stress_mpa`` -- applies the NASA Eq. 30-32 inelastic
+    correction and releases a corrected capacity; supplying only a
+    proportional limit keeps the elastic result, released when the correlated
+    critical stress stays under that limit and reported as an upper bound
+    otherwise.
     """
     p_mpa = _non_negative_pressure(external_pressure_mpa)
     r_mm = _positive_finite(
@@ -2235,6 +2450,22 @@ def smooth_cylinder_external_pressure_buckling(
     )
     if proportional_mpa is not None and yield_mpa is not None and proportional_mpa > yield_mpa:
         raise ValueError("proportional_limit_mpa must be <= yield_strength_mpa")
+    curve_parts = (ramberg_osgood_n, compressive_proof_stress_mpa)
+    if any(part is not None for part in curve_parts) and None in curve_parts:
+        raise ValueError(
+            "ramberg_osgood_n and compressive_proof_stress_mpa must be supplied together"
+        )
+    curve: tuple[float, float] | None = None
+    if ramberg_osgood_n is not None and compressive_proof_stress_mpa is not None:
+        hardening = _positive_finite(ramberg_osgood_n, "ramberg_osgood_n")
+        if hardening <= 1.0:
+            raise ValueError("ramberg_osgood_n must be > 1")
+        curve = (
+            hardening,
+            _positive_finite(
+                compressive_proof_stress_mpa, "compressive_proof_stress_mpa"
+            ),
+        )
     v = _validated_poisson_ratio(poisson_ratio)
     if load_case not in {"lateral_only", "hydrostatic_closed_end"}:
         raise ValueError("load_case must be lateral_only or hydrostatic_closed_end")
@@ -2322,37 +2553,57 @@ def smooth_cylinder_external_pressure_buckling(
 
     validity_violations: list[str] = []
     plasticity_pending: str | None = None
+    inelastic_pressure: float | None = None
+    plasticity_factor: float | None = None
+    secant_modulus: float | None = None
+    tangent_modulus: float | None = None
     if radius_thickness <= SMOOTH_CYLINDER_MIN_RADIUS_THICKNESS_RATIO:
         validity_violations.append(
             "shell_mid_surface_radius_mm / wall_thickness_mm must be > 10 for the "
             "Roark thin-tube overlap gate"
         )
-    if selected is not None:
-        if proportional_mpa is None:
+    if selected is not None and not validity_violations:
+        if curve is not None and selected.correlated_critical_pressure_mpa is not None:
+            # A complete curve corrects every capacity, not only one already past
+            # the proportional limit: eta is 1 in the elastic range, so applying it
+            # throughout avoids a step at that limit.
+            hardening, proof_mpa = curve
+            inelastic_pressure, plasticity_equation = (
+                solve_inelastic_critical_pressure(
+                    elastic_critical_pressure_mpa=(
+                        selected.correlated_critical_pressure_mpa
+                    ),
+                    radius_over_thickness=radius_thickness,
+                    elastic_modulus_mpa=e_mpa,
+                    ramberg_osgood_n=hardening,
+                    compressive_proof_stress_mpa=proof_mpa,
+                    gamma_z=selected.gamma_z,
+                    more_than_two_wave_boundary=boundary,
+                )
+            )
+            plasticity_factor = (
+                inelastic_pressure / selected.correlated_critical_pressure_mpa
+            )
+            secant_modulus, tangent_modulus = ramberg_osgood_moduli(
+                inelastic_pressure * radius_thickness,
+                elastic_modulus_mpa=e_mpa,
+                ramberg_osgood_n=hardening,
+                compressive_proof_stress_mpa=proof_mpa,
+            )
+            source_equations = (*source_equations, plasticity_equation)
+        elif proportional_mpa is None:
             validity_violations.append(
-                "proportional_limit_mpa is required to establish elastic applicability for "
-                "a released capacity; NASA inelastic corrections are not implemented"
+                "a released capacity needs either proportional_limit_mpa or a complete "
+                "compressive curve (ramberg_osgood_n with compressive_proof_stress_mpa)"
             )
         elif (
             selected.correlated_critical_circumferential_stress_mpa is not None
             and selected.correlated_critical_circumferential_stress_mpa > proportional_mpa
         ):
-            if validity_violations:
-                # The capacity is withheld on another gate, so the exceedance is one
-                # more violation on the withheld record, not a pending release.
-                validity_violations.append(
-                    "correlated critical circumferential membrane stress exceeds the "
-                    "supplied proportional limit; NASA inelastic corrections are not "
-                    "implemented"
-                )
-            else:
-                # Plasticity would reduce this capacity, so the released number is an
-                # elastic upper bound rather than a withheld result; the scope note
-                # carries why NASA Eqs. 30-32 cannot correct it here.
-                plasticity_pending = SMOOTH_CYLINDER_PLASTICITY_PENDING_REASON.format(
-                    stress=selected.correlated_critical_circumferential_stress_mpa,
-                    limit=proportional_mpa,
-                )
+            plasticity_pending = SMOOTH_CYLINDER_PLASTICITY_PENDING_REASON.format(
+                stress=selected.correlated_critical_circumferential_stress_mpa,
+                limit=proportional_mpa,
+            )
 
     capacity_status: Literal[
         "released",
@@ -2369,17 +2620,17 @@ def smooth_cylinder_external_pressure_buckling(
     correlated_pressure: float | None = None
     correlated_stress: float | None = None
     if capacity_status_not_withheld(capacity_status) and selected is not None:
-        correlated_pressure = selected.correlated_critical_pressure_mpa
-        correlated_stress = selected.correlated_critical_circumferential_stress_mpa
+        if inelastic_pressure is not None:
+            correlated_pressure = inelastic_pressure
+            correlated_stress = inelastic_pressure * radius_thickness
+        else:
+            correlated_pressure = selected.correlated_critical_pressure_mpa
+            correlated_stress = selected.correlated_critical_circumferential_stress_mpa
     margin = (
         correlated_pressure / p_mpa - 1.0
         if capacity_status == "released" and correlated_pressure is not None and p_mpa > 0.0
         else None
     )
-    # A correlated critical stress above the proportional limit makes that capacity an
-    # elastic upper bound, so applying the same test to the working stress p*r/t says,
-    # with no buckling result, whether every capacity at or above p is such a bound at
-    # every unsupported length: only thickness moves this stress.
     working_stress = p_mpa * radius_thickness
     applicability_limit, applicability_basis, elastic_applicability = (
         _elastic_applicability_screen(working_stress, proportional_mpa, yield_mpa)
@@ -2426,6 +2677,11 @@ def smooth_cylinder_external_pressure_buckling(
         poisson_ratio=v,
         yield_strength_mpa=yield_mpa,
         proportional_limit_mpa=proportional_mpa,
+        ramberg_osgood_n=curve[0] if curve is not None else None,
+        compressive_proof_stress_mpa=curve[1] if curve is not None else None,
+        plasticity_factor=plasticity_factor,
+        secant_modulus_at_critical_stress_mpa=secant_modulus,
+        tangent_modulus_at_critical_stress_mpa=tangent_modulus,
         flexural_rigidity_n_mm=flexural_rigidity,
         curvature_parameter_z=z,
         geometry_mode_parameter=geometry_mode_parameter,
@@ -2446,7 +2702,10 @@ def smooth_cylinder_external_pressure_buckling(
             selected.sqrt_correlation_factor if selected is not None else None
         ),
         critical_buckling_coefficient=(
-            selected.critical_buckling_coefficient if selected is not None else None
+            selected.critical_buckling_coefficient
+            * (plasticity_factor if plasticity_factor is not None else 1.0)
+            if selected is not None
+            else None
         ),
         critical_aspect_ratio_beta=(
             selected.critical_aspect_ratio_beta if selected is not None else None
@@ -2494,13 +2753,17 @@ def ring_stiffened_shell_external_pressure(
     poisson_ratio: float,
     proportional_limit_mpa: float | None = None,
     yield_strength_mpa: float | None = None,
+    ramberg_osgood_n: float | None = None,
+    compressive_proof_stress_mpa: float | None = None,
     max_mode_evaluations: int = RING_SHELL_DEFAULT_MAX_MODE_EVALUATIONS,
 ) -> RingShellResult:
     """Return the source-gated rectangular-ring external-pressure calculation.
 
     ``yield_strength_mpa`` is optional. It bounds the proportional limit as for
     the smooth cylinder, and it stands in as the elastic-applicability limit the
-    global mode is screened against when no proportional limit is supplied.
+    global mode is screened against when no proportional limit is supplied. A
+    complete compressive curve corrects only the smooth inter-ring bay model;
+    the orthotropic global model remains elastic.
     """
 
     p_mpa = _non_negative_pressure(external_pressure_mpa)
@@ -2600,6 +2863,8 @@ def ring_stiffened_shell_external_pressure(
         poisson_ratio=v,
         yield_strength_mpa=yield_mpa,
         proportional_limit_mpa=proportional_mpa,
+        ramberg_osgood_n=ramberg_osgood_n,
+        compressive_proof_stress_mpa=compressive_proof_stress_mpa,
         load_case="hydrostatic_closed_end",
     )
 
@@ -2812,7 +3077,7 @@ def ring_stiffened_shell_external_pressure(
         "global_elastic_applicability alongside it: the global capacity can stand above the "
         "material limit while a lower inter-ring capacity wins the minimum. Neither pressure "
         "is a rigorous bound on the real structure; NASA's 10-40% low-lobe theory error and "
-        "the recommended 0.75 factor keep both advisory elastic estimates.",
+        "the recommended 0.75 factor keep both advisory estimates.",
         GENERAL_INSTABILITY_SMEARED_NOTE,
         GENERAL_INSTABILITY_SCOPE_NOTE,
         *((global_plasticity_pending,) if global_plasticity_pending is not None else ()),

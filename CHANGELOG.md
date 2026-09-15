@@ -9,10 +9,33 @@ model; both predate this changelog.
 
 ## [Unreleased]
 
-- Show the existing pending-plasticity pressure as an elastic estimate in
+- Implement the NASA SP-8007 Rev. 2 Eqs. 30-32 material correction for
+  smooth-cylinder external-pressure buckling
+  (`nasa_smooth_cylinder_external_pressure_buckling` 4.1.0 -> 5.0.0). A
+  complete compressive Ramberg-Osgood curve now corrects the smooth-cylinder
+  capacity and the ring model's inter-ring bay result; the ring model becomes
+  4.0.0. Its orthotropic global mode remains elastic and advisory. The existing
+  `R_mid/t > 10` domain and moderate/long overlap withholding are unchanged,
+  and this work establishes no new thickness domain or physical validation.
+- Add `ramberg_osgood_n` and `compressive_proof_stress` to the material path
+  for named and explicit records, required together, with
+  `compressive_stress_strain_source` for provenance. Bundled curves are added
+  for Al-6061-T6 (n = 28, LT extrusion) and Ti-6Al-4V (n = 21, longitudinal
+  annealed extrusion); each record states its product form, direction, and any
+  substitution. The `smooth-buckling`, `smooth-buckling size`, `ring-shell`,
+  and `cylinder` commands accept the pair for explicit ductile metals;
+  supplying only one is an `invalid_request`.
+- Stop partitioning smooth-buckling sizing at the proportional limit when a
+  complete curve is present: the correction is continuous through that limit,
+  so it no longer starts a withheld band. Without a curve the partition stands.
+  The changed material input and branch partition advance that sizing operation
+  contract from 3.1.0 to 4.0.0.
+- Show the pending-plasticity pressure as an elastic estimate in
   smooth-buckling and cylinder summary/text output, retaining null acceptance
-  capacity and margin. Correct the documented buckling envelope and material
-  source explanations; calculation equations and material values are unchanged.
+  capacity and margin. That output now appears only for a record with a
+  proportional limit and no curve. Correct the documented buckling envelope and
+  material source explanations, and replace an unofficial ASME full-text link
+  with an edition-and-clause citation.
 
 ## [0.2.0] - 2026-09-09
 

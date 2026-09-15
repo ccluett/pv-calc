@@ -1,0 +1,15 @@
+{
+  "schema_version": "5.0.0",
+  "model": "smooth-buckling",
+  "inputs": {
+    "external_pressure": {"value": 92.35134, "unit": "MPa"},
+    "shell_mid_surface_radius": {"value": 145.177251, "unit": "mm"},
+    "wall_thickness": {"value": 14.445498, "unit": "mm"},
+    "unsupported_length": {"value": 609.6, "unit": "mm"},
+    "load_case": "hydrostatic_closed_end"
+  },
+  "material": {
+    "type": "named",
+    "name": "Ti-6Al-4V"
+  }
+}

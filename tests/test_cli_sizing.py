@@ -570,7 +570,7 @@ def test_cylinder_size_selection_and_bracket_match_independent_forward_runs() ->
     sizing = payload["sizing"]
     assert payload["model"] == "smooth-buckling"
     assert payload["operation"] == "size"
-    assert sizing["operation_version"] == "3.1.0"
+    assert sizing["operation_version"] == "4.0.0"
     assert sizing["algorithm"] == "known_branch_partition_and_bisection"
     assert sizing["solution_type"] == "interior_root"
     assert sizing["declared_check_set"] == [
@@ -952,7 +952,7 @@ def test_cylinder_size_without_a_proportional_limit_has_no_reliable_solution() -
     assert diagnostics["capacity_status"] == "withheld_applicability"
     assert diagnostics["wall_thickness"] == {"unit": "mm", "value": 2.0}
     assert any(
-        "proportional_limit_mpa is required" in reason
+        "needs either proportional_limit_mpa or a complete compressive curve" in reason
         for reason in diagnostics["withheld_reasons"]
     )
 
@@ -984,7 +984,7 @@ def test_cylinder_size_without_a_proportional_limit_has_no_reliable_solution() -
     named_payload = _error_payload(named)
     assert named_payload["error"]["code"] == "no_reliable_solution"
     assert any(
-        "proportional_limit_mpa is required" in reason
+        "needs either proportional_limit_mpa or a complete compressive curve" in reason
         for reason in named_payload["error"]["details"][0]["lower_evaluation"]["withheld_reasons"]
     )
 

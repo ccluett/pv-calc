@@ -1,4 +1,4 @@
-"""Reproduce the external-pressure coverage investigation without changing kernels.
+"""Reproduce the illustrative 6000 m housing coverage study.
 
 Run from the checkout: uv run python validation/external_pressure_coverage.py
 """
@@ -60,10 +60,6 @@ def main() -> None:
         thresholds.append({
             "material": name, "yield_mpa": material.yield_strength_mpa,
             "yield_geometry_gate_depth_m": gate_pressure / PRESSURE_PER_METRE,
-            "elastic_necessary_depth_bound_m": (
-                material.proportional_limit_mpa / (10.0 * PRESSURE_PER_METRE)
-                if material.proportional_limit_mpa is not None else None
-            ),
             "tool_sized_radius_thickness_ratio": ratio,
         })
 
@@ -88,7 +84,14 @@ def main() -> None:
             "unsupported_length": q(LENGTH),
         }))
         buckling = cylinder["components"]["smooth_buckling"]["result"]
-        estimate = buckling["correlated_critical_pressure_mpa"]["value"]
+        # Released capacity: the NASA Eq. 30-32 correction when the record
+        # carries a compressive curve, the elastic upper bound when it does not.
+        capacity = buckling["correlated_critical_pressure_mpa"]["value"]
+        elastic = next(
+            candidate["correlated_critical_pressure_mpa"]["value"]
+            for candidate in buckling["candidates"]
+            if candidate["applicable"]
+        )
         checks = {item["id"]: item for item in cylinder["assessment"]["checks"]}
         assert cylinder["assessment"]["status"] == "fail"
         row = {
@@ -97,7 +100,9 @@ def main() -> None:
             "combined_sizing": "no_reliable_solution",
             "comparison_radius_thickness_ratio": 10.05,
             "comparison_wall_mm": wall,
-            "comparison_elastic_buckling_pressure_mpa": estimate,
+            "comparison_elastic_buckling_pressure_mpa": elastic,
+            "comparison_released_buckling_pressure_mpa": capacity,
+            "comparison_plasticity_factor": buckling["plasticity_factor"],
             "comparison_buckling_status": buckling["capacity_status"],
             "comparison_yield_pressure_mpa": checks["cylindrical_shell_stress"]["capacity"]["value"],
             "comparison_assessment_buckling_capacity": checks["smooth_cylinder_buckling"]["capacity"]["value"],

@@ -298,6 +298,8 @@ def _calculate_smooth_buckling_result(
             yield_strength_mpa=material.yield_strength_mpa,
             load_case=load_case,
             proportional_limit_mpa=material.proportional_limit_mpa,
+            ramberg_osgood_n=material.ramberg_osgood_n,
+            compressive_proof_stress_mpa=material.compressive_proof_stress_mpa,
         )
     except (ArithmeticError, TypeError, ValueError) as exc:
         raise CalcCliError("unevaluable_model", str(exc)) from exc
@@ -401,6 +403,8 @@ def _evaluate_ring_shell(
             poisson_ratio=poisson_ratio,
             yield_strength_mpa=material.yield_strength_mpa,
             proportional_limit_mpa=material.proportional_limit_mpa,
+            ramberg_osgood_n=material.ramberg_osgood_n,
+            compressive_proof_stress_mpa=material.compressive_proof_stress_mpa,
         )
     except (ArithmeticError, TypeError, ValueError) as exc:
         raise CalcCliError("unevaluable_model", str(exc)) from exc

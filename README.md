@@ -76,14 +76,16 @@ von Mises stress against yield strength. A `plastic` is checked by its largest
 stress against a designer-selected working strength that accounts for creep.
 A `brittle` material is checked against separate tensile and compressive
 ultimate strengths because it has no yield strength. The buckling models use
-elastic properties and a proportional-limit applicability check.
+elastic properties. Smooth-cylinder capacity additionally needs either a
+proportional limit or a complete compressive Ramberg-Osgood curve; hemisphere
+buckling needs a proportional limit.
 
 [pv_calc/data/materials.yaml](https://github.com/ccluett/pv-calc/blob/main/pv_calc/data/materials.yaml)
 is the canonical bundled database; the repository-root `materials.yaml` is a
 compatibility symlink to it. It contains ten records across the three failure
 categories. Each property identifies its source. The stored strengths are reference inputs,
-not design allowables. When used, the stored derivations of working strengths
-and proportional limits appear in `material.property_sources`.
+not design allowables. When used, the stored derivations of working strengths,
+proportional limits, and compressive curves appear in `material.property_sources`.
 
 Use the same unit-bearing forward, sizing, sweep, or comparison request from
 Python through `calculate`. It returns a JSON-serializable dictionary without
