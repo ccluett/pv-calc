@@ -100,6 +100,13 @@ The Al-6061-T6 and Ti-6Al-4V records mark their handbook compression data
 directions that a generic alloy name does not establish. For acceptance checks,
 supply data applicable to the part through explicit inputs or a custom record.
 
+Bundled strength values are reference floors within the product forms and
+thickness bands named by their provenance, not a substitute for qualifying the
+manufactured part. In particular, generic `Al-7075-T6` uses the lowest located
+common wrought minimum, 54 ksi for thick ASTM B209 plate; higher values for a
+narrower form or thickness must be supplied explicitly or through a scoped
+custom record.
+
 [pv_calc/data/materials.yaml](https://github.com/ccluett/pv-calc/blob/main/pv_calc/data/materials.yaml)
 is the canonical bundled database; the repository-root `materials.yaml` is a
 compatibility symlink to it. It contains ten records across the three failure

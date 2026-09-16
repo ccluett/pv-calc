@@ -87,31 +87,30 @@ materials:
     density_kg_per_m3: 2810
     elastic_modulus_mpa: 71016
     poisson_ratio: 0.33
-    yield_strength_mpa: 427
+    yield_strength_mpa: 372
     failure_category: ductile_metal
     source: >-
-      ASTM B211 specification minimum for cold-finished 7075-T651 bar, 62 ksi
-      yield at 6.001 to 7.000 in diameter, stored as 427 MPa, the
-      1 ksi = 6.894757 MPa conversion rounded to the nearest MPa; not a
-      statistical design allowable. 7075-T6 has no
-      single minimum yield strength: it runs 54 to 73 ksi across product forms
-      and thickness bands, and 62 ksi is the lowest band ASTM B211 states for
-      this temper. It is therefore a conservative floor for smaller
-      cold-finished bar (66 ksi up thru 4.000 in), for ASTM B209 sheet and
-      plate over 0.040 to 2.000 in (67 to 69 ksi), for ASTM B210 drawn
-      seamless tube (66 ksi), and for ASTM B221 extrusions (68 to 73 ksi). It
-      is not conservative for thick sections: B209 plate at 3.501 to 4.000 in
-      is 54 ksi and ASTM B247 hand forgings at 5.001 to 6.000 in are 56 ksi,
-      so confirm the governing minimum for the actual form and thickness. The
-      73 ksi commonly quoted for this alloy is the Aluminum Association
-      typical value, not a minimum. Density, elastic modulus, and Poisson
-      ratio are not specification-governed; the stored 2810 kg/m3 is the
-      Association's metric pairing for 0.101 lb/in3, 71016 MPa is 10.3 Mpsi,
-      the tension modulus, the Association publishing 10.4 Mpsi as the average
-      of tension and compression, and 0.33 is its nominal Poisson ratio. No
-      proportional limit is recorded, so elastic buckling capacity stays
-      withheld. Temperature: room temperature; no elevated-temperature
-      derating is stored.
+      Conservative generic floor across the located common wrought
+      7075-T6/T651 product forms and thickness bands: ASTM B209 plate at 3.501
+      to 4.000 in states 54 ksi yield, stored as 372 MPa, the 1 ksi = 6.894757
+      MPa conversion rounded to the nearest MPa; not a statistical design
+      allowable. Higher specification minima apply to narrower scopes: ASTM
+      B247 hand forgings at 5.001 to 6.000 in state 56 ksi, ASTM B211
+      cold-finished 7075-T651 bar at 6.001 to 7.000 in states 62 ksi, smaller
+      cold-finished bar states 66 ksi, ASTM B209 sheet and plate over 0.040 to
+      2.000 in state 67 to 69 ksi, ASTM B210 drawn seamless tube states 66 ksi,
+      and ASTM B221 extrusions state 68 to 73 ksi. Use the governing minimum
+      for the actual form, thickness, direction, and temper rather than taking
+      this generic floor as a design allowable. The 73 ksi commonly quoted for
+      this alloy is the Aluminum Association typical value, not a minimum.
+      Density, elastic modulus, and Poisson ratio are not
+      specification-governed; the stored 2810 kg/m3 is the Association's
+      metric pairing for 0.101 lb/in3, 71016 MPa is 10.3 Mpsi, the tension
+      modulus, the Association publishing 10.4 Mpsi as the average of tension
+      and compression, and 0.33 is its nominal Poisson ratio. No proportional
+      limit is recorded, so elastic buckling capacity stays withheld.
+      Temperature: room temperature; no elevated-temperature derating is
+      stored.
   Ti-6Al-4V:
     density_kg_per_m3: 4430
     elastic_modulus_mpa: 113800

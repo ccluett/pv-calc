@@ -89,6 +89,7 @@ def test_bundled_materials_work_outside_checkout_and_explicit_override_wins(tmp_
         "buckling_data_qualification": "reference_only",
     }
     other = show_material("Al-7075-T6")
+    assert other["properties"]["yield_strength_mpa"] == 372.0
     assert other["capabilities"]["smooth_cylinder_buckling_capacity"] == {
         "available": False, "missing_properties": ["proportional_limit_mpa"],
     }
@@ -105,6 +106,31 @@ def test_bundled_materials_work_outside_checkout_and_explicit_override_wins(tmp_
     database.unlink()
     missing = runner.invoke(app, [*options, "--materials-file", str(database)])
     assert _error_payload(missing)["error"]["code"] == "invalid_material_database"
+
+
+def test_generic_7075_uses_the_lowest_documented_common_wrought_floor() -> None:
+    request = {
+        "schema_version": CALC_SCHEMA_VERSION,
+        "model": "tube",
+        "inputs": {
+            "external_pressure": {"value": 40.0, "unit": "MPa"},
+            "internal_radius": {"value": 1000.0, "unit": "mm"},
+            "wall_thickness": {"value": 100.0, "unit": "mm"},
+        },
+        "material": {"type": "named", "name": "Al-7075-T6"},
+    }
+
+    result = runner.invoke(
+        app,
+        ["check", "--input", "-", "--format", "json"],
+        input=json.dumps(request),
+    )
+
+    assert result.exit_code == 1, result.output
+    check = json.loads(result.stdout)["assessment"]["checks"][0]
+    assert check["status"] == "fail"
+    assert check["demand"]["value"] == pytest.approx(399.19647183968414)
+    assert check["capacity"] == {"unit": "MPa", "value": 372.0}
 
 
 def test_material_capability_availability_is_per_calculation() -> None:
