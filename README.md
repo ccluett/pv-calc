@@ -202,7 +202,11 @@ pv-calc smooth-buckling size \
   --unsupported-length "300 mm" \
   --wall-thickness-lower "0.5 mm" --wall-thickness-upper "4 mm" \
   --stock-thickness "1 mm" --stock-thickness "2 mm" --stock-thickness "3 mm" \
-  --material Al-6061-T6 --format text
+  --failure-category ductile_metal --yield-strength "250 MPa" \
+  --elastic-modulus "70000 MPa" --poisson-ratio 0.3 \
+  --proportional-limit "200 MPa" \
+  --material-provenance "example values; qualify for the actual product" \
+  --format text
 ```
 
 A geometry sweep uses `inputs.geometry` and a unit-bearing `inputs.axis` in
