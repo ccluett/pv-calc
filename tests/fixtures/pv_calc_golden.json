@@ -20,7 +20,7 @@
               "source": {
                 "database": "materials.yaml",
                 "name": "Al-6061-T6",
-                "provenance": "ASTM B221 and ASTM B241 specification minimums for wrought aluminum 6061-T6 (extruded profiles and seamless extruded tube). Basis: specification minimums, 38 ksi ultimate and 35 ksi yield, stored as conversions at 1 ksi = 6.894757 MPa rounded to the nearest MPa; not statistical design allowables. ASTM B209 6061-T651 plate carries the same 35 ksi yield minimum at a higher 42 ksi ultimate, so the stored floors bound the common wrought forms. Density, elastic modulus, and Poisson ratio are not specification-governed; the stored 2700 kg/m3, 68900 MPa (average of tension and compression), and estimated 0.33 are nominal values from the ASM Aerospace Specification Metals / MatWeb data sheet \"Aluminum 6061-T6; 6061-T651\" (asm.matweb.com). Temperature: room temperature; no elevated-temperature derating is stored.",
+                "provenance": "ASTM B221 and ASTM B241 specification minimums for wrought aluminum 6061-T6 (extruded profiles and seamless extruded tube). Basis: specification minimums, 38 ksi ultimate and 35 ksi yield, stored as conversions at 1 ksi = 6.894757 MPa rounded to the nearest MPa; not statistical design allowables. ASTM B209 6061-T651 plate carries the same 35 ksi yield minimum at a higher 42 ksi ultimate, so the stored floors bound the common wrought forms. Density, elastic modulus, and Poisson ratio are not specification-governed; the stored 2700 kg/m3, 68900 MPa (average of tension and compression), and estimated 0.33 are nominal values from the ASM Aerospace Specification Metals / MatWeb data sheet \"Aluminum 6061-T6; 6061-T651\" (asm.matweb.com). Temperature: room temperature; no elevated-temperature derating is stored. No proportional limit or compressive curve is stored: the located MIL-HDBK-5J curves are product-form- and direction-specific, while this generic record does not require the caller to identify an extruded tube or its hoop direction.",
                 "type": "named"
               }
             },
@@ -103,7 +103,7 @@
               "source": {
                 "database": "materials.yaml",
                 "name": "Al-6061-T6",
-                "provenance": "ASTM B221 and ASTM B241 specification minimums for wrought aluminum 6061-T6 (extruded profiles and seamless extruded tube). Basis: specification minimums, 38 ksi ultimate and 35 ksi yield, stored as conversions at 1 ksi = 6.894757 MPa rounded to the nearest MPa; not statistical design allowables. ASTM B209 6061-T651 plate carries the same 35 ksi yield minimum at a higher 42 ksi ultimate, so the stored floors bound the common wrought forms. Density, elastic modulus, and Poisson ratio are not specification-governed; the stored 2700 kg/m3, 68900 MPa (average of tension and compression), and estimated 0.33 are nominal values from the ASM Aerospace Specification Metals / MatWeb data sheet \"Aluminum 6061-T6; 6061-T651\" (asm.matweb.com). Temperature: room temperature; no elevated-temperature derating is stored.",
+                "provenance": "ASTM B221 and ASTM B241 specification minimums for wrought aluminum 6061-T6 (extruded profiles and seamless extruded tube). Basis: specification minimums, 38 ksi ultimate and 35 ksi yield, stored as conversions at 1 ksi = 6.894757 MPa rounded to the nearest MPa; not statistical design allowables. ASTM B209 6061-T651 plate carries the same 35 ksi yield minimum at a higher 42 ksi ultimate, so the stored floors bound the common wrought forms. Density, elastic modulus, and Poisson ratio are not specification-governed; the stored 2700 kg/m3, 68900 MPa (average of tension and compression), and estimated 0.33 are nominal values from the ASM Aerospace Specification Metals / MatWeb data sheet \"Aluminum 6061-T6; 6061-T651\" (asm.matweb.com). Temperature: room temperature; no elevated-temperature derating is stored. No proportional limit or compressive curve is stored: the located MIL-HDBK-5J curves are product-form- and direction-specific, while this generic record does not require the caller to identify an extruded tube or its hoop direction.",
                 "type": "named"
               }
             },
@@ -286,7 +286,7 @@
               "source": {
                 "database": "materials.yaml",
                 "name": "Ti-6Al-4V",
-                "provenance": "ASTM B348 specification minimums for Ti-6Al-4V (Grade 5, UNS R56400) bar and billet, annealed; ASTM B265 Grade 5 sheet and plate states the same minimums. Basis: specification minimums, 130 ksi ultimate and 120 ksi yield, stored as conversions at 1 ksi = 6.894757 MPa rounded to the nearest MPa; not statistical design allowables. Density, elastic modulus, and Poisson ratio are not specification-governed; the stored 4430 kg/m3, 113800 MPa, and 0.34 (rounded from 0.342) are nominal values from the ASM Aerospace Specification Metals / MatWeb data sheet \"Titanium Ti-6Al-4V (Grade 5), Annealed\" (asm.matweb.com, bassnum MTP641). Temperature: room temperature; no elevated-temperature derating is stored.",
+                "provenance": "ASTM B348 specification minimums for Ti-6Al-4V (Grade 5, UNS R56400) bar and billet, annealed; ASTM B265 Grade 5 sheet and plate states the same minimums. Basis: specification minimums, 130 ksi ultimate and 120 ksi yield, stored as conversions at 1 ksi = 6.894757 MPa rounded to the nearest MPa; not statistical design allowables. Density, elastic modulus, and Poisson ratio are not specification-governed; the stored 4430 kg/m3, 113800 MPa, and 0.34 (rounded from 0.342) are nominal values from the ASM Aerospace Specification Metals / MatWeb data sheet \"Titanium Ti-6Al-4V (Grade 5), Annealed\" (asm.matweb.com, bassnum MTP641). Temperature: room temperature; no elevated-temperature derating is stored. No proportional limit or compressive curve is stored: the located MIL-HDBK-5J curve is for longitudinal compression of annealed extrusion, not the generic hoop direction and product forms represented here.",
                 "type": "named"
               }
             },
@@ -369,7 +369,7 @@
               "source": {
                 "database": "materials.yaml",
                 "name": "Ti-6Al-4V",
-                "provenance": "ASTM B348 specification minimums for Ti-6Al-4V (Grade 5, UNS R56400) bar and billet, annealed; ASTM B265 Grade 5 sheet and plate states the same minimums. Basis: specification minimums, 130 ksi ultimate and 120 ksi yield, stored as conversions at 1 ksi = 6.894757 MPa rounded to the nearest MPa; not statistical design allowables. Density, elastic modulus, and Poisson ratio are not specification-governed; the stored 4430 kg/m3, 113800 MPa, and 0.34 (rounded from 0.342) are nominal values from the ASM Aerospace Specification Metals / MatWeb data sheet \"Titanium Ti-6Al-4V (Grade 5), Annealed\" (asm.matweb.com, bassnum MTP641). Temperature: room temperature; no elevated-temperature derating is stored.",
+                "provenance": "ASTM B348 specification minimums for Ti-6Al-4V (Grade 5, UNS R56400) bar and billet, annealed; ASTM B265 Grade 5 sheet and plate states the same minimums. Basis: specification minimums, 130 ksi ultimate and 120 ksi yield, stored as conversions at 1 ksi = 6.894757 MPa rounded to the nearest MPa; not statistical design allowables. Density, elastic modulus, and Poisson ratio are not specification-governed; the stored 4430 kg/m3, 113800 MPa, and 0.34 (rounded from 0.342) are nominal values from the ASM Aerospace Specification Metals / MatWeb data sheet \"Titanium Ti-6Al-4V (Grade 5), Annealed\" (asm.matweb.com, bassnum MTP641). Temperature: room temperature; no elevated-temperature derating is stored. No proportional limit or compressive curve is stored: the located MIL-HDBK-5J curve is for longitudinal compression of annealed extrusion, not the generic hoop direction and product forms represented here.",
                 "type": "named"
               }
             },
@@ -10419,15 +10419,11 @@
           "value": 827.0
         }
       },
-      "property_sources": {
-        "compressive_stress_strain": "MIL-HDBK-5J (31 January 2003), Section 9.8.4.1.2 curve convention. Figures 5.4.1.1.6(b) and (c), printed p. 5-65, supply typical longitudinal compressive n = 21 for room-temperature annealed extrusion. Using this shape for hoop compression and for this record's bar, billet, sheet, and plate forms remains unverified. The 827 MPa tensile minimum is a substitute compression anchor, not a measured proof stress. Table 5.4.1.0(c1) annealed bar gives Fcy(L) = 129 ksi against Fty(L) = 125 ksi; lowering the anchor lowers this assumed curve, but does not validate the direction or product-form substitutions.",
-        "proportional_limit": "Derived from the assumed compressive curve above using the same pv-calc 0.99 E tangent-modulus screen as Al-6061-T6: 602.0 MPa = 0.728 x yield. An elastic applicability limit, not a design allowable; the curve's direction and product-form limitations apply."
-      },
       "source": {
-        "database": "materials.yaml",
-        "name": "Ti-6Al-4V",
-        "provenance": "ASTM B348 specification minimums for Ti-6Al-4V (Grade 5, UNS R56400) bar and billet, annealed; ASTM B265 Grade 5 sheet and plate states the same minimums. Basis: specification minimums, 130 ksi ultimate and 120 ksi yield, stored as conversions at 1 ksi = 6.894757 MPa rounded to the nearest MPa; not statistical design allowables. Density, elastic modulus, and Poisson ratio are not specification-governed; the stored 4430 kg/m3, 113800 MPa, and 0.34 (rounded from 0.342) are nominal values from the ASM Aerospace Specification Metals / MatWeb data sheet \"Titanium Ti-6Al-4V (Grade 5), Annealed\" (asm.matweb.com, bassnum MTP641). Temperature: room temperature; no elevated-temperature derating is stored.",
-        "type": "named"
+        "database": null,
+        "name": "Illustrative Ti-6Al-4V curve assumption",
+        "provenance": "Illustrative assumption from historical MIL-HDBK-5J Figures 5.4.1.1.6(b,c), p. 5-65: typical longitudinal annealed-extrusion n = 21 with the 827 MPa tensile minimum substituted as the compression anchor. MIL-HDBK-5J is cancelled and MMPDS is its successor; verify current hoop-direction, product-form, heat-treatment, and proof-stress data for design use.",
+        "type": "explicit"
       }
     },
     "model": "smooth-buckling",

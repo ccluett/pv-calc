@@ -18,6 +18,7 @@ from _cli_helpers import _error_payload
 
 from pv_calc.api import calculate
 from pv_calc.contracts import CALC_SCHEMA_VERSION
+from pv_calc.presentation import assess_response
 from pv_calc.pressure_vessel import (
     SMOOTH_CYLINDER_MORE_THAN_TWO_WAVE_COEFFICIENT,
     ramberg_osgood_moduli,
@@ -487,32 +488,86 @@ def _smooth_request(material: dict) -> dict:
     }
 
 
-def test_named_and_explicit_curves_reach_the_same_released_capacity() -> None:
+def test_generic_titanium_withholds_until_qualified_curve_data_are_supplied() -> None:
     named = calculate(_smooth_request({"type": "named", "name": "Ti-6Al-4V"}))
     explicit = calculate(_smooth_request(EXPLICIT_TITANIUM_CURVE))
-    for response in (named, explicit):
-        result = response["result"]
-        assert result["capacity_status"] == "released"
-        assert result["correlated_critical_pressure_mpa"]["value"] == pytest.approx(
-            62.7161928406424, abs=5e-7
-        )
-        assert result["margin"] is not None
-        assert result["plasticity_factor"] == pytest.approx(0.984780, abs=1e-6)
-    assert (
-        named["result"]["correlated_critical_pressure_mpa"]
-        == explicit["result"]["correlated_critical_pressure_mpa"]
+    named_result = named["result"]
+    assert named_result["capacity_status"] == "withheld_applicability"
+    assert named_result["correlated_critical_pressure_mpa"]["value"] is None
+    assert named_result["proportional_limit_mpa"]["value"] is None
+    assert named_result["margin"] is None
+    assert named_result["plasticity_factor"] is None
+    assert named_result["ramberg_osgood_n"] is None
+    assert assess_response(named)["status"] == "indeterminate"
+    assert "property_sources" not in named["material"]
+    elastic_candidate = next(
+        candidate for candidate in named_result["candidates"] if candidate["applicable"]
     )
-    # The named record's curve carries its handbook basis into the response.
-    sources = named["material"]["property_sources"]
-    assert "MIL-HDBK-5J" in sources["compressive_stress_strain"]
-    assert "Fcy" in sources["compressive_stress_strain"]
+    assert elastic_candidate["correlated_critical_pressure_mpa"]["value"] == pytest.approx(
+        63.685456731934785, abs=5e-7
+    )
+
+    explicit_result = explicit["result"]
+    assert explicit_result["capacity_status"] == "released"
+    assert explicit_result["correlated_critical_pressure_mpa"]["value"] == pytest.approx(
+        62.7161928406424, abs=5e-7
+    )
+    assert explicit_result["margin"] is not None
+    assert explicit_result["plasticity_factor"] == pytest.approx(0.984780, abs=1e-6)
+
+
+def test_generic_aluminium_cannot_use_an_extrusion_curve_implicitly() -> None:
+    inputs = {
+        "external_pressure": {"value": 20.0, "unit": "MPa"},
+        "shell_mid_surface_radius": {"value": 100.5, "unit": "mm"},
+        "wall_thickness": {"value": 10.0, "unit": "mm"},
+        "unsupported_length": {"value": 700.0, "unit": "mm"},
+        "load_case": "hydrostatic_closed_end",
+    }
+    named = calculate({
+        "schema_version": CALC_SCHEMA_VERSION,
+        "model": "smooth-buckling",
+        "material": {"type": "named", "name": "Al-6061-T6"},
+        "inputs": inputs,
+    })
+    assert named["result"]["capacity_status"] == "withheld_applicability"
+    assert named["result"]["correlated_critical_pressure_mpa"]["value"] is None
+    assert named["result"]["proportional_limit_mpa"]["value"] is None
+    assert assess_response(named)["status"] == "indeterminate"
+
+    qualified = calculate({
+        "schema_version": CALC_SCHEMA_VERSION,
+        "model": "smooth-buckling",
+        "material": {
+            "type": "explicit",
+            "name": "Test 6061-T6 extrusion in qualified LT compression",
+            "provenance": (
+                "Test fixture scoped to a 6061-T6 extrusion and LT compression; "
+                "not a generic alloy record."
+            ),
+            "properties": {
+                "failure_category": "ductile_metal",
+                "yield_strength": {"value": 241.0, "unit": "MPa"},
+                "elastic_modulus": {"value": 68900.0, "unit": "MPa"},
+                "poisson_ratio": 0.33,
+                "ramberg_osgood_n": 28.0,
+                "compressive_proof_stress": {"value": 241.0, "unit": "MPa"},
+            },
+        },
+        "inputs": inputs,
+    })
+    assert qualified["result"]["capacity_status"] == "released"
+    assert qualified["result"]["correlated_critical_pressure_mpa"]["value"] == pytest.approx(
+        20.038967943932864, abs=5e-7
+    )
+    assert assess_response(qualified)["status"] == "pass"
 
 
 def test_the_composed_cylinder_reports_the_corrected_buckling_capacity() -> None:
     wall = 304.8 / 21.1
     response = calculate({
         "schema_version": CALC_SCHEMA_VERSION, "model": "cylinder",
-        "material": {"type": "named", "name": "Ti-6Al-4V"},
+        "material": EXPLICIT_TITANIUM_CURVE,
         "inputs": {**HOUSING_GEOMETRY,
                    "internal_radius": {"value": 304.8 / 2.0 - wall, "unit": "mm"}},
     })
@@ -540,7 +595,12 @@ def test_the_cli_releases_the_same_corrected_capacity() -> None:
         "--wall-thickness", f"{wall} mm",
         "--unsupported-length", "609.6 mm",
         "--load-case", "hydrostatic_closed_end",
-        "--material", "Ti-6Al-4V",
+        "--failure-category", "ductile_metal",
+        "--yield-strength", "827 MPa",
+        "--elastic-modulus", "113800 MPa",
+        "--poisson-ratio", "0.34",
+        "--ramberg-osgood-n", "21",
+        "--compressive-proof-stress", "827 MPa",
         "--json",
     ])
     assert result.exit_code == 0, result.output

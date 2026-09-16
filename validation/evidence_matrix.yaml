@@ -214,9 +214,10 @@ models:
       - The NASA Eq. 30-32 inelastic correction is implemented for a supplied compressive
         curve. NASA states those factors for lateral pressure and calls the hydrostatic
         biaxial factors unavailable, so the hydrostatic load case uses them as the source
-        directs for lack of better information. Two of seven bundled metals carry a curve;
-        the Al-6061-T6 data match its stored extrusion/tube scope, while Ti-6Al-4V retains
-        explicit unverified direction and product-form substitutions.
+        directs for lack of better information. No bundled generic metal carries a curve or
+        proportional limit. The located Al-6061-T6 LT-extrusion and Ti-6Al-4V longitudinal-
+        extrusion shapes remain available only as explicit caller-qualified assumptions;
+        neither establishes generic hoop response across the listed product forms.
       - The R_mid/t > 10 gate is unchanged; no new thickness-domain evidence was established.
       - End-restraint credit and physical validation are absent.
       - UnderPressure 4.60 version-stamped captures remain open.

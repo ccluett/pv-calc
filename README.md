@@ -28,7 +28,11 @@ pv-calc cylinder \
   --gravity "9.81 m/s^2" --design-factor 1.0 \
   --internal-radius "50 mm" --wall-thickness "1 mm" \
   --unsupported-length "300 mm" \
-  --material Al-6061-T6 --format text
+  --failure-category ductile_metal --yield-strength "250 MPa" \
+  --elastic-modulus "70000 MPa" --poisson-ratio 0.3 \
+  --proportional-limit "200 MPa" \
+  --material-provenance "example values; qualify for the actual product" \
+  --format text
 ```
 
 Every dimensioned input carries a unit, quoted (`"8 mm"`) or attached (`8mm`).
@@ -43,10 +47,13 @@ and calculation errors.
 material checks use exact Lamé stresses at both wall surfaces for every thickness. `--force-thick` is
 accepted for compatibility and has no effect.
 
-Read status fields alongside numbers. A smooth-cylinder elastic buckling
-estimate above the proportional limit retains its pressure but has a null
-`margin`. Deformation beyond the supplied material strength is labeled
+Read status fields alongside numbers. When a caller supplies a proportional
+limit without a complete curve, a smooth-cylinder elastic buckling estimate
+above that limit retains its pressure but has a null `margin`. Deformation
+beyond the supplied material strength is labeled
 `elastic_estimate_material_limit`; it is not a plastic-deformation prediction.
+Ring-shell pressures, including the inter-ring smooth-shell estimate, remain
+advisory and therefore stay indeterminate when selected with `check`.
 Thickness sizing selects the smallest solution among model-eligible intervals
 within the requested bounds and reports excluded intervals below the selection.
 Zero-pressure forward requests are supported: demand and available deformation
@@ -80,12 +87,20 @@ elastic properties. Smooth-cylinder capacity additionally needs either a
 proportional limit or a complete compressive Ramberg-Osgood curve; hemisphere
 buckling needs a proportional limit.
 
+The generic bundled alloy records intentionally carry neither proportional
+limits nor compressive curves. Handbook curves located for Al-6061-T6 and
+Ti-6Al-4V are tied to particular product forms and directions, while the
+generic records do not make the caller identify those qualifications. Buckling
+therefore remains indeterminate until the caller supplies qualified data
+explicitly or selects a deliberately scoped record from a custom database.
+
 [pv_calc/data/materials.yaml](https://github.com/ccluett/pv-calc/blob/main/pv_calc/data/materials.yaml)
 is the canonical bundled database; the repository-root `materials.yaml` is a
 compatibility symlink to it. It contains ten records across the three failure
-categories. Each property identifies its source. The stored strengths are reference inputs,
-not design allowables. When used, the stored derivations of working strengths,
-proportional limits, and compressive curves appear in `material.property_sources`.
+categories. Each property identifies its source. The stored strengths are
+reference inputs, not design allowables. When used, derivations of working
+strengths and qualified custom-database limits or curves appear in
+`material.property_sources`.
 
 Use the same unit-bearing forward, sizing, sweep, or comparison request from
 Python through `calculate`. It returns a JSON-serializable dictionary without
@@ -103,7 +118,18 @@ request = {
         "wall_thickness": {"value": 1.0, "unit": "mm"},
         "unsupported_length": {"value": 300.0, "unit": "mm"},
     },
-    "material": {"type": "named", "name": "Al-6061-T6"},
+    "material": {
+        "type": "explicit",
+        "name": "Project-qualified compression record",
+        "provenance": "Example values; replace with qualified project data.",
+        "properties": {
+            "failure_category": "ductile_metal",
+            "yield_strength": {"value": 250.0, "unit": "MPa"},
+            "elastic_modulus": {"value": 70000.0, "unit": "MPa"},
+            "poisson_ratio": 0.3,
+            "proportional_limit": {"value": 200.0, "unit": "MPa"},
+        },
+    },
 }
 response = calculate(request)
 print(response["assessment"]["status"])

@@ -462,6 +462,15 @@ CYLINDER_SIZE_MATERIAL = [
     "test cylinder sizing property record",
 ]
 
+QUALIFIED_ALUMINIUM_BUCKLING_MATERIAL = [
+    "--yield-strength", "241 MPa",
+    "--proportional-limit", "183.4 MPa",
+    "--elastic-modulus", "68900 MPa",
+    "--poisson-ratio", "0.33",
+    "--failure-category", "ductile_metal",
+    "--material-provenance", "test-only qualified 6061-T6 extrusion LT record",
+]
+
 
 def _cylinder_size_args(
     *,
@@ -1030,7 +1039,7 @@ def test_cylinder_size_finds_released_solution_below_an_unusable_upper_bound(
         _cylinder_size_args(
             external_pressure="1 MPa", internal_radius="100 mm",
             unsupported_length="300 mm", lower="1 mm", upper=f"{upper_mm:.17g} mm",
-            material=["--material", "Al-6061-T6", "--materials-file", str(MATERIALS_FILE)],
+            material=QUALIFIED_ALUMINIUM_BUCKLING_MATERIAL,
         ),
     )
     assert result.exit_code == 0, result.output

@@ -357,17 +357,24 @@ statistical A-basis or B-basis allowables and have no temperature derating,
 weld or heat-affected-zone knockdown, fatigue or notch correction, or
 environmental-cracking adjustment. The calculator applies no safety factor.
 
-Only Al-6061-T6 and Ti-6Al-4V carry `proportional_limit_mpa` and a complete
-compressive Ramberg-Osgood pair. The curve is
+No generic bundled alloy record carries `proportional_limit_mpa` or a complete
+compressive Ramberg-Osgood pair. The material schema accepts both through an
+explicit material or a deliberately scoped custom record. The curve
+representation is
 `strain = s/E + 0.002*(s/s0)^n`, with `s0` supplied as
 `compressive_proof_stress_mpa`, following MIL-HDBK-5J Section 9.8.4.1.2.
-Their source fields record the shape, anchor, product form, direction, and any
+The source fields record shape, anchor, product form, direction, and any
 substitution; a curve is not a universal alloy property. The proportional
 limits use this project's `E_tan = 0.99 E` screen, which differs from the
-handbook convention of 0.0001 plastic strain (Section 1.4.4.2, p. 1-9). The
-remaining metals have no adopted compressive curve or proportional limit. A
-missing curve preserves the elastic-only behavior rather than inventing
-material data.
+handbook convention of 0.0001 plastic strain (Section 1.4.4.2, p. 1-9).
+MIL-HDBK-5J is a historical source: its cancellation notice identifies MMPDS
+as a suitable successor and cautions users to evaluate it for their application.
+The located Al-6061-T6 curve is LT extrusion data, and the located Ti-6Al-4V
+curve is longitudinal annealed-extrusion data. Neither establishes a generic
+hoop response across the product forms represented by its alloy-name record.
+The values remain available for explicit, caller-qualified use; omitting them
+from the generic records prevents a material description in prose from silently
+releasing capacity.
 
 Named-material responses preserve relevant derivations in
 `material.property_sources`, keyed by `working_strength`, `proportional_limit`,
@@ -461,9 +468,11 @@ Where a source gives no rule, capacity is withheld instead of guessed:
   `released_pending_plasticity`, with a null ordinary margin.
 - The compressive curve is `strain = s/E + 0.002*(s/s0)^n`, the MIL-HDBK-5J
   Section 9.8.4.1.2 form with `s0` the 0.2% offset compressive proof stress.
-  Al-6061-T6 uses LT extrusion data matching the stored tube scope. The
-  Ti-6Al-4V record explicitly retains its unverified direction and product-form
-  substitutions. Five of the seven bundled metals carry no curve.
+  The located Al-6061-T6 LT-extrusion and Ti-6Al-4V longitudinal-extrusion
+  shapes do not establish generic hoop response across their listed product
+  forms. They may be supplied explicitly when qualified. All seven bundled
+  generic metals carry neither a curve nor a proportional limit, so none can
+  release a named-material buckling capacity on prose qualifications alone.
 - Ring global and inter-ring instability remain advisory calculator results
   (`capacity_status: advisory`). A complete compressive curve corrects the
   inter-ring smooth-shell pressure; the orthotropic global pressure remains
@@ -535,7 +544,7 @@ where a released result publishes it as its own disposition.
 | Hemisphere external-pressure buckling | NASA SP-8032, Section 4.2.1.1, Eqs. 1-4 |
 | Historical hemisphere membrane limit | NASA Technical Memorandum 4579 (Ko, 1994), Eq. (5), printed p. 6 |
 | Smooth-cylinder buckling | NASA SP-8007 Rev. 2, Eqs. 19-32 |
-| Compressive Ramberg-Osgood material curves | MIL-HDBK-5J (31 January 2003), Section 9.8.4.1.2 for the 0.002 power-law form, Section 1.4.4.2 for the proportional-limit convention, and Figures 3.6.2.2.6(i) and 5.4.1.1.6(b,c) for the stored exponents |
+| Compressive Ramberg-Osgood material curves | MIL-HDBK-5J (31 January 2003), Section 9.8.4.1.2 for the 0.002 power-law form, Section 1.4.4.2 for the proportional-limit convention, and Figures 3.6.2.2.6(i) and 5.4.1.1.6(b,c) for the explicitly supplied illustrative exponents |
 | Smooth-cylinder rounded Eq. 25 comparator | NASA SP-8007 Rev. 2, Eq. 25, printed p. 27, which states it only for `nu = 0.316`; its rounded `0.926` stands 0.0873% above the Eq. 24 capacity at that ratio, so it is reported beside Eq. 24 and sets no capacity |
 | Ring-stiffened global instability | NASA SP-8007 Rev. 2, Eq. 64/65 and Eqs. 82-91 |
 | Rectangular ring torsion constant | NASA/TP-2011-216882, Eq. A16 |

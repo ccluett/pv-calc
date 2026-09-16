@@ -179,6 +179,15 @@ DEPTH_ONLY_COMMANDS = [
     ["ring-shell", "--shell-mid-surface-radius", "100 mm", "--wall-thickness", "1 mm", "--unsupported-length", "1000 mm", "--ring-spacing", "100 mm", "--ring-axial-width", "3 mm", "--ring-radial-height", "10 mm", "--ring-location", "internal"],
 ]
 
+QUALIFIED_BUCKLING_MATERIAL_OPTIONS = [
+    "--failure-category", "ductile_metal",
+    "--yield-strength", "250 MPa",
+    "--elastic-modulus", "70000 MPa",
+    "--poisson-ratio", "0.3",
+    "--proportional-limit", "200 MPa",
+    "--material-provenance", "test-only qualified buckling material",
+]
+
 
 @pytest.mark.parametrize("command", DEPTH_ONLY_COMMANDS)
 @pytest.mark.parametrize("options", [["--fluid-density", "garbage"], ["--gravity", "also garbage"], ["--fluid-density", "1025 kg/m^3", "--gravity", "9.81 m/s^2"]])
@@ -192,9 +201,14 @@ def test_depth_only_options_cannot_be_silently_ignored(command, options):
 
 @pytest.mark.parametrize("command", DEPTH_ONLY_COMMANDS)
 def test_depth_only_options_are_consumed_with_a_depth_load(command):
+    material = (
+        QUALIFIED_BUCKLING_MATERIAL_OPTIONS
+        if command[0] in {"smooth-buckling", "ring-shell"}
+        else ["--material", "Al-6061-T6"]
+    )
     result = runner.invoke(app, [*command, "--depth", "10 m", "--design-factor", "1.25",
                                 "--fluid-density", "1025 kg/m^3", "--gravity", "9.81 m/s^2",
-                                "--material", "Al-6061-T6", "--json"])
+                                *material, "--json"])
     assert result.exit_code == 0, result.output
     assert json.loads(result.stdout)["loading"]["design_external_pressure"]["value"] == pytest.approx(0.125690625)
 

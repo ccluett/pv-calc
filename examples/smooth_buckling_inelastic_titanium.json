@@ -9,7 +9,17 @@
     "load_case": "hydrostatic_closed_end"
   },
   "material": {
-    "type": "named",
-    "name": "Ti-6Al-4V"
+    "type": "explicit",
+    "name": "Illustrative Ti-6Al-4V curve assumption",
+    "provenance": "Illustrative assumption from historical MIL-HDBK-5J Figures 5.4.1.1.6(b,c), p. 5-65: typical longitudinal annealed-extrusion n = 21 with the 827 MPa tensile minimum substituted as the compression anchor. MIL-HDBK-5J is cancelled and MMPDS is its successor; verify current hoop-direction, product-form, heat-treatment, and proof-stress data for design use.",
+    "properties": {
+      "failure_category": "ductile_metal",
+      "yield_strength": {"value": 827, "unit": "MPa"},
+      "elastic_modulus": {"value": 113800, "unit": "MPa"},
+      "poisson_ratio": 0.34,
+      "proportional_limit": {"value": 602, "unit": "MPa"},
+      "ramberg_osgood_n": 21,
+      "compressive_proof_stress": {"value": 827, "unit": "MPa"}
+    }
   }
 }

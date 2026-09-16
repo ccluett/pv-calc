@@ -102,8 +102,32 @@ def _result_checks(payload: dict[str, Any]) -> list[dict[str, Any]]:
             ))
         return checks
     if model == "ring-shell":
-        inter_ring = _result_checks({"model": "smooth-buckling", "result": result.get("inter_ring_shell_buckling", {})})[0]
-        inter_ring["id"] = "inter_ring_shell_buckling"
+        inter_ring_result = result.get("inter_ring_shell_buckling", {})
+        inter_ring_status = inter_ring_result.get("capacity_status", "unavailable")
+        parent_violations = result.get("validity_violations", [])
+        if parent_violations:
+            inter_ring_status = result.get(
+                "capacity_status", "withheld_invalid_applicability"
+            )
+        elif inter_ring_status == "released":
+            inter_ring_status = "advisory"
+        elif inter_ring_status == "released_pending_plasticity":
+            inter_ring_status = "advisory_pending_plasticity"
+        inter_ring = _check(
+            "inter_ring_shell_buckling",
+            pressure,
+            inter_ring_result.get("correlated_critical_pressure_mpa"),
+            inter_ring_result.get("margin"),
+            inter_ring_status,
+            [
+                *parent_violations,
+                *inter_ring_result.get("validity_violations", []),
+                *inter_ring_result.get("release_gate_violations", []),
+                "The inter-ring smooth-shell result is advisory in a ring-shell "
+                "calculation; ideal circular support at each ring center line is "
+                "assumed, not established by the supplied ring geometry.",
+            ],
+        )
         return [
             _check("ring_shell_global_buckling", pressure, None, None,
                    result.get("capacity_status", "unavailable"),

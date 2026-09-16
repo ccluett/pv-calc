@@ -122,7 +122,11 @@ def test_materials_cli_default_override_and_unknown_name(tmp_path: Path) -> None
     assert shown.exit_code == 0
     record = json.loads(shown.stdout)
     assert record["properties"]["source"]
-    assert record["properties"]["proportional_limit_source"]
+    assert "proportional_limit_mpa" not in record["properties"]
+    assert "ramberg_osgood_n" not in record["properties"]
+    assert record["capabilities"]["smooth_cylinder_buckling_capacity"] == {
+        "available": False, "missing_properties": ["proportional_limit_mpa"],
+    }
     missing = runner.invoke(app, ["materials", "show", "not-present", "--json"])
     assert missing.exit_code == 2
     assert json.loads(missing.stderr)["error"]["code"] == "unknown_material"

@@ -29,6 +29,25 @@ def _q(value: float | None, unit: str = "MPa") -> dict:
     return {"value": value, "unit": unit}
 
 
+def _qualified_aluminium() -> dict:
+    """Test-only scoped material for checks unrelated to material selection."""
+    return {
+        "type": "explicit",
+        "name": "Test 6061-T6 extrusion in qualified LT compression",
+        "provenance": (
+            "Test fixture scoped to a 6061-T6 extrusion and LT compression; "
+            "not a generic alloy record."
+        ),
+        "properties": {
+            "failure_category": "ductile_metal",
+            "yield_strength": _q(241.0),
+            "elastic_modulus": _q(68900.0),
+            "poisson_ratio": 0.33,
+            "proportional_limit": _q(183.4),
+        },
+    }
+
+
 def test_summary_is_concise_retains_quantities_and_does_not_mutate() -> None:
     response = _example("tube", "tube_9_0401_ksi.json")
     original = deepcopy(response)
@@ -59,6 +78,64 @@ def test_elastic_estimates_never_become_capacities(release_status: str) -> None:
     assert check["margin"] is None
     assert "elastic formula estimate" in render_text(response)
     assert summary["assessment"]["governing_check"] is None
+
+
+@pytest.mark.parametrize(
+    ("ring_width", "parent_status", "inter_ring_status"),
+    [(5.0, "advisory", "advisory"),
+     (160.0, "withheld_invalid_applicability", "withheld_invalid_applicability")],
+)
+def test_ring_bay_estimate_cannot_be_promoted_to_a_released_check(
+    ring_width: float, parent_status: str, inter_ring_status: str,
+) -> None:
+    response = calculate({
+        "schema_version": CALC_SCHEMA_VERSION, "model": "ring-shell",
+        "inputs": {
+            "external_pressure": _q(0.1),
+            "shell_mid_surface_radius": _q(100, "mm"),
+            "wall_thickness": _q(1, "mm"),
+            "unsupported_length": _q(600, "mm"),
+            "ring_spacing": _q(150, "mm"),
+            "ring_axial_width": _q(ring_width, "mm"),
+            "ring_radial_height": _q(5, "mm"),
+            "ring_location": "external",
+        },
+        "material": _qualified_aluminium(),
+    })
+    estimate = response["result"]["inter_ring_shell_buckling"][
+        "correlated_critical_pressure_mpa"
+    ]
+    assert response["result"]["capacity_status"] == parent_status
+    assert estimate["value"] == pytest.approx(0.3211519092350811)
+
+    default = assess_response(response)
+    selected = assess_response(response, ["inter_ring_shell_buckling"])
+    assert default["status"] == selected["status"] == "indeterminate"
+    check = selected["checks"][0]
+    assert check["applicability"] == inter_ring_status
+    assert check["eligible"] is False
+    assert check["capacity"]["value"] is None
+    assert check["margin"] is None
+    assert "advisory" in " ".join(check["reasons"])
+    if ring_width > 150:
+        assert "do not overlap" in " ".join(check["reasons"])
+
+    summary = summarize_response(response, ["inter_ring_shell_buckling"])
+    assert summary["assessment"] == selected
+    selected_payload = {
+        "schema_version": response["schema_version"],
+        "model": response["model"],
+        "assessment": selected,
+    }
+    text = render_text(selected_payload)
+    assert "ring-shell: INDETERMINATE" in text
+    assert "inter_ring_shell_buckling: INDETERMINATE" in text
+    assert "capacity unavailable" in text
+    row = next(csv.DictReader(io.StringIO(render_csv(selected_payload))))
+    assert row["status"] == "indeterminate"
+    assert row["eligible"] == "False"
+    assert row["applicability"] == inter_ring_status
+    assert row["capacity"] == ""
 
 
 def _uncorrected_titanium() -> dict:
@@ -118,9 +195,15 @@ def test_compressive_curve_replaces_the_pending_estimate_with_a_capacity(model: 
             "load_case": "hydrostatic_closed_end",
         }
     )
+    material = _uncorrected_titanium()
+    material["name"] = "Ti-6Al-4V with an explicit compressive curve"
+    material["properties"].update({
+        "ramberg_osgood_n": 21.0,
+        "compressive_proof_stress": _q(827.0),
+    })
     response = calculate({
         "schema_version": CALC_SCHEMA_VERSION, "model": model,
-        "material": {"type": "named", "name": "Ti-6Al-4V"},
+        "material": material,
         "inputs": {"external_pressure": _q(92.35134), "wall_thickness": _q(wall, "mm"),
                    "unsupported_length": _q(609.6, "mm"), **radius_input},
     })
@@ -250,7 +333,7 @@ def test_cylinder_boundary_status_is_unchanged_by_summary_or_check_retarget(
         "schema_version": CALC_SCHEMA_VERSION, "model": "cylinder",
         "inputs": {"external_pressure": _q(1), "internal_radius": _q(50, "mm"),
                    "wall_thickness": _q(1, "mm"), "unsupported_length": _q(100, "mm")},
-        "material": {"type": "named", "name": "Al-6061-T6"},
+        "material": _qualified_aluminium(),
     }
     capacity = calculate(request)["assessment"]["checks"][1]["capacity"]["value"]
     # Straddle the target to avoid testing the last bit of division rounding.
@@ -268,7 +351,7 @@ def test_cylinder_boundary_status_is_unchanged_by_summary_or_check_retarget(
 
 
 def test_selected_stock_sizing_boundary_retains_solver_decision() -> None:
-    material = {"type": "named", "name": "Al-6061-T6"}
+    material = _qualified_aluminium()
     cylinder = calculate({
         "schema_version": CALC_SCHEMA_VERSION, "model": "cylinder", "material": material,
         "inputs": {"external_pressure": _q(1), "internal_radius": _q(50, "mm"),

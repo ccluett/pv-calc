@@ -59,11 +59,11 @@ P_cr >= P_target,   P_cr q <= sigma_proportional,   q > 10
 | SS-2507 | 552 | 3756.106 |
 | Ti-6Al-4V | 827 | 5627.355 |
 
-Five of seven bundled metals carry neither a proportional limit nor a
-compressive curve, so they have no fully released named-material smooth-shell
-buckling capacity. Al-6061-T6 and Ti-6Al-4V carry complete curves; the
-correction can release a capacity above their proportional limits, but only
-inside the same geometric domain.
+All seven bundled generic metals carry neither a proportional limit nor a
+compressive curve, so none has a fully released named-material smooth-shell
+buckling capacity. Qualified limits and curves can still be supplied explicitly
+or through a deliberately scoped custom record. The correction remains inside
+the same geometric domain.
 
 ## The q > 10 geometric cutoff
 
@@ -80,8 +80,8 @@ The model retains q > 10 and includes no thick-shell formulation, FEA evidence,
 collapse analysis, or physical validation. The material correction therefore
 establishes no new thickness coverage for the five housings above.
 
-At q = 10.05 the composition reports these, with the bundled titanium curve
-(n = 21 anchored at 827 MPa) supplying the correction:
+At q = 10.05 the composition reports these when supplied the illustrative
+titanium curve assumption (n = 21 anchored at 827 MPa) explicitly:
 
 | OD, in | Elastic estimate, MPa | Corrected capacity, MPa | eta | First-yield pressure, MPa | Overall at 92.35134 MPa |
 |---|---:|---:|---:|---:|---|
@@ -108,7 +108,12 @@ The material-source claims were checked against the actual handbook pages:
 | Figure 3.7.6.1.6(j), p. 3-400 (PDF page 702) | 7075-T6/T651 rolled bar, rod, shape, <= 3.000 in: n(L compression) = 13 |
 | Figure 3.7.6.1.6(l), p. 3-401 (PDF page 703) | 7075-T651X extrusion, 0.500-0.749 in: n(L) = 26, n(LT) = 27 in compression |
 
+MIL-HDBK-5J is historical: the DLA cancellation notice identifies MMPDS as a
+suitable successor and cautions users to evaluate it for their application.
 These product and directional distinctions prevent treating any one curve as
-a universal alloy property. The titanium record uses a longitudinal extrusion
-shape for hoop compression and for other product forms; those substitutions
-remain unverified. Source: MIL-HDBK-5J (31 January 2003), cited locations above.
+a universal alloy property. The generic aluminium record therefore does not
+adopt the LT-extrusion curve, and the generic titanium record does not adopt the
+longitudinal-extrusion curve, for unspecified hoop compression and product
+forms. The values above are an explicit illustrative assumption whose
+substitutions remain unverified. Source: MIL-HDBK-5J (31 January 2003), cited
+locations above.

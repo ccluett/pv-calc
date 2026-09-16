@@ -22,20 +22,54 @@ LENGTH = 609.6
 PRESSURE_PER_METRE = RHO * GRAVITY * FACTOR / 1e6
 DESIGN_PRESSURE = DEPTH * PRESSURE_PER_METRE
 YIELD_GATE_RATIO = 80.0 / (441.0 * math.sqrt(3.0))
+ILLUSTRATIVE_TITANIUM_CURVE = {
+    "type": "explicit",
+    "name": "Illustrative Ti-6Al-4V curve assumption",
+    "provenance": (
+        "Illustrative assumption from historical MIL-HDBK-5J Figures "
+        "5.4.1.1.6(b,c), "
+        "p. 5-65: typical longitudinal annealed-extrusion n = 21 with the "
+        "827 MPa tensile minimum substituted as the compression anchor. "
+        "MIL-HDBK-5J is cancelled and MMPDS is its successor; verify current "
+        "hoop-direction, product-form, heat-treatment, and proof-stress data."
+    ),
+    "properties": {
+        "failure_category": "ductile_metal",
+        "yield_strength": {"value": 827.0, "unit": "MPa"},
+        "elastic_modulus": {"value": 113800.0, "unit": "MPa"},
+        "poisson_ratio": 0.34,
+        "proportional_limit": {"value": 602.0, "unit": "MPa"},
+        "ramberg_osgood_n": 21.0,
+        "compressive_proof_stress": {"value": 827.0, "unit": "MPa"},
+    },
+}
 
 
 def q(value: float, unit: str = "mm") -> dict[str, Any]:
     return {"value": value, "unit": unit}
 
 
-def request(model: str, inputs: dict[str, Any], material: str = "Ti-6Al-4V") -> dict[str, Any]:
+def request(
+    model: str,
+    inputs: dict[str, Any],
+    material: str | dict[str, Any] = "Ti-6Al-4V",
+) -> dict[str, Any]:
     return {
         "schema_version": "5.0.0", "model": model, "inputs": inputs,
-        "material": {"type": "named", "name": material},
+        "material": (
+            {"type": "named", "name": material}
+            if isinstance(material, str)
+            else material
+        ),
     }
 
 
-def size(model: str, outside: float, pressure: float, material: str) -> dict[str, Any]:
+def size(
+    model: str,
+    outside: float,
+    pressure: float,
+    material: str | dict[str, Any],
+) -> dict[str, Any]:
     inputs = {
         "external_pressure": q(pressure, "MPa"), "external_radius": q(outside),
         "wall_thickness_bounds": {"lower": q(1), "upper": q(60)},
@@ -70,22 +104,27 @@ def main() -> None:
         yield_wall = outside * (1.0 - bore_fraction)
         sized = size("tube", outside, DESIGN_PRESSURE, "Ti-6Al-4V")
         assert math.isclose(sized["sizing"]["selected_wall_thickness"]["value"], yield_wall, rel_tol=1e-8)
-        try:
-            size("smooth-buckling", outside, DESIGN_PRESSURE, "Ti-6Al-4V")
-        except CalcCliError as exc:
-            assert exc.code == "no_reliable_solution"
-        else:
-            raise AssertionError("Expected the released combined-sizing coverage gap")
+        for material in ("Ti-6Al-4V", ILLUSTRATIVE_TITANIUM_CURVE):
+            try:
+                size("smooth-buckling", outside, DESIGN_PRESSURE, material)
+            except CalcCliError as exc:
+                assert exc.code == "no_reliable_solution"
+            else:
+                raise AssertionError("Expected the released combined-sizing coverage gap")
 
         wall = outside / 10.55
-        cylinder = calculate(request("cylinder", {
-            "external_pressure": q(DESIGN_PRESSURE, "MPa"),
-            "internal_radius": q(outside - wall), "wall_thickness": q(wall),
-            "unsupported_length": q(LENGTH),
-        }))
+        cylinder = calculate(request(
+            "cylinder",
+            {
+                "external_pressure": q(DESIGN_PRESSURE, "MPa"),
+                "internal_radius": q(outside - wall), "wall_thickness": q(wall),
+                "unsupported_length": q(LENGTH),
+            },
+            ILLUSTRATIVE_TITANIUM_CURVE,
+        ))
         buckling = cylinder["components"]["smooth_buckling"]["result"]
-        # Released capacity: the NASA Eq. 30-32 correction when the record
-        # carries a compressive curve, the elastic upper bound when it does not.
+        # The explicit illustrative curve exercises the NASA Eq. 30-32
+        # correction without promoting it into the generic named record.
         capacity = buckling["correlated_critical_pressure_mpa"]["value"]
         elastic = next(
             candidate["correlated_critical_pressure_mpa"]["value"]

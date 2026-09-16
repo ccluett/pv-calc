@@ -71,8 +71,15 @@ def test_bundled_materials_work_outside_checkout_and_explicit_override_wins(tmp_
     assert len(records) == 10
     assert all(record["database"] == BUNDLED_MATERIAL_DATABASE for record in records)
     aluminium = show_material("Al-6061-T6")
-    assert aluminium["properties"]["proportional_limit_source"]
-    assert aluminium["capabilities"]["cylinder"]["available"]
+    assert "proportional_limit_mpa" not in aluminium["properties"]
+    assert "ramberg_osgood_n" not in aluminium["properties"]
+    assert aluminium["capabilities"]["cylinder"] == {
+        "available": False, "missing_properties": ["proportional_limit_mpa"],
+    }
+    titanium = show_material("Ti-6Al-4V")
+    assert "proportional_limit_mpa" not in titanium["properties"]
+    assert "ramberg_osgood_n" not in titanium["properties"]
+    assert not titanium["capabilities"]["smooth_cylinder_buckling_capacity"]["available"]
     other = show_material("Al-7075-T6")
     assert other["capabilities"]["smooth_cylinder_buckling_capacity"] == {
         "available": False, "missing_properties": ["proportional_limit_mpa"],
@@ -187,18 +194,36 @@ def test_bundled_materials_are_readable_from_an_installed_zip_package(tmp_path: 
     ],
     ids=["smooth-buckling", "hemisphere", "ring-shell"],
 )
-def test_named_proportional_limit_keeps_its_derivation(model_options: list[str]) -> None:
+def test_scoped_named_proportional_limit_keeps_its_derivation(
+    model_options: list[str], tmp_path: Path,
+) -> None:
+    database = tmp_path / "qualified-materials.yaml"
+    database.write_text(
+        "materials:\n"
+        "  Qualified-6061-T6-Extrusion-LT:\n"
+        "    source: Test fixture scoped to 6061-T6 extrusion in LT compression\n"
+        "    failure_category: ductile_metal\n"
+        "    yield_strength_mpa: 241\n"
+        "    elastic_modulus_mpa: 68900\n"
+        "    poisson_ratio: 0.33\n"
+        "    proportional_limit_mpa: 183.4\n"
+        "    ramberg_osgood_n: 28\n"
+        "    compressive_proof_stress_mpa: 241\n"
+        "    proportional_limit_source: Test derivation at 0.99 E; not a design allowable\n"
+        "    compressive_stress_strain_source: Test qualified extrusion LT curve\n"
+    )
     result = runner.invoke(
         app,
         [*model_options, "--external-pressure", "0.1 MPa",
-         "--material", "Al-6061-T6", "--materials-file", str(MATERIALS_FILE), "--json"],
+         "--material", "Qualified-6061-T6-Extrusion-LT",
+         "--materials-file", str(database), "--json"],
     )
     assert result.exit_code == 0, result.output
     material = json.loads(result.stdout)["material"]
     assert material["properties_used"]["proportional_limit"] == {
         "unit": "MPa", "value": 183.4,
     }
-    record = load_calc_materials(MATERIALS_FILE)["Al-6061-T6"]
+    record = load_calc_materials(database)["Qualified-6061-T6-Extrusion-LT"]
     sources = material["property_sources"]
     # Smooth and inter-ring buckling read the compressive curve; hemisphere
     # buckling remains elastic and reports no curve source.
@@ -209,7 +234,7 @@ def test_named_proportional_limit_keeps_its_derivation(model_options: list[str])
     derivation = sources["proportional_limit"]
     assert "0.99 E" in derivation
     assert "not a design allowable" in derivation
-    assert material["source"]["provenance"].startswith("ASTM B221 and ASTM B241")
+    assert material["source"]["provenance"].startswith("Test fixture scoped")
 
 
 @pytest.mark.parametrize(
