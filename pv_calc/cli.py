@@ -1753,7 +1753,11 @@ def check_request(
             response, required_checks=checks or None,
             minimum_margin=_minimum_margin_from_option(minimum_margin),
         )
-        payload: dict[str, Any] = {key: response[key] for key in ("schema_version", "model", "operation", "loading") if key in response}
+        payload: dict[str, Any] = {
+            key: response[key]
+            for key in ("schema_version", "model", "operation", "loading", "material")
+            if key in response
+        }
         payload["assessment"] = assessment
         _emit(payload, compact=json_output, output_format=output_format)
         raise typer.Exit({"pass": 0, "fail": 1, "indeterminate": 3}[assessment["status"]])

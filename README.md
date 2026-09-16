@@ -38,7 +38,8 @@ report; `--format summary` gives a compact structured assessment; and
 `--format csv` exports check rows, including sweep and comparison results.
 Depth-based results retain the depth, design factor, and service/design pressures
 in these formats. Batch `check` results retain material names, sweep coordinates,
-and calculation errors.
+and calculation errors. A single-request `check` JSON result retains the
+resolved material block and its provenance beside the assessment.
 `--json` only compacts the detailed JSON onto one line. Tube and hemisphere
 material checks use exact Lamé stresses at both wall surfaces for every thickness. `--force-thick` is
 accepted for compatibility and has no effect.

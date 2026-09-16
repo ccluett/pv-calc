@@ -127,10 +127,16 @@ def test_generic_7075_uses_the_lowest_documented_common_wrought_floor() -> None:
     )
 
     assert result.exit_code == 1, result.output
-    check = json.loads(result.stdout)["assessment"]["checks"][0]
+    payload = json.loads(result.stdout)
+    check = payload["assessment"]["checks"][0]
     assert check["status"] == "fail"
     assert check["demand"]["value"] == pytest.approx(399.19647183968414)
     assert check["capacity"] == {"unit": "MPa", "value": 372.0}
+    assert payload["material"]["source"]["name"] == "Al-7075-T6"
+    assert "54 ksi" in payload["material"]["source"]["provenance"]
+    assert payload["material"]["properties_used"]["yield_strength"] == {
+        "unit": "MPa", "value": 372.0,
+    }
 
 
 def test_material_capability_availability_is_per_calculation() -> None:
