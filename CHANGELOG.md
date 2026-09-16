@@ -9,11 +9,6 @@ model; both predate this changelog.
 
 ## [Unreleased]
 
-- Reject smooth-cylinder submergence mass calculations when
-  `R_mid - t/2 <= 0` instead of squaring a zero or negative bore radius into a
-  plausible-looking positive volume. This geometry invariant is independent of
-  the thin-shell buckling applicability gate.
-
 ## [0.2.0] - 2026-09-09
 
 - Add `cylinder`, a combined closed-end stress and smooth-buckling assessment
