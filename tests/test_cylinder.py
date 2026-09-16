@@ -261,6 +261,12 @@ def test_missing_closure_property_retains_other_known_failures(payload: dict[str
     assert result["smooth_cylinder_buckling"]["status"] == "fail"
     assert response["assessment"]["status"] == "fail"
     assert response["components"]["closures"][0]["error"]["code"] == "invalid_material"
+    material_record = response["components"]["closures"][0]["material"]
+    assert material_record["source"]["type"] == "explicit"
+    assert material_record["properties_used"]["ultimate_compressive_strength"] == q(
+        1.0, "MPa"
+    )
+    assert "ultimate_tensile_strength" not in material_record["properties_used"]
 
 
 def test_closure_failure_retained_when_its_buckling_is_withheld(payload: dict[str, Any]) -> None:

@@ -38,10 +38,13 @@ failure retains `fail` even if another required check is unavailable; otherwise
 missing required coverage gives `indeterminate`. The governing numerical check
 is null when coverage is incomplete. Acceptance is scoped to the requested
 checks, not the whole as-built vessel.
-For a single request, structured `check` output retains the resolved `material`
-block so its name, properties used, database, and provenance travel with the
-decision. Batch assessments retain each entry's index, material or sweep
-coordinate, and any calculation error under `assessment.entries[].context`.
+For a single request, detailed/default JSON `check` output retains each resolved
+material block so its name, properties used, database, and provenance travel
+with the decision. A simple calculation uses the top-level `material`; a
+cylinder or combined sizing result keeps material-only projections at its
+existing `components` or `selected_results` paths. Batch assessments retain
+each entry's index, material or sweep coordinate, and any calculation error
+under `assessment.entries[].context`.
 CSV includes the operation, coordinates, material, outcome, and error message.
 
 An ordinary forward or sizing JSON request can replace `inputs.external_pressure`
