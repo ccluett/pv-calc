@@ -538,6 +538,13 @@ def _closed_body_volumes_m3(
     else:
         mid = _to_unit(inputs.shell_mid_surface_radius, "mm", "inputs.shell_mid_surface_radius")
         inner = mid - thickness / 2.0
+        if inner <= 0.0:
+            raise CalcCliError(
+                "invalid_request",
+                "inputs.submergence requires inputs.shell_mid_surface_radius to "
+                "exceed half inputs.wall_thickness so the closed shell has a "
+                "positive bore",
+            )
         outer = mid + thickness / 2.0
         length = _to_unit(inputs.unsupported_length, "mm", "inputs.unsupported_length")
         basis = (
