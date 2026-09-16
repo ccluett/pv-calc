@@ -162,13 +162,14 @@ def test_the_factor_falls_monotonically_as_stress_rises() -> None:
     [(TITANIUM, 602.045684), (ALUMINIUM, 183.441496)],
     ids=["Ti", "Al"],
 )
-def test_the_stored_proportional_limits_are_this_curve_at_0p99_tangent_modulus(
+def test_the_historical_curve_limits_are_at_0p99_tangent_modulus(
     material: dict[str, float], expected: float,
 ) -> None:
-    """The bundled proportional limits are derived from these same curves.
+    """Recover the historical limits used by the explicitly scoped examples.
 
-    Recovering them from the curve confirms the exponent and anchor now stored
-    as structured fields are the ones the prose derivation used.
+    The generic bundled records intentionally contain neither these curves nor
+    their derived limits. This check retains independent evidence for the
+    explicitly supplied historical assumptions without widening their scope.
     """
     e = material["elastic_modulus_mpa"]
     low, high = 1.0e-6, material["compressive_proof_stress_mpa"]

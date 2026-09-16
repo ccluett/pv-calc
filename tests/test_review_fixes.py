@@ -37,6 +37,54 @@ def invoke(request, output_format, command="check", *options):
     return runner.invoke(app, [command, "--input", "-", "--format", output_format, *options], input=json.dumps(request))
 
 
+def test_selected_ring_bay_check_stays_indeterminate_at_the_cli_boundary():
+    request = {
+        "schema_version": "5.0.0",
+        "model": "ring-shell",
+        "inputs": {
+            "external_pressure": q(0.1, "MPa"),
+            "shell_mid_surface_radius": q(100),
+            "wall_thickness": q(1),
+            "unsupported_length": q(600),
+            "ring_spacing": q(200),
+            "ring_axial_width": q(5),
+            "ring_radial_height": q(10),
+            "ring_location": "external",
+        },
+        "material": {
+            "type": "explicit",
+            "name": "Test-only qualified ring-shell material",
+            "provenance": "Regression fixture; not a generic alloy record.",
+            "properties": {
+                "failure_category": "ductile_metal",
+                "yield_strength": q(250, "MPa"),
+                "elastic_modulus": q(70_000, "MPa"),
+                "poisson_ratio": 0.3,
+                "proportional_limit": q(200, "MPa"),
+            },
+        },
+    }
+
+    result = invoke(
+        request,
+        "json",
+        "check",
+        "--check",
+        "inter_ring_shell_buckling",
+    )
+
+    assert result.exit_code == 3, result.output
+    assessment = json.loads(result.stdout)["assessment"]
+    assert assessment["status"] == "indeterminate"
+    check = assessment["checks"][0]
+    assert check["id"] == "inter_ring_shell_buckling"
+    assert check["applicability"] == "advisory"
+    assert check["eligible"] is False
+    assert check["capacity"]["value"] is None
+    assert check["margin"] is None
+    assert "ideal circular support" in " ".join(check["reasons"])
+
+
 @pytest.mark.parametrize("output_format", ["json", "summary", "text", "csv"])
 def test_check_comparison_preserves_identities_and_entry_errors(tmp_path, output_format):
     database = tmp_path / "materials.yaml"
