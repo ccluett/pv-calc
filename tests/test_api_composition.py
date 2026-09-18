@@ -34,6 +34,7 @@ def _qualified_comparison_database(tmp_path: Path) -> Path:
             "source": f"Test-only {name} record with explicitly qualified compression data",
             "proportional_limit_mpa": limit,
             "proportional_limit_source": "Test-only qualified compression input",
+            "buckling_data_qualification": "qualified",
         })
         data["materials"][name] = record
     path = tmp_path / "qualified-materials.yaml"

@@ -1583,7 +1583,10 @@ def _evaluate_smooth_buckling_size(
             )
         except (TypeError, ValueError) as exc:
             raise CalcCliError("unevaluable_model", str(exc)) from exc
-        if buckling.capacity_status != "released":
+        if buckling.capacity_status not in {
+            "released",
+            "released_unqualified_material",
+        }:
             # An elastic upper bound is not a sizing capacity, and its reason is
             # stated in the result's notes rather than in either violation tuple.
             pending = buckling.capacity_status == "released_pending_plasticity"
@@ -1625,7 +1628,7 @@ def _evaluate_smooth_buckling_size(
         ),
         evaluate=evaluate,
         partition_thicknesses=tuple(thickness for _, thickness in partition),
-        branch_label="released buckling regime",
+        branch_label="numerically available buckling regime",
         failure_details=lambda samples: _smooth_buckling_sizing_error_details(
             lower_bound_mm=lower_bound_mm,
             upper_bound_mm=upper_bound_mm,
@@ -1657,6 +1660,7 @@ def _evaluate_smooth_buckling_size(
             "external_radius_minus_half_wall_thickness" if external_radius_mm is not None
             else SMOOTH_BUCKLING_SIZING_RADIUS_CONVENTION
         ),
+        buckling_data_qualification=material.buckling_data_qualification,
         target_minimum_margin=target_minimum_margin,
         bounds=NormalizedThicknessBounds(
             lower=_millimeters(lower_bound_mm),

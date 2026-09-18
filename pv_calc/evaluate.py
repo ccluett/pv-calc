@@ -255,6 +255,7 @@ def _evaluate_hemisphere(
             material_failure_category=material.failure_category,
             strength_mpa=material.shell_strength_mpa(),
             proportional_limit_mpa=material.proportional_limit_mpa,
+            buckling_data_qualification=material.buckling_data_qualification,
             force_thick=request.inputs.force_thick,
         )
     except (ArithmeticError, TypeError, ValueError) as exc:
@@ -300,6 +301,7 @@ def _calculate_smooth_buckling_result(
             proportional_limit_mpa=material.proportional_limit_mpa,
             ramberg_osgood_n=material.ramberg_osgood_n,
             compressive_proof_stress_mpa=material.compressive_proof_stress_mpa,
+            buckling_data_qualification=material.buckling_data_qualification,
         )
     except (ArithmeticError, TypeError, ValueError) as exc:
         raise CalcCliError("unevaluable_model", str(exc)) from exc
@@ -405,6 +407,7 @@ def _evaluate_ring_shell(
             proportional_limit_mpa=material.proportional_limit_mpa,
             ramberg_osgood_n=material.ramberg_osgood_n,
             compressive_proof_stress_mpa=material.compressive_proof_stress_mpa,
+            buckling_data_qualification=material.buckling_data_qualification,
         )
     except (ArithmeticError, TypeError, ValueError) as exc:
         raise CalcCliError("unevaluable_model", str(exc)) from exc

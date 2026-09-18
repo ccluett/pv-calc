@@ -166,6 +166,13 @@ _RESULT_FIELD_DESCRIPTIONS: dict[str, str] = {
         "0.2% offset compressive proof stress anchoring the Ramberg-Osgood curve, or"
         " null when no curve was supplied."
     ),
+    "buckling_data_qualification": (
+        "Whether the supplied proportional limit or compressive curve is treated as "
+        "qualified for acceptance or as reference-only preliminary data. A reference-only "
+        "result retains its number as released_unqualified_material but cannot pass check. "
+        "Its elastic candidate may be exposed as a check upper bound that can establish "
+        "failure, but never passage, under the supplied elastic properties."
+    ),
     "eq25_simplified_critical_pressure_mpa": (
         "NASA/SP-8007-2020/REV 2 Eq. 25, printed p. 27, which that source states only "
         "for nu = 0.316. Populated when poisson_ratio is exactly 0.316 and null at "
@@ -183,7 +190,8 @@ _RESULT_FIELD_DESCRIPTIONS: dict[str, str] = {
         "a proportional limit but no compressive curve such a capacity is an elastic "
         "upper bound reported as released_pending_plasticity. A complete curve applies "
         "the inelastic correction; without either curve or proportional limit, capacity "
-        "is withheld. "
+        "is withheld. The elastic upper bound can establish conservative failure when it "
+        "is below demand and the required margin, but cannot establish passage. "
         "'undetermined' means neither a proportional limit nor a yield strength was "
         "supplied. It never withholds a result and never sets a margin."
     ),
@@ -217,6 +225,8 @@ _RESULT_FIELD_DESCRIPTIONS: dict[str, str] = {
         "Whether the selected advisory_governing_pressure_mpa is an elastic upper "
         "bound: 'advisory_pending_plasticity' when the winning mode's critical "
         "membrane stress exceeds elastic_applicability_limit_mpa, "
+        "'advisory_unqualified_material' when the winning inter-ring estimate uses "
+        "reference-only material data, "
         "'advisory_plasticity_undetermined' when no limit was available to screen it, "
         "and 'advisory' otherwise. Null when every mode was withheld. It describes the "
         "selected mode alone, so read global_elastic_applicability alongside it: the "
@@ -1095,6 +1105,8 @@ def _smooth_buckling_size_contract(cli_options: Mapping[str, str]) -> dict[str, 
             " capacity is released only as an elastic upper bound pending"
             " plasticity: neither carries a sizing capacity, so no thickness"
             " inside them can be selected",
+            "reference-only material data may select a preliminary thickness, but the"
+            " selected check remains indeterminate until qualified data replace it",
         ],
         "load_case": SMOOTH_BUCKLING_SIZING_LOAD_CASE,
         "minimum_margin": {

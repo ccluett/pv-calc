@@ -11,7 +11,7 @@ from __future__ import annotations
 import math
 from importlib.resources import files
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 import yaml
 from pydantic import BaseModel, ConfigDict, field_validator, model_validator
@@ -20,6 +20,7 @@ from pv_calc.schemas import MaterialFailureCategory
 
 
 BUNDLED_MATERIAL_DATABASE = "bundled:pv_calc/data/materials.yaml"
+BucklingDataQualification = Literal["qualified", "reference_only"]
 
 
 class CalcMaterial(BaseModel):
@@ -57,6 +58,7 @@ class CalcMaterial(BaseModel):
     ramberg_osgood_n: float | None = None
     compressive_proof_stress_mpa: float | None = None
     compressive_stress_strain_source: str | None = None
+    buckling_data_qualification: BucklingDataQualification | None = None
     density_kg_per_m3: float | None = None
 
     @field_validator(

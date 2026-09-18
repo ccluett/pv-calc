@@ -211,6 +211,7 @@ class ExplicitTubeMaterialInput(ContractModel):
     type: Literal["explicit"]
     name: NonBlankString | None = None
     provenance: NonBlankString | None = None
+    buckling_data_qualification: Literal["qualified", "reference_only"] = "qualified"
     properties: TubeMaterialProperties
 
 
@@ -786,6 +787,9 @@ class SmoothBucklingSizingMetadata(ContractModel):
         "internal_radius_plus_half_wall_thickness",
         "external_radius_minus_half_wall_thickness",
     ]
+    buckling_data_qualification: Literal["qualified", "reference_only"] = Field(
+        description="Whether the buckling inputs support acceptance or preliminary sizing only.",
+    )
     target_minimum_margin: Annotated[float, Field(ge=0, allow_inf_nan=False)]
     bounds: NormalizedThicknessBounds
     selected_wall_thickness: MillimeterQuantity

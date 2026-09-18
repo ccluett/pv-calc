@@ -18,16 +18,19 @@
 # of its own. Everything is room temperature unless a record says otherwise.
 # A design uses the governing code and its own qualified material data.
 #
-# No generic bundled record carries `proportional_limit_mpa` or a complete
-# compressive curve. The values located in MIL-HDBK-5J are specific to product
-# form, direction, thickness, and heat treatment, while these alloy-name
-# records do not encode those qualifications. Qualified values can be supplied
-# explicitly or in a scoped custom database. The plastics remain null because
-# their stored allowable is a long-term quantity that no elastic-limit
-# criterion attaches to. The brittle record is null because releasing buckling
-# capacity for a flaw-dominated material on an elastic screen would claim more
-# than its data sheet supports. A null limit withholds elastic buckling capacity
-# rather than defaulting to a fraction of yield.
+# `proportional_limit_mpa` is not a specification minimum: no consulted
+# handbook tabulates one. Al-6061-T6 and Ti-6Al-4V retain historical,
+# curve-derived reference values and complete compressive curves so the tool
+# can produce auditable preliminary estimates. Their
+# `buckling_data_qualification: reference_only` marker prevents those estimates
+# from becoming acceptance capacities: product form, direction, heat treatment,
+# and proof stress still need project qualification. The other metals have no
+# adopted curve or limit. The plastics remain null because their stored
+# allowable is a long-term quantity that no elastic-limit criterion attaches
+# to. The brittle record is null because releasing buckling capacity for a
+# flaw-dominated material on an elastic screen would claim more than its data
+# sheet supports. A null limit withholds elastic buckling capacity rather than
+# defaulting to a fraction of yield.
 #
 # Units are SI, MPa and kg/m^3. A source stating English units is converted
 # at 1 ksi = 6.894757 MPa, 1 Mpsi = 6894.757 MPa, and
@@ -43,7 +46,28 @@ materials:
     poisson_ratio: 0.33
     yield_strength_mpa: 241
     ultimate_strength_mpa: 262
+    proportional_limit_mpa: 183.4
+    ramberg_osgood_n: 28
+    compressive_proof_stress_mpa: 241
+    buckling_data_qualification: reference_only
     failure_category: ductile_metal
+    compressive_stress_strain_source: >-
+      MIL-HDBK-5J (31 January 2003), Section 9.8.4.1.2: strain = s/E +
+      0.002 (s/s0)^n, anchored at 0.2% compression proof stress s0.
+      Figure 3.6.2.2.6(i), printed p. 3-283, supplies the typical LT
+      compressive exponent n = 28 for room-temperature 6061-T6 extrusion;
+      LT is the hoop direction of an extruded tube. Table 3.6.2.0(g) gives
+      Fcy(LT) = 35 ksi for extruded rod, bar, and shapes, rounded to
+      241 MPa, matching the stored tensile minimum. A minimum anchor with
+      a typical shape, not a statistical design allowable. This curve is
+      retained as reference-only data because the generic alloy name does not
+      establish that product form and direction for a particular request.
+    proportional_limit_source: >-
+      Derived from the compressive curve above at tangent modulus 0.99 E:
+      183.4 MPa = 0.761 x yield. This pv-calc elastic-accuracy criterion
+      differs from MIL-HDBK-5J's 0.0001 plastic-strain convention in
+      Section 1.4.4.2, printed p. 1-9. It screens elastic buckling capacity;
+      it is not a design allowable and is retained as reference-only data.
     source: >-
       ASTM B221 and ASTM B241 specification minimums for wrought aluminum
       6061-T6 (extruded profiles and seamless extruded tube). Basis:
@@ -56,10 +80,9 @@ materials:
       of tension and compression), and estimated 0.33 are nominal values
       from the ASM Aerospace Specification Metals / MatWeb data sheet
       "Aluminum 6061-T6; 6061-T651" (asm.matweb.com). Temperature: room
-      temperature; no elevated-temperature derating is stored. No proportional
-      limit or compressive curve is stored: the located MIL-HDBK-5J curves are
-      product-form- and direction-specific, while this generic record does not
-      require the caller to identify an extruded tube or its hoop direction.
+      temperature; no elevated-temperature derating is stored. The bundled
+      compression curve and derived proportional limit are reference-only;
+      qualify the actual product form and hoop direction before acceptance.
   Al-7075-T6:
     density_kg_per_m3: 2810
     elastic_modulus_mpa: 71016
@@ -95,7 +118,28 @@ materials:
     poisson_ratio: 0.34
     yield_strength_mpa: 827
     ultimate_strength_mpa: 896
+    proportional_limit_mpa: 602.0
+    ramberg_osgood_n: 21
+    compressive_proof_stress_mpa: 827
+    buckling_data_qualification: reference_only
     failure_category: ductile_metal
+    compressive_stress_strain_source: >-
+      MIL-HDBK-5J (31 January 2003), Section 9.8.4.1.2 curve convention.
+      Figures 5.4.1.1.6(b) and (c), printed p. 5-65, supply typical
+      longitudinal compressive n = 21 for room-temperature annealed
+      extrusion. Using this shape for hoop compression and for this record's
+      bar, billet, sheet, and plate forms remains unverified. The 827 MPa
+      tensile minimum is a substitute compression anchor, not a measured
+      proof stress. Table 5.4.1.0(c1) annealed bar gives Fcy(L) = 129 ksi
+      against Fty(L) = 125 ksi; lowering the anchor lowers this assumed
+      curve, but does not validate the direction or product-form substitutions.
+      Retained as reference-only data for auditable preliminary estimates.
+    proportional_limit_source: >-
+      Derived from the assumed compressive curve above using the same
+      pv-calc 0.99 E tangent-modulus screen as Al-6061-T6:
+      602.0 MPa = 0.728 x yield. An elastic applicability limit, not a
+      design allowable; the curve's direction and product-form limitations
+      apply. Retained as reference-only data.
     source: >-
       ASTM B348 specification minimums for Ti-6Al-4V (Grade 5, UNS R56400)
       bar and billet, annealed; ASTM B265 Grade 5 sheet and plate states the
@@ -107,9 +151,9 @@ materials:
       ASM Aerospace Specification Metals / MatWeb data sheet "Titanium
       Ti-6Al-4V (Grade 5), Annealed" (asm.matweb.com, bassnum MTP641).
       Temperature: room temperature; no elevated-temperature derating is
-      stored. No proportional limit or compressive curve is stored: the located
-      MIL-HDBK-5J curve is for longitudinal compression of annealed extrusion,
-      not the generic hoop direction and product forms represented here.
+      stored. The bundled longitudinal annealed-extrusion curve and derived
+      proportional limit are reference-only; they do not establish the hoop
+      response of the generic product forms represented here.
   Ti-Grade-2:
     density_kg_per_m3: 4512
     elastic_modulus_mpa: 104800

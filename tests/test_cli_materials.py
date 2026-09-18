@@ -71,15 +71,21 @@ def test_bundled_materials_work_outside_checkout_and_explicit_override_wins(tmp_
     assert len(records) == 10
     assert all(record["database"] == BUNDLED_MATERIAL_DATABASE for record in records)
     aluminium = show_material("Al-6061-T6")
-    assert "proportional_limit_mpa" not in aluminium["properties"]
-    assert "ramberg_osgood_n" not in aluminium["properties"]
+    assert aluminium["properties"]["proportional_limit_mpa"] == 183.4
+    assert aluminium["properties"]["ramberg_osgood_n"] == 28.0
+    assert aluminium["properties"]["buckling_data_qualification"] == "reference_only"
     assert aluminium["capabilities"]["cylinder"] == {
-        "available": False, "missing_properties": ["proportional_limit_mpa"],
+        "available": True,
+        "missing_properties": [],
     }
     titanium = show_material("Ti-6Al-4V")
-    assert "proportional_limit_mpa" not in titanium["properties"]
-    assert "ramberg_osgood_n" not in titanium["properties"]
-    assert not titanium["capabilities"]["smooth_cylinder_buckling_capacity"]["available"]
+    assert titanium["properties"]["proportional_limit_mpa"] == 602.0
+    assert titanium["properties"]["ramberg_osgood_n"] == 21.0
+    assert titanium["properties"]["buckling_data_qualification"] == "reference_only"
+    assert titanium["capabilities"]["smooth_cylinder_buckling_capacity"] == {
+        "available": True,
+        "missing_properties": [],
+    }
     other = show_material("Al-7075-T6")
     assert other["capabilities"]["smooth_cylinder_buckling_capacity"] == {
         "available": False, "missing_properties": ["proportional_limit_mpa"],

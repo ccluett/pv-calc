@@ -28,11 +28,7 @@ pv-calc cylinder \
   --gravity "9.81 m/s^2" --design-factor 1.0 \
   --internal-radius "50 mm" --wall-thickness "1 mm" \
   --unsupported-length "300 mm" \
-  --failure-category ductile_metal --yield-strength "250 MPa" \
-  --elastic-modulus "70000 MPa" --poisson-ratio 0.3 \
-  --proportional-limit "200 MPa" \
-  --material-provenance "example values; qualify for the actual product" \
-  --format text
+  --material Al-6061-T6 --format text
 ```
 
 Every dimensioned input carries a unit, quoted (`"8 mm"`) or attached (`8mm`).
@@ -49,9 +45,18 @@ accepted for compatibility and has no effect.
 
 Read status fields alongside numbers. When a caller supplies a proportional
 limit without a complete curve, a smooth-cylinder elastic buckling estimate
-above that limit retains its pressure but has a null `margin`. Deformation
+above that limit retains its pressure but has a null `margin`. It cannot pass;
+if that elastic upper bound is already below the requested demand and margin,
+the check can still fail conservatively. Deformation
 beyond the supplied material strength is labeled
 `elastic_estimate_material_limit`; it is not a plastic-deformation prediction.
+Bundled reference-only compression curves return a numerical
+`released_unqualified_material` estimate, but that estimate is not an
+acceptance capacity. `check` remains indeterminate unless the corresponding
+elastic upper bound already proves failure; qualified nonlinear material data
+cannot raise that bound under the supplied elastic properties. Reference-only
+data may drive exploratory sizing, whose selected result retains the same
+qualification and cannot pass acceptance without qualified data.
 Ring-shell pressures, including the inter-ring smooth-shell estimate, remain
 advisory and therefore stay indeterminate when selected with `check`.
 Thickness sizing selects the smallest solution among model-eligible intervals
@@ -59,6 +64,14 @@ within the requested bounds and reports excluded intervals below the selection.
 Zero-pressure forward requests are supported: demand and available deformation
 are zero, capacities retain their applicability gates, and capacity/demand
 margins are null. Sizing requires positive pressure.
+
+Smooth-cylinder and hemispherical buckling are thin-shell calculations only.
+The current release gate requires shell mid-surface radius / thickness `> 10`;
+`R_mid/t <= 10` has no collapse model in pv-calc and must not be interpreted as
+a physical failure or safe result. The committed 6000 m housing study lands at
+about `R_mid/t = 9.3`, so the NASA plasticity correction does not close that
+flagship coverage gap. Use a qualified thick-shell/collapse method outside this
+domain.
 
 For a direct depth load, density, gravity, and the design factor are all
 required; there is no default factor. The resulting design differential
@@ -87,20 +100,22 @@ elastic properties. Smooth-cylinder capacity additionally needs either a
 proportional limit or a complete compressive Ramberg-Osgood curve; hemisphere
 buckling needs a proportional limit.
 
-The generic bundled alloy records intentionally carry neither proportional
-limits nor compressive curves. Handbook curves located for Al-6061-T6 and
-Ti-6Al-4V are tied to particular product forms and directions, while the
-generic records do not make the caller identify those qualifications. Buckling
-therefore remains indeterminate until the caller supplies qualified data
-explicitly or selects a deliberately scoped record from a custom database.
+The generic bundled Al-6061-T6 and Ti-6Al-4V records retain handbook-derived
+proportional limits and compressive curves as `reference_only`. This keeps a
+copy-and-run calculation useful and preserves the complete derivation beside
+the number, while preventing it from becoming an acceptance decision. The
+curves are tied to particular product forms and directions that the generic
+names do not establish. Supply qualified data explicitly or select a
+deliberately scoped custom record to obtain an acceptance-eligible result.
 
 [pv_calc/data/materials.yaml](https://github.com/ccluett/pv-calc/blob/main/pv_calc/data/materials.yaml)
 is the canonical bundled database; the repository-root `materials.yaml` is a
 compatibility symlink to it. It contains ten records across the three failure
 categories. Each property identifies its source. The stored strengths are
 reference inputs, not design allowables. When used, derivations of working
-strengths and qualified custom-database limits or curves appear in
-`material.property_sources`.
+strengths, proportional limits, and compressive curves appear in
+`material.property_sources`; `material.data_qualification` says whether the
+buckling inputs are acceptance-eligible or reference-only.
 
 Use the same unit-bearing forward, sizing, sweep, or comparison request from
 Python through `calculate`. It returns a JSON-serializable dictionary without
@@ -118,18 +133,7 @@ request = {
         "wall_thickness": {"value": 1.0, "unit": "mm"},
         "unsupported_length": {"value": 300.0, "unit": "mm"},
     },
-    "material": {
-        "type": "explicit",
-        "name": "Project-qualified compression record",
-        "provenance": "Example values; replace with qualified project data.",
-        "properties": {
-            "failure_category": "ductile_metal",
-            "yield_strength": {"value": 250.0, "unit": "MPa"},
-            "elastic_modulus": {"value": 70000.0, "unit": "MPa"},
-            "poisson_ratio": 0.3,
-            "proportional_limit": {"value": 200.0, "unit": "MPa"},
-        },
-    },
+    "material": {"type": "named", "name": "Al-6061-T6"},
 }
 response = calculate(request)
 print(response["assessment"]["status"])
@@ -202,12 +206,12 @@ pv-calc smooth-buckling size \
   --unsupported-length "300 mm" \
   --wall-thickness-lower "0.5 mm" --wall-thickness-upper "4 mm" \
   --stock-thickness "1 mm" --stock-thickness "2 mm" --stock-thickness "3 mm" \
-  --failure-category ductile_metal --yield-strength "250 MPa" \
-  --elastic-modulus "70000 MPa" --poisson-ratio 0.3 \
-  --proportional-limit "200 MPa" \
-  --material-provenance "example values; qualify for the actual product" \
-  --format text
+  --material Al-6061-T6 --format text
 ```
+
+This bundled-material sizing result is preliminary and remains indeterminate
+for acceptance; repeat it with qualified compression data for a releasable
+design check.
 
 A geometry sweep uses `inputs.geometry` and a unit-bearing `inputs.axis` in
 its JSON request. For example, following the Python request above:

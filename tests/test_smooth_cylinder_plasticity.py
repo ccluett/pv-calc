@@ -165,11 +165,10 @@ def test_the_factor_falls_monotonically_as_stress_rises() -> None:
 def test_the_historical_curve_limits_are_at_0p99_tangent_modulus(
     material: dict[str, float], expected: float,
 ) -> None:
-    """Recover the historical limits used by the explicitly scoped examples.
+    """Recover the limits stored as reference-only bundled material data.
 
-    The generic bundled records intentionally contain neither these curves nor
-    their derived limits. This check retains independent evidence for the
-    explicitly supplied historical assumptions without widening their scope.
+    This check independently preserves the curve derivation while the material
+    qualification status prevents its product-form assumptions from widening.
     """
     e = material["elastic_modulus_mpa"]
     low, high = 1.0e-6, material["compressive_proof_stress_mpa"]
@@ -489,18 +488,30 @@ def _smooth_request(material: dict) -> dict:
     }
 
 
-def test_generic_titanium_withholds_until_qualified_curve_data_are_supplied() -> None:
+def test_generic_titanium_returns_a_reference_estimate_until_curve_is_qualified() -> None:
     named = calculate(_smooth_request({"type": "named", "name": "Ti-6Al-4V"}))
     explicit = calculate(_smooth_request(EXPLICIT_TITANIUM_CURVE))
     named_result = named["result"]
-    assert named_result["capacity_status"] == "withheld_applicability"
-    assert named_result["correlated_critical_pressure_mpa"]["value"] is None
-    assert named_result["proportional_limit_mpa"]["value"] is None
-    assert named_result["margin"] is None
-    assert named_result["plasticity_factor"] is None
-    assert named_result["ramberg_osgood_n"] is None
-    assert assess_response(named)["status"] == "indeterminate"
-    assert "property_sources" not in named["material"]
+    assert named_result["capacity_status"] == "released_unqualified_material"
+    assert named_result["correlated_critical_pressure_mpa"]["value"] == pytest.approx(
+        62.7161928406424, abs=5e-7
+    )
+    assert named_result["proportional_limit_mpa"]["value"] == 602.0
+    assert named_result["margin"] is not None
+    assert named_result["plasticity_factor"] == pytest.approx(0.984780, abs=1e-6)
+    assert named_result["ramberg_osgood_n"] == 21.0
+    assert named_result["buckling_data_qualification"] == "reference_only"
+    assert assess_response(named)["status"] == "fail"
+    assert named["material"]["data_qualification"]["buckling"]["status"] == (
+        "reference_only"
+    )
+    assert "MIL-HDBK-5J" in named["material"]["property_sources"][
+        "compressive_stress_strain"
+    ]
+    assert any(
+        "reference-only" in reason
+        for reason in named_result["release_gate_violations"]
+    )
     elastic_candidate = next(
         candidate for candidate in named_result["candidates"] if candidate["applicable"]
     )
@@ -517,7 +528,7 @@ def test_generic_titanium_withholds_until_qualified_curve_data_are_supplied() ->
     assert explicit_result["plasticity_factor"] == pytest.approx(0.984780, abs=1e-6)
 
 
-def test_generic_aluminium_cannot_use_an_extrusion_curve_implicitly() -> None:
+def test_generic_aluminium_curve_stays_a_non_acceptance_reference_estimate() -> None:
     inputs = {
         "external_pressure": {"value": 20.0, "unit": "MPa"},
         "shell_mid_surface_radius": {"value": 100.5, "unit": "mm"},
@@ -531,9 +542,12 @@ def test_generic_aluminium_cannot_use_an_extrusion_curve_implicitly() -> None:
         "material": {"type": "named", "name": "Al-6061-T6"},
         "inputs": inputs,
     })
-    assert named["result"]["capacity_status"] == "withheld_applicability"
-    assert named["result"]["correlated_critical_pressure_mpa"]["value"] is None
-    assert named["result"]["proportional_limit_mpa"]["value"] is None
+    assert named["result"]["capacity_status"] == "released_unqualified_material"
+    assert named["result"]["correlated_critical_pressure_mpa"]["value"] == pytest.approx(
+        20.038967943932864, abs=5e-7
+    )
+    assert named["result"]["proportional_limit_mpa"]["value"] == 183.4
+    assert named["result"]["buckling_data_qualification"] == "reference_only"
     assert assess_response(named)["status"] == "indeterminate"
 
     qualified = calculate({
@@ -562,6 +576,45 @@ def test_generic_aluminium_cannot_use_an_extrusion_curve_implicitly() -> None:
         20.038967943932864, abs=5e-7
     )
     assert assess_response(qualified)["status"] == "pass"
+
+
+def test_explicit_reference_only_curve_cannot_pass_acceptance() -> None:
+    material = {
+        **EXPLICIT_TITANIUM_CURVE,
+        "buckling_data_qualification": "reference_only",
+    }
+    response = calculate(_smooth_request(material))
+    assert response["result"]["capacity_status"] == "released_unqualified_material"
+    assert response["result"]["correlated_critical_pressure_mpa"]["value"] == pytest.approx(
+        62.7161928406424, abs=5e-7
+    )
+    assert assess_response(response)["status"] == "fail"
+
+
+def test_reference_only_reason_survives_pending_plasticity_precedence() -> None:
+    material = {
+        "type": "explicit",
+        "name": "Reference-only titanium proportional limit",
+        "buckling_data_qualification": "reference_only",
+        "properties": {
+            "failure_category": "ductile_metal",
+            "yield_strength": {"value": 827.0, "unit": "MPa"},
+            "elastic_modulus": {"value": 113800.0, "unit": "MPa"},
+            "poisson_ratio": 0.34,
+            "proportional_limit": {"value": 602.0, "unit": "MPa"},
+        },
+    }
+    response = calculate(_smooth_request(material))
+
+    result = response["result"]
+    assert result["capacity_status"] == "released_pending_plasticity"
+    assert any(
+        "reference-only" in reason
+        for reason in result["release_gate_violations"]
+    )
+    check = assess_response(response)["checks"][0]
+    assert check["status"] == "fail"
+    assert any("reference-only" in reason for reason in check["reasons"])
 
 
 def test_the_composed_cylinder_reports_the_corrected_buckling_capacity() -> None:

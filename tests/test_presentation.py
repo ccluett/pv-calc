@@ -64,7 +64,8 @@ def test_summary_is_concise_retains_quantities_and_does_not_mutate() -> None:
 
 
 @pytest.mark.parametrize("release_status", [
-    "released_pending_plasticity", "withheld_applicability", "withheld_correlation_overlap",
+    "released_pending_plasticity", "released_unqualified_material",
+    "withheld_applicability", "withheld_correlation_overlap",
 ])
 def test_elastic_estimates_never_become_capacities(release_status: str) -> None:
     response = _example("smooth-buckling", "smooth_buckling_moderate_nasa.json")
@@ -138,6 +139,32 @@ def test_ring_bay_estimate_cannot_be_promoted_to_a_released_check(
     assert row["capacity"] == ""
 
 
+def test_reference_only_ring_bay_remains_advisory_and_unqualified() -> None:
+    response = calculate({
+        "schema_version": CALC_SCHEMA_VERSION, "model": "ring-shell",
+        "inputs": {
+            "external_pressure": _q(0.1),
+            "shell_mid_surface_radius": _q(100, "mm"),
+            "wall_thickness": _q(1, "mm"),
+            "unsupported_length": _q(600, "mm"),
+            "ring_spacing": _q(150, "mm"),
+            "ring_axial_width": _q(5, "mm"),
+            "ring_radial_height": _q(5, "mm"),
+            "ring_location": "external",
+        },
+        "material": {"type": "named", "name": "Al-6061-T6"},
+    })
+
+    bay = response["result"]["inter_ring_shell_buckling"]
+    assert bay["capacity_status"] == "released_unqualified_material"
+    assert bay["correlated_critical_pressure_mpa"]["value"] is not None
+    check = assess_response(response, ["inter_ring_shell_buckling"])["checks"][0]
+    assert check["applicability"] == "advisory_unqualified_material"
+    assert check["eligible"] is False
+    assert check["capacity"]["value"] is None
+    assert check["status"] == "indeterminate"
+
+
 def _uncorrected_titanium() -> dict:
     """Exercise the proportional-limit screen without the bundled curve."""
     return {
@@ -154,9 +181,12 @@ def _uncorrected_titanium() -> dict:
 
 
 @pytest.mark.parametrize("model", ["cylinder", "smooth-buckling"])
-@pytest.mark.parametrize("pressure", [1.0, 92.35134])
-def test_pending_pressure_is_visible_without_deciding_buckling_acceptance(
-    model: str, pressure: float,
+@pytest.mark.parametrize(
+    ("pressure", "expected_status"),
+    [(1.0, "indeterminate"), (92.35134, "fail")],
+)
+def test_pending_pressure_is_visible_and_its_elastic_upper_bound_can_reject(
+    model: str, pressure: float, expected_status: str,
 ) -> None:
     wall = 152.4 / 10.55
     radius_input = (
@@ -178,11 +208,76 @@ def test_pending_pressure_is_visible_without_deciding_buckling_acceptance(
     assert estimate["status"] == "released_pending_plasticity"
     assert estimate["value"]["value"] == pytest.approx(63.685456731934785)
     check = next(c for c in summary["assessment"]["checks"] if c["id"] == "smooth_cylinder_buckling")
-    assert check["status"] == "indeterminate"
+    assert check["status"] == expected_status
     assert check["capacity"]["value"] is None
+    assert check["upper_bound"]["value"] == pytest.approx(63.685456731934785)
     assert check["margin"] is None
     assert "elastic_buckling_estimate: released_pending_plasticity | 63.6855 MPa" in render_text(response)
+    assert "upper bound 63.6855 MPa" in render_text(response)
+    if expected_status == "fail":
+        assert any("cannot raise that bound" in reason for reason in check["reasons"])
+        row = next(csv.DictReader(io.StringIO(render_csv(response))))
+        if model == "cylinder":
+            row = next(
+                item
+                for item in csv.DictReader(io.StringIO(render_csv(response)))
+                if item["check"] == "smooth_cylinder_buckling"
+            )
+        assert float(row["upper_bound"]) == pytest.approx(63.685456731934785)
     assert response == original
+
+
+@pytest.mark.parametrize("model", ["cylinder", "smooth-buckling"])
+@pytest.mark.parametrize(
+    ("pressure", "expected_status"),
+    [(63.0, "indeterminate"), (64.0, "fail")],
+)
+def test_reference_curve_uses_the_elastic_bound_not_the_corrected_estimate(
+    model: str, pressure: float, expected_status: str,
+) -> None:
+    wall = 152.4 / 10.55
+    radius_input = (
+        {"internal_radius": _q(152.4 - wall, "mm")}
+        if model == "cylinder" else {
+            "shell_mid_surface_radius": _q(152.4 - wall / 2.0, "mm"),
+            "load_case": "hydrostatic_closed_end",
+        }
+    )
+    response = calculate({
+        "schema_version": CALC_SCHEMA_VERSION,
+        "model": model,
+        "material": {"type": "named", "name": "Ti-6Al-4V"},
+        "inputs": {
+            "external_pressure": _q(pressure),
+            "wall_thickness": _q(wall, "mm"),
+            "unsupported_length": _q(609.6, "mm"),
+            **radius_input,
+        },
+    })
+
+    summary = summarize_response(response)
+    check = next(
+        item
+        for item in summary["assessment"]["checks"]
+        if item["id"] == "smooth_cylinder_buckling"
+    )
+    assert check["applicability"] == "released_unqualified_material"
+    assert check["status"] == expected_status
+    assert check["capacity"]["value"] is None
+    assert check["upper_bound"]["value"] == pytest.approx(63.685456731934785)
+    assert summary["outputs"]["reference_buckling_estimate"]["value"][
+        "value"
+    ] == pytest.approx(62.7161928406424)
+    if expected_status == "fail":
+        coverage = summary["assessment"]["required_check_coverage"]
+        assert "smooth_cylinder_buckling" in coverage["evaluated"]
+        assert coverage["complete"] is False
+        assert summary["assessment"]["governing_check"] is None
+    if pressure == 63.0:
+        # A different qualified curve could lie above the reference correction,
+        # up to the elastic bound. A stricter requested margin can still make
+        # rejection certain without turning the estimate into a capacity.
+        assert assess_response(response, minimum_margin=0.02)["status"] == "fail"
 
 
 @pytest.mark.parametrize("model", ["cylinder", "smooth-buckling"])
@@ -269,6 +364,42 @@ def test_thick_plate_withholds_bending_but_seat_check_can_remain_available() -> 
     assert assess_response(response, ["center_deflection"])["status"] == "indeterminate"
 
 
+@pytest.mark.parametrize(
+    ("pressure", "expected_status"),
+    [(6.0, "indeterminate"), (20.0, "fail")],
+)
+def test_named_hemisphere_reference_estimate_uses_its_elastic_upper_bound(
+    pressure: float, expected_status: str,
+) -> None:
+    response = calculate({
+        "schema_version": CALC_SCHEMA_VERSION,
+        "model": "hemisphere",
+        "inputs": {
+            "external_pressure": _q(pressure),
+            "internal_radius": _q(100, "mm"),
+            "wall_thickness": _q(100 / 39.5, "mm"),
+        },
+        "material": {"type": "named", "name": "Al-6061-T6"},
+    })
+
+    assert response["result"]["buckling_capacity_status"] == (
+        "released_unqualified_material"
+    )
+    summary = summarize_response(response)
+    buckling = next(
+        check for check in summary["assessment"]["checks"]
+        if check["id"] == "hemisphere_buckling"
+    )
+    assert buckling["status"] == expected_status
+    assert buckling["capacity"]["value"] is None
+    assert buckling["upper_bound"]["value"] == pytest.approx(8.018849005433532)
+    estimate = summary["outputs"]["reference_buckling_estimate"]
+    assert estimate["value"]["value"] is not None
+    assert "reference_buckling_estimate: released_unqualified_material" in render_text(
+        response
+    )
+
+
 def test_coupled_sizing_retains_both_checks_and_targets() -> None:
     request = _validate_request(SmoothBucklingSizeRequest, json.loads((EXAMPLES / "smooth_buckling_size_moderate.json").read_text()))
     response = _evaluate_smooth_buckling_size(request, None)
@@ -278,6 +409,22 @@ def test_coupled_sizing_retains_both_checks_and_targets() -> None:
     assert summary["assessment"]["status"] == "pass"
     assert all(check["required_margin"] == response["sizing"]["target_minimum_margin"] for check in checks)
     assert summary["sizing"]["selected_wall_thickness"] == response["sizing"]["selected_wall_thickness"]
+
+
+def test_reference_only_curve_can_size_preliminarily_without_passing_check() -> None:
+    raw = json.loads((EXAMPLES / "smooth_buckling_size_moderate.json").read_text())
+    raw["material"] = {"type": "named", "name": "Al-6061-T6"}
+    request = _validate_request(SmoothBucklingSizeRequest, raw)
+    response = _evaluate_smooth_buckling_size(request, None)
+
+    assert response["sizing"]["selected_wall_thickness"]["value"] > 0
+    assert response["sizing"]["buckling_data_qualification"] == "reference_only"
+    buckling = response["selected_results"]["smooth-buckling"]["result"]
+    assert buckling["capacity_status"] == "released_unqualified_material"
+    summary = summarize_response(response)
+    assert summary["assessment"]["status"] == "indeterminate"
+    estimate = summary["outputs"]["reference_buckling_estimate"]
+    assert estimate["value"] == buckling["correlated_critical_pressure_mpa"]
 
 
 def test_plate_sizing_deflection_check_has_its_own_units_and_criterion() -> None:

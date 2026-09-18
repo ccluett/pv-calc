@@ -16,6 +16,10 @@ from typing import Any
 
 from pv_calc.contracts import QuantityInput, _to_unit
 from pv_calc.errors import CalcCliError
+from pv_calc.pressure_vessel import (
+    BUCKLING_ELASTIC_UPPER_BOUND_FAILURE_REASON,
+    BUCKLING_ELASTIC_UPPER_BOUND_STATUSES,
+)
 
 
 ASSESSMENT_SCOPE = "Only the listed calculation checks and supplied criteria are assessed."
@@ -24,7 +28,8 @@ CSV_FIELDS = (
     "outcome", "message", "depth_m", "design_factor", "service_external_pressure_mpa",
     "design_external_pressure_mpa", "fluid_density_kg_per_m3", "gravity_m_per_s2",
     "assessment", "scope", "omissions", "check", "status", "eligible", "demand", "demand_unit",
-    "capacity", "capacity_unit", "margin", "required_margin", "applicability",
+    "capacity", "capacity_unit", "upper_bound", "upper_bound_unit", "margin",
+    "required_margin", "applicability",
     "reasons", "wall_thickness_mm", "plate_thickness_mm", "structural_air_mass_kg",
     "net_submerged_mass_kg",
 )
@@ -45,9 +50,10 @@ def _quantity(value: Any, unit: str = "MPa") -> dict[str, Any]:
 def _check(
     name: str, demand: Any, capacity: Any, margin: Any,
     applicability: str = "released", reasons: Sequence[str] = (),
+    upper_bound: Any = None,
 ) -> dict[str, Any]:
     released = applicability == "released"
-    return {
+    check = {
         "id": name,
         "demand": _quantity(demand),
         "capacity": _quantity(capacity if released else None,
@@ -57,6 +63,24 @@ def _check(
         "applicability": applicability,
         "reasons": list(dict.fromkeys(reasons)),
     }
+    if _number(upper_bound) is not None:
+        check["upper_bound"] = _quantity(
+            upper_bound,
+            upper_bound.get("unit", "MPa") if isinstance(upper_bound, dict) else "MPa",
+        )
+    return check
+
+
+def _smooth_buckling_elastic_upper_bound(result: dict[str, Any]) -> Any:
+    if result.get("capacity_status") not in BUCKLING_ELASTIC_UPPER_BOUND_STATUSES:
+        return None
+    candidates = [
+        candidate.get("correlated_critical_pressure_mpa")
+        for candidate in result.get("candidates", [])
+        if candidate.get("applicable")
+        and _number(candidate.get("correlated_critical_pressure_mpa")) is not None
+    ]
+    return candidates[0] if len(candidates) == 1 else None
 
 
 def _result_checks(payload: dict[str, Any]) -> list[dict[str, Any]]:
@@ -73,15 +97,26 @@ def _result_checks(payload: dict[str, Any]) -> list[dict[str, Any]]:
     if model == "smooth-buckling":
         return [_check(
             "smooth_cylinder_buckling", pressure, result.get("correlated_critical_pressure_mpa"), result.get("margin"),
-            result.get("capacity_status", "unavailable"),
-            [*result.get("validity_violations", []), *result.get("release_gate_violations", [])],
+            applicability=result.get("capacity_status", "unavailable"),
+            reasons=[
+                *result.get("validity_violations", []),
+                *result.get("release_gate_violations", []),
+            ],
+            upper_bound=_smooth_buckling_elastic_upper_bound(result),
         )]
     if model == "hemisphere":
         return [
             _check("hemisphere_stress", result.get("governing_stress_mpa"), strength, result.get("stress_margin")),
             _check("seat_bearing", result.get("seat_bearing_stress_mpa"), strength, result.get("seat_margin")),
             _check("hemisphere_buckling", pressure, result.get("released_buckling_pressure_mpa"), result.get("buckling_margin"),
-                   result.get("buckling_capacity_status", "unavailable"), result.get("buckling_validity_violations", [])),
+                   applicability=result.get("buckling_capacity_status", "unavailable"),
+                   reasons=result.get("buckling_validity_violations", []),
+                   upper_bound=(
+                       result.get("released_buckling_pressure_mpa")
+                       if result.get("buckling_capacity_status")
+                       == "released_unqualified_material"
+                       else None
+                   )),
         ]
     if model == "plate":
         checks = [_check(
@@ -111,6 +146,8 @@ def _result_checks(payload: dict[str, Any]) -> list[dict[str, Any]]:
             )
         elif inter_ring_status == "released":
             inter_ring_status = "advisory"
+        elif inter_ring_status == "released_unqualified_material":
+            inter_ring_status = "advisory_unqualified_material"
         elif inter_ring_status == "released_pending_plasticity":
             inter_ring_status = "advisory_pending_plasticity"
         inter_ring = _check(
@@ -181,7 +218,8 @@ def assess_response(
     """Assess released checks against criteria; missing checks stay indeterminate.
 
     A known failing required check takes precedence over unavailable required
-    checks. Zero demand can pass a released finite capacity with a null margin.
+    checks. A non-released elastic upper bound may establish failure but never
+    passage. Zero demand can pass a released finite capacity with a null margin.
     Existing sizing/assembly criteria remain in force when a lower structural
     margin is supplied; centre deflection retains its explicit limit. A name absent from the response becomes an explicit
     unavailable check, which is useful for scripted requirements.
@@ -219,8 +257,17 @@ def assess_response(
         target = max(structural_target, original_target, declared_target)
         check["required_margin"] = target
         demand, capacity = _number(check.get("demand")), _number(check.get("capacity"))
+        upper_bound = _number(check.get("upper_bound"))
         released = check.get("applicability") == "released"
         eligible = released and check.get("eligible", True) and demand is not None and demand >= 0 and capacity is not None and capacity > 0
+        upper_bound_failure = (
+            check.get("applicability") in BUCKLING_ELASTIC_UPPER_BOUND_STATUSES
+            and demand is not None
+            and demand >= 0.0
+            and upper_bound is not None
+            and upper_bound >= 0.0
+            and upper_bound < demand * (1.0 + target)
+        )
         check["eligible"] = bool(eligible)
         reasons = list(check.get("reasons", []))
         if eligible:
@@ -241,11 +288,13 @@ def assess_response(
             if demand == 0 and margin is None:
                 reasons.append("Zero demand; margin ratio is undefined, and the released capacity meets the criterion.")
         else:
-            check["status"] = "indeterminate"
+            check["status"] = "fail" if upper_bound_failure else "indeterminate"
             if not released:
                 check["capacity"] = _quantity(None, check.get("capacity", {}).get("unit", "MPa"))
                 check["margin"] = None
-            if not reasons:
+            if upper_bound_failure:
+                reasons.append(BUCKLING_ELASTIC_UPPER_BOUND_FAILURE_REASON)
+            elif not reasons:
                 reasons.append("A released demand and capacity are required to assess this check.")
         check["reasons"] = list(dict.fromkeys(reasons))
         checks.append(check)
@@ -257,7 +306,10 @@ def assess_response(
     return {
         "status": status, "checks": checks, "governing_check": governing,
         "required_check_coverage": {
-            "required": required, "evaluated": [check["id"] for check in checks if check["eligible"]],
+            "required": required,
+            "evaluated": [
+                check["id"] for check in checks if check["status"] != "indeterminate"
+            ],
             "indeterminate": [check["id"] for check in checks if check["status"] == "indeterminate"], "complete": complete,
         },
         "scope": payload.get("assessment", {}).get("scope", ASSESSMENT_SCOPE),
@@ -344,6 +396,7 @@ def summarize_response(
             "selected_check_margins", "selected_minimum_margin", "selected_governing_check", "check_targets",
             "target_minimum_margin", "maximum_deflection", "solution_type", "selection_scope", "variable",
             "geometry_constraint", "selected_stock_thickness", "stock_thicknesses",
+            "buckling_data_qualification",
         }}
     outputs = {}
     for prefix in ("displacement", "deflection"):
@@ -351,6 +404,15 @@ def summarize_response(
             outputs[prefix] = {"status": result[f"{prefix}_status"], "reasons": result.get(f"{prefix}_validity_violations", [])}
             if prefix == "deflection":
                 outputs[prefix]["value"] = result.get("released_maximum_deflection_mm")
+    if (
+        payload.get("model") == "hemisphere"
+        and result.get("buckling_capacity_status") == "released_unqualified_material"
+    ):
+        outputs["reference_buckling_estimate"] = {
+            "status": result["buckling_capacity_status"],
+            "value": deepcopy(result.get("released_buckling_pressure_mpa")),
+            "reasons": list(result.get("buckling_validity_violations", [])),
+        }
     if payload.get("model") == "cylinder":
         buckling = payload.get("components", {}).get("smooth_buckling", {}).get("result", {})
     elif payload.get("model") == "smooth-buckling":
@@ -365,6 +427,12 @@ def summarize_response(
             "status": buckling["capacity_status"],
             "value": deepcopy(buckling.get("correlated_critical_pressure_mpa")),
             "reasons": [],
+        }
+    elif buckling.get("capacity_status") == "released_unqualified_material":
+        outputs["reference_buckling_estimate"] = {
+            "status": buckling["capacity_status"],
+            "value": deepcopy(buckling.get("correlated_critical_pressure_mpa")),
+            "reasons": list(buckling.get("release_gate_violations", [])),
         }
     if outputs:
         summary["outputs"] = outputs
@@ -418,7 +486,12 @@ def _render_summary(summary: dict[str, Any]) -> list[str]:
         ) if key in loading))
     for check in assessment["checks"]:
         margin = "undefined" if check.get("margin") is None else _format(check["margin"])
-        lines.append(f"{check['id']}: {check['status'].upper()} | demand {_format(check['demand'])} | capacity {_format(check['capacity'])} | margin {margin} (required {_format(check['required_margin'])})")
+        upper_bound = (
+            f" | upper bound {_format(check['upper_bound'])}"
+            if check.get("upper_bound") is not None
+            else ""
+        )
+        lines.append(f"{check['id']}: {check['status'].upper()} | demand {_format(check['demand'])} | capacity {_format(check['capacity'])}{upper_bound} | margin {margin} (required {_format(check['required_margin'])})")
         lines.extend(f"  {reason}" for reason in check["reasons"])
     for name, output in summary.get("outputs", {}).items():
         lines.append(f"{name}: {output['status']}" + (f" | {_format(output['value'])}" if output.get("value") is not None else ""))
@@ -490,6 +563,8 @@ def render_csv(payload: dict[str, Any]) -> str:
                 **common, "check": check["id"], "status": check["status"], "eligible": check["eligible"],
                 "demand": check["demand"].get("value"), "demand_unit": check["demand"].get("unit"),
                 "capacity": check["capacity"].get("value"), "capacity_unit": check["capacity"].get("unit"),
+                "upper_bound": check.get("upper_bound", {}).get("value"),
+                "upper_bound_unit": check.get("upper_bound", {}).get("unit"),
                 "margin": check["margin"], "required_margin": check["required_margin"],
                 "applicability": check["applicability"], "reasons": " | ".join(check["reasons"]),
             })

@@ -80,8 +80,8 @@ changes from 0.1.0 on are recorded in the [changelog](../CHANGELOG.md).
 |---|---|---|
 | `closed_end_tube_stress` | 3.1.0 | Exact closed-end Lamé stress at both wall surfaces for every thickness; the material check follows the failure category: 3D von Mises against yield strength for `ductile_metal`, maximum hoop stress against the working strength (`plastic`) or ultimate compressive strength (`brittle`), component stresses stay report-only. Scalar radial displacement at each stress-state radius, uniform axial strain, and an axial length change over a supplied gauge length, released only when the caller gives both an elastic modulus and a Poisson ratio |
 | `uniformly_loaded_flat_circular_plate` | 4.1.0 | Roark cases 10a/10b for a declared fixed or simply-supported edge, the surface bending stress compared to the yield, working, or (brittle) ultimate tensile strength; requires `w <= t/2` on a shear-corrected deflection estimate, `0.05 <= nu <= 0.35`, and, from swept FEA evidence, `D_free/t >= 10` (fixed) or `>= 4` (simply supported) to release the bending margin, with the center deflection released only at `>= 20` and `>= 10`; outside those the formula values stay published and the margin or deflection is withheld with its reasons. With an optional outside radius, the average seat bearing stress on the outside annulus, its failure pressure, and margin, thickness-independent and report-only |
-| `roark_nasa_hemispherical_head_external_pressure` | 4.1.0 | Exact Lamé sphere stress under the category's criterion, as for the tube, plus NASA SP-8032 clamped-cap buckling; capacity released only for a thin shell with `lambda > 2` and a source-traceable proportional limit. Exact spherical radial displacement at both wall surfaces, away from the equator. The average seat bearing stress on the equator annulus, its failure pressure, and margin, report-only |
-| `nasa_smooth_cylinder_external_pressure_buckling` | 5.0.0 | NASA SP-8007 Rev. 2 Eqs. 19-29 at shell mid-surface radius; capacity released at every `gamma*Z` except the moderate/long correlation overlap. A complete compressive Ramberg-Osgood curve (`ramberg_osgood_n` with `compressive_proof_stress`) applies the Eqs. 30-32 correction and releases the corrected capacity and margin. Without a curve, a result above the proportional limit remains an elastic upper bound with a null margin (`released_pending_plasticity`). The existing `R_mid/t > 10` gate is unchanged. Reports Roark Table 35 case 20 as a comparator that sets no capacity. The `elastic_applicability` screen labels the applied `p*r/t` comparison and sets no margin |
+| `roark_nasa_hemispherical_head_external_pressure` | 5.0.0 | Exact Lamé sphere stress under the category's criterion, as for the tube, plus NASA SP-8032 clamped-cap buckling; capacity released only for a thin shell with `lambda > 2` and a source-traceable proportional limit. Reference-only limits retain the numerical result as `released_unqualified_material` but cannot support acceptance. Exact spherical radial displacement at both wall surfaces, away from the equator. The average seat bearing stress on the equator annulus, its failure pressure, and margin, report-only |
+| `nasa_smooth_cylinder_external_pressure_buckling` | 5.0.0 | NASA SP-8007 Rev. 2 Eqs. 19-29 at shell mid-surface radius; capacity released at every `gamma*Z` except the moderate/long correlation overlap. A complete compressive Ramberg-Osgood curve (`ramberg_osgood_n` with `compressive_proof_stress`) applies the Eqs. 30-32 correction and releases the corrected capacity and margin. Without a curve, a result above the proportional limit remains an elastic upper bound with a null margin (`released_pending_plasticity`). Reference-only data retain the numerical result and margin as `released_unqualified_material`; neither status can pass, but an elastic upper bound below demand and the required margin establishes conservative failure. The existing `R_mid/t > 10` gate is unchanged. Reports Roark Table 35 case 20 as a comparator that sets no capacity. The `elastic_applicability` screen labels the applied `p*r/t` comparison and sets no margin |
 | `nasa_ring_stiffened_shell_external_pressure` | 4.0.0 | NASA SP-8007 Rev. 2 Eq. 64/65 with Eqs. 82-91 ring stiffnesses and Eq. 91 torsion, fixed 0.75 adjustment, expanding mode search; advisory only. Its inter-ring bay reuses the smooth-cylinder model, including the Eqs. 30-32 correction when a complete compressive curve is supplied. The orthotropic global modes remain elastic: `global_elastic_applicability` labels an over-limit global pressure as an elastic upper bound but neither corrects nor withholds it. The corrected inter-ring pressure may change the advisory governing candidate, without changing the advisory status. Low-lobe theory error and the fixed 0.75 factor remain limitations |
 | `archimedes_submerged_mass_and_buoyancy` | 1.0.0 | Archimedes' principle in Lautrup's constant-gravity form for a fully submerged, rigid, closed, non-flooded body; structural air mass, displaced-fluid mass, net submerged mass, and buoyant-force magnitude from two resolved volumes, two densities, and gravity |
 | `hydrostatic_external_pressure_from_depth` | 1.0.0 | Lautrup Eq. (4-3) `p - p0 = rho0*g0*h` in a fluid of one uniform density under uniform gravity; service and design differential external pressure across the wall with the interior at zero gauge, the design pressure scaled by the caller's policy factor |
@@ -96,9 +96,13 @@ closed-end differential pressure drive both `cylindrical_shell_stress` and
 `axial_length` defaults to the unsupported length and cannot be shorter.
 Detailed kernel responses remain under `components`. `assessment.checks`
 reports unit-bearing demand and released capacity, margin, required margin,
-applicability, and reasons for each check. Pending-plasticity pressures appear
-as elastic estimates in `components` and summary/text output, never as
-acceptance capacity or margin.
+applicability, and reasons for each check. Pending-plasticity and reference-only
+pressures appear as estimates in `components` and summary/text output, never as
+acceptance capacities. A reference-only estimate retains its numerical margin
+for preliminary sizing, but the assessment suppresses that capacity. It remains
+indeterminate unless the elastic upper bound under the supplied elastic
+properties already proves failure; the corrected reference estimate alone never
+sets that failure.
 
 An optional `inputs.closures` array must contain exactly two closures. Each
 specifies its own named or explicit material and either `model: plate` with
@@ -357,10 +361,12 @@ statistical A-basis or B-basis allowables and have no temperature derating,
 weld or heat-affected-zone knockdown, fatigue or notch correction, or
 environmental-cracking adjustment. The calculator applies no safety factor.
 
-No generic bundled alloy record carries `proportional_limit_mpa` or a complete
-compressive Ramberg-Osgood pair. The material schema accepts both through an
-explicit material or a deliberately scoped custom record. The curve
-representation is
+The generic bundled Al-6061-T6 and Ti-6Al-4V records retain a
+`proportional_limit_mpa` and complete compressive Ramberg-Osgood pair with
+`buckling_data_qualification: reference_only`. This preserves a reproducible
+preliminary estimate without promoting the data into an acceptance decision.
+The material schema accepts `qualified` data through an explicit material or a
+deliberately scoped custom record. The curve representation is
 `strain = s/E + 0.002*(s/s0)^n`, with `s0` supplied as
 `compressive_proof_stress_mpa`, following MIL-HDBK-5J Section 9.8.4.1.2.
 The source fields record shape, anchor, product form, direction, and any
@@ -372,9 +378,13 @@ as a suitable successor and cautions users to evaluate it for their application.
 The located Al-6061-T6 curve is LT extrusion data, and the located Ti-6Al-4V
 curve is longitudinal annealed-extrusion data. Neither establishes a generic
 hoop response across the product forms represented by its alloy-name record.
-The values remain available for explicit, caller-qualified use; omitting them
-from the generic records prevents a material description in prose from silently
-releasing capacity.
+The result status is `released_unqualified_material` when these bundled values
+otherwise satisfy the model gates. Detailed output and
+`material.data_qualification` carry the caveat beside the number; concise
+assessment hides the capacity and cannot pass. It reports failure only when the
+separately reported elastic upper bound is below demand and the required margin.
+Explicit inputs default to `qualified` for compatibility, while JSON callers
+may mark them `reference_only` on the material object.
 
 Named-material responses preserve relevant derivations in
 `material.property_sources`, keyed by `working_strength`, `proportional_limit`,
@@ -470,9 +480,10 @@ Where a source gives no rule, capacity is withheld instead of guessed:
   Section 9.8.4.1.2 form with `s0` the 0.2% offset compressive proof stress.
   The located Al-6061-T6 LT-extrusion and Ti-6Al-4V longitudinal-extrusion
   shapes do not establish generic hoop response across their listed product
-  forms. They may be supplied explicitly when qualified. All seven bundled
-  generic metals carry neither a curve nor a proportional limit, so none can
-  release a named-material buckling capacity on prose qualifications alone.
+  forms. The two curves are retained as reference-only data; their numerical
+  estimates and exploratory sizing remain available. `check` cannot pass and
+  stays indeterminate unless the elastic upper bound already proves failure.
+  The other five bundled metals carry neither a curve nor a proportional limit.
 - Ring global and inter-ring instability remain advisory calculator results
   (`capacity_status: advisory`). A complete compressive curve corrects the
   inter-ring smooth-shell pressure; the orthotropic global pressure remains
@@ -521,7 +532,7 @@ only; `RingModeDisposition` does not define it.
 |---|---|---|---|
 | Tube / cylindrical shell (`closed_end_tube_stress` 3.1.0) | `ductile_metal`, first yield of the exact Lamé stress state against yield strength; `plastic` and `brittle`, the largest hoop stress magnitude against the working or ultimate compressive strength; no post-yield or fracture model. Displacement additionally needs an elastic modulus and a Poisson ratio and is linearly elastic | Exact through-wall radial, hoop, and axial stress at both wall surfaces, principal ordering, 3D von Mises, the category's failure criterion, theoretical failure pressure, margin; scalar radial displacement at each stress-state radius, uniform axial strain, and the axial length change over a supplied gauge length | Tube/endcap junction and interface response — `external_blocker`: the stresses apply away from that interface, and no seat, attachment, or restraint detail exists to model, which is equally why junction bending is outside the displacement. Ovalization, initial out-of-roundness, and plastic deformation — `external_blocker` for the same missing fabrication and post-yield inputs. Shell stability and closure bending are not gaps here; they are the other rows |
 | Flat circular plate (`uniformly_loaded_flat_circular_plate` 4.1.0) | Governing surface bending stress against the yield strength (`ductile_metal`), working strength (`plastic`), or ultimate tensile strength (`brittle`); a brittle seat reads the ultimate compressive strength | Maximum radial and tangential bending stress with locations and governing direction, and the margin, released inside the evidence floors; transverse shear `p*D_free/(4*t)` at the support; Kirchhoff center deflection, released on its own stricter floor; with an outside radius, the average seat bearing stress `p*R_o^2/(R_o^2 - R_free^2)`, its failure pressure, and margin | Thick-plate shear-deformation bending below the released `D_free/t` floors — `not_implemented`, those requests are withheld rather than approximated; large-deflection membrane action past `w <= t/2` — `not_implemented`, gated rather than modeled; bearing-contact distribution beyond the average seat stress, attachment, seal, penetration, and compliant real edge restraint — `external_blocker` |
-| Hemispherical head (`roark_nasa_hemispherical_head_external_pressure` 4.1.0) | The category's criterion for the stress check, as for the tube; released buckling additionally requires a source-traceable proportional limit at or above the correlated critical membrane stress. The displacement is linearly elastic and reads the elastic modulus and Poisson ratio this model already requires | Exact Lamé meridional, hoop, and radial stress, von Mises, the category's failure criterion and stress margin; classical sphere critical pressure; NASA SP-8032 clamped-cap correlated pressure and buckling margin, released only for a thin shell with `lambda > 2` and proportional-limit support. The Roark Table 35 case 22 probable minimum is a published comparator and sets no capacity. Exact spherical radial displacement at both wall surfaces, away from the equator. The average seat bearing stress on the equator annulus, its failure pressure, and margin | Equator junction bending, actual restraint, attachments, penetrations, imperfections, residual stress, and plastic interaction — `external_blocker`, and equally why the equator boundary layer is outside the displacement; inelastic buckling correction — `not_implemented`, capacity is withheld instead |
+| Hemispherical head (`roark_nasa_hemispherical_head_external_pressure` 5.0.0) | The category's criterion for the stress check, as for the tube; released buckling additionally requires a source-traceable proportional limit at or above the correlated critical membrane stress. Reference-only data return an estimate but not an acceptance capacity. The displacement is linearly elastic and reads the elastic modulus and Poisson ratio this model already requires | Exact Lamé meridional, hoop, and radial stress, von Mises, the category's failure criterion and stress margin; classical sphere critical pressure; NASA SP-8032 clamped-cap correlated pressure and buckling margin, released only for a thin shell with `lambda > 2` and proportional-limit support. The Roark Table 35 case 22 probable minimum is a published comparator and sets no capacity. Exact spherical radial displacement at both wall surfaces, away from the equator. The average seat bearing stress on the equator annulus, its failure pressure, and margin | Equator junction bending, actual restraint, attachments, penetrations, imperfections, residual stress, and plastic interaction — `external_blocker`, and equally why the equator boundary layer is outside the displacement; inelastic buckling correction — `not_implemented`, capacity is withheld instead |
 | Smooth cylinder buckling (`nasa_smooth_cylinder_external_pressure_buckling` 5.0.0) | Isotropic; linear elastic unless a complete compressive Ramberg-Osgood curve is supplied. With only a proportional limit, a correlated stress above it remains an elastic upper bound as `released_pending_plasticity`; with a curve, NASA Eqs. 30-32 correct the capacity and release its margin | External-pressure instability of an unstiffened, simply supported cylinder: short, moderate, and long candidates, regime selection, corrected or elastic critical pressure and membrane stress, and margin; the Roark case-20 probable minimum is a comparator only | The moderate/long overlap is withheld because NASA gives no selector; the hydrostatic case uses the lateral-pressure Eqs. 30-32 as NASA directs when biaxial factors are unavailable. The `R_mid/t > 10` gate is unchanged and no new thickness-domain evidence or physical validation was established. End-restraint credit remains `not_implemented` |
 | Ring-stiffened shell (`nasa_ring_stiffened_shell_external_pressure` 4.0.0) | One isotropic material for shell and ring. A complete curve corrects the inter-ring smooth-shell result. The orthotropic global mode remains elastic; its applicability screen may use the proportional limit or yield strength but only labels the advisory result | `global_ring_stiffened_shell_eq64_eq91` and `inter_ring_shell_buckling`; both remain `implemented_advisory`, and a corrected inter-ring pressure may change the advisory governing candidate | `long_cylinder_global_eq66_transition`, ring material strength and crippling, frame tripping, attachment and fabrication effects, and local/global interaction remain `external_blocker`; section rules inapplicable to the supported solid ring remain `not_applicable` |
 

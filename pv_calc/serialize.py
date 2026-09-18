@@ -11,6 +11,7 @@ from pv_calc.contracts import CALC_SCHEMA_VERSION, _quantity
 from pv_calc.errors import CalcCliError
 from pv_calc.hydrostatics import SubmergedMassResult
 from pv_calc.pressure_vessel import (
+    BUCKLING_REFERENCE_ONLY_REASON,
     FlatCircularPlateResult,
     HemisphereResult,
     RingShellResult,
@@ -341,6 +342,22 @@ def _material_payload(
     }
     if property_sources:
         payload["property_sources"] = property_sources
+    if (
+        isinstance(material, ResolvedMaterial)
+        and model in {"smooth-buckling", "hemisphere", "ring-shell"}
+    ):
+        qualification = material.buckling_data_qualification
+        payload["data_qualification"] = {
+            "buckling": {
+                "status": qualification,
+                "reason": (
+                    BUCKLING_REFERENCE_ONLY_REASON
+                    if qualification == "reference_only"
+                    else "the selected material data are treated as caller-qualified; "
+                    "pv-calc does not independently certify their applicability"
+                ),
+            }
+        }
     return payload
 
 

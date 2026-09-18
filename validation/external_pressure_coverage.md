@@ -59,11 +59,15 @@ P_cr >= P_target,   P_cr q <= sigma_proportional,   q > 10
 | SS-2507 | 552 | 3756.106 |
 | Ti-6Al-4V | 827 | 5627.355 |
 
-All seven bundled generic metals carry neither a proportional limit nor a
-compressive curve, so none has a fully released named-material smooth-shell
-buckling capacity. Qualified limits and curves can still be supplied explicitly
-or through a deliberately scoped custom record. The correction remains inside
-the same geometric domain.
+The bundled generic Al-6061-T6 and Ti-6Al-4V records retain historical curves
+as reference-only data. They can produce a corrected numerical estimate and
+drive exploratory sizing, but their `released_unqualified_material` status
+cannot pass acceptance. A separately retained elastic upper bound can still
+establish conservative failure when it falls below demand and the required
+margin. The other five metals carry neither a proportional limit nor a
+compressive curve. Qualified limits and curves can be supplied explicitly or
+through a deliberately scoped custom record. The correction remains inside the
+same geometric domain.
 
 ## The q > 10 geometric cutoff
 

@@ -19,6 +19,33 @@ from pv_calc.schemas import (
 )
 
 
+BucklingDataQualification = Literal["qualified", "reference_only"]
+BUCKLING_REFERENCE_ONLY_REASON = (
+    "the buckling material inputs are marked reference-only; their product-form, "
+    "direction, heat-treatment, and proof-stress applicability is not established for "
+    "this request; the numerical result is available for preliminary work but is not an "
+    "acceptance capacity"
+)
+BUCKLING_ELASTIC_UPPER_BOUND_FAILURE_REASON = (
+    "the elastic buckling upper bound under the supplied elastic properties is below "
+    "the demand and required margin; qualifying or correcting the nonlinear material "
+    "response cannot raise that bound"
+)
+BUCKLING_ELASTIC_UPPER_BOUND_STATUSES = frozenset(
+    {"released_pending_plasticity", "released_unqualified_material"}
+)
+
+
+def _validated_buckling_data_qualification(
+    value: BucklingDataQualification,
+) -> BucklingDataQualification:
+    if value not in {"qualified", "reference_only"}:
+        raise ValueError(
+            "buckling_data_qualification must be qualified or reference_only"
+        )
+    return value
+
+
 MATERIAL_FAILURE_SOURCE = (
     "Standard failure criteria by material class: a ductile metal compares the von Mises "
     "distortion-energy stress (shells) or the surface bending stress (plates) to the yield "
@@ -142,7 +169,7 @@ TUBE_SCOPE_NOTES = (
 )
 
 HEMISPHERE_MODEL_ID = "roark_nasa_hemispherical_head_external_pressure"
-HEMISPHERE_MODEL_VERSION = "4.1.0"
+HEMISPHERE_MODEL_VERSION = "5.0.0"
 HEMISPHERE_THIN_WALL_MEAN_RADIUS_RATIO = 10.0
 HEMISPHERE_NASA_MINIMUM_LAMBDA = 2.0
 HEMISPHERE_ROARK_PROBABLE_MINIMUM_COEFFICIENT = 0.365
@@ -178,6 +205,8 @@ HEMISPHERE_SCOPE_NOTES = (
     "domain Roark states; NASA SP-8032 does not state that numeric cutoff.",
     "Elastic buckling capacity requires a proportional limit at or above the NASA-correlated "
     "critical membrane stress; no inelastic correction is implemented.",
+    "Reference-only proportional-limit data retain the numerical result as "
+    "released_unqualified_material but do not supply an acceptance capacity.",
     "The Roark probable-minimum pressure is reported only as a published comparator and does "
     "not set released capacity.",
     "The seat bearing stress is the average over the flat equator annulus between the internal "
@@ -334,6 +363,9 @@ SMOOTH_CYLINDER_SCOPE_NOTES = (
     "Without a curve, a critical stress above the proportional limit retains an elastic "
     "estimate as released_pending_plasticity with a null margin. Material strength remains "
     "a separate check; the composed cylinder evaluates both stress and buckling.",
+    "Reference-only compression data retain the corrected numerical estimate and margin as "
+    "released_unqualified_material; concise acceptance cannot pass and fails only when the "
+    "elastic upper bound under the supplied elastic properties is already insufficient.",
     "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released "
     "capacity follows the printed 0.855 coefficient in Eq. 24.",
     "The Roark probable-minimum pressure and its lobe count are reported only as a published "
@@ -445,6 +477,7 @@ class HemisphereResult:
     poisson_ratio: float
     strength_mpa: float
     proportional_limit_mpa: float | None
+    buckling_data_qualification: BucklingDataQualification
     stress_states: tuple[HemisphereStressState, ...]
     governing_radius_mm: float
     governing_stress_mpa: float
@@ -461,7 +494,9 @@ class HemisphereResult:
     nasa_candidate_critical_membrane_stress_mpa: float | None
     roark_probable_minimum_coefficient: float
     roark_probable_minimum_pressure_mpa: float
-    buckling_capacity_status: Literal["released", "withheld_applicability"]
+    buckling_capacity_status: Literal[
+        "released", "released_unqualified_material", "withheld_applicability"
+    ]
     released_buckling_pressure_mpa: float | None
     released_buckling_critical_membrane_stress_mpa: float | None
     buckling_margin: float | None
@@ -570,6 +605,7 @@ class SmoothCylinderBucklingResult:
     ]
     capacity_status: Literal[
         "released",
+        "released_unqualified_material",
         "released_pending_plasticity",
         "withheld_correlation_overlap",
         "withheld_applicability",
@@ -585,6 +621,7 @@ class SmoothCylinderBucklingResult:
     poisson_ratio: float
     yield_strength_mpa: float | None
     proportional_limit_mpa: float | None
+    buckling_data_qualification: BucklingDataQualification
     ramberg_osgood_n: float | None
     compressive_proof_stress_mpa: float | None
     plasticity_factor: float | None
@@ -659,6 +696,7 @@ RING_SHELL_GLOBAL_PLASTICITY_PENDING_REASON = (
 )
 RingShellAdvisoryStatus = Literal[
     "advisory",
+    "advisory_unqualified_material",
     "advisory_pending_plasticity",
     "advisory_plasticity_undetermined",
 ]
@@ -669,6 +707,7 @@ RING_SHELL_ADVISORY_STATUS_BY_APPLICABILITY: dict[str, RingShellAdvisoryStatus] 
 }
 RING_SHELL_ADVISORY_STATUS_BY_INTER_RING_STATUS: dict[str, RingShellAdvisoryStatus] = {
     "released": "advisory",
+    "released_unqualified_material": "advisory_unqualified_material",
     "released_pending_plasticity": "advisory_pending_plasticity",
 }
 
@@ -799,6 +838,7 @@ class RingShellResult:
     poisson_ratio: float
     yield_strength_mpa: float | None
     proportional_limit_mpa: float | None
+    buckling_data_qualification: BucklingDataQualification
     ring_section_type: Literal["solid_rectangle"]
     ring_axial_width_mm: float
     ring_radial_height_mm: float
@@ -825,7 +865,12 @@ class RingShellResult:
     advisory_candidate_modes: tuple[str, ...]
     advisory_governing_mode: str | None
     advisory_governing_status: (
-        Literal["advisory", "advisory_pending_plasticity", "advisory_plasticity_undetermined"]
+        Literal[
+            "advisory",
+            "advisory_unqualified_material",
+            "advisory_pending_plasticity",
+            "advisory_plasticity_undetermined",
+        ]
         | None
     )
     advisory_governing_pressure_mpa: float | None
@@ -1200,6 +1245,7 @@ def hemispherical_head_external_pressure(
     material_failure_category: MaterialFailureCategory,
     strength_mpa: float,
     proportional_limit_mpa: float | None = None,
+    buckling_data_qualification: BucklingDataQualification = "qualified",
     force_thick: bool = False,
 ) -> HemisphereResult:
     """Calculate hemispherical-head stress, material failure, buckling, and displacement.
@@ -1210,7 +1256,9 @@ def hemispherical_head_external_pressure(
     no-op. Buckling capacity is released only when
     the NASA SP-8032 clamped-cap recommendation is in its stated ``lambda > 2``
     range, the geometry remains in the thin-shell domain, and the correlated
-    response remains elastic.
+    response remains elastic. ``buckling_data_qualification='reference_only'``
+    retains an otherwise released number as a preliminary estimate that cannot
+    support acceptance.
 
     ``strength_mpa`` is the uniaxial strength the category's criterion compares
     against, as for the tube: yield strength against von Mises stress for a
@@ -1236,6 +1284,9 @@ def hemispherical_head_external_pressure(
         _positive_finite(proportional_limit_mpa, "proportional_limit_mpa")
         if proportional_limit_mpa is not None
         else None
+    )
+    data_qualification = _validated_buckling_data_qualification(
+        buckling_data_qualification
     )
     if (
         category == "ductile_metal"
@@ -1366,6 +1417,8 @@ def hemispherical_head_external_pressure(
             )
 
     capacity_released = not buckling_violations and nasa_candidate_pressure is not None
+    if capacity_released and data_qualification == "reference_only":
+        buckling_violations.append(BUCKLING_REFERENCE_ONLY_REASON)
     released_pressure = nasa_candidate_pressure if capacity_released else None
     released_stress = nasa_candidate_stress if capacity_released else None
     buckling_margin = (
@@ -1405,6 +1458,7 @@ def hemispherical_head_external_pressure(
         poisson_ratio=poisson,
         strength_mpa=strength,
         proportional_limit_mpa=proportional_limit,
+        buckling_data_qualification=data_qualification,
         stress_states=stress_states,
         governing_radius_mm=governing.radius_mm,
         governing_stress_mpa=governing_stress,
@@ -1424,7 +1478,13 @@ def hemispherical_head_external_pressure(
         ),
         roark_probable_minimum_pressure_mpa=roark_pressure,
         buckling_capacity_status=(
-            "released" if capacity_released else "withheld_applicability"
+            (
+                "released_unqualified_material"
+                if data_qualification == "reference_only"
+                else "released"
+            )
+            if capacity_released
+            else "withheld_applicability"
         ),
         released_buckling_pressure_mpa=released_pressure,
         released_buckling_critical_membrane_stress_mpa=released_stress,
@@ -2418,6 +2478,7 @@ def smooth_cylinder_external_pressure_buckling(
     yield_strength_mpa: float | None = None,
     ramberg_osgood_n: float | None = None,
     compressive_proof_stress_mpa: float | None = None,
+    buckling_data_qualification: BucklingDataQualification = "qualified",
 ) -> SmoothCylinderBucklingResult:
     """Calculate external-pressure buckling of a smooth cylinder.
 
@@ -2428,7 +2489,8 @@ def smooth_cylinder_external_pressure_buckling(
     correction and releases a corrected capacity; supplying only a
     proportional limit keeps the elastic result, released when the correlated
     critical stress stays under that limit and reported as an upper bound
-    otherwise.
+    otherwise. Reference-only material data retain the corrected numerical
+    estimate and margin but label it ``released_unqualified_material``.
     """
     p_mpa = _non_negative_pressure(external_pressure_mpa)
     r_mm = _positive_finite(
@@ -2450,6 +2512,9 @@ def smooth_cylinder_external_pressure_buckling(
     )
     if proportional_mpa is not None and yield_mpa is not None and proportional_mpa > yield_mpa:
         raise ValueError("proportional_limit_mpa must be <= yield_strength_mpa")
+    data_qualification = _validated_buckling_data_qualification(
+        buckling_data_qualification
+    )
     curve_parts = (ramberg_osgood_n, compressive_proof_stress_mpa)
     if any(part is not None for part in curve_parts) and None in curve_parts:
         raise ValueError(
@@ -2607,14 +2672,24 @@ def smooth_cylinder_external_pressure_buckling(
 
     capacity_status: Literal[
         "released",
+        "released_unqualified_material",
         "released_pending_plasticity",
         "withheld_correlation_overlap",
         "withheld_applicability",
     ]
+    reference_only_estimate = (
+        not validity_violations
+        and gate_status == "released"
+        and data_qualification == "reference_only"
+    )
+    if reference_only_estimate:
+        release_gate_violations.append(BUCKLING_REFERENCE_ONLY_REASON)
     if validity_violations:
         capacity_status = "withheld_applicability"
     elif plasticity_pending is not None:
         capacity_status = "released_pending_plasticity"
+    elif reference_only_estimate:
+        capacity_status = "released_unqualified_material"
     else:
         capacity_status = gate_status
     correlated_pressure: float | None = None
@@ -2628,7 +2703,9 @@ def smooth_cylinder_external_pressure_buckling(
             correlated_stress = selected.correlated_critical_circumferential_stress_mpa
     margin = (
         correlated_pressure / p_mpa - 1.0
-        if capacity_status == "released" and correlated_pressure is not None and p_mpa > 0.0
+        if capacity_status in {"released", "released_unqualified_material"}
+        and correlated_pressure is not None
+        and p_mpa > 0.0
         else None
     )
     working_stress = p_mpa * radius_thickness
@@ -2677,6 +2754,7 @@ def smooth_cylinder_external_pressure_buckling(
         poisson_ratio=v,
         yield_strength_mpa=yield_mpa,
         proportional_limit_mpa=proportional_mpa,
+        buckling_data_qualification=data_qualification,
         ramberg_osgood_n=curve[0] if curve is not None else None,
         compressive_proof_stress_mpa=curve[1] if curve is not None else None,
         plasticity_factor=plasticity_factor,
@@ -2755,6 +2833,7 @@ def ring_stiffened_shell_external_pressure(
     yield_strength_mpa: float | None = None,
     ramberg_osgood_n: float | None = None,
     compressive_proof_stress_mpa: float | None = None,
+    buckling_data_qualification: BucklingDataQualification = "qualified",
     max_mode_evaluations: int = RING_SHELL_DEFAULT_MAX_MODE_EVALUATIONS,
 ) -> RingShellResult:
     """Return the source-gated rectangular-ring external-pressure calculation.
@@ -2789,6 +2868,9 @@ def ring_stiffened_shell_external_pressure(
     )
     if proportional_mpa is not None and yield_mpa is not None and proportional_mpa > yield_mpa:
         raise ValueError("proportional_limit_mpa must be <= yield_strength_mpa")
+    data_qualification = _validated_buckling_data_qualification(
+        buckling_data_qualification
+    )
     v = _validated_poisson_ratio(poisson_ratio)
     if ring_location not in {"internal", "external"}:
         raise ValueError("ring_location must be internal or external")
@@ -2865,6 +2947,7 @@ def ring_stiffened_shell_external_pressure(
         proportional_limit_mpa=proportional_mpa,
         ramberg_osgood_n=ramberg_osgood_n,
         compressive_proof_stress_mpa=compressive_proof_stress_mpa,
+        buckling_data_qualification=data_qualification,
         load_case="hydrostatic_closed_end",
     )
 
@@ -3080,6 +3163,7 @@ def ring_stiffened_shell_external_pressure(
         "the recommended 0.75 factor keep both advisory estimates.",
         GENERAL_INSTABILITY_SMEARED_NOTE,
         GENERAL_INSTABILITY_SCOPE_NOTE,
+        *((BUCKLING_REFERENCE_ONLY_REASON,) if data_qualification == "reference_only" else ()),
         *((global_plasticity_pending,) if global_plasticity_pending is not None else ()),
     )
     return RingShellResult(
@@ -3102,6 +3186,7 @@ def ring_stiffened_shell_external_pressure(
         poisson_ratio=v,
         yield_strength_mpa=yield_mpa,
         proportional_limit_mpa=proportional_mpa,
+        buckling_data_qualification=data_qualification,
         ring_section_type="solid_rectangle",
         ring_axial_width_mm=width_mm,
         ring_radial_height_mm=height_mm,

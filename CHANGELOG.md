@@ -23,13 +23,16 @@ model; both predate this changelog.
   and this work establishes no new thickness domain or physical validation.
 - Add `ramberg_osgood_n` and `compressive_proof_stress` to the material path
   for named and explicit records, required together, with
-  `compressive_stress_strain_source` for provenance. No generic bundled alloy
-  record supplies a proportional limit or curve: the located Al-6061-T6 and
-  Ti-6Al-4V handbook curves are specific to product form and direction, which
-  the generic records do not require as inputs. The `smooth-buckling`,
-  `smooth-buckling size`, `ring-shell`, and `cylinder` commands accept qualified
-  values through an explicit material or a deliberately scoped custom material
-  database; supplying only half of a curve is an `invalid_request`.
+  `compressive_stress_strain_source` for provenance. The generic Al-6061-T6
+  and Ti-6Al-4V records retain the located handbook curves and derived limits
+  as `reference_only`: calculations and exploratory sizing return a
+  `released_unqualified_material` estimate that cannot pass acceptance. A
+  check remains indeterminate unless the elastic upper bound under the supplied
+  elastic properties already falls below demand and the required margin, which
+  is a conservative failure. Material capabilities expose the qualification.
+  Qualified explicit or scoped custom records retain ordinary released
+  behavior. Supplying only half of a curve is an `invalid_request`.
+  The hemisphere model becomes 5.0.0 to carry the same qualification status.
 - Stop partitioning smooth-buckling sizing at the proportional limit when a
   complete curve is present: the correction is continuous through that limit,
   so it no longer starts a withheld band. Without a curve the partition stands.

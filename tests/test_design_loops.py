@@ -47,6 +47,7 @@ def _add_qualified_test_material(
         ),
         "proportional_limit_mpa": proportional_limit_mpa,
         "proportional_limit_source": "Test-only qualified compression input",
+        "buckling_data_qualification": "qualified",
     })
     data["materials"][name] = record
 

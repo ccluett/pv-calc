@@ -125,7 +125,7 @@ models:
       - Service, material, fabrication, temperature, and inspection inputs remain design-use blockers.
 
   - model_id: roark_nasa_hemispherical_head_external_pressure
-    model_version: "4.1.0"
+    model_version: "5.0.0"
     maturity: verified_equation
     completeness: partial
     evidence:
@@ -161,7 +161,10 @@ models:
         pressure. The buckling correlation uses a clamped equator; the spherical
         stress and displacement apply away from the equator and do not claim
         that boundary condition.
-      - Buckling capacity is withheld outside the thin-shell and NASA lambda gates or without elastic proportional-limit support.
+      - >-
+        Buckling capacity is withheld outside the thin-shell and NASA lambda
+        gates or without elastic proportional-limit support. Reference-only
+        support retains a numerical estimate but cannot pass acceptance.
       - >-
         Junction bending, actual restraint, attachments, penetrations,
         imperfections, residual stress, and plastic interaction are absent;
@@ -211,13 +214,16 @@ models:
       - Released capacity requires either a source-traceable proportional limit or a
         complete compressive Ramberg-Osgood curve. With only a limit, a correlated
         critical membrane stress above it retains an elastic upper bound with a null margin.
-      - The NASA Eq. 30-32 inelastic correction is implemented for a supplied compressive
+      - >-
+        The NASA Eq. 30-32 inelastic correction is implemented for a supplied compressive
         curve. NASA states those factors for lateral pressure and calls the hydrostatic
         biaxial factors unavailable, so the hydrostatic load case uses them as the source
-        directs for lack of better information. No bundled generic metal carries a curve or
-        proportional limit. The located Al-6061-T6 LT-extrusion and Ti-6Al-4V longitudinal-
-        extrusion shapes remain available only as explicit caller-qualified assumptions;
-        neither establishes generic hoop response across the listed product forms.
+        directs for lack of better information. The bundled Al-6061-T6 LT-extrusion and
+        Ti-6Al-4V longitudinal-extrusion shapes are marked reference-only: they retain a
+        numerical estimate and may drive exploratory sizing, but cannot pass acceptance.
+        A separately reported elastic upper bound may still establish conservative failure
+        when it is below demand and the required margin. Neither curve establishes generic
+        hoop response across the listed product forms.
       - The R_mid/t > 10 gate is unchanged; no new thickness-domain evidence was established.
       - End-restraint credit and physical validation are absent.
       - UnderPressure 4.60 version-stamped captures remain open.
