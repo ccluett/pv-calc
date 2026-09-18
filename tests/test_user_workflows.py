@@ -158,7 +158,13 @@ def test_materials_cli_default_override_and_unknown_name(tmp_path: Path) -> None
     assert record["capabilities"]["smooth_cylinder_buckling_capacity"] == {
         "available": True,
         "missing_properties": [],
+        "buckling_data_qualification": "reference_only",
     }
+    shown_text = runner.invoke(
+        app, ["materials", "show", "Al-6061-T6", "--format", "text"]
+    )
+    assert shown_text.exit_code == 0
+    assert "buckling data reference_only" in shown_text.stdout
     missing = runner.invoke(app, ["materials", "show", "not-present", "--json"])
     assert missing.exit_code == 2
     assert json.loads(missing.stderr)["error"]["code"] == "unknown_material"

@@ -77,6 +77,7 @@ def test_bundled_materials_work_outside_checkout_and_explicit_override_wins(tmp_
     assert aluminium["capabilities"]["cylinder"] == {
         "available": True,
         "missing_properties": [],
+        "buckling_data_qualification": "reference_only",
     }
     titanium = show_material("Ti-6Al-4V")
     assert titanium["properties"]["proportional_limit_mpa"] == 602.0
@@ -85,6 +86,7 @@ def test_bundled_materials_work_outside_checkout_and_explicit_override_wins(tmp_
     assert titanium["capabilities"]["smooth_cylinder_buckling_capacity"] == {
         "available": True,
         "missing_properties": [],
+        "buckling_data_qualification": "reference_only",
     }
     other = show_material("Al-7075-T6")
     assert other["capabilities"]["smooth_cylinder_buckling_capacity"] == {

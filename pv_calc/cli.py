@@ -1843,6 +1843,9 @@ def _emit_material(payload: dict[str, Any], compact: bool, output_format: str | 
             typer.echo(f"{record['name']} ({record['database']})")
             for name, capability in record["capabilities"].items():
                 available = "available" if capability["available"] else "missing " + ", ".join(capability["missing_properties"])
+                qualification = capability.get("buckling_data_qualification")
+                if qualification is not None:
+                    available += f"; buckling data {qualification}"
                 typer.echo(f"  {name}: {available}")
         if "properties" in payload:
             typer.echo(_json_text(payload["properties"], compact=False))

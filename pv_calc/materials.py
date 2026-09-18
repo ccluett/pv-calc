@@ -180,7 +180,9 @@ def material_capabilities(material: CalcMaterial) -> dict[str, dict[str, Any]]:
 
     ``available`` means the inputs for the named calculation are present. It
     does not promise that a capacity will be released at a particular geometry
-    or load, or qualify the reference properties as design allowables.
+    or load, or qualify the reference properties as design allowables. Buckling
+    capabilities carry ``buckling_data_qualification`` when the record declares
+    one, so property completeness cannot be mistaken for acceptance eligibility.
     """
     strength_field = {
         "ductile_metal": "yield_strength_mpa",
@@ -216,7 +218,7 @@ def material_capabilities(material: CalcMaterial) -> dict[str, dict[str, Any]]:
         "cylinder": [*shell, *buckling],
         "mass_properties": ["density_kg_per_m3"],
     }
-    return {
+    capabilities = {
         name: {
             "available": not (missing := sorted({
                 field for field in required if getattr(material, field) is None
@@ -225,6 +227,16 @@ def material_capabilities(material: CalcMaterial) -> dict[str, dict[str, Any]]:
         }
         for name, required in requirements.items()
     }
+    if material.buckling_data_qualification is not None:
+        for name in (
+            "hemisphere_buckling_capacity",
+            "smooth_cylinder_buckling_capacity",
+            "cylinder",
+        ):
+            capabilities[name]["buckling_data_qualification"] = (
+                material.buckling_data_qualification
+            )
+    return capabilities
 
 
 def _material_record(name: str, material: CalcMaterial, database: str) -> dict[str, Any]:
@@ -233,7 +245,11 @@ def _material_record(name: str, material: CalcMaterial, database: str) -> dict[s
         "database": database,
         "properties": material.model_dump(exclude_none=True),
         "capabilities": material_capabilities(material),
-        "capability_scope": "Property availability only; geometry, load, and source applicability must still be evaluated.",
+        "capability_scope": (
+            "Property availability only; buckling data qualification is reported on the "
+            "affected capabilities, and geometry, load, and source applicability must "
+            "still be evaluated."
+        ),
     }
 
 
