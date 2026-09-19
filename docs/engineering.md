@@ -361,8 +361,7 @@ for a flaw-dominated property rather than material constants. For the metals,
 density, elastic modulus, and Poisson ratio are not specification-governed
 either, and each record names the data sheet its nominal values come from.
 The generic `Al-7075-T6` record uses 54 ksi, the lowest minimum among the
-common wrought form and thickness bands documented in its provenance; the
-higher minima for narrower forms are not promoted into the generic record.
+product forms and thickness bands documented in its provenance.
 These values are calculation inputs rather than design allowables. They are not
 statistical A-basis or B-basis allowables and have no temperature derating,
 weld or heat-affected-zone knockdown, fatigue or notch correction, or

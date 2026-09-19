@@ -100,9 +100,8 @@ materials:
       cold-finished bar states 66 ksi, ASTM B209 sheet and plate over 0.040 to
       2.000 in state 67 to 69 ksi, ASTM B210 drawn seamless tube states 66 ksi,
       and ASTM B221 extrusions state 68 to 73 ksi. Use the governing minimum
-      for the actual form, thickness, direction, and temper rather than taking
-      this generic floor as a design allowable. The 73 ksi commonly quoted for
-      this alloy is the Aluminum Association typical value, not a minimum.
+      for the actual form, thickness, direction, and temper. The 73 ksi commonly
+      quoted for this alloy is the Aluminum Association typical value, not a minimum.
       Density, elastic modulus, and Poisson ratio are not
       specification-governed; the stored 2810 kg/m3 is the Association's
       metric pairing for 0.101 lb/in3, 71016 MPa is 10.3 Mpsi, the tension
