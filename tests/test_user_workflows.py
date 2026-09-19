@@ -102,6 +102,36 @@ def test_ordinary_forward_success_and_check_failure_are_distinct() -> None:
     assert _run(request, "--format", "summary", command="check").exit_code == 1
 
 
+@pytest.mark.parametrize(
+    ("pressure", "exit_code", "status"),
+    [(63.0, 3, "indeterminate"), (64.0, 1, "fail")],
+)
+def test_check_uses_nonreleased_elastic_upper_bound_only_to_reject(
+    pressure: float, exit_code: int, status: str,
+) -> None:
+    wall = 152.4 / 10.55
+    request = {
+        "schema_version": "5.0.0",
+        "model": "smooth-buckling",
+        "material": {"type": "named", "name": "Ti-6Al-4V"},
+        "inputs": {
+            "external_pressure": _q(pressure, "MPa"),
+            "shell_mid_surface_radius": _q(152.4 - wall / 2.0),
+            "wall_thickness": _q(wall),
+            "unsupported_length": _q(609.6),
+            "load_case": "hydrostatic_closed_end",
+        },
+    }
+
+    result = _run(request, "--format", "summary", command="check")
+    assert result.exit_code == exit_code, result.output
+    assessment = json.loads(result.stdout)["assessment"]
+    assert assessment["status"] == status
+    check = assessment["checks"][0]
+    assert check["capacity"]["value"] is None
+    assert check["upper_bound"]["value"] == pytest.approx(63.685456731934785)
+
+
 @pytest.mark.parametrize("options", [
     ["--format", "invalid"], ["--json", "--format", "text"],
 ])
@@ -122,7 +152,19 @@ def test_materials_cli_default_override_and_unknown_name(tmp_path: Path) -> None
     assert shown.exit_code == 0
     record = json.loads(shown.stdout)
     assert record["properties"]["source"]
-    assert record["properties"]["proportional_limit_source"]
+    assert record["properties"]["proportional_limit_mpa"] == 183.4
+    assert record["properties"]["ramberg_osgood_n"] == 28.0
+    assert record["properties"]["buckling_data_qualification"] == "reference_only"
+    assert record["capabilities"]["smooth_cylinder_buckling_capacity"] == {
+        "available": True,
+        "missing_properties": [],
+        "buckling_data_qualification": "reference_only",
+    }
+    shown_text = runner.invoke(
+        app, ["materials", "show", "Al-6061-T6", "--format", "text"]
+    )
+    assert shown_text.exit_code == 0
+    assert "buckling data reference_only" in shown_text.stdout
     missing = runner.invoke(app, ["materials", "show", "not-present", "--json"])
     assert missing.exit_code == 2
     assert json.loads(missing.stderr)["error"]["code"] == "unknown_material"

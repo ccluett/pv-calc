@@ -239,6 +239,7 @@ def test_non_ring_inventory_covers_every_golden_and_released_example() -> None:
         "smooth_short_lateral_and_hydrostatic",
         "smooth_moderate_and_eq25",
         "smooth_long_and_mid_surface_migration",
+        "smooth_inelastic_correction_eq30_eq32",
         "smooth_gap_overlap_and_applicability_boundaries",
         "smooth_underpressure_example_1_invalid_manual_parity",
         "smooth_underpressure_example_4_valid_overlap",

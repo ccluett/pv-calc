@@ -11,6 +11,7 @@ TubeEndCondition = Literal["closed"]
 PlateBoundaryCondition = Literal["fixed", "simply_supported"]
 StressSignConvention = Literal["tension_positive"]
 PrincipalStressOrdering = Literal["descending_algebraic"]
+BucklingDataQualification = Literal["qualified", "reference_only"]
 
 # The material behavior a stress result assumes: a ductile metal yields, so
 # its von Mises or surface bending stress is compared to the yield strength; a

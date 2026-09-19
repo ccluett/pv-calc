@@ -14,11 +14,32 @@ from pv_calc.cli import app
 from pv_calc.contracts import CALC_SCHEMA_VERSION
 from pv_calc.errors import CalcCliError
 
-from _cli_helpers import EXAMPLES, runner
+from _cli_helpers import EXAMPLES, MATERIALS_FILE, runner
 
 
 def q(value: float, unit: str) -> dict[str, Any]:
     return {"value": float(value), "unit": unit}
+
+
+def _qualified_comparison_database(tmp_path: Path) -> Path:
+    import yaml
+
+    data = yaml.safe_load(MATERIALS_FILE.read_text())
+    for name, base, limit in (
+        ("Test-Buckling-A", "Al-6061-T6", 180.0),
+        ("Test-Buckling-B", "Ti-6Al-4V", 500.0),
+    ):
+        record = copy.deepcopy(data["materials"][base])
+        record.update({
+            "source": f"Test-only {name} record with explicitly qualified compression data",
+            "proportional_limit_mpa": limit,
+            "proportional_limit_source": "Test-only qualified compression input",
+            "buckling_data_qualification": "qualified",
+        })
+        data["materials"][name] = record
+    path = tmp_path / "qualified-materials.yaml"
+    path.write_text(yaml.safe_dump(data))
+    return path
 
 
 def depth_request(example: str) -> dict[str, Any]:
@@ -32,19 +53,22 @@ def depth_request(example: str) -> dict[str, Any]:
 
 
 @pytest.mark.parametrize("example", ["smooth_buckling_size_moderate.json", "tube_size_7_ksi.json", "cylinder_check.json"])
-def test_material_comparison_normalizes_nested_depth_and_keeps_each_conversion(example: str) -> None:
+def test_material_comparison_normalizes_nested_depth_and_keeps_each_conversion(
+    example: str, tmp_path: Path,
+) -> None:
+    database = _qualified_comparison_database(tmp_path)
     base = depth_request(example)
     request = {
         "schema_version": CALC_SCHEMA_VERSION, "model": "compare-materials",
-        "inputs": {"materials": ["Al-6061-T6", "Ti-6Al-4V"]}, "request": base,
+        "inputs": {"materials": ["Test-Buckling-A", "Test-Buckling-B"]}, "request": base,
     }
     original = copy.deepcopy(request)
-    response = calculate(request)
+    response = calculate(request, materials_file=database)
     assert request == original
     for entry in response["comparison"]["entries"]:
         single = copy.deepcopy(base)
         single["material"] = {"type": "named", "name": entry["material"]}
-        assert entry["response"] == calculate(single)
+        assert entry["response"] == calculate(single, materials_file=database)
         assert entry["response"]["loading"]["depth"] == q(100, "m")
         assert entry["response"]["loading"]["design_external_pressure"]["value"] == pytest.approx(1.25690625)
     # Result provenance dictionaries must not alias across batch entries.
@@ -104,18 +128,21 @@ def test_cli_retains_nested_load_conversion_after_typed_validation(command: str,
     assert json.loads(result.stdout) == json.loads(json.dumps(calculate(request)))
 
 
-def test_nested_depth_load_still_rejects_conflicting_pressure_and_preserves_partial_comparison() -> None:
+def test_nested_depth_load_still_rejects_conflicting_pressure_and_preserves_partial_comparison(
+    tmp_path: Path,
+) -> None:
+    database = _qualified_comparison_database(tmp_path)
     base = depth_request("smooth_buckling_size_moderate.json")
     request = {"schema_version": CALC_SCHEMA_VERSION, "model": "compare-materials", "request": base,
-               "inputs": {"materials": ["Al-7075-T6", "Al-6061-T6"]}}
-    response = calculate(request)
+               "inputs": {"materials": ["Al-7075-T6", "Test-Buckling-A"]}}
+    response = calculate(request, materials_file=database)
     entries = response["comparison"]["entries"]
     assert entries[0]["outcome"] == "no_reliable_solution"
     assert "response" not in entries[0]
     assert entries[1]["response"]["loading"]["depth"] == q(100, "m")
     base["inputs"]["external_pressure"] = q(1, "MPa")
     with pytest.raises(CalcCliError) as exc:
-        calculate(request)
+        calculate(request, materials_file=database)
     assert exc.value.code == "input_source_conflict"
 
 

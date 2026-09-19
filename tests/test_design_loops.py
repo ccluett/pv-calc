@@ -36,6 +36,22 @@ def q(value: float, unit: str = "mm") -> dict[str, Any]:
     return {"value": float(value), "unit": unit}
 
 
+def _add_qualified_test_material(
+    data: dict[str, Any], *, name: str, base: str, proportional_limit_mpa: float,
+) -> None:
+    record = copy.deepcopy(data["materials"][base])
+    record.update({
+        "source": (
+            f"Test-only record derived from {base} and explicitly scoped to "
+            "qualified compression data."
+        ),
+        "proportional_limit_mpa": proportional_limit_mpa,
+        "proportional_limit_source": "Test-only qualified compression input",
+        "buckling_data_qualification": "qualified",
+    })
+    data["materials"][name] = record
+
+
 def size_request(model: str = "smooth-buckling", *, outer: bool = True) -> dict[str, Any]:
     request = json.loads((EXAMPLES / "smooth_buckling_size_moderate.json").read_text())
     request["model"] = model
@@ -283,14 +299,17 @@ def test_sized_comparison_keeps_unavailable_materials_and_no_solution_rows(tmp_p
 
     database = tmp_path / "materials.yaml"
     data = yaml.safe_load(MATERIALS_FILE.read_text())
-    data["materials"]["NoDensity"] = copy.deepcopy(data["materials"]["Al-6061-T6"])
+    _add_qualified_test_material(
+        data, name="QualifiedForTest", base="Al-6061-T6", proportional_limit_mpa=183.4,
+    )
+    data["materials"]["NoDensity"] = copy.deepcopy(data["materials"]["QualifiedForTest"])
     data["materials"]["NoDensity"].pop("density_kg_per_m3", None)
-    data["materials"]["NoElastic"] = copy.deepcopy(data["materials"]["Al-6061-T6"])
+    data["materials"]["NoElastic"] = copy.deepcopy(data["materials"]["QualifiedForTest"])
     data["materials"]["NoElastic"].pop("elastic_modulus_mpa", None)
     database.write_text(yaml.safe_dump(data))
     request = size_request()
     # A proportional limit is missing from several bundled material records.
-    names = ["Al-6061-T6", "Al-7075-T6", "NoElastic", "missing", "NoDensity"]
+    names = ["QualifiedForTest", "Al-7075-T6", "NoElastic", "missing", "NoDensity"]
     result = _evaluate_material_comparison(comparison(request, names), database)
     entries = result["comparison"]["entries"]
     assert [entry["material"] for entry in entries] == names
@@ -312,7 +331,20 @@ def test_sizing_explicitly_rejects_zero_design_pressure(model: str) -> None:
         evaluate_size(request)
 
 
-def test_cylinder_geometry_sweep_runs_shared_stress_and_buckling_checks() -> None:
+def test_cylinder_geometry_sweep_runs_shared_stress_and_buckling_checks(
+    tmp_path: Path,
+) -> None:
+    import yaml
+
+    database = tmp_path / "qualified-materials.yaml"
+    data = yaml.safe_load(MATERIALS_FILE.read_text())
+    _add_qualified_test_material(
+        data, name="Test-Buckling-A", base="Al-6061-T6", proportional_limit_mpa=183.4,
+    )
+    _add_qualified_test_material(
+        data, name="Test-Buckling-B", base="Ti-6Al-4V", proportional_limit_mpa=602.0,
+    )
+    database.write_text(yaml.safe_dump(data))
     base = {
         "schema_version": CALC_SCHEMA_VERSION,
         "model": "cylinder",
@@ -320,7 +352,7 @@ def test_cylinder_geometry_sweep_runs_shared_stress_and_buckling_checks() -> Non
             "external_pressure": q(1, "MPa"), "internal_radius": q(50),
             "wall_thickness": q(1), "unsupported_length": q(300),
         },
-        "material": {"type": "named", "name": "Al-6061-T6"},
+        "material": {"type": "named", "name": "Test-Buckling-A"},
     }
     request = SweepRequest.model_validate({
         "schema_version": CALC_SCHEMA_VERSION, "model": "sweep", "request": base,
@@ -328,18 +360,20 @@ def test_cylinder_geometry_sweep_runs_shared_stress_and_buckling_checks() -> Non
             "type": "list", "values": [q(300), q(100)],
         }},
     })
-    result = _evaluate_sweep(request, MATERIALS_FILE)
+    result = _evaluate_sweep(request, database)
     points = result["sweep"]["points"]
     assert [point["response"]["assessment"]["status"] for point in points] == ["fail", "pass"]
     assert all(point["response"]["assessment"]["governing_check"] == "smooth_cylinder_buckling" for point in points)
     for point in points:
         single = copy.deepcopy(base)
         single["inputs"]["unsupported_length"] = point["unsupported_length"]
-        assert point["response"] == _evaluate_single_request("cylinder", single, MATERIALS_FILE)
+        assert point["response"] == _evaluate_single_request("cylinder", single, database)
     compared = _evaluate_material_comparison(
-        comparison(base, ["Al-6061-T6", "Ti-6Al-4V"]), MATERIALS_FILE,
+        comparison(base, ["Test-Buckling-A", "Test-Buckling-B"]), database,
     )
-    assert [entry["material"] for entry in compared["comparison"]["entries"]] == ["Al-6061-T6", "Ti-6Al-4V"]
+    assert [entry["material"] for entry in compared["comparison"]["entries"]] == [
+        "Test-Buckling-A", "Test-Buckling-B",
+    ]
     for entry in compared["comparison"]["entries"]:
         assert entry["outcome"] == "evaluated"
         assert len(entry["response"]["assessment"]["checks"]) == 2
