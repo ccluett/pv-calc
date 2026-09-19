@@ -29,7 +29,7 @@ from pydantic import (
 )
 
 from pv_calc.errors import CalcCliError
-from pv_calc.schemas import MaterialFailureCategory
+from pv_calc.schemas import BucklingDataQualification, MaterialFailureCategory
 from pv_calc.units import Q_, dimensionless_factor, magnitude, unit_expression_problem
 
 CALC_SCHEMA_VERSION = "5.0.0"
@@ -211,7 +211,7 @@ class ExplicitTubeMaterialInput(ContractModel):
     type: Literal["explicit"]
     name: NonBlankString | None = None
     provenance: NonBlankString | None = None
-    buckling_data_qualification: Literal["qualified", "reference_only"] = "qualified"
+    buckling_data_qualification: BucklingDataQualification = "qualified"
     properties: TubeMaterialProperties
 
 
@@ -787,7 +787,7 @@ class SmoothBucklingSizingMetadata(ContractModel):
         "internal_radius_plus_half_wall_thickness",
         "external_radius_minus_half_wall_thickness",
     ]
-    buckling_data_qualification: Literal["qualified", "reference_only"] = Field(
+    buckling_data_qualification: BucklingDataQualification = Field(
         description="Whether the buckling inputs support acceptance or preliminary sizing only.",
     )
     target_minimum_margin: Annotated[float, Field(ge=0, allow_inf_nan=False)]

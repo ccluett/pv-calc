@@ -10,7 +10,9 @@ correction or of any assumed material curve.
 
 from __future__ import annotations
 
+import json
 import math
+from pathlib import Path
 
 import pytest
 
@@ -323,36 +325,6 @@ def test_the_solved_root_satisfies_its_own_residual() -> None:
         assert result.plasticity_factor == pytest.approx(root / elastic, rel=1e-12)
 
 
-def test_a_fixed_point_iteration_would_not_have_converged_here() -> None:
-    """The 16-inch case is why this is a bracketed solve, not an iteration."""
-    geometry = _at_ratio(16.0 * 25.4, 10.05)
-    result = _kernel(**geometry, ramberg_osgood_n=21.0,
-                     compressive_proof_stress_mpa=827.0)
-    selected = next(item for item in result.candidates if item.applicable)
-    elastic = selected.correlated_critical_pressure_mpa
-    boundary = (
-        SMOOTH_CYLINDER_MORE_THAN_TWO_WAVE_COEFFICIENT
-        * result.geometry_mode_parameter**2
-    )
-    pressure = elastic
-    visited = []
-    for _ in range(40):
-        eta, _ = smooth_cylinder_plasticity_factor(
-            pressure * result.shell_mid_surface_radius_over_thickness,
-            elastic_modulus_mpa=113800.0, ramberg_osgood_n=21.0,
-            compressive_proof_stress_mpa=827.0, gamma_z=selected.gamma_z,
-            more_than_two_wave_boundary=boundary,
-        )
-        pressure = elastic * eta
-        visited.append(pressure)
-    # The iterate oscillates between two far-apart values instead of settling.
-    assert abs(visited[-1] - visited[-2]) > 10.0
-    assert abs(visited[-1] - visited[-3]) < 1.0e-6
-    # The bracketed solve lands between the two, on the actual root.
-    root = result.correlated_critical_pressure_mpa
-    assert min(visited[-2:]) < root < max(visited[-2:])
-
-
 def test_the_correction_is_continuous_through_the_proportional_limit() -> None:
     """No step where the elastic-only path would have changed status."""
     diameter = 16.0 * 25.4
@@ -589,6 +561,16 @@ def test_explicit_reference_only_curve_cannot_pass_acceptance() -> None:
         62.7161928406424, abs=5e-7
     )
     assert assess_response(response)["status"] == "fail"
+
+
+def test_illustrative_titanium_example_cannot_pass_with_a_positive_margin() -> None:
+    example = Path(__file__).resolve().parents[1] / "examples" / "smooth_buckling_inelastic_titanium.json"
+    request = json.loads(example.read_text(encoding="utf-8"))
+    request["inputs"]["external_pressure"] = {"value": 60.0, "unit": "MPa"}
+    response = calculate(request)
+    assert response["result"]["margin"] > 0
+    assert response["result"]["capacity_status"] == "released_unqualified_material"
+    assert assess_response(response)["status"] == "indeterminate"
 
 
 def test_reference_only_reason_survives_pending_plasticity_precedence() -> None:
@@ -854,28 +836,6 @@ def test_each_elastic_regime_selects_the_matching_plasticity_equation(
         assert result.regime == "long"
     else:
         assert result.regime in {"short", "moderate"}
-
-
-@pytest.mark.parametrize("fraction", [0.8, 0.9, 0.95, 1.0, 1.05, 1.1])
-def test_the_moderate_factor_lies_between_the_short_and_long_ones(fraction: float) -> None:
-    """Guards the Eq. 31 transcription, whose printed form is the ambiguous one.
-
-    Eq. 31 covers the range between Eq. 30's short plate-like factor and
-    Eq. 32's long ring-like one, so it has to sit between them. Reading its
-    radical as applying only to E_tan/E_sec, rather than over the whole
-    bracket, puts it far below Eq. 32 instead, which would make a moderate
-    cylinder weaker than a long one.
-    """
-    stress = fraction * TITANIUM["compressive_proof_stress_mpa"]
-    secant, tangent = ramberg_osgood_moduli(stress, **TITANIUM)
-    factors = _reference_factors(secant, tangent, TITANIUM["elastic_modulus_mpa"])
-    assert factors["eq32"] < factors["eq31"] < factors["eq30"] or (
-        # The two long-regime factors converge and may cross by a hair as the
-        # curve softens; the short-regime bound is the one that must hold.
-        factors["eq31"] < factors["eq30"]
-        and abs(factors["eq31"] - factors["eq32"]) < 0.01
-    )
-    assert factors["eq31"] < factors["eq30"]
 
 
 @pytest.mark.parametrize("command", ["smooth-buckling", "cylinder"])

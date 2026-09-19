@@ -268,6 +268,8 @@ def test_reference_curve_uses_the_elastic_bound_not_the_corrected_estimate(
     assert summary["outputs"]["reference_buckling_estimate"]["value"][
         "value"
     ] == pytest.approx(62.7161928406424)
+    reason = next(reason for reason in check["reasons"] if "reference-only" in reason)
+    assert render_text(response).count(reason) == 1
     if expected_status == "fail":
         coverage = summary["assessment"]["required_check_coverage"]
         assert "smooth_cylinder_buckling" in coverage["evaluated"]

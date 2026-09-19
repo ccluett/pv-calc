@@ -1025,7 +1025,7 @@ def test_cylinder_size_names_a_capacity_that_is_pending_plasticity() -> None:
         "cylindrical_shell_stress": forward["tube"]["result"]["margin"],
     }
     assert any(
-        "elastic upper bound pending validation" in reason
+        "elastic upper bound because no compressive curve was supplied" in reason
         for reason in diagnostics["withheld_reasons"]
     )
 

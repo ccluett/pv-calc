@@ -353,8 +353,7 @@ def _material_payload(
                 "reason": (
                     BUCKLING_REFERENCE_ONLY_REASON
                     if qualification == "reference_only"
-                    else "the selected material data are treated as caller-qualified; "
-                    "pv-calc does not independently certify their applicability"
+                    else "Material data are treated as qualified unless marked reference_only."
                 ),
             }
         }

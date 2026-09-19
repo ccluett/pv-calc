@@ -8,9 +8,8 @@ external hydrostatic pressure, with flat circular or hemispherical end
 closures. Stress calculations support ductile metals, plastics, and brittle
 materials, using a failure criterion appropriate to each category. Annular
 endcaps, complete spheres, cones, and internal-pressure workflows are not yet
-included. All released calculations are advisory. Fabrication,
-service use, and certification require separate qualification outside this
-repository.
+included. Results cover the analytical checks listed below; vessel certification
+and fabrication requirements are outside the scope of the calculator.
 
 ## Requests and results
 
@@ -361,30 +360,25 @@ statistical A-basis or B-basis allowables and have no temperature derating,
 weld or heat-affected-zone knockdown, fatigue or notch correction, or
 environmental-cracking adjustment. The calculator applies no safety factor.
 
-The generic bundled Al-6061-T6 and Ti-6Al-4V records retain a
-`proportional_limit_mpa` and complete compressive Ramberg-Osgood pair with
-`buckling_data_qualification: reference_only`. This preserves a reproducible
-preliminary estimate without promoting the data into an acceptance decision.
-The material schema accepts `qualified` data through an explicit material or a
-deliberately scoped custom record. The curve representation is
+The bundled Al-6061-T6 and Ti-6Al-4V records provide a `proportional_limit_mpa`
+and complete compressive Ramberg-Osgood pair. The curve representation is
 `strain = s/E + 0.002*(s/s0)^n`, with `s0` supplied as
 `compressive_proof_stress_mpa`, following MIL-HDBK-5J Section 9.8.4.1.2.
 The source fields record shape, anchor, product form, direction, and any
-substitution; a curve is not a universal alloy property. The proportional
+substitution. The proportional
 limits use this project's `E_tan = 0.99 E` screen, which differs from the
 handbook convention of 0.0001 plastic strain (Section 1.4.4.2, p. 1-9).
-MIL-HDBK-5J is a historical source: its cancellation notice identifies MMPDS
-as a suitable successor and cautions users to evaluate it for their application.
-The located Al-6061-T6 curve is LT extrusion data, and the located Ti-6Al-4V
-curve is longitudinal annealed-extrusion data. Neither establishes a generic
-hoop response across the product forms represented by its alloy-name record.
-The result status is `released_unqualified_material` when these bundled values
-otherwise satisfy the model gates. Detailed output and
-`material.data_qualification` carry the caveat beside the number; concise
-assessment hides the capacity and cannot pass. It reports failure only when the
-separately reported elastic upper bound is below demand and the required margin.
-Explicit inputs default to `qualified` for compatibility, while JSON callers
-may mark them `reference_only` on the material object.
+MIL-HDBK-5J is cancelled; its notice identifies MMPDS as a successor. The
+Al-6061-T6 curve describes LT extrusion compression; the Ti-6Al-4V curve describes
+longitudinal compression of annealed extrusion, with a tensile minimum substituted
+for compression proof stress. These assumptions are unverified for the generic
+alloy records, so both use `buckling_data_qualification: reference_only`.
+
+When the model gates pass, these records return `released_unqualified_material`
+estimates for calculation and sizing. `check` returns indeterminate unless the
+elastic upper bound proves failure. `material.data_qualification` records this
+distinction. Explicit inputs and custom records default to `qualified`; JSON
+inputs can set `reference_only` on the material object.
 
 Named-material responses preserve relevant derivations in
 `material.property_sources`, keyed by `working_strength`, `proportional_limit`,
@@ -476,14 +470,9 @@ Where a source gives no rule, capacity is withheld instead of guessed:
   smooth cylinder corrects it with NASA Eqs. 30-32 when a curve is available,
   and otherwise releases the elastic upper bound as
   `released_pending_plasticity`, with a null ordinary margin.
-- The compressive curve is `strain = s/E + 0.002*(s/s0)^n`, the MIL-HDBK-5J
-  Section 9.8.4.1.2 form with `s0` the 0.2% offset compressive proof stress.
-  The located Al-6061-T6 LT-extrusion and Ti-6Al-4V longitudinal-extrusion
-  shapes do not establish generic hoop response across their listed product
-  forms. The two curves are retained as reference-only data; their numerical
-  estimates and exploratory sizing remain available. `check` cannot pass and
-  stays indeterminate unless the elastic upper bound already proves failure.
-  The other five bundled metals carry neither a curve nor a proportional limit.
+- Bundled compression curves retain the product-form and direction limits
+  described in the material records above. The other five bundled metals carry
+  neither a curve nor a proportional limit.
 - Ring global and inter-ring instability remain advisory calculator results
   (`capacity_status: advisory`). A complete compressive curve corrects the
   inter-ring smooth-shell pressure; the orthotropic global pressure remains

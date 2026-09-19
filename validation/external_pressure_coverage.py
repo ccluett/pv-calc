@@ -25,6 +25,7 @@ YIELD_GATE_RATIO = 80.0 / (441.0 * math.sqrt(3.0))
 ILLUSTRATIVE_TITANIUM_CURVE = {
     "type": "explicit",
     "name": "Illustrative Ti-6Al-4V curve assumption",
+    "buckling_data_qualification": "reference_only",
     "provenance": (
         "Illustrative assumption from historical MIL-HDBK-5J Figures "
         "5.4.1.1.6(b,c), "
@@ -123,15 +124,15 @@ def main() -> None:
             ILLUSTRATIVE_TITANIUM_CURVE,
         ))
         buckling = cylinder["components"]["smooth_buckling"]["result"]
-        # The explicit illustrative curve exercises the NASA Eq. 30-32
-        # correction without promoting it into the generic named record.
-        capacity = buckling["correlated_critical_pressure_mpa"]["value"]
+        corrected = buckling["correlated_critical_pressure_mpa"]["value"]
         elastic = next(
             candidate["correlated_critical_pressure_mpa"]["value"]
             for candidate in buckling["candidates"]
             if candidate["applicable"]
         )
         checks = {item["id"]: item for item in cylinder["assessment"]["checks"]}
+        assert buckling["capacity_status"] == "released_unqualified_material"
+        assert checks["smooth_cylinder_buckling"]["capacity"]["value"] is None
         assert cylinder["assessment"]["status"] == "fail"
         row = {
             "outside_diameter_in": diameter, "yield_wall_mm": yield_wall,
@@ -140,7 +141,7 @@ def main() -> None:
             "comparison_radius_thickness_ratio": 10.05,
             "comparison_wall_mm": wall,
             "comparison_elastic_buckling_pressure_mpa": elastic,
-            "comparison_released_buckling_pressure_mpa": capacity,
+            "comparison_corrected_buckling_pressure_mpa": corrected,
             "comparison_plasticity_factor": buckling["plasticity_factor"],
             "comparison_buckling_status": buckling["capacity_status"],
             "comparison_yield_pressure_mpa": checks["cylindrical_shell_stress"]["capacity"]["value"],

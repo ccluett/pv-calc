@@ -353,7 +353,7 @@ def test_source_based_thin_tube_and_proportional_limit_gates():
     assert withheld_and_exceeding.capacity_status == "withheld_applicability"
     assert any("must be > 10" in item for item in withheld_and_exceeding.validity_violations)
     assert withheld_and_exceeding.correlated_critical_pressure_mpa is None
-    assert not any("pending validation" in item for item in withheld_and_exceeding.notes)
+    assert not any("no compressive curve was supplied" in item for item in withheld_and_exceeding.notes)
 
     with pytest.raises(ValueError, match="must be <= yield_strength_mpa"):
         _kernel(yield_strength=250.0, proportional_limit=250.0001)

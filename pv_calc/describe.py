@@ -167,11 +167,9 @@ _RESULT_FIELD_DESCRIPTIONS: dict[str, str] = {
         " null when no curve was supplied."
     ),
     "buckling_data_qualification": (
-        "Whether the supplied proportional limit or compressive curve is treated as "
-        "qualified for acceptance or as reference-only preliminary data. A reference-only "
-        "result retains its number as released_unqualified_material but cannot pass check. "
-        "Its elastic candidate may be exposed as a check upper bound that can establish "
-        "failure, but never passage, under the supplied elastic properties."
+        "qualified or reference_only. Reference-only data produce estimates for "
+        "calculation and sizing; check stays indeterminate unless the elastic upper "
+        "bound proves failure."
     ),
     "eq25_simplified_critical_pressure_mpa": (
         "NASA/SP-8007-2020/REV 2 Eq. 25, printed p. 27, which that source states only "
@@ -182,18 +180,10 @@ _RESULT_FIELD_DESCRIPTIONS: dict[str, str] = {
         "value traceable and sets no capacity, margin, or regime."
     ),
     "elastic_applicability": (
-        "Screen, not a capacity: compares working_circumferential_membrane_stress_mpa "
-        "with elastic_applicability_limit_mpa using the same strict comparison the "
-        "plasticity check applies to the correlated critical stress. 'exceeded' means "
-        "every capacity at or above the applied pressure exceeds that limit too, at "
-        "every unsupported length, because only wall thickness moves this stress: with "
-        "a proportional limit but no compressive curve such a capacity is an elastic "
-        "upper bound reported as released_pending_plasticity. A complete curve applies "
-        "the inelastic correction; without either curve or proportional limit, capacity "
-        "is withheld. The elastic upper bound can establish conservative failure when it "
-        "is below demand and the required margin, but cannot establish passage. "
-        "'undetermined' means neither a proportional limit nor a yield strength was "
-        "supplied. It never withholds a result and never sets a margin."
+        "Compares applied membrane stress p*r/t with elastic_applicability_limit_mpa: "
+        "'exceeded' above the limit, 'within' at or below it, and 'undetermined' when "
+        "no limit is supplied. This screen is independent of unsupported length and "
+        "sets neither capacity nor margin."
     ),
     "elastic_applicability_limit_mpa": (
         "The stress limit the elastic-applicability screen compared against: the "
@@ -209,17 +199,11 @@ _RESULT_FIELD_DESCRIPTIONS: dict[str, str] = {
         "global_elastic_applicability comparison readable."
     ),
     "global_elastic_applicability": (
-        "Screen, not a capacity, and unlike the inter-ring result's "
-        "elastic_applicability it compares a capacity stress rather than the applied "
-        "working stress: 'exceeded' means "
-        "global_critical_circumferential_membrane_stress_mpa stands above "
-        "elastic_applicability_limit_mpa, so the global pressure is an elastic upper "
-        "bound. NASA gives plasticity factors for unstiffened cylinders only, so that "
-        "bound is labelled rather than corrected. 'undetermined' means neither a "
-        "proportional limit nor a yield strength was supplied, or the mode search "
-        "produced no pressure to screen. On a record another gate already withheld, "
-        "an exceedance joins validity_violations instead of adding a pending-"
-        "validation note: no advisory pressure exists for one to describe."
+        "Compares global critical membrane stress with elastic_applicability_limit_mpa. "
+        "'exceeded' marks the pressure as an elastic upper bound; NASA's plasticity "
+        "factors cover unstiffened cylinders, so the global mode remains uncorrected. "
+        "'undetermined' means the material limit or global pressure is missing. "
+        "For withheld results, an exceedance is recorded in validity_violations."
     ),
     "advisory_governing_status": (
         "Whether the selected advisory_governing_pressure_mpa is an elastic upper "
@@ -228,11 +212,8 @@ _RESULT_FIELD_DESCRIPTIONS: dict[str, str] = {
         "'advisory_unqualified_material' when the winning inter-ring estimate uses "
         "reference-only material data, "
         "'advisory_plasticity_undetermined' when no limit was available to screen it, "
-        "and 'advisory' otherwise. Null when every mode was withheld. It describes the "
-        "selected mode alone, so read global_elastic_applicability alongside it: the "
-        "global capacity is regularly over the limit while a lower inter-ring capacity "
-        "wins the minimum and reports a plain 'advisory'. The whole result stays "
-        "advisory in every case."
+        "and 'advisory' otherwise. Null when every mode was withheld. This describes "
+        "the selected mode; global_elastic_applicability separately reports the global mode."
     ),
     "working_circumferential_membrane_stress_mpa": (
         "Applied thin-shell circumferential membrane stress p*r/t at the mid-surface "
@@ -241,13 +222,9 @@ _RESULT_FIELD_DESCRIPTIONS: dict[str, str] = {
         "elastic_applicability comparison readable; it is not a capacity or a margin."
     ),
     "advisory_candidate_modes": (
-        "The modes that entered the advisory_governing_mode minimum, which admits every "
-        "mode whose pressure was not withheld, one labelled an elastic upper bound "
-        "included, because plasticity could only reduce that elastic estimate. A mode "
-        "absent here was withheld rather than compared, so advisory_governing_mode "
-        "naming the global mode does not by itself mean the inter-ring result lost; read "
-        "capacity_status and inter_ring_shell_buckling.capacity_status for which "
-        "withheld it."
+        "Modes with available pressures, including elastic upper bounds, that entered "
+        "the governing-pressure minimum. Absent modes were withheld; their capacity_status "
+        "fields give the reason."
     ),
 }
 

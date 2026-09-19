@@ -160,15 +160,15 @@ def _result_checks(payload: dict[str, Any]) -> list[dict[str, Any]]:
                 *parent_violations,
                 *inter_ring_result.get("validity_violations", []),
                 *inter_ring_result.get("release_gate_violations", []),
-                "The inter-ring smooth-shell result is advisory in a ring-shell "
-                "calculation; ideal circular support at each ring center line is "
-                "assumed, not established by the supplied ring geometry.",
+                "Inter-ring buckling is advisory: ideal circular support at each ring "
+                "center line is assumed; ring stiffness and attachment are not checked "
+                "for that support.",
             ],
         )
         return [
             _check("ring_shell_global_buckling", pressure, None, None,
                    result.get("capacity_status", "unavailable"),
-                   [*result.get("validity_violations", []), "Global ring-shell results are advisory; no released global capacity is available."]),
+                   [*result.get("validity_violations", []), "Global ring-shell buckling is advisory: the long-cylinder transition and local failure modes are not covered."]),
             inter_ring,
         ]
     return []
@@ -484,6 +484,7 @@ def _render_summary(summary: dict[str, Any]) -> list[str]:
             ("depth", "depth"), ("design_factor", "factor"),
             ("service_external_pressure", "service pressure"), ("design_external_pressure", "design pressure"),
         ) if key in loading))
+    check_reasons: set[str] = set()
     for check in assessment["checks"]:
         margin = "undefined" if check.get("margin") is None else _format(check["margin"])
         upper_bound = (
@@ -493,9 +494,10 @@ def _render_summary(summary: dict[str, Any]) -> list[str]:
         )
         lines.append(f"{check['id']}: {check['status'].upper()} | demand {_format(check['demand'])} | capacity {_format(check['capacity'])}{upper_bound} | margin {margin} (required {_format(check['required_margin'])})")
         lines.extend(f"  {reason}" for reason in check["reasons"])
+        check_reasons.update(check["reasons"])
     for name, output in summary.get("outputs", {}).items():
         lines.append(f"{name}: {output['status']}" + (f" | {_format(output['value'])}" if output.get("value") is not None else ""))
-        lines.extend(f"  {reason}" for reason in output["reasons"])
+        lines.extend(f"  {reason}" for reason in output["reasons"] if reason not in check_reasons)
     if assessment.get("governing_check"):
         lines.append(f"Governing check: {assessment['governing_check']}")
     mass = summary.get("mass_properties", {})

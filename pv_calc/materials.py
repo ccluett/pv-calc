@@ -11,16 +11,15 @@ from __future__ import annotations
 import math
 from importlib.resources import files
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any
 
 import yaml
 from pydantic import BaseModel, ConfigDict, field_validator, model_validator
 
-from pv_calc.schemas import MaterialFailureCategory
+from pv_calc.schemas import BucklingDataQualification, MaterialFailureCategory
 
 
 BUNDLED_MATERIAL_DATABASE = "bundled:pv_calc/data/materials.yaml"
-BucklingDataQualification = Literal["qualified", "reference_only"]
 
 
 class CalcMaterial(BaseModel):

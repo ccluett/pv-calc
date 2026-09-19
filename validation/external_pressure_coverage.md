@@ -87,14 +87,15 @@ establishes no new thickness coverage for the five housings above.
 At q = 10.05 the composition reports these when supplied the illustrative
 titanium curve assumption (n = 21 anchored at 827 MPa) explicitly:
 
-| OD, in | Elastic estimate, MPa | Corrected capacity, MPa | eta | First-yield pressure, MPa | Overall at 92.35134 MPa |
+| OD, in | Elastic estimate, MPa | Corrected estimate, MPa | eta | First-yield pressure, MPa | Overall at 92.35134 MPa |
 |---|---:|---:|---:|---:|---|
 | 12 | 63.685457 | 62.716193 | 0.984780 | 86.225559 | fail |
 | 16 | 86.908397 | 72.966922 | 0.839584 | 86.225559 | fail |
 
-Both now release a capacity and an ordinary margin. In the 16-inch row, the
-corrected capacity falls below both the elastic estimate and first yield; a
-simple minimum of the two uncorrected limits would give a different result.
+Both report a corrected estimate and margin with `released_unqualified_material`
+status; the assessment capacity remains unset. In the 16-inch row, the corrected
+estimate falls below both the elastic estimate and first yield; a simple minimum
+of the two uncorrected limits would give a different result.
 
 Within the implemented correlation, a plasticity reduction <= 1 cannot make an
 elastic estimate below demand pass. Both cases still fail; the stress check

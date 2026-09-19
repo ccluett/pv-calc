@@ -23,11 +23,10 @@ from pv_calc.contracts import (
 from pv_calc.errors import CalcCliError
 from pv_calc.materials import (
     BUNDLED_MATERIAL_DATABASE,
-    BucklingDataQualification,
     CalcMaterial,
     load_calc_materials,
 )
-from pv_calc.schemas import MaterialFailureCategory
+from pv_calc.schemas import BucklingDataQualification, MaterialFailureCategory
 
 
 @dataclass(frozen=True)

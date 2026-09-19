@@ -11,6 +11,7 @@
   "material": {
     "type": "explicit",
     "name": "Illustrative Ti-6Al-4V curve assumption",
+    "buckling_data_qualification": "reference_only",
     "provenance": "Illustrative assumption from historical MIL-HDBK-5J Figures 5.4.1.1.6(b,c), p. 5-65: typical longitudinal annealed-extrusion n = 21 with the 827 MPa tensile minimum substituted as the compression anchor. MIL-HDBK-5J is cancelled and MMPDS is its successor; verify current hoop-direction, product-form, heat-treatment, and proof-stress data for design use.",
     "properties": {
       "failure_category": "ductile_metal",

@@ -7,6 +7,7 @@ from typing import Any, Literal, get_args
 
 from pv_calc.ring_section import rectangular_ring_section_properties
 from pv_calc.schemas import (
+    BucklingDataQualification,
     MaterialFailureCategory,
     PlateBoundaryCondition,
     PlateFailureCriterion,
@@ -19,17 +20,13 @@ from pv_calc.schemas import (
 )
 
 
-BucklingDataQualification = Literal["qualified", "reference_only"]
 BUCKLING_REFERENCE_ONLY_REASON = (
-    "the buckling material inputs are marked reference-only; their product-form, "
-    "direction, heat-treatment, and proof-stress applicability is not established for "
-    "this request; the numerical result is available for preliminary work but is not an "
-    "acceptance capacity"
+    "Buckling data are reference-only; applicability of the material properties "
+    "to this part is unverified."
 )
 BUCKLING_ELASTIC_UPPER_BOUND_FAILURE_REASON = (
-    "the elastic buckling upper bound under the supplied elastic properties is below "
-    "the demand and required margin; qualifying or correcting the nonlinear material "
-    "response cannot raise that bound"
+    "The elastic buckling upper bound for the supplied elastic properties is below "
+    "demand including the required margin; a material correction cannot raise that bound."
 )
 BUCKLING_ELASTIC_UPPER_BOUND_STATUSES = frozenset(
     {"released_pending_plasticity", "released_unqualified_material"}
@@ -205,8 +202,6 @@ HEMISPHERE_SCOPE_NOTES = (
     "domain Roark states; NASA SP-8032 does not state that numeric cutoff.",
     "Elastic buckling capacity requires a proportional limit at or above the NASA-correlated "
     "critical membrane stress; no inelastic correction is implemented.",
-    "Reference-only proportional-limit data retain the numerical result as "
-    "released_unqualified_material but do not supply an acceptance capacity.",
     "The Roark probable-minimum pressure is reported only as a published comparator and does "
     "not set released capacity.",
     "The seat bearing stress is the average over the flat equator annulus between the internal "
@@ -334,9 +329,8 @@ SMOOTH_CYLINDER_PLASTICITY_EQ30_GAMMA_Z_LIMIT = 5.0
 SMOOTH_CYLINDER_PLASTICITY_RELATIVE_TOLERANCE = 1.0e-12
 SMOOTH_CYLINDER_PLASTICITY_PENDING_REASON = (
     "correlated critical circumferential membrane stress {stress:.6g} MPa exceeds the "
-    "supplied proportional limit {limit:.6g} MPa; no complete compressive curve was "
-    "supplied for the NASA correction, so this capacity is an elastic upper bound "
-    "pending validation"
+    "supplied proportional limit {limit:.6g} MPa; the pressure is an elastic upper "
+    "bound because no compressive curve was supplied for the NASA correction"
 )
 SMOOTH_CYLINDER_SCOPE_NOTES = (
     "The NASA equations assume a thin, circular, isotropic, unstiffened shell with uniform "
@@ -363,9 +357,6 @@ SMOOTH_CYLINDER_SCOPE_NOTES = (
     "Without a curve, a critical stress above the proportional limit retains an elastic "
     "estimate as released_pending_plasticity with a null margin. Material strength remains "
     "a separate check; the composed cylinder evaluates both stress and buckling.",
-    "Reference-only compression data retain the corrected numerical estimate and margin as "
-    "released_unqualified_material; concise acceptance cannot pass and fails only when the "
-    "elastic upper bound under the supplied elastic properties is already insufficient.",
     "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released "
     "capacity follows the printed 0.855 coefficient in Eq. 24.",
     "The Roark probable-minimum pressure and its lobe count are reported only as a published "
@@ -690,9 +681,9 @@ GENERAL_INSTABILITY_SMEARED_NOTE = (
 )
 RING_SHELL_GLOBAL_PLASTICITY_PENDING_REASON = (
     "the global Eq. 64/65 capacity implies a shell circumferential membrane stress "
-    "{stress:.6g} MPa above the supplied {basis} {limit:.6g} MPa; NASA states plasticity "
-    "factors for unstiffened cylinders only (Eqs. 30-32) and none for the smeared "
-    "orthotropic mode, so this advisory pressure is an elastic upper bound pending validation"
+    "{stress:.6g} MPa above the supplied {basis} {limit:.6g} MPa; this pressure is an "
+    "elastic upper bound because NASA provides no plasticity correction for the "
+    "smeared orthotropic mode"
 )
 RingShellAdvisoryStatus = Literal[
     "advisory",
@@ -2132,9 +2123,8 @@ def solve_inelastic_critical_pressure(
     ``eta`` is 1 at zero stress and decreases as stress rises, so the residual
     ``p - p_elastic*eta(p*r/t)`` is negative at ``p=0`` and non-negative at
     ``p=p_elastic``. That brackets a root on ``[0, p_elastic]`` for every
-    admissible curve, which is why this bisects rather than iterating the fixed
-    point: the fixed-point form can oscillate, including for the preserved
-    16-inch interpolation case.
+    admissible curve. Bisection converges even when fixed-point iteration
+    oscillates.
     """
     p_elastic = _positive_finite(
         elastic_critical_pressure_mpa, "elastic_critical_pressure_mpa"
@@ -3145,22 +3135,17 @@ def ring_stiffened_shell_external_pressure(
         ),
     )
     notes = (
-        "The 0.75 multiplier is NASA's recommendation immediately following Eq. 68; it is not tuned to DTMB.",
+        "The 0.75 multiplier follows NASA's recommendation immediately after Eq. 68.",
         "The shell radius is explicitly the shell mid-surface radius, consistent with the Eq. 82-91 reference surface.",
         "I_r is centroidal; Eq. 90 adds the separate z_r^2 A_r parallel-axis term.",
         "J_r is the exact Saint-Venant constant for the same solid rectangle used by geometry and mass.",
         "The inter-ring ideal supports are ring center lines; no end-restraint capacity increase is credited.",
-        "advisory_governing_mode is the minimum over advisory_candidate_modes, which admits "
-        "every mode whose pressure was not withheld, one labelled an elastic upper bound "
-        "included, because plasticity could only reduce that elastic estimate. A mode absent "
-        "from the list was withheld rather than compared, so read the list before reading "
-        "advisory_margin; capacity_status and inter_ring_shell_buckling.capacity_status say "
-        "which withheld it.",
-        "advisory_governing_status describes the selected mode only, so read "
-        "global_elastic_applicability alongside it: the global capacity can stand above the "
-        "material limit while a lower inter-ring capacity wins the minimum. Neither pressure "
-        "is a rigorous bound on the real structure; NASA's 10-40% low-lobe theory error and "
-        "the recommended 0.75 factor keep both advisory estimates.",
+        "advisory_candidate_modes lists the available pressures, including elastic upper "
+        "bounds; advisory_governing_mode selects their minimum. Withheld modes are excluded.",
+        "advisory_governing_status describes the selected mode. "
+        "global_elastic_applicability separately reports the global mode's material limit.",
+        "Ring pressures remain advisory: the Eq. 64/66 transition and local failure modes "
+        "are outside this calculation. NASA also reports 10-40% theory error for low-lobe modes.",
         GENERAL_INSTABILITY_SMEARED_NOTE,
         GENERAL_INSTABILITY_SCOPE_NOTE,
         *((BUCKLING_REFERENCE_ONLY_REASON,) if data_qualification == "reference_only" else ()),

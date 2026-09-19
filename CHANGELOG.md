@@ -9,6 +9,9 @@ model; both predate this changelog.
 
 ## [Unreleased]
 
+- Mark the illustrative titanium curve as reference-only, consistent with its
+  source assumptions. Shorten repeated qualification notes in documentation and
+  output; text reports show shared check/estimate reasons once.
 - Keep the ring-shell inter-ring smooth-shell estimate advisory in concise
   assessments. Selecting that check can no longer promote it to a released
   passing capacity, and invalid parent ring geometry is carried into the

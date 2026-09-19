@@ -624,7 +624,7 @@
         "material": {
           "data_qualification": {
             "buckling": {
-              "reason": "the selected material data are treated as caller-qualified; pv-calc does not independently certify their applicability",
+              "reason": "Material data are treated as qualified unless marked reference_only.",
               "status": "qualified"
             }
           },
@@ -848,7 +848,6 @@
             "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
             "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, and recommends linear interpolation in Z for 5 < gamma*Z < 100. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
             "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. Material strength remains a separate check; the composed cylinder evaluates both stress and buckling.",
-            "Reference-only compression data retain the corrected numerical estimate and margin as released_unqualified_material; concise acceptance cannot pass and fails only when the elastic upper bound under the supplied elastic properties is already insufficient.",
             "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
             "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
             "elastic_applicability compares applied membrane stress p*r/t with the proportional limit, falling back to yield strength. It sets neither capacity nor margin."
@@ -1541,7 +1540,7 @@
           "material": {
             "data_qualification": {
               "buckling": {
-                "reason": "the selected material data are treated as caller-qualified; pv-calc does not independently certify their applicability",
+                "reason": "Material data are treated as qualified unless marked reference_only.",
                 "status": "qualified"
               }
             },
@@ -1642,7 +1641,6 @@
               "The SP-8032 correlation is the source's lower bound to clamped-cap test data.",
               "The release gate adopts mean-radius/thickness > 10 from the conventional thin-shell domain Roark states; NASA SP-8032 does not state that numeric cutoff.",
               "Elastic buckling capacity requires a proportional limit at or above the NASA-correlated critical membrane stress; no inelastic correction is implemented.",
-              "Reference-only proportional-limit data retain the numerical result as released_unqualified_material but do not supply an acceptance capacity.",
               "The Roark probable-minimum pressure is reported only as a published comparator and does not set released capacity.",
               "The seat bearing stress is the average over the flat equator annulus between the internal and external radii, reported as a positive compressive magnitude with its own failure pressure and margin; it does not enter the shell stress margin.",
               "Radial displacement is derived from the same Lam\u00e9 stresses using spherical strain compatibility and three-dimensional Hooke's law. Each stress state carries the displacement at its own surface radius, positive outward, so external pressure gives a negative value.",
@@ -1785,7 +1783,7 @@
         "material": {
           "data_qualification": {
             "buckling": {
-              "reason": "the selected material data are treated as caller-qualified; pv-calc does not independently certify their applicability",
+              "reason": "Material data are treated as qualified unless marked reference_only.",
               "status": "qualified"
             }
           },
@@ -2009,7 +2007,6 @@
             "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
             "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, and recommends linear interpolation in Z for 5 < gamma*Z < 100. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
             "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. Material strength remains a separate check; the composed cylinder evaluates both stress and buckling.",
-            "Reference-only compression data retain the corrected numerical estimate and margin as released_unqualified_material; concise acceptance cannot pass and fails only when the elastic upper bound under the supplied elastic properties is already insufficient.",
             "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
             "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
             "elastic_applicability compares applied membrane stress p*r/t with the proportional limit, falling back to yield strength. It sets neither capacity nor margin."
@@ -2404,7 +2401,7 @@
     "material": {
       "data_qualification": {
         "buckling": {
-          "reason": "the selected material data are treated as caller-qualified; pv-calc does not independently certify their applicability",
+          "reason": "Material data are treated as qualified unless marked reference_only.",
           "status": "qualified"
         }
       },
@@ -2505,7 +2502,6 @@
         "The SP-8032 correlation is the source's lower bound to clamped-cap test data.",
         "The release gate adopts mean-radius/thickness > 10 from the conventional thin-shell domain Roark states; NASA SP-8032 does not state that numeric cutoff.",
         "Elastic buckling capacity requires a proportional limit at or above the NASA-correlated critical membrane stress; no inelastic correction is implemented.",
-        "Reference-only proportional-limit data retain the numerical result as released_unqualified_material but do not supply an acceptance capacity.",
         "The Roark probable-minimum pressure is reported only as a published comparator and does not set released capacity.",
         "The seat bearing stress is the average over the flat equator annulus between the internal and external radii, reported as a positive compressive magnitude with its own failure pressure and margin; it does not enter the shell stress margin.",
         "Radial displacement is derived from the same Lam\u00e9 stresses using spherical strain compatibility and three-dimensional Hooke's law. Each stress state carries the displacement at its own surface radius, positive outward, so external pressure gives a negative value.",
@@ -3322,7 +3318,7 @@
     "material": {
       "data_qualification": {
         "buckling": {
-          "reason": "the selected material data are treated as caller-qualified; pv-calc does not independently certify their applicability",
+          "reason": "Material data are treated as qualified unless marked reference_only.",
           "status": "qualified"
         }
       },
@@ -3821,7 +3817,6 @@
           "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
           "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, and recommends linear interpolation in Z for 5 < gamma*Z < 100. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
           "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. Material strength remains a separate check; the composed cylinder evaluates both stress and buckling.",
-          "Reference-only compression data retain the corrected numerical estimate and margin as released_unqualified_material; concise acceptance cannot pass and fails only when the elastic upper bound under the supplied elastic properties is already insufficient.",
           "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
           "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
           "elastic_applicability compares applied membrane stress p*r/t with the proportional limit, falling back to yield strength. It sets neither capacity nor margin."
@@ -3950,13 +3945,14 @@
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
       "model_version": "4.0.0",
       "notes": [
-        "The 0.75 multiplier is NASA's recommendation immediately following Eq. 68; it is not tuned to DTMB.",
+        "The 0.75 multiplier follows NASA's recommendation immediately after Eq. 68.",
         "The shell radius is explicitly the shell mid-surface radius, consistent with the Eq. 82-91 reference surface.",
         "I_r is centroidal; Eq. 90 adds the separate z_r^2 A_r parallel-axis term.",
         "J_r is the exact Saint-Venant constant for the same solid rectangle used by geometry and mass.",
         "The inter-ring ideal supports are ring center lines; no end-restraint capacity increase is credited.",
-        "advisory_governing_mode is the minimum over advisory_candidate_modes, which admits every mode whose pressure was not withheld, one labelled an elastic upper bound included, because plasticity could only reduce that elastic estimate. A mode absent from the list was withheld rather than compared, so read the list before reading advisory_margin; capacity_status and inter_ring_shell_buckling.capacity_status say which withheld it.",
-        "advisory_governing_status describes the selected mode only, so read global_elastic_applicability alongside it: the global capacity can stand above the material limit while a lower inter-ring capacity wins the minimum. Neither pressure is a rigorous bound on the real structure; NASA's 10-40% low-lobe theory error and the recommended 0.75 factor keep both advisory estimates.",
+        "advisory_candidate_modes lists the available pressures, including elastic upper bounds; advisory_governing_mode selects their minimum. Withheld modes are excluded.",
+        "advisory_governing_status describes the selected mode. global_elastic_applicability separately reports the global mode's material limit.",
+        "Ring pressures remain advisory: the Eq. 64/66 transition and local failure modes are outside this calculation. NASA also reports 10-40% theory error for low-lobe modes.",
         "The smeared-ring model assumes uniformly spaced rings; widely spaced rings and local/global interaction need a discrete-shell or code-rule check.",
         "Ring material stress, frame tripping/crippling, attachment and weld effects, fabrication imperfections, residual stress, and local/global interaction are not evaluated."
       ],
@@ -4042,7 +4038,7 @@
     "material": {
       "data_qualification": {
         "buckling": {
-          "reason": "the selected material data are treated as caller-qualified; pv-calc does not independently certify their applicability",
+          "reason": "Material data are treated as qualified unless marked reference_only.",
           "status": "qualified"
         }
       },
@@ -4541,7 +4537,6 @@
           "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
           "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, and recommends linear interpolation in Z for 5 < gamma*Z < 100. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
           "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. Material strength remains a separate check; the composed cylinder evaluates both stress and buckling.",
-          "Reference-only compression data retain the corrected numerical estimate and margin as released_unqualified_material; concise acceptance cannot pass and fails only when the elastic upper bound under the supplied elastic properties is already insufficient.",
           "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
           "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
           "elastic_applicability compares applied membrane stress p*r/t with the proportional limit, falling back to yield strength. It sets neither capacity nor margin."
@@ -4670,13 +4665,14 @@
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
       "model_version": "4.0.0",
       "notes": [
-        "The 0.75 multiplier is NASA's recommendation immediately following Eq. 68; it is not tuned to DTMB.",
+        "The 0.75 multiplier follows NASA's recommendation immediately after Eq. 68.",
         "The shell radius is explicitly the shell mid-surface radius, consistent with the Eq. 82-91 reference surface.",
         "I_r is centroidal; Eq. 90 adds the separate z_r^2 A_r parallel-axis term.",
         "J_r is the exact Saint-Venant constant for the same solid rectangle used by geometry and mass.",
         "The inter-ring ideal supports are ring center lines; no end-restraint capacity increase is credited.",
-        "advisory_governing_mode is the minimum over advisory_candidate_modes, which admits every mode whose pressure was not withheld, one labelled an elastic upper bound included, because plasticity could only reduce that elastic estimate. A mode absent from the list was withheld rather than compared, so read the list before reading advisory_margin; capacity_status and inter_ring_shell_buckling.capacity_status say which withheld it.",
-        "advisory_governing_status describes the selected mode only, so read global_elastic_applicability alongside it: the global capacity can stand above the material limit while a lower inter-ring capacity wins the minimum. Neither pressure is a rigorous bound on the real structure; NASA's 10-40% low-lobe theory error and the recommended 0.75 factor keep both advisory estimates.",
+        "advisory_candidate_modes lists the available pressures, including elastic upper bounds; advisory_governing_mode selects their minimum. Withheld modes are excluded.",
+        "advisory_governing_status describes the selected mode. global_elastic_applicability separately reports the global mode's material limit.",
+        "Ring pressures remain advisory: the Eq. 64/66 transition and local failure modes are outside this calculation. NASA also reports 10-40% theory error for low-lobe modes.",
         "The smeared-ring model assumes uniformly spaced rings; widely spaced rings and local/global interaction need a discrete-shell or code-rule check.",
         "Ring material stress, frame tripping/crippling, attachment and weld effects, fabrication imperfections, residual stress, and local/global interaction are not evaluated."
       ],
@@ -4762,7 +4758,7 @@
     "material": {
       "data_qualification": {
         "buckling": {
-          "reason": "the selected material data are treated as caller-qualified; pv-calc does not independently certify their applicability",
+          "reason": "Material data are treated as qualified unless marked reference_only.",
           "status": "qualified"
         }
       },
@@ -5261,7 +5257,6 @@
           "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
           "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, and recommends linear interpolation in Z for 5 < gamma*Z < 100. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
           "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. Material strength remains a separate check; the composed cylinder evaluates both stress and buckling.",
-          "Reference-only compression data retain the corrected numerical estimate and margin as released_unqualified_material; concise acceptance cannot pass and fails only when the elastic upper bound under the supplied elastic properties is already insufficient.",
           "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
           "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
           "elastic_applicability compares applied membrane stress p*r/t with the proportional limit, falling back to yield strength. It sets neither capacity nor margin."
@@ -5390,13 +5385,14 @@
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
       "model_version": "4.0.0",
       "notes": [
-        "The 0.75 multiplier is NASA's recommendation immediately following Eq. 68; it is not tuned to DTMB.",
+        "The 0.75 multiplier follows NASA's recommendation immediately after Eq. 68.",
         "The shell radius is explicitly the shell mid-surface radius, consistent with the Eq. 82-91 reference surface.",
         "I_r is centroidal; Eq. 90 adds the separate z_r^2 A_r parallel-axis term.",
         "J_r is the exact Saint-Venant constant for the same solid rectangle used by geometry and mass.",
         "The inter-ring ideal supports are ring center lines; no end-restraint capacity increase is credited.",
-        "advisory_governing_mode is the minimum over advisory_candidate_modes, which admits every mode whose pressure was not withheld, one labelled an elastic upper bound included, because plasticity could only reduce that elastic estimate. A mode absent from the list was withheld rather than compared, so read the list before reading advisory_margin; capacity_status and inter_ring_shell_buckling.capacity_status say which withheld it.",
-        "advisory_governing_status describes the selected mode only, so read global_elastic_applicability alongside it: the global capacity can stand above the material limit while a lower inter-ring capacity wins the minimum. Neither pressure is a rigorous bound on the real structure; NASA's 10-40% low-lobe theory error and the recommended 0.75 factor keep both advisory estimates.",
+        "advisory_candidate_modes lists the available pressures, including elastic upper bounds; advisory_governing_mode selects their minimum. Withheld modes are excluded.",
+        "advisory_governing_status describes the selected mode. global_elastic_applicability separately reports the global mode's material limit.",
+        "Ring pressures remain advisory: the Eq. 64/66 transition and local failure modes are outside this calculation. NASA also reports 10-40% theory error for low-lobe modes.",
         "The smeared-ring model assumes uniformly spaced rings; widely spaced rings and local/global interaction need a discrete-shell or code-rule check.",
         "Ring material stress, frame tripping/crippling, attachment and weld effects, fabrication imperfections, residual stress, and local/global interaction are not evaluated."
       ],
@@ -5482,7 +5478,7 @@
     "material": {
       "data_qualification": {
         "buckling": {
-          "reason": "the selected material data are treated as caller-qualified; pv-calc does not independently certify their applicability",
+          "reason": "Material data are treated as qualified unless marked reference_only.",
           "status": "qualified"
         }
       },
@@ -5981,7 +5977,6 @@
           "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
           "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, and recommends linear interpolation in Z for 5 < gamma*Z < 100. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
           "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. Material strength remains a separate check; the composed cylinder evaluates both stress and buckling.",
-          "Reference-only compression data retain the corrected numerical estimate and margin as released_unqualified_material; concise acceptance cannot pass and fails only when the elastic upper bound under the supplied elastic properties is already insufficient.",
           "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
           "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
           "elastic_applicability compares applied membrane stress p*r/t with the proportional limit, falling back to yield strength. It sets neither capacity nor margin."
@@ -6110,13 +6105,14 @@
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
       "model_version": "4.0.0",
       "notes": [
-        "The 0.75 multiplier is NASA's recommendation immediately following Eq. 68; it is not tuned to DTMB.",
+        "The 0.75 multiplier follows NASA's recommendation immediately after Eq. 68.",
         "The shell radius is explicitly the shell mid-surface radius, consistent with the Eq. 82-91 reference surface.",
         "I_r is centroidal; Eq. 90 adds the separate z_r^2 A_r parallel-axis term.",
         "J_r is the exact Saint-Venant constant for the same solid rectangle used by geometry and mass.",
         "The inter-ring ideal supports are ring center lines; no end-restraint capacity increase is credited.",
-        "advisory_governing_mode is the minimum over advisory_candidate_modes, which admits every mode whose pressure was not withheld, one labelled an elastic upper bound included, because plasticity could only reduce that elastic estimate. A mode absent from the list was withheld rather than compared, so read the list before reading advisory_margin; capacity_status and inter_ring_shell_buckling.capacity_status say which withheld it.",
-        "advisory_governing_status describes the selected mode only, so read global_elastic_applicability alongside it: the global capacity can stand above the material limit while a lower inter-ring capacity wins the minimum. Neither pressure is a rigorous bound on the real structure; NASA's 10-40% low-lobe theory error and the recommended 0.75 factor keep both advisory estimates.",
+        "advisory_candidate_modes lists the available pressures, including elastic upper bounds; advisory_governing_mode selects their minimum. Withheld modes are excluded.",
+        "advisory_governing_status describes the selected mode. global_elastic_applicability separately reports the global mode's material limit.",
+        "Ring pressures remain advisory: the Eq. 64/66 transition and local failure modes are outside this calculation. NASA also reports 10-40% theory error for low-lobe modes.",
         "The smeared-ring model assumes uniformly spaced rings; widely spaced rings and local/global interaction need a discrete-shell or code-rule check.",
         "Ring material stress, frame tripping/crippling, attachment and weld effects, fabrication imperfections, residual stress, and local/global interaction are not evaluated."
       ],
@@ -6202,7 +6198,7 @@
     "material": {
       "data_qualification": {
         "buckling": {
-          "reason": "the selected material data are treated as caller-qualified; pv-calc does not independently certify their applicability",
+          "reason": "Material data are treated as qualified unless marked reference_only.",
           "status": "qualified"
         }
       },
@@ -6701,7 +6697,6 @@
           "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
           "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, and recommends linear interpolation in Z for 5 < gamma*Z < 100. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
           "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. Material strength remains a separate check; the composed cylinder evaluates both stress and buckling.",
-          "Reference-only compression data retain the corrected numerical estimate and margin as released_unqualified_material; concise acceptance cannot pass and fails only when the elastic upper bound under the supplied elastic properties is already insufficient.",
           "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
           "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
           "elastic_applicability compares applied membrane stress p*r/t with the proportional limit, falling back to yield strength. It sets neither capacity nor margin."
@@ -6830,13 +6825,14 @@
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
       "model_version": "4.0.0",
       "notes": [
-        "The 0.75 multiplier is NASA's recommendation immediately following Eq. 68; it is not tuned to DTMB.",
+        "The 0.75 multiplier follows NASA's recommendation immediately after Eq. 68.",
         "The shell radius is explicitly the shell mid-surface radius, consistent with the Eq. 82-91 reference surface.",
         "I_r is centroidal; Eq. 90 adds the separate z_r^2 A_r parallel-axis term.",
         "J_r is the exact Saint-Venant constant for the same solid rectangle used by geometry and mass.",
         "The inter-ring ideal supports are ring center lines; no end-restraint capacity increase is credited.",
-        "advisory_governing_mode is the minimum over advisory_candidate_modes, which admits every mode whose pressure was not withheld, one labelled an elastic upper bound included, because plasticity could only reduce that elastic estimate. A mode absent from the list was withheld rather than compared, so read the list before reading advisory_margin; capacity_status and inter_ring_shell_buckling.capacity_status say which withheld it.",
-        "advisory_governing_status describes the selected mode only, so read global_elastic_applicability alongside it: the global capacity can stand above the material limit while a lower inter-ring capacity wins the minimum. Neither pressure is a rigorous bound on the real structure; NASA's 10-40% low-lobe theory error and the recommended 0.75 factor keep both advisory estimates.",
+        "advisory_candidate_modes lists the available pressures, including elastic upper bounds; advisory_governing_mode selects their minimum. Withheld modes are excluded.",
+        "advisory_governing_status describes the selected mode. global_elastic_applicability separately reports the global mode's material limit.",
+        "Ring pressures remain advisory: the Eq. 64/66 transition and local failure modes are outside this calculation. NASA also reports 10-40% theory error for low-lobe modes.",
         "The smeared-ring model assumes uniformly spaced rings; widely spaced rings and local/global interaction need a discrete-shell or code-rule check.",
         "Ring material stress, frame tripping/crippling, attachment and weld effects, fabrication imperfections, residual stress, and local/global interaction are not evaluated."
       ],
@@ -6922,7 +6918,7 @@
     "material": {
       "data_qualification": {
         "buckling": {
-          "reason": "the selected material data are treated as caller-qualified; pv-calc does not independently certify their applicability",
+          "reason": "Material data are treated as qualified unless marked reference_only.",
           "status": "qualified"
         }
       },
@@ -7421,7 +7417,6 @@
           "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
           "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, and recommends linear interpolation in Z for 5 < gamma*Z < 100. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
           "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. Material strength remains a separate check; the composed cylinder evaluates both stress and buckling.",
-          "Reference-only compression data retain the corrected numerical estimate and margin as released_unqualified_material; concise acceptance cannot pass and fails only when the elastic upper bound under the supplied elastic properties is already insufficient.",
           "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
           "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
           "elastic_applicability compares applied membrane stress p*r/t with the proportional limit, falling back to yield strength. It sets neither capacity nor margin."
@@ -7550,13 +7545,14 @@
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
       "model_version": "4.0.0",
       "notes": [
-        "The 0.75 multiplier is NASA's recommendation immediately following Eq. 68; it is not tuned to DTMB.",
+        "The 0.75 multiplier follows NASA's recommendation immediately after Eq. 68.",
         "The shell radius is explicitly the shell mid-surface radius, consistent with the Eq. 82-91 reference surface.",
         "I_r is centroidal; Eq. 90 adds the separate z_r^2 A_r parallel-axis term.",
         "J_r is the exact Saint-Venant constant for the same solid rectangle used by geometry and mass.",
         "The inter-ring ideal supports are ring center lines; no end-restraint capacity increase is credited.",
-        "advisory_governing_mode is the minimum over advisory_candidate_modes, which admits every mode whose pressure was not withheld, one labelled an elastic upper bound included, because plasticity could only reduce that elastic estimate. A mode absent from the list was withheld rather than compared, so read the list before reading advisory_margin; capacity_status and inter_ring_shell_buckling.capacity_status say which withheld it.",
-        "advisory_governing_status describes the selected mode only, so read global_elastic_applicability alongside it: the global capacity can stand above the material limit while a lower inter-ring capacity wins the minimum. Neither pressure is a rigorous bound on the real structure; NASA's 10-40% low-lobe theory error and the recommended 0.75 factor keep both advisory estimates.",
+        "advisory_candidate_modes lists the available pressures, including elastic upper bounds; advisory_governing_mode selects their minimum. Withheld modes are excluded.",
+        "advisory_governing_status describes the selected mode. global_elastic_applicability separately reports the global mode's material limit.",
+        "Ring pressures remain advisory: the Eq. 64/66 transition and local failure modes are outside this calculation. NASA also reports 10-40% theory error for low-lobe modes.",
         "The smeared-ring model assumes uniformly spaced rings; widely spaced rings and local/global interaction need a discrete-shell or code-rule check.",
         "Ring material stress, frame tripping/crippling, attachment and weld effects, fabrication imperfections, residual stress, and local/global interaction are not evaluated."
       ],
@@ -7642,7 +7638,7 @@
     "material": {
       "data_qualification": {
         "buckling": {
-          "reason": "the selected material data are treated as caller-qualified; pv-calc does not independently certify their applicability",
+          "reason": "Material data are treated as qualified unless marked reference_only.",
           "status": "qualified"
         }
       },
@@ -8141,7 +8137,6 @@
           "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
           "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, and recommends linear interpolation in Z for 5 < gamma*Z < 100. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
           "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. Material strength remains a separate check; the composed cylinder evaluates both stress and buckling.",
-          "Reference-only compression data retain the corrected numerical estimate and margin as released_unqualified_material; concise acceptance cannot pass and fails only when the elastic upper bound under the supplied elastic properties is already insufficient.",
           "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
           "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
           "elastic_applicability compares applied membrane stress p*r/t with the proportional limit, falling back to yield strength. It sets neither capacity nor margin."
@@ -8270,13 +8265,14 @@
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
       "model_version": "4.0.0",
       "notes": [
-        "The 0.75 multiplier is NASA's recommendation immediately following Eq. 68; it is not tuned to DTMB.",
+        "The 0.75 multiplier follows NASA's recommendation immediately after Eq. 68.",
         "The shell radius is explicitly the shell mid-surface radius, consistent with the Eq. 82-91 reference surface.",
         "I_r is centroidal; Eq. 90 adds the separate z_r^2 A_r parallel-axis term.",
         "J_r is the exact Saint-Venant constant for the same solid rectangle used by geometry and mass.",
         "The inter-ring ideal supports are ring center lines; no end-restraint capacity increase is credited.",
-        "advisory_governing_mode is the minimum over advisory_candidate_modes, which admits every mode whose pressure was not withheld, one labelled an elastic upper bound included, because plasticity could only reduce that elastic estimate. A mode absent from the list was withheld rather than compared, so read the list before reading advisory_margin; capacity_status and inter_ring_shell_buckling.capacity_status say which withheld it.",
-        "advisory_governing_status describes the selected mode only, so read global_elastic_applicability alongside it: the global capacity can stand above the material limit while a lower inter-ring capacity wins the minimum. Neither pressure is a rigorous bound on the real structure; NASA's 10-40% low-lobe theory error and the recommended 0.75 factor keep both advisory estimates.",
+        "advisory_candidate_modes lists the available pressures, including elastic upper bounds; advisory_governing_mode selects their minimum. Withheld modes are excluded.",
+        "advisory_governing_status describes the selected mode. global_elastic_applicability separately reports the global mode's material limit.",
+        "Ring pressures remain advisory: the Eq. 64/66 transition and local failure modes are outside this calculation. NASA also reports 10-40% theory error for low-lobe modes.",
         "The smeared-ring model assumes uniformly spaced rings; widely spaced rings and local/global interaction need a discrete-shell or code-rule check.",
         "Ring material stress, frame tripping/crippling, attachment and weld effects, fabrication imperfections, residual stress, and local/global interaction are not evaluated."
       ],
@@ -8362,7 +8358,7 @@
     "material": {
       "data_qualification": {
         "buckling": {
-          "reason": "the selected material data are treated as caller-qualified; pv-calc does not independently certify their applicability",
+          "reason": "Material data are treated as qualified unless marked reference_only.",
           "status": "qualified"
         }
       },
@@ -8861,7 +8857,6 @@
           "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
           "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, and recommends linear interpolation in Z for 5 < gamma*Z < 100. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
           "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. Material strength remains a separate check; the composed cylinder evaluates both stress and buckling.",
-          "Reference-only compression data retain the corrected numerical estimate and margin as released_unqualified_material; concise acceptance cannot pass and fails only when the elastic upper bound under the supplied elastic properties is already insufficient.",
           "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
           "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
           "elastic_applicability compares applied membrane stress p*r/t with the proportional limit, falling back to yield strength. It sets neither capacity nor margin."
@@ -8990,13 +8985,14 @@
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
       "model_version": "4.0.0",
       "notes": [
-        "The 0.75 multiplier is NASA's recommendation immediately following Eq. 68; it is not tuned to DTMB.",
+        "The 0.75 multiplier follows NASA's recommendation immediately after Eq. 68.",
         "The shell radius is explicitly the shell mid-surface radius, consistent with the Eq. 82-91 reference surface.",
         "I_r is centroidal; Eq. 90 adds the separate z_r^2 A_r parallel-axis term.",
         "J_r is the exact Saint-Venant constant for the same solid rectangle used by geometry and mass.",
         "The inter-ring ideal supports are ring center lines; no end-restraint capacity increase is credited.",
-        "advisory_governing_mode is the minimum over advisory_candidate_modes, which admits every mode whose pressure was not withheld, one labelled an elastic upper bound included, because plasticity could only reduce that elastic estimate. A mode absent from the list was withheld rather than compared, so read the list before reading advisory_margin; capacity_status and inter_ring_shell_buckling.capacity_status say which withheld it.",
-        "advisory_governing_status describes the selected mode only, so read global_elastic_applicability alongside it: the global capacity can stand above the material limit while a lower inter-ring capacity wins the minimum. Neither pressure is a rigorous bound on the real structure; NASA's 10-40% low-lobe theory error and the recommended 0.75 factor keep both advisory estimates.",
+        "advisory_candidate_modes lists the available pressures, including elastic upper bounds; advisory_governing_mode selects their minimum. Withheld modes are excluded.",
+        "advisory_governing_status describes the selected mode. global_elastic_applicability separately reports the global mode's material limit.",
+        "Ring pressures remain advisory: the Eq. 64/66 transition and local failure modes are outside this calculation. NASA also reports 10-40% theory error for low-lobe modes.",
         "The smeared-ring model assumes uniformly spaced rings; widely spaced rings and local/global interaction need a discrete-shell or code-rule check.",
         "Ring material stress, frame tripping/crippling, attachment and weld effects, fabrication imperfections, residual stress, and local/global interaction are not evaluated."
       ],
@@ -9082,7 +9078,7 @@
     "material": {
       "data_qualification": {
         "buckling": {
-          "reason": "the selected material data are treated as caller-qualified; pv-calc does not independently certify their applicability",
+          "reason": "Material data are treated as qualified unless marked reference_only.",
           "status": "qualified"
         }
       },
@@ -9581,7 +9577,6 @@
           "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
           "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, and recommends linear interpolation in Z for 5 < gamma*Z < 100. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
           "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. Material strength remains a separate check; the composed cylinder evaluates both stress and buckling.",
-          "Reference-only compression data retain the corrected numerical estimate and margin as released_unqualified_material; concise acceptance cannot pass and fails only when the elastic upper bound under the supplied elastic properties is already insufficient.",
           "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
           "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
           "elastic_applicability compares applied membrane stress p*r/t with the proportional limit, falling back to yield strength. It sets neither capacity nor margin."
@@ -9710,13 +9705,14 @@
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
       "model_version": "4.0.0",
       "notes": [
-        "The 0.75 multiplier is NASA's recommendation immediately following Eq. 68; it is not tuned to DTMB.",
+        "The 0.75 multiplier follows NASA's recommendation immediately after Eq. 68.",
         "The shell radius is explicitly the shell mid-surface radius, consistent with the Eq. 82-91 reference surface.",
         "I_r is centroidal; Eq. 90 adds the separate z_r^2 A_r parallel-axis term.",
         "J_r is the exact Saint-Venant constant for the same solid rectangle used by geometry and mass.",
         "The inter-ring ideal supports are ring center lines; no end-restraint capacity increase is credited.",
-        "advisory_governing_mode is the minimum over advisory_candidate_modes, which admits every mode whose pressure was not withheld, one labelled an elastic upper bound included, because plasticity could only reduce that elastic estimate. A mode absent from the list was withheld rather than compared, so read the list before reading advisory_margin; capacity_status and inter_ring_shell_buckling.capacity_status say which withheld it.",
-        "advisory_governing_status describes the selected mode only, so read global_elastic_applicability alongside it: the global capacity can stand above the material limit while a lower inter-ring capacity wins the minimum. Neither pressure is a rigorous bound on the real structure; NASA's 10-40% low-lobe theory error and the recommended 0.75 factor keep both advisory estimates.",
+        "advisory_candidate_modes lists the available pressures, including elastic upper bounds; advisory_governing_mode selects their minimum. Withheld modes are excluded.",
+        "advisory_governing_status describes the selected mode. global_elastic_applicability separately reports the global mode's material limit.",
+        "Ring pressures remain advisory: the Eq. 64/66 transition and local failure modes are outside this calculation. NASA also reports 10-40% theory error for low-lobe modes.",
         "The smeared-ring model assumes uniformly spaced rings; widely spaced rings and local/global interaction need a discrete-shell or code-rule check.",
         "Ring material stress, frame tripping/crippling, attachment and weld effects, fabrication imperfections, residual stress, and local/global interaction are not evaluated."
       ],
@@ -9802,7 +9798,7 @@
     "material": {
       "data_qualification": {
         "buckling": {
-          "reason": "the selected material data are treated as caller-qualified; pv-calc does not independently certify their applicability",
+          "reason": "Material data are treated as qualified unless marked reference_only.",
           "status": "qualified"
         }
       },
@@ -10301,7 +10297,6 @@
           "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
           "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, and recommends linear interpolation in Z for 5 < gamma*Z < 100. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
           "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. Material strength remains a separate check; the composed cylinder evaluates both stress and buckling.",
-          "Reference-only compression data retain the corrected numerical estimate and margin as released_unqualified_material; concise acceptance cannot pass and fails only when the elastic upper bound under the supplied elastic properties is already insufficient.",
           "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
           "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
           "elastic_applicability compares applied membrane stress p*r/t with the proportional limit, falling back to yield strength. It sets neither capacity nor margin."
@@ -10430,13 +10425,14 @@
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
       "model_version": "4.0.0",
       "notes": [
-        "The 0.75 multiplier is NASA's recommendation immediately following Eq. 68; it is not tuned to DTMB.",
+        "The 0.75 multiplier follows NASA's recommendation immediately after Eq. 68.",
         "The shell radius is explicitly the shell mid-surface radius, consistent with the Eq. 82-91 reference surface.",
         "I_r is centroidal; Eq. 90 adds the separate z_r^2 A_r parallel-axis term.",
         "J_r is the exact Saint-Venant constant for the same solid rectangle used by geometry and mass.",
         "The inter-ring ideal supports are ring center lines; no end-restraint capacity increase is credited.",
-        "advisory_governing_mode is the minimum over advisory_candidate_modes, which admits every mode whose pressure was not withheld, one labelled an elastic upper bound included, because plasticity could only reduce that elastic estimate. A mode absent from the list was withheld rather than compared, so read the list before reading advisory_margin; capacity_status and inter_ring_shell_buckling.capacity_status say which withheld it.",
-        "advisory_governing_status describes the selected mode only, so read global_elastic_applicability alongside it: the global capacity can stand above the material limit while a lower inter-ring capacity wins the minimum. Neither pressure is a rigorous bound on the real structure; NASA's 10-40% low-lobe theory error and the recommended 0.75 factor keep both advisory estimates.",
+        "advisory_candidate_modes lists the available pressures, including elastic upper bounds; advisory_governing_mode selects their minimum. Withheld modes are excluded.",
+        "advisory_governing_status describes the selected mode. global_elastic_applicability separately reports the global mode's material limit.",
+        "Ring pressures remain advisory: the Eq. 64/66 transition and local failure modes are outside this calculation. NASA also reports 10-40% theory error for low-lobe modes.",
         "The smeared-ring model assumes uniformly spaced rings; widely spaced rings and local/global interaction need a discrete-shell or code-rule check.",
         "Ring material stress, frame tripping/crippling, attachment and weld effects, fabrication imperfections, residual stress, and local/global interaction are not evaluated."
       ],
@@ -10522,8 +10518,8 @@
     "material": {
       "data_qualification": {
         "buckling": {
-          "reason": "the selected material data are treated as caller-qualified; pv-calc does not independently certify their applicability",
-          "status": "qualified"
+          "reason": "Buckling data are reference-only; applicability of the material properties to this part is unverified.",
+          "status": "reference_only"
         }
       },
       "properties_used": {
@@ -10568,7 +10564,7 @@
         "No capacity increase from longitudinal or rotational end restraint is credited."
       ],
       "boundary_condition": "simply_supported",
-      "buckling_data_qualification": "qualified",
+      "buckling_data_qualification": "reference_only",
       "candidates": [
         {
           "applicability_conditions": [
@@ -10680,7 +10676,7 @@
           "sqrt_correlation_factor": 0.948683298051
         }
       ],
-      "capacity_status": "released",
+      "capacity_status": "released_unqualified_material",
       "circumferential_line_load_n_per_mm": {
         "unit": "N/mm",
         "value": 13407.3136674
@@ -10746,10 +10742,10 @@
         "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
         "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, and recommends linear interpolation in Z for 5 < gamma*Z < 100. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
         "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. Material strength remains a separate check; the composed cylinder evaluates both stress and buckling.",
-        "Reference-only compression data retain the corrected numerical estimate and margin as released_unqualified_material; concise acceptance cannot pass and fails only when the elastic upper bound under the supplied elastic properties is already insufficient.",
         "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
         "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
-        "elastic_applicability compares applied membrane stress p*r/t with the proportional limit, falling back to yield strength. It sets neither capacity nor margin."
+        "elastic_applicability compares applied membrane stress p*r/t with the proportional limit, falling back to yield strength. It sets neither capacity nor margin.",
+        "Buckling data are reference-only; applicability of the material properties to this part is unverified."
       ],
       "plasticity_factor": 0.98478044267,
       "poisson_ratio": 0.34,
@@ -10760,7 +10756,9 @@
       "radius_convention": "shell_mid_surface",
       "ramberg_osgood_n": 21.0,
       "regime": "short",
-      "release_gate_violations": [],
+      "release_gate_violations": [
+        "Buckling data are reference-only; applicability of the material properties to this part is unverified."
+      ],
       "roark_probable_minimum_factor": 0.8,
       "roark_probable_minimum_lobes_n": 2,
       "roark_probable_minimum_pressure_mpa": {
@@ -10820,7 +10818,7 @@
     "material": {
       "data_qualification": {
         "buckling": {
-          "reason": "the selected material data are treated as caller-qualified; pv-calc does not independently certify their applicability",
+          "reason": "Material data are treated as qualified unless marked reference_only.",
           "status": "qualified"
         }
       },
@@ -11044,7 +11042,6 @@
         "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
         "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, and recommends linear interpolation in Z for 5 < gamma*Z < 100. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
         "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. Material strength remains a separate check; the composed cylinder evaluates both stress and buckling.",
-        "Reference-only compression data retain the corrected numerical estimate and margin as released_unqualified_material; concise acceptance cannot pass and fails only when the elastic upper bound under the supplied elastic properties is already insufficient.",
         "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
         "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
         "elastic_applicability compares applied membrane stress p*r/t with the proportional limit, falling back to yield strength. It sets neither capacity nor margin."
@@ -11117,7 +11114,7 @@
     "material": {
       "data_qualification": {
         "buckling": {
-          "reason": "the selected material data are treated as caller-qualified; pv-calc does not independently certify their applicability",
+          "reason": "Material data are treated as qualified unless marked reference_only.",
           "status": "qualified"
         }
       },
@@ -11341,7 +11338,6 @@
         "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
         "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, and recommends linear interpolation in Z for 5 < gamma*Z < 100. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
         "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. Material strength remains a separate check; the composed cylinder evaluates both stress and buckling.",
-        "Reference-only compression data retain the corrected numerical estimate and margin as released_unqualified_material; concise acceptance cannot pass and fails only when the elastic upper bound under the supplied elastic properties is already insufficient.",
         "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
         "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
         "elastic_applicability compares applied membrane stress p*r/t with the proportional limit, falling back to yield strength. It sets neither capacity nor margin."
@@ -11414,7 +11410,7 @@
     "material": {
       "data_qualification": {
         "buckling": {
-          "reason": "the selected material data are treated as caller-qualified; pv-calc does not independently certify their applicability",
+          "reason": "Material data are treated as qualified unless marked reference_only.",
           "status": "qualified"
         }
       },
@@ -11638,7 +11634,6 @@
         "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
         "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, and recommends linear interpolation in Z for 5 < gamma*Z < 100. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
         "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. Material strength remains a separate check; the composed cylinder evaluates both stress and buckling.",
-        "Reference-only compression data retain the corrected numerical estimate and margin as released_unqualified_material; concise acceptance cannot pass and fails only when the elastic upper bound under the supplied elastic properties is already insufficient.",
         "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
         "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
         "elastic_applicability compares applied membrane stress p*r/t with the proportional limit, falling back to yield strength. It sets neither capacity nor margin."
@@ -11716,7 +11711,7 @@
         "material": {
           "data_qualification": {
             "buckling": {
-              "reason": "the selected material data are treated as caller-qualified; pv-calc does not independently certify their applicability",
+              "reason": "Material data are treated as qualified unless marked reference_only.",
               "status": "qualified"
             }
           },
@@ -11940,7 +11935,6 @@
             "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
             "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, and recommends linear interpolation in Z for 5 < gamma*Z < 100. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
             "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. Material strength remains a separate check; the composed cylinder evaluates both stress and buckling.",
-            "Reference-only compression data retain the corrected numerical estimate and margin as released_unqualified_material; concise acceptance cannot pass and fails only when the elastic upper bound under the supplied elastic properties is already insufficient.",
             "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
             "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
             "elastic_applicability compares applied membrane stress p*r/t with the proportional limit, falling back to yield strength. It sets neither capacity nor margin."
