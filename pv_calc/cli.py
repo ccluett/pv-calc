@@ -1735,6 +1735,38 @@ def run_request(
         _exit_with_error(exc)
 
 
+def _check_provenance_projection(response: dict[str, Any]) -> dict[str, Any]:
+    """Keep contextual material records without copying full calculation results."""
+    projection: dict[str, Any] = {}
+    for group_name in ("components", "selected_results"):
+        group = response.get(group_name)
+        if not isinstance(group, dict):
+            continue
+        projected_group: dict[str, Any] = {}
+        for name, child in group.items():
+            if isinstance(child, dict) and "material" in child:
+                projected_group[name] = {
+                    key: child[key]
+                    for key in ("id", "model", "material")
+                    if key in child
+                }
+            elif isinstance(child, list):
+                projected_children = [
+                    {
+                        key: item[key]
+                        for key in ("id", "model", "material")
+                        if key in item
+                    }
+                    for item in child
+                    if isinstance(item, dict) and "material" in item
+                ]
+                if projected_children:
+                    projected_group[name] = projected_children
+        if projected_group:
+            projection[group_name] = projected_group
+    return projection
+
+
 @app.command("check")
 def check_request(
     input_path: Annotated[str | None, typer.Option("--input", help="Request JSON file, or '-' for stdin.")] = None,
@@ -1753,7 +1785,16 @@ def check_request(
             response, required_checks=checks or None,
             minimum_margin=_minimum_margin_from_option(minimum_margin),
         )
-        payload: dict[str, Any] = {key: response[key] for key in ("schema_version", "model", "operation", "loading") if key in response}
+        payload: dict[str, Any] = {
+            key: response[key]
+            for key in ("schema_version", "model", "operation", "loading", "material")
+            if key in response
+        }
+        # Detailed JSON is the auditable check record. Keep material provenance
+        # there without making the concise summary/text/CSV formats imply that
+        # one tube material represents a multi-material assembly.
+        if output_format in (None, "json"):
+            payload.update(_check_provenance_projection(response))
         payload["assessment"] = assessment
         _emit(payload, compact=json_output, output_format=output_format)
         raise typer.Exit({"pass": 0, "fail": 1, "indeterminate": 3}[assessment["status"]])

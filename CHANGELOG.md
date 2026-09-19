@@ -12,6 +12,13 @@ model; both predate this changelog.
 - Mark the illustrative titanium curve as reference-only, consistent with its
   source assumptions. Shorten repeated qualification notes in documentation and
   output; text reports show shared check/estimate reasons once.
+- Change the generic `Al-7075-T6` yield reference from the 62 ksi minimum for
+  one B211 bar-size band to the 54 ksi minimum already documented for thick
+  B209 plate. Higher form-specific strengths remain available through explicit
+  inputs or scoped custom records instead of being implied by the generic name.
+  Single-request JSON `check` output now retains each resolved material block
+  and provenance beside its assessment, including material-only component and
+  selected-result projections for composed calculations.
 - Keep the ring-shell inter-ring smooth-shell estimate advisory in concise
   assessments. Selecting that check can no longer promote it to a released
   passing capacity, and invalid parent ring geometry is carried into the
