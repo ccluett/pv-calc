@@ -9,6 +9,8 @@ model; both predate this changelog.
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-09-20
+
 - Release shear-corrected plate deflection for `D_free/t >= 10` (fixed) or
   `>= 6` (simply supported), retaining the stress, material, and small-deflection
   gates. Plate model 5.0.0 and sizing operation 3.0.0 use the corrected value;
@@ -59,6 +61,14 @@ model; both predate this changelog.
   smooth-buckling and cylinder summary/text output, with null acceptance
   capacity and margin, when a proportional limit is supplied without a curve.
   Replace an unofficial ASME full-text link with an edition-and-clause citation.
+- Reject a smooth-cylinder `inputs.submergence` request whose mid-surface
+  radius does not exceed half the wall thickness, instead of reporting a mass
+  for a closed shell with no bore. A thick shell with a positive bore keeps its
+  mass while its buckling capacity is withheld.
+- Model versions: tube 3.1.0, hemisphere 5.0.0, plate 5.0.0, smooth buckling
+  5.0.0, ring shell 4.0.0; cylinder composition 1.0.0. Sizing operation
+  versions: tube 3.1.0, smooth buckling 4.0.0, plate 3.0.0. Sweep 1.2.0 and
+  material comparison 1.1.0. Request schema remains 5.0.0.
 
 ## [0.2.0] - 2026-09-09
 
