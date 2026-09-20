@@ -1209,3 +1209,52 @@ def test_submergence_names_the_geometry_and_density_it_needs() -> None:
         266.60 * 6894.757 / (64.0 * 0.45359237 / 0.3048**3 * 9.80665) / 0.3048, rel=1.0e-4
     )
     assert "mid-surface radius" in smooth_payload["mass_properties"]["volume_basis"]
+
+
+@pytest.mark.parametrize("wall_thickness", [100, 120])
+def test_smooth_submergence_rejects_a_nonpositive_bore(
+    wall_thickness: float,
+) -> None:
+    result = runner.invoke(
+        app,
+        [
+            "smooth-buckling",
+            "--external-pressure", "0.1 MPa",
+            "--shell-mid-surface-radius", "50 mm",
+            "--wall-thickness", f"{wall_thickness} mm",
+            "--unsupported-length", "200 mm",
+            "--load-case", "hydrostatic_closed_end",
+            "--material", "Al-6061-T6",
+            "--fluid-density", "1025 kg/m^3",
+            "--gravity", "9.81 m/s^2",
+            "--json",
+        ],
+    )
+
+    error = _error_payload(result)["error"]
+    assert result.exit_code == 2
+    assert error["code"] == "invalid_request"
+    assert "positive bore" in error["message"]
+
+
+def test_smooth_submergence_keeps_mass_for_a_physically_valid_thick_shell() -> None:
+    result = runner.invoke(
+        app,
+        [
+            "smooth-buckling",
+            "--external-pressure", "0.1 MPa",
+            "--shell-mid-surface-radius", "50 mm",
+            "--wall-thickness", "80 mm",
+            "--unsupported-length", "200 mm",
+            "--load-case", "hydrostatic_closed_end",
+            "--material", "Al-6061-T6",
+            "--fluid-density", "1025 kg/m^3",
+            "--gravity", "9.81 m/s^2",
+            "--json",
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.stdout)
+    assert payload["result"]["capacity_status"] == "withheld_applicability"
+    assert payload["mass_properties"]["result"]["solid_volume_m3"]["value"] > 0.0

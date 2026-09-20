@@ -36,11 +36,16 @@ from pv_calc.evaluate import (
     _calculate_tube_result,
     _evaluate_hemisphere,
 )
-from pv_calc.resolve import ResolvedMaterial, _resolve_material
-from pv_calc.serialize import _calculation_source, _ensure_json_representable, _response
 from pv_calc.pressure_vessel import (
     BUCKLING_ELASTIC_UPPER_BOUND_FAILURE_REASON,
     BUCKLING_ELASTIC_UPPER_BOUND_STATUSES,
+)
+from pv_calc.resolve import ResolvedMaterial, _resolve_material
+from pv_calc.serialize import (
+    _calculation_source,
+    _ensure_json_representable,
+    _material_payload,
+    _response,
 )
 
 
@@ -296,7 +301,11 @@ def evaluate_cylinder(
     except CalcCliError as exc:
         if exc.code != "invalid_material":
             raise
-        components["tube"] = {"model": "tube", "error": {"code": exc.code, "message": exc.message}}
+        components["tube"] = {
+            "model": "tube",
+            "material": _material_payload(material, model="tube"),
+            "error": {"code": exc.code, "message": exc.message},
+        }
         checks.append(_check("cylindrical_shell_stress", pressure, None,
                              required_margin=target, applicability="missing_material_property",
                              reasons=[exc.message]))
@@ -323,7 +332,9 @@ def evaluate_cylinder(
         if exc.code != "invalid_material":
             raise
         components["smooth_buckling"] = {
-            "model": "smooth-buckling", "error": {"code": exc.code, "message": exc.message}
+            "model": "smooth-buckling",
+            "material": _material_payload(material, model="smooth-buckling"),
+            "error": {"code": exc.code, "message": exc.message},
         }
         checks.append(_check("smooth_cylinder_buckling", pressure, None,
                              required_margin=target, applicability="missing_material_property",
@@ -371,7 +382,11 @@ def evaluate_cylinder(
             except CalcCliError as exc:
                 if exc.code != "invalid_material":
                     raise
-                response = {"model": "plate", "error": {"code": exc.code, "message": exc.message}}
+                response = {
+                    "model": "plate",
+                    "material": _material_payload(closure_material, model="plate"),
+                    "error": {"code": exc.code, "message": exc.message},
+                }
                 checks.append(_check(f"{name}.flat_endcap_bending", pressure, None,
                                      required_margin=target, applicability="missing_material_property",
                                      reasons=[exc.message]))
@@ -413,7 +428,11 @@ def evaluate_cylinder(
             except CalcCliError as exc:
                 if exc.code != "invalid_material":
                     raise
-                response = {"model": "hemisphere", "error": {"code": exc.code, "message": exc.message}}
+                response = {
+                    "model": "hemisphere",
+                    "material": _material_payload(closure_material, model="hemisphere"),
+                    "error": {"code": exc.code, "message": exc.message},
+                }
                 checks.extend(_check(f"{name}.{mode}", pressure, None, required_margin=target,
                                      applicability="missing_material_property", reasons=[exc.message])
                               for mode in ("hemispherical_shell_stress", "hemisphere_buckling"))

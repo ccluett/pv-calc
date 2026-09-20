@@ -41,9 +41,14 @@ failure retains `fail` even if another required check is unavailable; otherwise
 missing required coverage gives `indeterminate`. The governing numerical check
 is null when coverage is incomplete. Acceptance is scoped to the requested
 checks, not the whole as-built vessel.
-Batch assessments retain each entry's index, material or sweep coordinate, and
-any calculation error under `assessment.entries[].context`. CSV includes the
-operation, coordinates, material, outcome, and error message.
+For a single request, detailed/default JSON `check` output retains each resolved
+material block so its name, properties used, database, and provenance travel
+with the decision. A simple calculation uses the top-level `material`; a
+cylinder or combined sizing result keeps material-only projections at its
+existing `components` or `selected_results` paths. Batch assessments retain
+each entry's index, material or sweep coordinate, and any calculation error
+under `assessment.entries[].context`.
+CSV includes the operation, coordinates, material, outcome, and error message.
 
 An ordinary forward or sizing JSON request can replace `inputs.external_pressure`
 with `inputs.depth`, `inputs.fluid_density`, `inputs.gravity`, and
@@ -382,10 +387,13 @@ material density: a tube of its `axial_length` with weightless closures, a
 plate as the solid disc of its `outside_radius`, a hemispherical shell, and a
 smooth cylinder as the closed shell of its unsupported length at the
 mid-surface radius plus or minus half the wall; each block states the formulas
-it used as `volume_basis`, and a tube or plate without the length or radius the
-volume needs is refused as `invalid_request`. The density comes from the named
-record or from an explicit record's `density`; without one the request is
-refused as `invalid_material` rather than answered without weights.
+it used as `volume_basis`. Smooth-shell mass additionally requires
+`R_mid - t/2 > 0`; this positive-bore geometry invariant is separate from the
+thin-shell buckling gate, so a physically valid thick shell retains mass while
+its buckling capacity may be withheld. A tube or plate without the length or
+radius the volume needs is refused as `invalid_request`. The density comes from
+the named record or from an explicit record's `density`; without one the
+request is refused as `invalid_material` rather than answered without weights.
 `failure_depths` expresses that model's failure pressures, an explicit per-model
 list of result fields, as `h = p / (rho * g)` in the same fluid, the inverse of
 the depth axis's conversion, with a withheld pressure keeping its null. The
@@ -416,6 +424,8 @@ ultimates are vendor data sheet values, which for a glass are nominal figures
 for a flaw-dominated property rather than material constants. For the metals,
 density, elastic modulus, and Poisson ratio are not specification-governed
 either, and each record names the data sheet its nominal values come from.
+The generic `Al-7075-T6` record uses 54 ksi, the lowest minimum among the
+product forms and thickness bands documented in its provenance.
 These values are calculation inputs rather than design allowables. They are not
 statistical A-basis or B-basis allowables and have no temperature derating,
 weld or heat-affected-zone knockdown, fatigue or notch correction, or
