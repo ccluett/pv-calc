@@ -1176,3 +1176,68 @@ def test_material_names_yaml_reads_as_non_strings_are_refused(tmp_path: Path) ->
     )
     with pytest.raises(ValueError, match="material name True"):
         load_calc_materials(database)
+
+
+def test_batch_check_output_carries_no_material_projection() -> None:
+    request = {
+        "schema_version": CALC_SCHEMA_VERSION,
+        "model": "sweep",
+        "inputs": {
+            "geometry": "unsupported_length",
+            "axis": {
+                "type": "range",
+                "start": _quantity(200.0), "stop": _quantity(300.0), "count": 2,
+            },
+        },
+        "request": {
+            "schema_version": CALC_SCHEMA_VERSION,
+            "model": "cylinder",
+            "inputs": {
+                "external_pressure": _quantity(0.1, "MPa"),
+                "internal_radius": _quantity(50.0),
+                "wall_thickness": _quantity(1.0),
+                "unsupported_length": _quantity(300.0),
+            },
+            "material": _qualified_curve_material(),
+        },
+    }
+
+    result = runner.invoke(
+        app, ["check", "--input", "-", "--format", "json"], input=json.dumps(request),
+    )
+
+    payload = json.loads(result.stdout)
+    assert len(payload["assessment"]["entries"]) == 2
+    assert "components" not in payload
+    assert "selected_results" not in payload
+
+
+def test_concise_check_formats_omit_the_material_projection() -> None:
+    request = {
+        "schema_version": CALC_SCHEMA_VERSION,
+        "model": "cylinder",
+        "inputs": {
+            "external_pressure": _quantity(0.1, "MPa"),
+            "internal_radius": _quantity(50.0),
+            "wall_thickness": _quantity(1.0),
+            "unsupported_length": _quantity(300.0),
+        },
+        "material": _qualified_curve_material(),
+    }
+
+    detailed = runner.invoke(
+        app, ["check", "--input", "-", "--format", "json"], input=json.dumps(request),
+    )
+    summary = runner.invoke(
+        app, ["check", "--input", "-", "--format", "summary"], input=json.dumps(request),
+    )
+    text = runner.invoke(
+        app, ["check", "--input", "-", "--format", "text"], input=json.dumps(request),
+    )
+
+    assert set(json.loads(detailed.stdout)["components"]) == {"tube", "smooth_buckling"}
+    summary_payload = json.loads(summary.stdout)
+    assert "components" not in summary_payload
+    assert summary_payload["assessment"]["status"] == "pass"
+    assert "components" not in text.stdout
+    assert "cylindrical_shell_stress: PASS" in text.stdout
