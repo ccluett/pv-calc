@@ -337,6 +337,69 @@ def test_scope_and_required_margin_are_explicit() -> None:
             assess_response(response, minimum_margin=target)
 
 
+@pytest.mark.parametrize(("strength_fraction", "required_margin"), [
+    (2 / 3, 0.5), (3 / 4, 1 / 3),
+])
+@pytest.mark.parametrize(("load_fraction", "expected"), [(0.99, "pass"), (1.01, "fail")])
+def test_strength_fraction_targets_agree_for_tube_and_cylinder(
+    strength_fraction: float, required_margin: float,
+    load_fraction: float, expected: str,
+) -> None:
+    """A policy target changes acceptance without changing material strength."""
+    request = {
+        "schema_version": CALC_SCHEMA_VERSION, "model": "tube",
+        "inputs": {"external_pressure": _q(1), "internal_radius": _q(50, "mm"),
+                   "wall_thickness": _q(1, "mm")},
+        "material": {"type": "named", "name": "Al-6061-T6"},
+    }
+    reference = calculate(request)["result"]
+    failure_pressure = reference["theoretical_failure_pressure_mpa"]["value"]
+    request["inputs"]["external_pressure"] = _q(
+        failure_pressure * strength_fraction * load_fraction,
+    )
+    response = calculate(request)
+    result = response["result"]
+    assert result["strength_mpa"] == reference["strength_mpa"]
+    assert result["governing_stress_mpa"]["value"] == pytest.approx(
+        result["strength_mpa"]["value"] * strength_fraction * load_fraction,
+    )
+    assert assess_response(
+        response, ["cylindrical_shell_stress"], minimum_margin=required_margin,
+    )["status"] == expected
+
+    cylinder = calculate({
+        **request, "model": "cylinder",
+        "inputs": {**request["inputs"], "unsupported_length": _q(100, "mm"),
+                   "minimum_margin": required_margin},
+    })
+    stress_check = next(
+        check for check in cylinder["assessment"]["checks"]
+        if check["id"] == "cylindrical_shell_stress"
+    )
+    assert stress_check["status"] == expected
+    assert assess_response(cylinder, ["cylindrical_shell_stress"])["status"] == expected
+
+
+def test_assessment_is_importable_from_both_modules() -> None:
+    import pv_calc.assessment
+    import pv_calc.presentation
+
+    assert pv_calc.presentation.assess_response is pv_calc.assessment.assess_response
+
+
+@pytest.mark.parametrize(("demand", "capacity"), [(-1.0, 5.0), (1.0, 0.0), (1.0, -5.0), (None, 5.0)])
+def test_check_decision_is_indeterminate_without_a_nonnegative_demand_and_positive_capacity(
+    demand: float | None, capacity: float | None,
+) -> None:
+    from pv_calc.assessment import check_decision
+
+    decision = check_decision(
+        demand=demand, capacity=capacity, applicability="released", required_margin=0.0,
+    )
+    assert decision.status == "indeterminate"
+    assert not decision.eligible
+
+
 def test_zero_demand_pass_requires_released_positive_capacity() -> None:
     response = _example("smooth-buckling", "smooth_buckling_moderate_nasa.json")
     response["result"].update(external_pressure_mpa=_q(0), margin=None)

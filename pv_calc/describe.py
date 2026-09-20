@@ -1069,8 +1069,9 @@ def _smooth_buckling_size_contract(cli_options: Mapping[str, str]) -> dict[str, 
             " Released tube-stress margins remain visible at the excluded endpoints."
             " The smallest eligible thickness meeting every target is selected; missing"
             " buckling capacities are not inferred.",
-            "Exact Lame tube stress and released buckling are checked at the"
-            " selected thickness. The governing check is calculated from the"
+            "Exact Lame tube stress and eligible buckling margins are checked at the"
+            " selected thickness. Reference-only data retain their qualification"
+            " and cannot pass acceptance. The governing check is calculated from the"
             " material category's own strength and reported rather than assumed.",
         ],
         "command": "pv-calc smooth-buckling size",
@@ -1104,8 +1105,6 @@ def _smooth_buckling_size_contract(cli_options: Mapping[str, str]) -> dict[str, 
             " capacity is released only as an elastic upper bound pending"
             " plasticity: neither carries a sizing capacity, so no thickness"
             " inside them can be selected",
-            "reference-only material data may select a preliminary thickness, but the"
-            " selected check remains indeterminate until qualified data replace it",
         ],
         "load_case": SMOOTH_BUCKLING_SIZING_LOAD_CASE,
         "minimum_margin": {

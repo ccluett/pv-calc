@@ -1364,8 +1364,8 @@ def _smooth_buckling_sizing_sample(
     assert tube.margin is not None  # Sizing requires positive applied pressure.
     check_margins = {
         TUBE_SIZING_CHECK: tube.margin,
-        # The caller admits only released capacities, so the margin exists;
-        # the result type cannot say so, hence the cast.
+        # Released capacities and reference-only exploratory estimates have a
+        # margin; the caller excludes every other status before this point.
         "smooth_cylinder_buckling": cast(float, buckling.margin),
     }
     governing = min(check_margins, key=lambda name: (check_margins[name], name))
