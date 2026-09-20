@@ -44,11 +44,10 @@ solution. The parity tests select the exact reference at every thickness;
 its conventions, surfaces,
 assumptions, and exclusions are recorded in
 [`sources/tube_scalar_displacement.md`](sources/tube_scalar_displacement.md).
-It is a separate file because this module's SHA-256 is recorded as
-`manifest.reference_sha256` in the committed tube/plate FEA summaries. The
-source revision recorded in those manifests is retained. Comparisons use the same `1e-9`
-relative and `1e-10` absolute limits stated below and run in the same test
-module.
+It is a separate file because `non_ring_reference.py` is pinned by
+`manifest.reference_sha256` in the committed tube/plate FEA summaries.
+Comparisons use the same `1e-9` relative and `1e-10` absolute limits stated
+below and run in the same test module.
 
 Hemispherical-head membrane **displacement** remains in
 [`hemisphere_displacement_reference.py`](hemisphere_displacement_reference.py),
@@ -70,15 +69,17 @@ separate from the unchanged numerical equation tolerances.
 
 The smooth-cylinder reference likewise retains its historical margin against
 an elastic pressure estimate when plasticity is pending. Tests continue to
-check that pressure and its historical ratio, while requiring current
-production to report a usable margin only for `capacity_status="released"`.
+check that pressure and its historical ratio, and that production withholds
+the margin wherever the reference's capacity was not released.
 
 The pinned plate reference predates the corrected-deflection release and
 `elastic_estimate_material_limit`. Plate parity compares its raw Kirchhoff and
 shear-corrected values unchanged, then checks current floors and release policy
-separately. Production releases the corrected value only inside the qualified
-geometry with bending stress no greater than the supplied strength. The
-historical oracle and FEA hashes remain unchanged.
+separately; the reference's own `released_maximum_deflection` and deflection
+floors are its historical Kirchhoff values and are not compared. Production
+releases the corrected value only inside the qualified geometry with bending
+stress no greater than the supplied strength. The historical oracle and FEA
+hashes remain unchanged.
 
 The inspected external PDFs are not vendored:
 
@@ -148,6 +149,6 @@ not a current thickness recommendation.
 
 The checked results from the Version 4.0 manual remain software/equation
 parity evidence. No UnderPressure 4.60 GUI report exists in the repository;
-the capture has not been made, and making one would require a manual GUI run.
+capturing one requires a manual GUI run.
 The executable reference records that status explicitly and does not relabel a
 Version 4.0 display or independent calculation as Version 4.60 evidence.

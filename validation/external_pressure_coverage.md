@@ -41,13 +41,7 @@ q = 10 => x = 19/21 => P/sigma_y = 80/(441 sqrt(3)) = 0.1047347427
 
 Here P is the design pressure multiplied by one plus any required margin.
 The q > 10 gate excludes the boundary itself and every stress-compliant wall
-at greater pressure. For a record without a complete compressive curve, an
-additional necessary bound follows from elastic release:
-
-```text
-P_cr >= P_target,   P_cr q <= sigma_proportional,   q > 10
-                => P_target < sigma_proportional / 10
-```
+at greater pressure.
 
 | Material | Yield, MPa | Yield/geometric boundary depth, m |
 |---|---:|---:|
@@ -59,6 +53,14 @@ P_cr >= P_target,   P_cr q <= sigma_proportional,   q > 10
 | SS-2507 | 552 | 3756.106 |
 | Ti-6Al-4V | 827 | 5627.355 |
 
+For a record without a complete compressive curve, an
+additional necessary bound follows from elastic release:
+
+```text
+P_cr >= P_target,   P_cr q <= sigma_proportional,   q > 10
+                => P_target < sigma_proportional / 10
+```
+
 The bundled generic Al-6061-T6 and Ti-6Al-4V records retain historical curves
 as reference-only data. They can produce a corrected numerical estimate and
 drive exploratory sizing, but their `released_unqualified_material` status
@@ -66,8 +68,7 @@ cannot pass acceptance. A separately retained elastic upper bound can still
 establish conservative failure when it falls below demand and the required
 margin. The other five metals carry neither a proportional limit nor a
 compressive curve. Qualified limits and curves can be supplied explicitly or
-through a deliberately scoped custom record. The correction remains inside the
-same geometric domain.
+through a custom record scoped to the part.
 
 ## The q > 10 geometric cutoff
 
@@ -97,11 +98,10 @@ status; the assessment capacity remains unset. In the 16-inch row, the corrected
 estimate falls below both the elastic estimate and first yield; a simple minimum
 of the two uncorrected limits would give a different result.
 
-Within the implemented correlation, a plasticity reduction <= 1 cannot make an
-elastic estimate below demand pass. Both cases still fail; the stress check
-already established that.
+A plasticity factor <= 1 cannot make an elastic estimate below demand pass,
+and both cases fail on stress regardless.
 
-The material-source claims were checked against the actual handbook pages:
+The material-source claims were checked against the handbook pages:
 
 | MIL-HDBK-5J location | Verified content |
 |---|---|
@@ -119,11 +119,10 @@ These product and directional distinctions prevent treating any one curve as
 a universal alloy property. The generic aluminium record therefore does not
 adopt the LT-extrusion curve, and the generic titanium record does not adopt the
 longitudinal-extrusion curve, for unspecified hoop compression and product
-forms. The values above are an explicit illustrative assumption whose
-substitutions remain unverified. Source: MIL-HDBK-5J (31 January 2003), cited
-locations above.
+forms. The values above are an illustrative assumption whose substitutions
+remain unverified (MIL-HDBK-5J, 31 January 2003).
 
-## Bounded elastic benchmark outcome
+## Elastic benchmark attempt
 
 A four-point continuum benchmark was specified at q values 9.313422, 10.0,
 10.5, and 20.0, with three mesh levels and separate outer-radius and NASA
@@ -155,7 +154,6 @@ retained, and `q > 10` remains unchanged. A future study needs a verified
 pressure-load tangent, matched closure and end restraints, and evidence for
 imperfections and material nonlinearity before it can address vessel collapse.
 
-The separate [20 September procedure qualification](sources/cylinder_solver_qualification.md)
-tested an existing procedure that includes pressure-load stiffness. It failed
-the published benchmark, so the investigation is closed and the four-point
-comparison remains unrun.
+A separate [procedure qualification](sources/cylinder_solver_qualification.md)
+tested a procedure that includes pressure-load stiffness. It failed the
+published benchmark, and the four-point comparison remains unrun.

@@ -215,7 +215,7 @@ def test_pending_pressure_is_visible_and_its_elastic_upper_bound_can_reject(
     assert "elastic_buckling_estimate: released_pending_plasticity | 63.6855 MPa" in render_text(response)
     assert "upper bound 63.6855 MPa" in render_text(response)
     if expected_status == "fail":
-        assert any("cannot raise that bound" in reason for reason in check["reasons"])
+        assert any("could only reduce or withhold it" in reason for reason in check["reasons"])
         row = next(csv.DictReader(io.StringIO(render_csv(response))))
         if model == "cylinder":
             row = next(

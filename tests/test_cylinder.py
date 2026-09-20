@@ -318,7 +318,7 @@ def test_reference_only_hemisphere_closure_can_fail_on_its_elastic_upper_bound(
     assert check["status"] == "fail"
     assert check["capacity"] == q(None, "MPa")
     assert check["upper_bound"]["value"] > 0.0
-    assert any("cannot raise that bound" in reason for reason in check["reasons"])
+    assert any("could only reduce or withhold it" in reason for reason in check["reasons"])
 
 
 def test_named_material_missing_elastic_data_keeps_closed_end_stress(

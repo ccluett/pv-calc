@@ -1,30 +1,9 @@
-# Model selection record
+# Deferred methods and references
 
-19 September 2026. The selected work is plate-deflection qualification and a
-bounded cylinder-coverage study. Released methods and their limits are documented
-in [engineering.md](engineering.md).
-
-## Selected work
-
-**Plate deflection.** The existing shear correction is qualified using the saved
-[plate sweep](../validation/fea/results/plate_sweep_fea_summary.json), with
-`abs(prediction - FEA) / abs(FEA) <= 5%`. Released deflection now starts at
-`D_free/t = 10` for fixed edges and `6` for simply supported edges, retaining
-the bending, material, Poisson-ratio, and small-deflection gates. Forward
-calculation, closure assessment, and sizing use the same corrected value;
-the raw Kirchhoff fields remain available.
-
-**Cylinder coverage.** Retain `R_mid/t > 10`. The attempted continuum benchmark
-found gauge sensitivity and an omitted pressure-load stiffness term in the
-selected solver's buckling procedure. It supplies no qualifying evidence for
-an extension; the [coverage record](../validation/external_pressure_coverage.md)
-documents the source check. That attempt added no cylinder model or benchmark
-runner. The subsequent [procedure qualification](../validation/sources/cylinder_solver_qualification.md)
-also failed; its focused benchmark is retained for reproducibility.
-
-Each addition needs a currently wrong or unavailable answer, the proposed
-improvement, and evidence that supports it. These tasks introduce no generic
-stress framework or numerical solver.
+Released methods and their limits are documented in
+[engineering.md](engineering.md). This note records stress-component
+terminology the tool does not implement and the references and decisions
+behind methods that were considered and deferred.
 
 ## Stress separation
 
@@ -52,23 +31,21 @@ stress after combining components at the same location:
 sigma_eq_m+b = von_mises(sigma_membrane + sigma_bending)
 ```
 
-Adding separate von Mises magnitudes or combining maxima from different points
-is generally incorrect. The residual is not automatically a fatigue peak, and
-linearizing a Lamé profile does not recover junction bending. The
-[Ansys theory reference](https://ansyshelp.ansys.com/public/Views/Secured/corp/v261/en/ans_thry/thy_post4.html)
-describes component-based linearization and axisymmetric conventions.
+Adding separate von Mises magnitudes, or combining maxima from different
+points, is incorrect. The residual is not automatically a peak stress, and
+linearizing a Lamé profile does not recover junction bending. ASME BPVC
+Section VIII, Division 2, Part 5, Annex 5-A describes component-based
+linearization and stress classification.
 
-Existing tube and hemisphere results already report signed surface components,
-principal stresses, and von Mises stress. Interior sampling could serve a
-specific inspection need; it does not improve their supported first-yield
-calculation. Separate membrane and membrane-plus-bending requirements would
-justify defining those quantities and extending the existing assessment layer.
-Material strengths and allowable fractions remain separate; see
+Tube and hemisphere results report signed surface components, principal
+stresses, and von Mises stress. Interior sampling would not improve their
+first-yield check. A membrane or membrane-plus-bending requirement would need
+those quantities defined and the assessment layer extended; see
 [acceptance criteria](engineering.md#acceptance-criteria-and-allowable-stresses).
 
 ## Deferred references
 
-These are references for a demonstrated future need, not an implementation sequence.
+References kept for a demonstrated future need, each with the decision taken.
 
 | Topic | Reference and decision |
 |---|---|

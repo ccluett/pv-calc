@@ -289,8 +289,8 @@ def _material_payload(
         properties = {"density": _quantity(material.density_kg_per_m3, "kg/m^3")}
     else:
         # The stress models read the category's strengths, the plate alone
-        # reading a brittle record's tensile strength. Buckling reads a yield
-        # strength only when it is present as an elastic-screen bound.
+        # reading a brittle record's tensile strength; the buckling models
+        # read a yield strength only to bound the proportional limit.
         strengths = material.strengths_mpa()
         if model in {"smooth-buckling", "ring-shell"}:
             strengths = {k: v for k, v in strengths.items() if k == "yield_strength"}

@@ -11,7 +11,7 @@ mean radius 2540 mm, square section 25.4 mm, elastic modulus 206800 MPa,
 Poisson ratio zero, and the first in-plane buckling mode with two lobes.
 Its reported critical pressure is approximately 0.05171 MPa.
 
-The selected existing tool is the repository's CalculiX 2.20 container.
+The tool is the repository's CalculiX 2.20 container.
 The candidate procedure applies pressure in a geometrically nonlinear static
 step, then extracts signed tangent eigenvalues in a prestressed frequency step.
 A zero crossing locates loss of stiffness; a failed static solve alone does not
@@ -54,16 +54,15 @@ the finest result is 19.184% below the published pressure, failing the 5% limit.
 Point and mean rigid-motion constraints at the 48-element mesh change the
 minimum critical pressure by only 0.00008%, but the point constraints split
 the two-lobe mode pair. Agreement of the minimum does not establish invariance
-of the spectrum. An independent linear-static preload check gives the same
-crossing as the nonlinear preload at the 64-element mesh; that choice does not
-explain the pressure discrepancy.
+of the spectrum. A linear-static preload at the 64-element mesh gave the same
+crossing as the nonlinear preload, so the preload choice does not explain the
+discrepancy; that check is not retained in the committed data.
 
-The [focused runner](../fea/pressure_ring_qualification.py) and
+The [runner](../fea/pressure_ring_qualification.py) and
 [comparison data](../fea/results/pressure_ring_qualification.json) retain the
 failed comparison. Raw solver files stay in the requested work directory.
 Pressure-load stiffness being present was necessary, but did not establish
 accuracy for this procedure and model. No correction factor was fitted.
 
-**Investigation closed under the stop condition.** A suitable accessible
-procedure was not demonstrated. The four-point cylinder comparison is not
-resumed, `R_mid/t > 10` stays unchanged, and no cylinder capability is added.
+The four-point cylinder comparison is not resumed and `R_mid/t > 10` stays
+unchanged.

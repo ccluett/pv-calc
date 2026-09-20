@@ -211,7 +211,6 @@ class ExplicitTubeMaterialInput(ContractModel):
     type: Literal["explicit"]
     name: NonBlankString | None = None
     provenance: NonBlankString | None = None
-    buckling_data_qualification: BucklingDataQualification = "qualified"
     properties: TubeMaterialProperties
 
 
@@ -220,14 +219,17 @@ class ExplicitPlateMaterialInput(ExplicitTubeMaterialInput):
 
 
 class ExplicitHemisphereMaterialInput(ExplicitTubeMaterialInput):
+    """The record for a model with a buckling capacity to qualify."""
+
+    buckling_data_qualification: BucklingDataQualification = "qualified"
     properties: HemisphereMaterialProperties
 
 
-class ExplicitCylinderMaterialInput(ExplicitTubeMaterialInput):
+class ExplicitCylinderMaterialInput(ExplicitHemisphereMaterialInput):
     properties: CylinderMaterialProperties
 
 
-class ExplicitBucklingMaterialInput(ExplicitTubeMaterialInput):
+class ExplicitBucklingMaterialInput(ExplicitHemisphereMaterialInput):
     properties: BucklingMaterialProperties
 
 

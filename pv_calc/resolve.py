@@ -215,7 +215,9 @@ def _resolve_material(
         working_strength_source=None,
         proportional_limit_source=None,
         compressive_stress_strain_source=None,
-        buckling_data_qualification=material.buckling_data_qualification,
+        buckling_data_qualification=getattr(
+            material, "buckling_data_qualification", "qualified"
+        ),
         ramberg_osgood_n=getattr(properties, "ramberg_osgood_n", None),
         compressive_proof_stress_mpa=(
             _to_unit(

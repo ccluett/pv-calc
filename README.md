@@ -49,8 +49,8 @@ Status fields distinguish usable capacities from estimates:
   proportional limit, with no curve to correct the elastic pressure; `margin` is null.
 - `released_unqualified_material`: a buckling estimate from reference-only
   material data. It can be used for exploratory sizing.
-- `elastic_estimate_material_limit`: elastic deformation beyond the supplied
-  material strength.
+- `elastic_estimate_material_limit`: a deformation kept as an elastic formula
+  value although the governing stress exceeds the supplied strength.
 
 The first two buckling statuses give `indeterminate` in `check`, or `fail` when
 the elastic upper bound is below demand including the required margin. Ring-shell
@@ -104,10 +104,10 @@ supply data applicable to the part through explicit inputs or a custom record.
 is the canonical bundled database; the repository-root `materials.yaml` is a
 compatibility symlink to it. It contains ten records across the three failure
 categories. Each property identifies its source. The stored strengths are
-reference inputs, not design allowables. When used, derivations of working
-strengths, proportional limits, and compressive curves appear in
-`material.property_sources`; `material.data_qualification` says whether the
-buckling inputs are acceptance-eligible or reference-only.
+reference inputs, not design allowables. Derivations of working strengths,
+proportional limits, and compressive curves appear in `material.property_sources`
+when a model reads them, and `material.data_qualification` says whether the
+buckling inputs are qualified or reference-only.
 
 Use the same unit-bearing forward, sizing, sweep, or comparison request from
 Python through `calculate`. It returns a JSON-serializable dictionary without
@@ -188,6 +188,14 @@ pv-calc check --input examples/cylinder_check.json --format summary
 pv-calc check --input examples/cylinder_check.json --check smooth_cylinder_buckling
 ```
 
+`check --minimum-margin M` requires `capacity >= demand * (1 + M)` for the
+selected structural checks; for a stress check, `M = 0.5` limits stress to
+two-thirds of the supplied strength. Cylinder and sizing requests accept the
+same target as `inputs.minimum_margin`. Encode policy factors this way rather
+than by reducing a material strength. These targets are not code-defined
+membrane or membrane-plus-bending stress checks; see
+[acceptance criteria and allowable stresses](https://github.com/ccluett/pv-calc/blob/main/docs/engineering.md#acceptance-criteria-and-allowable-stresses).
+
 For tube and combined smooth-cylinder sizing, fix either the internal or
 external radius. Optional stock thicknesses select the smallest eligible listed
 choice inside the explicit bounds:
@@ -201,7 +209,8 @@ pv-calc smooth-buckling size \
   --material Al-6061-T6 --format text
 ```
 
-The selected wall uses the bundled reference curve; `check` remains indeterminate.
+The Al-6061-T6 compression curve is reference-only, so the selected wall is
+exploratory and `check` reports indeterminate.
 
 A geometry sweep uses `inputs.geometry` and a unit-bearing `inputs.axis` in
 its JSON request. For example, following the Python request above:

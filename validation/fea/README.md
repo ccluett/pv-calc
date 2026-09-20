@@ -51,7 +51,7 @@ uv run python validation/fea/run_fea.py p5-03-plate-sweep --work-directory /tmp/
 
 The image tag, the `p5-*` subcommand names, and the `/tmp` paths above are
 literal strings inside `run_fea.py`, whose SHA-256 is the `runner_sha256`
-provenance pin in each committed summary; they are reproduced here verbatim so
+provenance pin in each committed `p5-*` summary; they are reproduced here verbatim so
 the commands work, and are not re-stamped, because re-stamping without a solver
 rerun would claim results the current file never produced. The outputs are
 committed under the descriptive names used throughout this document.
@@ -79,15 +79,13 @@ solver is added. A load-controlled nonlinear run will not be relabeled as a
 limit-point analysis.
 
 The CalculiX 2.20 `*BUCKLE` path used for the ring comparisons omits pressure-load
-stiffness, as the [cylinder coverage source review](../external_pressure_coverage.md)
-establishes. This also limits the existing ring eigenvalue comparisons:
-mesh convergence of this stress-stiffness problem does not validate hydrostatic
-bifurcation. The static tube and plate comparisons are unaffected.
-
-The separate [procedure qualification](../sources/cylinder_solver_qualification.md)
-tests a native prestressed-frequency procedure that includes pressure-load
-stiffness. It fails the published reference and supplies no coverage extension.
-The [saved comparison](results/pressure_ring_qualification.json) is reproducible:
+stiffness ([smooth-cylinder buckling coverage](../external_pressure_coverage.md)),
+so mesh convergence of the ring eigenvalues does not validate hydrostatic
+bifurcation. The static tube and plate comparisons are unaffected. A native
+prestressed-frequency procedure that includes pressure-load stiffness was
+tested against a published ring benchmark and failed
+([procedure qualification](../sources/cylinder_solver_qualification.md)). The
+[saved comparison](results/pressure_ring_qualification.json) is reproducible:
 
 ```console
 uv run python validation/fea/pressure_ring_qualification.py --work-directory /tmp/pv-calc-pressure-ring --output /tmp/pressure_ring_qualification.json
@@ -239,7 +237,8 @@ of the clamped-face radial nodal reactions about the plate mid-plane, an
 equilibrium resultant that passes the 2% mesh-change check at every solved
 case, converted as `sigma = 6 M / t^2`.
 
-Errors at the band edge `nu = 0.35` (`nu = 0.30` matches the P5-03 numbers).
+Errors, as `(FEA - Kirchhoff) / Kirchhoff`, at the band edge `nu = 0.35`
+(`nu = 0.30` matches the P5-03 numbers).
 Near the floors this is the worst solved Poisson value for every column
 below. The simply-supported center-stress error crosses over — it rises
 with `nu` at the thick end but falls with `nu` from `D_free/t = 10` up,
@@ -277,29 +276,30 @@ is at most 0.027%, the drift from the primary finest mesh to the deepest is
 at most 0.23%, and no within-budget decision changes at the deepest mesh,
 so no floor reading hinges on residual discretization drift.
 
-Production uses the first-order shear increment `q a^2 / (4 kappa G t)`
-for released deflection and its small-deflection applicability gate. Because
-Kirchhoff sits below the solved deflection everywhere, comparing its raw value with
-`t/2` releases results whose actual deflection is already past the
-small-deflection limit, so the released model applies that limit to
-`Kirchhoff + Mindlin` instead, with `kappa = 5/6` after Reissner (J. Appl.
-Mech. 12, 1945); the correction factor is conventional, not exact, which is
-why the prediction is checked against solved evidence rather than assumed exact.
-The sweep found that estimate above the solved deflection at every one of
-the 42 combinations (residuals from -5.17% to -0.006%) and above the
-deepest solved deflection at every sensitivity point — including the
-thinnest, low-Poisson corner, where the deepest-mesh margin is about
-+0.005% and a deep mesh could most plausibly have overturned it. The margin
-shrinks toward zero with thinness because the increment and the Kirchhoff
-error both vanish there, so this is a measured fact about the solved cases,
-not a claimed mathematical bound; between solved points, and beyond
-`D_free/t = 40` (production sets no upper ratio limit), release relies on
-that margin persisting as an engineering judgment.
+Production uses the first-order shear increment `q a^2 / (4 kappa G t)`,
+with `kappa = 5/6` after Reissner (J. Appl. Mech. 12, 1945), for the released
+deflection and for the `w <= t/2` small-deflection gate; the raw Kirchhoff
+value sits below the solved deflection everywhere, so gating on it would
+release results already past that limit. The correction factor is
+conventional, not exact, so the prediction is checked against the solved
+evidence. The sweep found the corrected prediction above the solved deflection
+at all 42 combinations (`(FEA - prediction) / prediction` from -5.17% to
+-0.006%) and above the deepest solved deflection at every sensitivity point,
+with the smallest margin, about +0.005%, at the thinnest low-Poisson corner.
+That ordering is a measured property of the solved cases, not a bound: it
+holds for both conventional shear factors (5/6 and pi^2/12) and would reverse
+above about `kappa = 0.839`. Between solved points, and beyond `D_free/t = 40`
+(production sets no upper ratio limit), release relies on the observed
+monotone decrease of the error with thinness.
 
 Using `abs(prediction - FEA) / abs(FEA)`, the corrected-deflection error is
 within 5% from `D_free/t = 4` for fixed edges and from `6` for simply-supported
-edges. The simply-supported `D_free/t = 4, nu = 0.35` case remains outside at
-5.446%. The release floors retain the independently qualified bending gate:
+edges; the simply-supported `D_free/t = 4, nu = 0.35` case is outside at
+5.446%. The fixed deflection floor is raised to the fixed bending floor, so a
+deflection is never released where the bending margin is withheld. The
+summary's `derived_validity_floors.*.deflection` entries (20 fixed, 10 simply
+supported) are the historical Kirchhoff floors and are retained unchanged; the
+parity test re-derives the corrected floors from the per-case data.
 
 | Released output | Fixed | Simply supported |
 |---|---:|---:|
@@ -317,13 +317,12 @@ quantity. Outside `0.05 <= nu <= 0.35`, and below `D_free/t = 4`, nothing
 is solved and the production model withholds rather than extrapolates.
 
 The committed Kirchhoff comparisons remain historical evidence: against the
-same budget, simply-supported Kirchhoff deflection fails at `D_free/t = 4`
+same budget, as `(FEA - Kirchhoff) / Kirchhoff`, simply-supported Kirchhoff deflection fails at `D_free/t = 4`
 and `6`, and fixed Kirchhoff deflection fails through `14`, at every solved
 Poisson value. The fixed
 center stress fails at `4` for all three Poisson values (`+8.04%` even at
 `nu = 0.05`) and at `6` only for `nu >= 0.30`. The fixed edge-moment
 comparison fails at `4` only for `nu >= 0.30` (`-0.91%` at `nu = 0.05`).
-All stay committed as failed checks.
 
 ## Executed P5-04 ideal eigenvalue comparisons
 
