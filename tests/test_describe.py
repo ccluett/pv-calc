@@ -33,6 +33,7 @@ from pv_calc.contracts import (
     PlateSizingMetadata,
     QuantityInput,
     RingShellRequest,
+    SMOOTH_BUCKLING_SIZE_OPERATION_VERSION,
     SmoothBucklingSizeRequest,
     SmoothBucklingSizingMetadata,
     SweepRequest,
@@ -235,13 +236,22 @@ def test_describe_reports_complete_discoverable_contracts() -> None:
     )
     assert smooth["available_operations"] == ["forward", "size"]
     assert "lateral_only" in json.dumps(smooth["input_contract"]["json_schema"])
-    assert "proportional_limit" in smooth["required_material_properties"]
+    assert smooth["required_material_properties"]["capacity_release_evidence"] == {
+        "one_of": [
+            ["proportional_limit"],
+            ["ramberg_osgood_n", "compressive_proof_stress"],
+        ],
+        "curve_failure_category": "ductile_metal",
+    }
+    smooth_material = smooth["output_contract"]["material"]["properties_used"]
+    assert {"ramberg_osgood_n", "compressive_proof_stress"} <= smooth_material.keys()
     assert any(
         "moderate/long correlation overlap" in item
         for item in smooth["known_omissions"]
     )
     smooth_size = smooth["size_contract"]
     assert smooth_size["command"] == "pv-calc smooth-buckling size"
+    assert smooth_size["operation_version"] == SMOOTH_BUCKLING_SIZE_OPERATION_VERSION
     assert smooth_size["varied_input"] == "wall_thickness"
     assert smooth_size["declared_check_set"] == [
         "cylindrical_shell_stress",
@@ -265,6 +275,24 @@ def test_describe_reports_complete_discoverable_contracts() -> None:
         "moderate_regime_proportional_limit",
         "long_regime_proportional_limit",
     ]
+    assert smooth_size["required_material_properties"] == {
+        "strength_by_failure_category": {
+            "brittle": ["ultimate_compressive_strength"],
+            "ductile_metal": ["yield_strength"],
+            "plastic": ["working_strength"],
+        },
+        "capacity_release_evidence": smooth["required_material_properties"][
+            "capacity_release_evidence"
+        ],
+    }
+    assert any(
+        "without a complete compressive curve" in assumption
+        for assumption in smooth_size["assumptions"]
+    )
+    assert any(
+        "released only as an elastic upper bound pending plasticity" in assumption
+        for assumption in smooth_size["assumptions"]
+    )
     _assert_workflow_schema(smooth_size["input_contract"]["json_schema"], SmoothBucklingSizeRequest)
     assert "external_radius - thickness" in smooth_size["fixed_radius_rule"]
     assert smooth_size["output_contract"]["sizing_json_schema"] == (
@@ -288,11 +316,19 @@ def test_describe_reports_complete_discoverable_contracts() -> None:
     _assert_workflow_schema(hemisphere["input_contract"]["json_schema"], HemisphereRequest)
     assert "proportional_limit" in hemisphere["required_material_properties"]
     assert any("plastic buckling" in item for item in hemisphere["known_omissions"])
+    hemisphere_defs = hemisphere["input_contract"]["json_schema"]["$defs"]
+    assert "ramberg_osgood_n" not in hemisphere_defs[
+        "HemisphereMaterialProperties"
+    ]["properties"]
 
     ring = json.loads(runner.invoke(app, ["describe", "ring-shell", "--json"]).stdout)
     assert ring["available_operations"] == ["forward"]
     _assert_workflow_schema(ring["input_contract"]["json_schema"], RingShellRequest)
     assert "proportional_limit" not in ring["required_material_properties"]
+    assert {"ramberg_osgood_n", "compressive_proof_stress"} <= ring[
+        "output_contract"
+    ]["material"]["properties_used"].keys()
+    assert any("global capacity" in item and "unstiffened" in item for item in ring["known_omissions"])
     assert any("Eq. 64/Eq. 66" in item for item in ring["known_omissions"])
 
     mass = json.loads(runner.invoke(app, ["describe", "mass-properties", "--json"]).stdout)
@@ -315,6 +351,11 @@ def test_describe_reports_complete_discoverable_contracts() -> None:
     assert "loading" in cylinder["output_contract"]["optional_top_level_fields"]
     assert "indeterminate" in cylinder["output_contract"]["assessment"]
     assert "missing component density" in cylinder["output_contract"]["mass_properties"]
+    cylinder_defs = cylinder["input_contract"]["json_schema"]["$defs"]
+    assert "ramberg_osgood_n" in cylinder_defs["CylinderMaterialProperties"]["properties"]
+    assert "ramberg_osgood_n" not in cylinder_defs[
+        "HemisphereMaterialProperties"
+    ]["properties"]
 
     swept = json.loads(runner.invoke(app, ["describe", "sweep", "--json"]).stdout)
     assert swept["operation"] == "sweep"
@@ -501,6 +542,7 @@ def test_describe_unit_maps_cover_dimensioned_result_fields(result_type, units) 
         "circumferential_wave_count_n",
         "critical_circumferential_lobes_n",
         "roark_probable_minimum_lobes_n",
+        "ramberg_osgood_n",
     }
     dimensioned_fields = {
         name

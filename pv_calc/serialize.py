@@ -11,6 +11,7 @@ from pv_calc.contracts import CALC_SCHEMA_VERSION, _quantity
 from pv_calc.errors import CalcCliError
 from pv_calc.hydrostatics import SubmergedMassResult
 from pv_calc.pressure_vessel import (
+    BUCKLING_REFERENCE_ONLY_REASON,
     FlatCircularPlateResult,
     HemisphereResult,
     RingShellResult,
@@ -112,6 +113,9 @@ SMOOTH_BUCKLING_RESULT_UNITS = {
     "working_circumferential_membrane_stress_mpa": "MPa",
     "elastic_applicability_limit_mpa": "MPa",
     "roark_probable_minimum_pressure_mpa": "MPa",
+    "compressive_proof_stress_mpa": "MPa",
+    "secant_modulus_at_critical_stress_mpa": "MPa",
+    "tangent_modulus_at_critical_stress_mpa": "MPa",
 }
 SMOOTH_BUCKLING_CANDIDATE_UNITS = {
     "ideal_critical_pressure_mpa": "MPa",
@@ -284,11 +288,9 @@ def _material_payload(
     if isinstance(material, ResolvedMassMaterial):
         properties = {"density": _quantity(material.density_kg_per_m3, "kg/m^3")}
     else:
-        # Every model that reads a strength record also reads both elastic
-        # constants; only the three buckling models read a proportional limit.
         # The stress models read the category's strengths, the plate alone
-        # reading a brittle record's tensile strength; the buckling models
-        # read a yield strength only to bound the proportional limit.
+        # reading a brittle record's tensile strength. Buckling reads a yield
+        # strength only when it is present as an elastic-screen bound.
         strengths = material.strengths_mpa()
         if model in {"smooth-buckling", "ring-shell"}:
             strengths = {k: v for k, v in strengths.items() if k == "yield_strength"}
@@ -305,15 +307,29 @@ def _material_payload(
                 material.proportional_limit_mpa,
                 "MPa",
             )
+        if model in {"smooth-buckling", "ring-shell"}:
+            properties["ramberg_osgood_n"] = material.ramberg_osgood_n
+            properties["compressive_proof_stress"] = _quantity(
+                material.compressive_proof_stress_mpa,
+                "MPa",
+            )
+        # Each source is emitted only when its property is present. The curve's
+        # one source covers both paired values, so the quantity anchor is enough.
+        source_properties = (
+            ("working_strength", "working_strength", material.working_strength_source),
+            ("proportional_limit", "proportional_limit", material.proportional_limit_source),
+            (
+                "compressive_stress_strain",
+                "compressive_proof_stress",
+                material.compressive_stress_strain_source,
+            ),
+        )
         property_sources = {
             name: source
-            for name, source in (
-                ("working_strength", material.working_strength_source),
-                ("proportional_limit", material.proportional_limit_source),
-            )
+            for name, described, source in source_properties
             if source is not None
-            and name in properties
-            and properties[name]["value"] is not None
+            and described in properties
+            and properties[described]["value"] is not None
         }
     payload = {
         "source": {
@@ -326,6 +342,21 @@ def _material_payload(
     }
     if property_sources:
         payload["property_sources"] = property_sources
+    if (
+        isinstance(material, ResolvedMaterial)
+        and model in {"smooth-buckling", "hemisphere", "ring-shell"}
+    ):
+        qualification = material.buckling_data_qualification
+        payload["data_qualification"] = {
+            "buckling": {
+                "status": qualification,
+                "reason": (
+                    BUCKLING_REFERENCE_ONLY_REASON
+                    if qualification == "reference_only"
+                    else "Material data are treated as qualified unless marked reference_only."
+                ),
+            }
+        }
     return payload
 
 

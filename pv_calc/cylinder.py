@@ -37,6 +37,10 @@ from pv_calc.evaluate import (
 )
 from pv_calc.resolve import ResolvedMaterial, _resolve_material
 from pv_calc.serialize import _calculation_source, _ensure_json_representable, _response
+from pv_calc.pressure_vessel import (
+    BUCKLING_ELASTIC_UPPER_BOUND_FAILURE_REASON,
+    BUCKLING_ELASTIC_UPPER_BOUND_STATUSES,
+)
 
 
 CYLINDER_MODEL_ID = "cylinder_assessment"
@@ -66,10 +70,12 @@ def describe_cylinder(cli_options: Mapping[str, str] | None = None) -> dict[str,
                 "geometry", "assumptions", "components", "assessment", "mass_properties",
             ],
             "components": "Detailed tube, smooth_buckling, and optional closure responses.",
-            "assessment": "Required checks report demand, released capacity, margin, "
-            "required_margin, applicability, reasons, and pass/fail/indeterminate status. "
-            "Any failed check yields fail; otherwise any unavailable check yields "
-            "indeterminate. A released zero-demand check passes with a null margin.",
+            "assessment": "Required checks report demand, released capacity, any elastic "
+            "upper bound, margin, required_margin, applicability, reasons, and "
+            "pass/fail/indeterminate status. A non-released elastic upper bound can prove "
+            "failure but never passage. Any failed check yields fail; otherwise any "
+            "unavailable check yields indeterminate. A released zero-demand check passes "
+            "with a null margin.",
             "mass_properties": "Tube and optional closures add at two non-overlapping "
             "butt planes. Density is optional; missing component density withholds "
             "structural and total mass. Payload mass and volume default to zero. "
@@ -105,6 +111,7 @@ def _check(
     required_margin: float = 0.0,
     applicability: str = "released",
     reasons: list[str] | None = None,
+    upper_bound: float | None = None,
 ) -> dict[str, Any]:
     """Only released, applicable capacities participate in acceptance."""
     released = applicability == "released"
@@ -115,7 +122,16 @@ def _check(
         else None
     )
     notes = list(reasons or [])
-    if not released or demand is None or capacity is None:
+    upper_bound_failure = (
+        applicability in BUCKLING_ELASTIC_UPPER_BOUND_STATUSES
+        and demand is not None
+        and upper_bound is not None
+        and upper_bound < demand * (1.0 + required_margin)
+    )
+    if upper_bound_failure:
+        status = "fail"
+        notes.append(BUCKLING_ELASTIC_UPPER_BOUND_FAILURE_REASON)
+    elif not released or demand is None or capacity is None:
         status = "indeterminate"
         if not notes:
             notes.append("The required calculation has no released demand or capacity.")
@@ -126,7 +142,7 @@ def _check(
         status = "pass" if capacity >= demand * (1.0 + required_margin) else "fail"
         if status == "fail":
             notes.append("Released capacity does not meet demand and the required margin.")
-    return {
+    check = {
         "id": name,
         "status": status,
         "demand": _quantity(demand, unit),
@@ -136,6 +152,21 @@ def _check(
         "applicability": applicability,
         "reasons": notes,
     }
+    if upper_bound is not None:
+        check["upper_bound"] = _quantity(upper_bound, unit)
+    return check
+
+
+def _smooth_buckling_elastic_upper_bound(result: Any) -> float | None:
+    if result.capacity_status not in BUCKLING_ELASTIC_UPPER_BOUND_STATUSES:
+        return None
+    candidates = [
+        candidate.correlated_critical_pressure_mpa
+        for candidate in result.candidates
+        if candidate.applicable
+        and candidate.correlated_critical_pressure_mpa is not None
+    ]
+    return candidates[0] if len(candidates) == 1 else None
 
 
 def _assessment(checks: list[dict[str, Any]], *, closures_included: bool) -> dict[str, Any]:
@@ -144,8 +175,11 @@ def _assessment(checks: list[dict[str, Any]], *, closures_included: bool) -> dic
     status = "fail" if failures else "indeterminate" if unresolved else "pass"
     # The governing numerical mode is unknown if any required check is
     # unavailable, even when a known failure already establishes rejection.
+    complete = not unresolved and all(
+        check["applicability"] == "released" for check in checks
+    )
     candidates = sorted(
-        (check for check in checks if check["margin"] is not None and not unresolved),
+        (check for check in checks if check["margin"] is not None and complete),
         key=lambda check: check["margin"] - check["required_margin"],
     )
     omissions = [
@@ -164,7 +198,7 @@ def _assessment(checks: list[dict[str, Any]], *, closures_included: bool) -> dic
             "required": [check["id"] for check in checks],
             "evaluated": [check["id"] for check in checks if check["status"] != "indeterminate"],
             "indeterminate": [check["id"] for check in unresolved],
-            "complete": not unresolved,
+            "complete": complete,
         },
         "scope": "Acceptance is limited to the requested, idealized component checks; "
         "it is not a housing qualification or a code-compliance determination.",
@@ -308,6 +342,7 @@ def evaluate_cylinder(
         checks.append(_check(
             "smooth_cylinder_buckling", pressure, buckling.correlated_critical_pressure_mpa,
             required_margin=target, applicability=buckling.capacity_status, reasons=reasons,
+            upper_bound=_smooth_buckling_elastic_upper_bound(buckling),
         ))
     except CalcCliError as exc:
         if exc.code != "invalid_material":
@@ -392,7 +427,13 @@ def evaluate_cylinder(
                     _check(f"{name}.hemisphere_buckling", pressure,
                            result["released_buckling_pressure_mpa"]["value"], required_margin=target,
                            applicability=result["buckling_capacity_status"],
-                           reasons=list(result["buckling_validity_violations"])),
+                           reasons=list(result["buckling_validity_violations"]),
+                           upper_bound=(
+                               result["released_buckling_pressure_mpa"]["value"]
+                               if result["buckling_capacity_status"]
+                               == "released_unqualified_material"
+                               else None
+                           )),
                 ])
             except CalcCliError as exc:
                 if exc.code != "invalid_material":

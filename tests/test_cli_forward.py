@@ -346,6 +346,27 @@ def test_hemisphere_named_material_without_proportional_limit_withholds_buckling
     }
 
 
+def test_hemisphere_rejects_explicit_smooth_cylinder_curve_fields() -> None:
+    raw = json.loads(
+        (EXAMPLES / "hemisphere_subsea_screen.json").read_text(encoding="utf-8")
+    )
+    raw["material"]["properties"].update({
+        "ramberg_osgood_n": 12.0,
+        "compressive_proof_stress": {"value": 300.0, "unit": "MPa"},
+    })
+
+    result = runner.invoke(
+        app, ["hemisphere", "--input", "-", "--json"], input=json.dumps(raw)
+    )
+
+    error = _error_payload(result)["error"]
+    assert error["code"] == "invalid_request"
+    assert {detail["location"][-1] for detail in error["details"]} == {
+        "compressive_proof_stress",
+        "ramberg_osgood_n",
+    }
+
+
 @pytest.mark.parametrize(
     ("filename", "regime", "capacity_status", "expected_pressure"),
     [
@@ -579,6 +600,53 @@ def test_ring_options_and_file_contract_are_identical() -> None:
     assert json.loads(from_file.stdout)["result"] == json.loads(from_options.stdout)["result"]
 
 
+def test_ring_curve_is_forwarded_only_to_the_inter_ring_bay() -> None:
+    options = [
+        "ring-shell",
+        "--external-pressure", "473 psi",
+        "--shell-mid-surface-radius", "4.0765 inch",
+        "--wall-thickness", "0.035 inch",
+        "--unsupported-length", "19.584 inch",
+        "--ring-spacing", "1.152 inch",
+        "--ring-axial-width", "0.086 inch",
+        "--ring-radial-height", "0.169 inch",
+        "--ring-location", "external",
+        "--elastic-modulus", "30000000 psi",
+        "--poisson-ratio", "0.3",
+        "--yield-strength", "85000 psi",
+        "--failure-category", "ductile_metal",
+    ]
+    baseline = runner.invoke(app, [*options, "--json"])
+    with_curve = runner.invoke(
+        app,
+        [
+            *options,
+            "--ramberg-osgood-n", "12",
+            # A compressive proof stress need not be at or below tensile yield.
+            "--compressive-proof-stress", "100000 psi",
+            "--json",
+        ],
+    )
+
+    assert baseline.exit_code == 0, baseline.output
+    assert with_curve.exit_code == 0, with_curve.output
+    plain = json.loads(baseline.stdout)
+    curved = json.loads(with_curve.stdout)
+    assert curved["result"]["global_without_ring_torsion"] == (
+        plain["result"]["global_without_ring_torsion"]
+    )
+    assert curved["result"]["global_with_ring_torsion"] == (
+        plain["result"]["global_with_ring_torsion"]
+    )
+    bay = curved["result"]["inter_ring_shell_buckling"]
+    assert bay["ramberg_osgood_n"] == 12.0
+    assert bay["compressive_proof_stress_mpa"]["value"] == pytest.approx(
+        magnitude(Q_(100_000.0, "psi"), "MPa")
+    )
+    assert bay["plasticity_factor"] is not None
+    assert curved["material"]["properties_used"]["ramberg_osgood_n"] == 12.0
+
+
 def test_smooth_options_and_file_contract_are_identical() -> None:
     example = EXAMPLES / "smooth_buckling_moderate_nasa.json"
     from_file = runner.invoke(app, ["smooth-buckling", "--input", str(example), "--json"])
@@ -648,7 +716,7 @@ def test_smooth_named_material_without_proportional_limit_withholds_capacity() -
         "value": None,
     }
     assert any(
-        "proportional_limit_mpa is required" in item
+        "needs either proportional_limit_mpa or a complete compressive curve" in item
         for item in payload["result"]["validity_violations"]
     )
 

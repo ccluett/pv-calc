@@ -69,6 +69,19 @@ def test_thin_hemisphere_reports_exact_surface_stress_and_released_nasa_capacity
     assert result.buckling_validity_violations == ()
 
 
+def test_reference_only_hemisphere_keeps_the_estimate_but_not_acceptance() -> None:
+    result = _released_case(buckling_data_qualification="reference_only")
+
+    assert result.buckling_capacity_status == "released_unqualified_material"
+    assert result.released_buckling_pressure_mpa is not None
+    assert result.buckling_margin is not None
+    assert result.buckling_data_qualification == "reference_only"
+    assert any(
+        "reference-only" in reason
+        for reason in result.buckling_validity_violations
+    )
+
+
 @pytest.mark.parametrize("thickness", [100.0 / 39.5, 25.0])
 def test_hemisphere_displacement_matches_spherical_compatibility_and_hooke_law(
     thickness: float,
@@ -240,6 +253,10 @@ def test_hemisphere_elastic_gate_releases_at_and_withholds_below_proportional_li
         (
             {"material_failure_category": "ceramic"},
             "material_failure_category must be one of",
+        ),
+        (
+            {"buckling_data_qualification": "unknown"},
+            "buckling_data_qualification must be qualified or reference_only",
         ),
     ],
 )

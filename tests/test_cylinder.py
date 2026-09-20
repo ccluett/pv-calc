@@ -275,6 +275,24 @@ def test_closure_failure_retained_when_its_buckling_is_withheld(payload: dict[st
     assert response["assessment"]["status"] == "fail"
 
 
+def test_reference_only_hemisphere_closure_can_fail_on_its_elastic_upper_bound(
+    payload: dict[str, Any],
+) -> None:
+    add_closures(payload)
+    payload["inputs"]["closures"][1]["material"] = {
+        "type": "named",
+        "name": "Al-6061-T6",
+    }
+    payload["inputs"]["external_pressure"] = q(20.0, "MPa")
+
+    check = checks(evaluate(payload))["closure_2.hemisphere_buckling"]
+    assert check["applicability"] == "released_unqualified_material"
+    assert check["status"] == "fail"
+    assert check["capacity"] == q(None, "MPa")
+    assert check["upper_bound"]["value"] > 0.0
+    assert any("cannot raise that bound" in reason for reason in check["reasons"])
+
+
 def test_named_material_missing_elastic_data_keeps_closed_end_stress(
     payload: dict[str, Any], tmp_path: Path
 ) -> None:

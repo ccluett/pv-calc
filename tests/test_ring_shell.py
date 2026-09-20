@@ -375,7 +375,7 @@ def test_global_capacity_above_the_material_limit_is_published_as_an_elastic_bou
     assert result.advisory_governing_mode == "global_eq64_with_eq91_ring_torsion"
     assert result.advisory_governing_pressure_mpa == pytest.approx(37.262265529490506)
     assert result.advisory_governing_status == "advisory_pending_plasticity"
-    assert any("elastic upper bound pending validation" in note for note in result.notes)
+    assert any("because NASA provides no plasticity correction" in note for note in result.notes)
 
 
 def test_global_capacity_at_the_material_limit_stays_unflagged():
@@ -389,7 +389,7 @@ def test_global_capacity_at_the_material_limit_stays_unflagged():
     assert at_limit.global_elastic_applicability == "within"
     assert at_limit.advisory_governing_status == "advisory"
     assert not any(
-        "elastic upper bound pending validation" in note for note in at_limit.notes
+        "because NASA provides no plasticity correction" in note for note in at_limit.notes
     )
     assert just_under.global_elastic_applicability == "exceeded"
     assert just_under.advisory_governing_status == "advisory_pending_plasticity"
@@ -451,7 +451,7 @@ def test_withheld_record_reports_the_exceedance_as_a_violation_not_a_pending_not
     assert result.advisory_governing_status is None
     assert result.advisory_governing_pressure_mpa is None
     assert not any(
-        "elastic upper bound pending validation" in note for note in result.notes
+        "because NASA provides no plasticity correction" in note for note in result.notes
     )
     assert any(
         "NASA inelastic corrections are not implemented for the smeared orthotropic mode"

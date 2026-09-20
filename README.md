@@ -43,15 +43,30 @@ and calculation errors.
 material checks use exact Lamé stresses at both wall surfaces for every thickness. `--force-thick` is
 accepted for compatibility and has no effect.
 
-Read status fields alongside numbers. A smooth-cylinder elastic buckling
-estimate above the proportional limit retains its pressure but has a null
-`margin`. Deformation beyond the supplied material strength is labeled
-`elastic_estimate_material_limit`; it is not a plastic-deformation prediction.
+Status fields distinguish usable capacities from estimates:
+
+- `released_pending_plasticity`: critical membrane stress exceeds the supplied
+  proportional limit, with no curve to correct the elastic pressure; `margin` is null.
+- `released_unqualified_material`: a buckling estimate from reference-only
+  material data. It can be used for exploratory sizing.
+- `elastic_estimate_material_limit`: elastic deformation beyond the supplied
+  material strength.
+
+The first two buckling statuses give `indeterminate` in `check`, or `fail` when
+the elastic upper bound is below demand including the required margin. Ring-shell
+checks remain indeterminate because the model omits the long-cylinder transition
+and local failure checks, and assumes circular supports for the inter-ring bay.
+
 Thickness sizing selects the smallest solution among model-eligible intervals
 within the requested bounds and reports excluded intervals below the selection.
 Zero-pressure forward requests are supported: demand and available deformation
 are zero, capacities retain their applicability gates, and capacity/demand
 margins are null. Sizing requires positive pressure.
+
+Smooth-cylinder and hemispherical buckling require shell mid-surface radius /
+thickness `> 10`. Thicker shells need a separate collapse model. The
+[6000 m housing study](validation/external_pressure_coverage.md) reaches
+`R_mid/t = 9.3`, outside this domain even with the NASA plasticity correction.
 
 For a direct depth load, density, gravity, and the design factor are all
 required; there is no default factor. The resulting design differential
@@ -76,14 +91,23 @@ von Mises stress against yield strength. A `plastic` is checked by its largest
 stress against a designer-selected working strength that accounts for creep.
 A `brittle` material is checked against separate tensile and compressive
 ultimate strengths because it has no yield strength. The buckling models use
-elastic properties and a proportional-limit applicability check.
+elastic properties. Smooth-cylinder capacity additionally needs either a
+proportional limit or a complete compressive Ramberg-Osgood curve; hemisphere
+buckling needs a proportional limit.
+
+The Al-6061-T6 and Ti-6Al-4V records mark their handbook compression data
+`reference_only`: the curves describe specific extrusion forms and loading
+directions that a generic alloy name does not establish. For acceptance checks,
+supply data applicable to the part through explicit inputs or a custom record.
 
 [pv_calc/data/materials.yaml](https://github.com/ccluett/pv-calc/blob/main/pv_calc/data/materials.yaml)
 is the canonical bundled database; the repository-root `materials.yaml` is a
 compatibility symlink to it. It contains ten records across the three failure
-categories. Each property identifies its source. The stored strengths are reference inputs,
-not design allowables. When used, the stored derivations of working strengths
-and proportional limits appear in `material.property_sources`.
+categories. Each property identifies its source. The stored strengths are
+reference inputs, not design allowables. When used, derivations of working
+strengths, proportional limits, and compressive curves appear in
+`material.property_sources`; `material.data_qualification` says whether the
+buckling inputs are acceptance-eligible or reference-only.
 
 Use the same unit-bearing forward, sizing, sweep, or comparison request from
 Python through `calculate`. It returns a JSON-serializable dictionary without
@@ -176,6 +200,8 @@ pv-calc smooth-buckling size \
   --stock-thickness "1 mm" --stock-thickness "2 mm" --stock-thickness "3 mm" \
   --material Al-6061-T6 --format text
 ```
+
+The selected wall uses the bundled reference curve; `check` remains indeterminate.
 
 A geometry sweep uses `inputs.geometry` and a unit-bearing `inputs.axis` in
 its JSON request. For example, following the Python request above:

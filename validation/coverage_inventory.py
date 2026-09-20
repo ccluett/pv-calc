@@ -164,6 +164,14 @@ NON_RING_COVERAGE_INVENTORY = [
         "provenance": "independent_equation",
     },
     {
+        "case_id": "smooth_inelastic_correction_eq30_eq32",
+        "artifacts": [
+            "tests/test_smooth_cylinder_plasticity.py",
+            "examples/smooth_buckling_inelastic_titanium.json",
+        ],
+        "provenance": "independent_equation",
+    },
+    {
         "case_id": "smooth_gap_overlap_and_applicability_boundaries",
         "artifacts": ["tests/test_smooth_cylinder_buckling.py"],
         "provenance": "independent_equation",

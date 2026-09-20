@@ -16,7 +16,7 @@ from typing import Any
 import yaml
 from pydantic import BaseModel, ConfigDict, field_validator, model_validator
 
-from pv_calc.schemas import MaterialFailureCategory
+from pv_calc.schemas import BucklingDataQualification, MaterialFailureCategory
 
 
 BUNDLED_MATERIAL_DATABASE = "bundled:pv_calc/data/materials.yaml"
@@ -53,6 +53,11 @@ class CalcMaterial(BaseModel):
     poisson_ratio: float | None = None
     proportional_limit_mpa: float | None = None
     proportional_limit_source: str | None = None
+    # The two values form one compressive Ramberg-Osgood curve.
+    ramberg_osgood_n: float | None = None
+    compressive_proof_stress_mpa: float | None = None
+    compressive_stress_strain_source: str | None = None
+    buckling_data_qualification: BucklingDataQualification | None = None
     density_kg_per_m3: float | None = None
 
     @field_validator(
@@ -63,6 +68,8 @@ class CalcMaterial(BaseModel):
         "elastic_modulus_mpa",
         "poisson_ratio",
         "proportional_limit_mpa",
+        "ramberg_osgood_n",
+        "compressive_proof_stress_mpa",
         "density_kg_per_m3",
         mode="before",
     )
@@ -79,6 +86,7 @@ class CalcMaterial(BaseModel):
         "ultimate_compressive_strength_mpa",
         "elastic_modulus_mpa",
         "proportional_limit_mpa",
+        "compressive_proof_stress_mpa",
         "density_kg_per_m3",
     )
     @classmethod
@@ -87,6 +95,15 @@ class CalcMaterial(BaseModel):
             return None
         if not math.isfinite(value) or value <= 0:
             raise ValueError("value must be finite and positive")
+        return value
+
+    @field_validator("ramberg_osgood_n")
+    @classmethod
+    def hardening_exponent(cls, value: float | None) -> float | None:
+        if value is None:
+            return None
+        if not math.isfinite(value) or value <= 1:
+            raise ValueError("ramberg_osgood_n must be finite and greater than 1")
         return value
 
     @field_validator("poisson_ratio")
@@ -98,7 +115,12 @@ class CalcMaterial(BaseModel):
             raise ValueError("poisson_ratio must be between 0 and 0.5")
         return value
 
-    @field_validator("source", "working_strength_source", "proportional_limit_source")
+    @field_validator(
+        "source",
+        "working_strength_source",
+        "proportional_limit_source",
+        "compressive_stress_strain_source",
+    )
     @classmethod
     def source_present(cls, value: str | None) -> str | None:
         if value is not None and not value.strip():
@@ -106,13 +128,22 @@ class CalcMaterial(BaseModel):
         return value
 
     @model_validator(mode="after")
-    def strength_ordering(self) -> "CalcMaterial":
+    def material_relationships(self) -> "CalcMaterial":
         if (
             self.proportional_limit_mpa is not None
             and self.yield_strength_mpa is not None
             and self.proportional_limit_mpa > self.yield_strength_mpa
         ):
             raise ValueError("proportional_limit_mpa must be <= yield_strength_mpa")
+        curve = (self.ramberg_osgood_n, self.compressive_proof_stress_mpa)
+        if any(value is not None for value in curve) and None in curve:
+            raise ValueError(
+                "ramberg_osgood_n and compressive_proof_stress_mpa must be given together"
+            )
+        if curve[0] is not None and self.failure_category != "ductile_metal":
+            raise ValueError(
+                "ramberg_osgood_n and compressive_proof_stress_mpa apply only to ductile_metal"
+            )
         return self
 
 
@@ -148,7 +179,9 @@ def material_capabilities(material: CalcMaterial) -> dict[str, dict[str, Any]]:
 
     ``available`` means the inputs for the named calculation are present. It
     does not promise that a capacity will be released at a particular geometry
-    or load, or qualify the reference properties as design allowables.
+    or load, or qualify the reference properties as design allowables. Buckling
+    capabilities carry ``buckling_data_qualification`` when the record declares
+    one, so property completeness cannot be mistaken for acceptance eligibility.
     """
     strength_field = {
         "ductile_metal": "yield_strength_mpa",
@@ -160,19 +193,31 @@ def material_capabilities(material: CalcMaterial) -> dict[str, dict[str, Any]]:
     bending = shell if material.failure_category != "brittle" else [
         "failure_category", "ultimate_tensile_strength_mpa", "ultimate_compressive_strength_mpa",
     ]
-    buckling = ["failure_category", *elastic, "proportional_limit_mpa"]
+    curve_complete = (
+        material.ramberg_osgood_n is not None
+        and material.compressive_proof_stress_mpa is not None
+    )
+    buckling = [
+        "failure_category",
+        *elastic,
+        *([] if curve_complete else ["proportional_limit_mpa"]),
+    ]
     requirements = {
         "tube_stress": shell,
         "tube_displacement": [*shell, *elastic],
         "plate_bending": [*bending, *elastic],
         "plate_deflection": [*bending, *elastic],
         "hemisphere_stress": [*shell, *elastic],
-        "hemisphere_buckling_capacity": [*shell, *buckling],
+        # Hemispherical buckling has no Ramberg-Osgood correction and still
+        # requires its proportional limit even when the record carries a curve.
+        "hemisphere_buckling_capacity": [
+            *shell, *elastic, "proportional_limit_mpa",
+        ],
         "smooth_cylinder_buckling_capacity": buckling,
         "cylinder": [*shell, *buckling],
         "mass_properties": ["density_kg_per_m3"],
     }
-    return {
+    capabilities = {
         name: {
             "available": not (missing := sorted({
                 field for field in required if getattr(material, field) is None
@@ -181,6 +226,16 @@ def material_capabilities(material: CalcMaterial) -> dict[str, dict[str, Any]]:
         }
         for name, required in requirements.items()
     }
+    if material.buckling_data_qualification is not None:
+        for name in (
+            "hemisphere_buckling_capacity",
+            "smooth_cylinder_buckling_capacity",
+            "cylinder",
+        ):
+            capabilities[name]["buckling_data_qualification"] = (
+                material.buckling_data_qualification
+            )
+    return capabilities
 
 
 def _material_record(name: str, material: CalcMaterial, database: str) -> dict[str, Any]:
@@ -189,7 +244,11 @@ def _material_record(name: str, material: CalcMaterial, database: str) -> dict[s
         "database": database,
         "properties": material.model_dump(exclude_none=True),
         "capabilities": material_capabilities(material),
-        "capability_scope": "Property availability only; geometry, load, and source applicability must still be evaluated.",
+        "capability_scope": (
+            "Property availability only; buckling data qualification is reported on the "
+            "affected capabilities, and geometry, load, and source applicability must "
+            "still be evaluated."
+        ),
     }
 
 
