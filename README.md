@@ -38,7 +38,10 @@ report; `--format summary` gives a compact structured assessment; and
 `--format csv` exports check rows, including sweep and comparison results.
 Depth-based results retain the depth, design factor, and service/design pressures
 in these formats. Batch `check` results retain material names, sweep coordinates,
-and calculation errors.
+and calculation errors. A single-request `check` JSON result retains each
+resolved material block and its provenance: at `material` for a simple
+calculation, or in material-only `components` and `selected_results`
+projections for composed workflows.
 `--json` only compacts the detailed JSON onto one line. Tube and hemisphere
 material checks use exact Lamé stresses at both wall surfaces for every thickness. `--force-thick` is
 accepted for compatibility and has no effect.
@@ -99,6 +102,10 @@ The Al-6061-T6 and Ti-6Al-4V records mark their handbook compression data
 `reference_only`: the curves describe specific extrusion forms and loading
 directions that a generic alloy name does not establish. For acceptance checks,
 supply data applicable to the part through explicit inputs or a custom record.
+
+The generic `Al-7075-T6` yield value is 372 MPa (54 ksi), from ASTM B209 plate
+at 3.501–4.000 inches thick: the lowest minimum among the surveyed product forms.
+For a higher form-specific strength, use explicit inputs or a custom record.
 
 [pv_calc/data/materials.yaml](https://github.com/ccluett/pv-calc/blob/main/pv_calc/data/materials.yaml)
 is the canonical bundled database; the repository-root `materials.yaml` is a

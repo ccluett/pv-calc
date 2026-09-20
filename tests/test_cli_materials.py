@@ -27,6 +27,26 @@ from _cli_helpers import (
 )
 
 
+def _quantity(value: float, unit: str = "mm") -> dict[str, float | str]:
+    return {"value": value, "unit": unit}
+
+
+def _qualified_curve_material() -> dict[str, object]:
+    return {
+        "type": "explicit",
+        "name": "Qualified shell curve",
+        "provenance": "Shell curve provenance for the regression fixture.",
+        "properties": {
+            "failure_category": "ductile_metal",
+            "yield_strength": _quantity(250.0, "MPa"),
+            "elastic_modulus": _quantity(70_000.0, "MPa"),
+            "poisson_ratio": 0.3,
+            "ramberg_osgood_n": 20.0,
+            "compressive_proof_stress": _quantity(250.0, "MPa"),
+        },
+    }
+
+
 def test_named_material_returns_only_values_used_by_model() -> None:
     result = runner.invoke(
         app,
@@ -89,6 +109,7 @@ def test_bundled_materials_work_outside_checkout_and_explicit_override_wins(tmp_
         "buckling_data_qualification": "reference_only",
     }
     other = show_material("Al-7075-T6")
+    assert other["properties"]["yield_strength_mpa"] == 372.0
     assert other["capabilities"]["smooth_cylinder_buckling_capacity"] == {
         "available": False, "missing_properties": ["proportional_limit_mpa"],
     }
@@ -105,6 +126,171 @@ def test_bundled_materials_work_outside_checkout_and_explicit_override_wins(tmp_
     database.unlink()
     missing = runner.invoke(app, [*options, "--materials-file", str(database)])
     assert _error_payload(missing)["error"]["code"] == "invalid_material_database"
+
+
+def test_generic_7075_uses_the_lowest_documented_common_wrought_floor() -> None:
+    request = {
+        "schema_version": CALC_SCHEMA_VERSION,
+        "model": "tube",
+        "inputs": {
+            "external_pressure": {"value": 40.0, "unit": "MPa"},
+            "internal_radius": {"value": 1000.0, "unit": "mm"},
+            "wall_thickness": {"value": 100.0, "unit": "mm"},
+        },
+        "material": {"type": "named", "name": "Al-7075-T6"},
+    }
+
+    result = runner.invoke(
+        app,
+        ["check", "--input", "-", "--format", "json"],
+        input=json.dumps(request),
+    )
+
+    assert result.exit_code == 1, result.output
+    payload = json.loads(result.stdout)
+    check = payload["assessment"]["checks"][0]
+    assert check["status"] == "fail"
+    assert check["demand"]["value"] == pytest.approx(399.19647183968414)
+    assert check["capacity"] == {"unit": "MPa", "value": 372.0}
+    assert payload["material"]["source"]["name"] == "Al-7075-T6"
+    assert "54 ksi" in payload["material"]["source"]["provenance"]
+    assert payload["material"]["properties_used"]["yield_strength"] == {
+        "unit": "MPa", "value": 372.0,
+    }
+
+
+def test_cylinder_check_keeps_each_component_material_record() -> None:
+    plate_material = {
+        "type": "explicit",
+        "name": "Closure plate A",
+        "provenance": "Distinct plate provenance for the regression fixture.",
+        "properties": {
+            # Missing tensile strength makes plate bending indeterminate, but
+            # this compressive strength still drives a known seat failure.
+            "failure_category": "brittle",
+            "ultimate_compressive_strength": _quantity(1.0, "MPa"),
+            "elastic_modulus": _quantity(69_000.0, "MPa"),
+            "poisson_ratio": 0.31,
+        },
+    }
+    hemisphere_material = {
+        "type": "explicit",
+        "name": "Closure hemisphere B",
+        "provenance": "Distinct hemisphere provenance for the regression fixture.",
+        "properties": {
+            "failure_category": "ductile_metal",
+            "yield_strength": _quantity(300.0, "MPa"),
+            "elastic_modulus": _quantity(75_000.0, "MPa"),
+            "poisson_ratio": 0.29,
+            "proportional_limit": _quantity(200.0, "MPa"),
+        },
+    }
+    request = {
+        "schema_version": CALC_SCHEMA_VERSION,
+        "model": "cylinder",
+        "inputs": {
+            "external_pressure": _quantity(0.1, "MPa"),
+            "internal_radius": _quantity(50.0),
+            "wall_thickness": _quantity(1.0),
+            "unsupported_length": _quantity(300.0),
+            "closures": [
+                {
+                    "model": "plate",
+                    "plate_thickness": _quantity(4.0),
+                    "boundary_condition": "fixed",
+                    "material": plate_material,
+                },
+                {"model": "hemisphere", "material": hemisphere_material},
+            ],
+        },
+        "material": _qualified_curve_material(),
+    }
+
+    result = runner.invoke(
+        app, ["check", "--input", "-", "--format", "json"],
+        input=json.dumps(request),
+    )
+
+    assert result.exit_code == 1, result.output
+    payload = json.loads(result.stdout)
+    assert payload["assessment"]["status"] == "fail"
+    check_statuses = {
+        check["id"]: check["status"] for check in payload["assessment"]["checks"]
+    }
+    assert check_statuses["closure_1.flat_endcap_bending"] == "indeterminate"
+    assert check_statuses["closure_1.seat_bearing"] == "fail"
+    components = payload["components"]
+    assert set(components) == {"tube", "smooth_buckling", "closures"}
+    assert all("result" not in components[name] for name in ("tube", "smooth_buckling"))
+    assert components["tube"]["model"] == "tube"
+    assert components["smooth_buckling"]["model"] == "smooth-buckling"
+
+    tube_material = components["tube"]["material"]
+    buckling_material = components["smooth_buckling"]["material"]
+    assert tube_material["source"]["provenance"] == (
+        "Shell curve provenance for the regression fixture."
+    )
+    assert "ramberg_osgood_n" not in tube_material["properties_used"]
+    assert buckling_material["properties_used"]["ramberg_osgood_n"] == 20.0
+    assert buckling_material["properties_used"]["compressive_proof_stress"] == {
+        "unit": "MPa", "value": 250.0,
+    }
+
+    closures = components["closures"]
+    assert [(item["id"], item["model"]) for item in closures] == [
+        ("closure_1", "plate"), ("closure_2", "hemisphere"),
+    ]
+    assert [item["material"]["source"]["name"] for item in closures] == [
+        "Closure plate A", "Closure hemisphere B",
+    ]
+    assert [item["material"]["source"]["provenance"] for item in closures] == [
+        "Distinct plate provenance for the regression fixture.",
+        "Distinct hemisphere provenance for the regression fixture.",
+    ]
+    assert closures[0]["material"]["properties_used"][
+        "ultimate_compressive_strength"
+    ] == {"unit": "MPa", "value": 1.0}
+    assert "ultimate_tensile_strength" not in closures[0]["material"]["properties_used"]
+    assert all("result" not in item for item in closures)
+
+
+def test_combined_buckling_size_check_keeps_both_material_records() -> None:
+    request = {
+        "schema_version": CALC_SCHEMA_VERSION,
+        "model": "smooth-buckling",
+        "operation": "size",
+        "inputs": {
+            "external_pressure": _quantity(2.0, "MPa"),
+            "internal_radius": _quantity(100.0),
+            "unsupported_length": _quantity(700.0),
+            "wall_thickness_bounds": {
+                "lower": _quantity(2.0),
+                "upper": _quantity(9.0),
+            },
+            "minimum_margin": 0.25,
+        },
+        "material": _qualified_curve_material(),
+    }
+
+    result = runner.invoke(
+        app, ["check", "--input", "-", "--format", "json"],
+        input=json.dumps(request),
+    )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.stdout)
+    assert payload["assessment"]["status"] == "pass"
+    selected = payload["selected_results"]
+    assert set(selected) == {"smooth-buckling", "tube"}
+    assert all(set(child) == {"model", "material"} for child in selected.values())
+    buckling_properties = selected["smooth-buckling"]["material"]["properties_used"]
+    tube_properties = selected["tube"]["material"]["properties_used"]
+    assert buckling_properties["ramberg_osgood_n"] == 20.0
+    assert buckling_properties["compressive_proof_stress"] == {
+        "unit": "MPa", "value": 250.0,
+    }
+    assert "ramberg_osgood_n" not in tube_properties
+    assert "compressive_proof_stress" not in tube_properties
 
 
 def test_material_capability_availability_is_per_calculation() -> None:
@@ -990,3 +1176,68 @@ def test_material_names_yaml_reads_as_non_strings_are_refused(tmp_path: Path) ->
     )
     with pytest.raises(ValueError, match="material name True"):
         load_calc_materials(database)
+
+
+def test_batch_check_output_carries_no_material_projection() -> None:
+    request = {
+        "schema_version": CALC_SCHEMA_VERSION,
+        "model": "sweep",
+        "inputs": {
+            "geometry": "unsupported_length",
+            "axis": {
+                "type": "range",
+                "start": _quantity(200.0), "stop": _quantity(300.0), "count": 2,
+            },
+        },
+        "request": {
+            "schema_version": CALC_SCHEMA_VERSION,
+            "model": "cylinder",
+            "inputs": {
+                "external_pressure": _quantity(0.1, "MPa"),
+                "internal_radius": _quantity(50.0),
+                "wall_thickness": _quantity(1.0),
+                "unsupported_length": _quantity(300.0),
+            },
+            "material": _qualified_curve_material(),
+        },
+    }
+
+    result = runner.invoke(
+        app, ["check", "--input", "-", "--format", "json"], input=json.dumps(request),
+    )
+
+    payload = json.loads(result.stdout)
+    assert len(payload["assessment"]["entries"]) == 2
+    assert "components" not in payload
+    assert "selected_results" not in payload
+
+
+def test_concise_check_formats_omit_the_material_projection() -> None:
+    request = {
+        "schema_version": CALC_SCHEMA_VERSION,
+        "model": "cylinder",
+        "inputs": {
+            "external_pressure": _quantity(0.1, "MPa"),
+            "internal_radius": _quantity(50.0),
+            "wall_thickness": _quantity(1.0),
+            "unsupported_length": _quantity(300.0),
+        },
+        "material": _qualified_curve_material(),
+    }
+
+    detailed = runner.invoke(
+        app, ["check", "--input", "-", "--format", "json"], input=json.dumps(request),
+    )
+    summary = runner.invoke(
+        app, ["check", "--input", "-", "--format", "summary"], input=json.dumps(request),
+    )
+    text = runner.invoke(
+        app, ["check", "--input", "-", "--format", "text"], input=json.dumps(request),
+    )
+
+    assert set(json.loads(detailed.stdout)["components"]) == {"tube", "smooth_buckling"}
+    summary_payload = json.loads(summary.stdout)
+    assert "components" not in summary_payload
+    assert summary_payload["assessment"]["status"] == "pass"
+    assert "components" not in text.stdout
+    assert "cylindrical_shell_stress: PASS" in text.stdout
