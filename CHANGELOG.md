@@ -9,6 +9,16 @@ model; both predate this changelog.
 
 ## [Unreleased]
 
+- Release shear-corrected plate deflection for `D_free/t >= 10` (fixed) or
+  `>= 6` (simply supported), retaining the stress, material, and small-deflection
+  gates. Plate model 5.0.0 and sizing operation 3.0.0 use the corrected value;
+  raw Kirchhoff fields remain available.
+- Move the acceptance rules shared by `check` and the cylinder composition into
+  `pv_calc.assessment`. `pv_calc.presentation.assess_response` still works and
+  returns the same results.
+- Correct the `sweep` and `compare-materials` CLI help. Document required
+  margins, their equivalent strength fractions, and how they differ from
+  code-defined membrane and membrane-plus-bending checks.
 - Mark the illustrative titanium curve as reference-only, consistent with its
   source assumptions. Shorten repeated qualification notes in documentation and
   output; text reports show shared check/estimate reasons once.
@@ -26,34 +36,29 @@ model; both predate this changelog.
 - Implement the NASA SP-8007 Rev. 2 Eqs. 30-32 material correction for
   smooth-cylinder external-pressure buckling
   (`nasa_smooth_cylinder_external_pressure_buckling` 4.1.0 -> 5.0.0). A
-  complete compressive Ramberg-Osgood curve now corrects the smooth-cylinder
-  capacity and the ring model's inter-ring bay result; the ring model becomes
-  4.0.0. Its orthotropic global mode remains elastic and advisory. The existing
-  `R_mid/t > 10` domain and moderate/long overlap withholding are unchanged,
-  and this work establishes no new thickness domain or physical validation.
-- Add `ramberg_osgood_n` and `compressive_proof_stress` to the material path
-  for named and explicit records, required together, with
-  `compressive_stress_strain_source` for provenance. The generic Al-6061-T6
-  and Ti-6Al-4V records retain the located handbook curves and derived limits
-  as `reference_only`: calculations and exploratory sizing return a
-  `released_unqualified_material` estimate that cannot pass acceptance. A
-  check remains indeterminate unless the elastic upper bound under the supplied
-  elastic properties already falls below demand and the required margin, which
-  is a conservative failure. Material capabilities expose the qualification.
-  Qualified explicit or scoped custom records retain ordinary released
-  behavior. Supplying only half of a curve is an `invalid_request`.
-  The hemisphere model becomes 5.0.0 to carry the same qualification status.
+  complete compressive Ramberg-Osgood curve corrects the smooth-cylinder
+  capacity and the ring model's inter-ring bay (ring model 4.0.0); the
+  orthotropic global mode remains elastic and advisory. The correction has no
+  strength limit; a corrected critical stress above the supplied yield strength
+  is noted. The `R_mid/t > 10` domain and the moderate/long overlap withholding
+  are unchanged.
+- Add `ramberg_osgood_n` and `compressive_proof_stress` to named and explicit
+  material records, required together, with `compressive_stress_strain_source`
+  for provenance; supplying half a curve is an `invalid_request`. The bundled
+  Al-6061-T6 and Ti-6Al-4V curves and derived limits are `reference_only`:
+  calculations and exploratory sizing return a `released_unqualified_material`
+  estimate that cannot pass acceptance, and `check` is indeterminate unless the
+  elastic upper bound already falls below demand and the required margin.
+  `materials show` reports the qualification on the buckling capabilities.
+  Explicit and custom records are qualified unless marked otherwise. The
+  hemisphere model becomes 5.0.0 to carry the same qualification status.
 - Stop partitioning smooth-buckling sizing at the proportional limit when a
-  complete curve is present: the correction is continuous through that limit,
-  so it no longer starts a withheld band. Without a curve the partition stands.
-  The changed material input and branch partition advance that sizing operation
-  contract from 3.1.0 to 4.0.0.
+  complete curve is present, because the correction is continuous through that
+  limit; without a curve the partition stands. Sizing operation 3.1.0 -> 4.0.0.
 - Show the pending-plasticity pressure as an elastic estimate in
-  smooth-buckling and cylinder summary/text output, retaining null acceptance
-  capacity and margin. That output appears only when the caller supplies a
-  proportional limit without a curve. Correct the documented buckling envelope
-  and material source explanations, and replace an unofficial ASME full-text
-  link with an edition-and-clause citation.
+  smooth-buckling and cylinder summary/text output, with null acceptance
+  capacity and margin, when a proportional limit is supplied without a curve.
+  Replace an unofficial ASME full-text link with an edition-and-clause citation.
 
 ## [0.2.0] - 2026-09-09
 

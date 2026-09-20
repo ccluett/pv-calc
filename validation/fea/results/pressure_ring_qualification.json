@@ -1,0 +1,495 @@
+{
+  "acceptance_limits": {
+    "finest_mesh_change_fraction": 0.02,
+    "minimum_crossing_gauge_difference_fraction": 0.005,
+    "reference_pressure_error_fraction": 0.05,
+    "required_first_physical_lobes": 2
+  },
+  "cases": [
+    {
+      "axial_elements": 2,
+      "bracket": [
+        {
+          "dat_sha256": "c5905143b65d2e33b8eb278ff98ff849e3999f63b46ca3fe955459c96abd8a2b",
+          "first_two_eigenvalues": [
+            20.80901,
+            21.09636
+          ],
+          "first_two_modes": [
+            {
+              "circumferential_lobes": 2,
+              "dominant_radial_energy_fraction": 0.999999999871641
+            },
+            {
+              "circumferential_lobes": 2,
+              "dominant_radial_energy_fraction": 0.9999999979497763
+            }
+          ],
+          "input_sha256": "13307deff36e759e4c7331a4407c4aaadd8131c842a3add5d06b6a97be2cc60b",
+          "pressure_mpa": 0.08,
+          "solver_warning_count": 0,
+          "stdout_sha256": "2e9ecdb574ae2be9a5f4fe1ef3069d5c2f6f016a945ebd414a862781bea91d24"
+        },
+        {
+          "dat_sha256": "e4dc51bad49d1ad29dfa41de033cd23d6e4717103b2b77211f51ef24e409ef69",
+          "first_two_eigenvalues": [
+            -2.743676,
+            -2.441965
+          ],
+          "first_two_modes": [
+            {
+              "circumferential_lobes": 2,
+              "dominant_radial_energy_fraction": 0.999999999855228
+            },
+            {
+              "circumferential_lobes": 2,
+              "dominant_radial_energy_fraction": 0.9999999976760832
+            }
+          ],
+          "input_sha256": "3257e763c1a22d06264a5d20d1ace7d59f8ea05413215dbc6673e8c49026cb3b",
+          "pressure_mpa": 0.084,
+          "solver_warning_count": 0,
+          "stdout_sha256": "ed4b29355a76b6507669ee471c95d0a73642df5a59eeb2e2d47e532c649b071f"
+        }
+      ],
+      "case_id": "M32-mean",
+      "circumferential_elements": 32,
+      "direct_check": {
+        "dat_sha256": "f52436c91a58db79e546dd689681e078e8a704c424d80d8c03e540a1dbe5415b",
+        "first_two_eigenvalues": [
+          -8.169826e-05,
+          0.2998656
+        ],
+        "first_two_modes": [
+          {
+            "circumferential_lobes": 2,
+            "dominant_radial_energy_fraction": 0.999999999857137
+          },
+          {
+            "circumferential_lobes": 2,
+            "dominant_radial_energy_fraction": 0.9999999977090278
+          }
+        ],
+        "input_sha256": "12a180a1ca5233f7b1e8028a56a2fa293b918bf301a6d8bbe8a0c03590925d81",
+        "pressure_mpa": 0.0835340359906297,
+        "solver_warning_count": 0,
+        "stdout_sha256": "29cc573dac74f27978dcf8b9a9a949063374cd1345355382a199a551e80ad772"
+      },
+      "interpolated_zero_pressure_mpa": 0.08353402211570447,
+      "radial_elements": 2,
+      "rigid_motion_gauge": "outer_lower"
+    },
+    {
+      "axial_elements": 3,
+      "bracket": [
+        {
+          "dat_sha256": "d04bceedf9fe436dd2088b4b30c41513d7af8ec4fe6f29b54c9642c856058441",
+          "first_two_eigenvalues": [
+            294.3289,
+            294.329
+          ],
+          "first_two_modes": [
+            {
+              "circumferential_lobes": 2,
+              "dominant_radial_energy_fraction": 0.9999999999999994
+            },
+            {
+              "circumferential_lobes": 2,
+              "dominant_radial_energy_fraction": 0.9999999999999997
+            }
+          ],
+          "input_sha256": "25864078f2d47e01d1fc9aca7a036ee19df7987c550f97788cc8a66130ca408a",
+          "pressure_mpa": 0.0,
+          "solver_warning_count": 0,
+          "stdout_sha256": "27aa3a0542001949712ea40ded703c1e174b36cbb97d0c72d658ce8a92150638"
+        },
+        {
+          "dat_sha256": "40ea85bb4259e2bbe0a7601bb6099d306e0a6c154f3166807385cb53c24a672a",
+          "first_two_eigenvalues": [
+            -10.08918,
+            -10.08804
+          ],
+          "first_two_modes": [
+            {
+              "circumferential_lobes": 2,
+              "dominant_radial_energy_fraction": 0.9999999999988426
+            },
+            {
+              "circumferential_lobes": 2,
+              "dominant_radial_energy_fraction": 0.9999999999999813
+            }
+          ],
+          "input_sha256": "c8d8a3d039aeb53c761952a57a912f897e41ed0c7dec5d7e03f8590ad14b911d",
+          "pressure_mpa": 0.0517,
+          "solver_warning_count": 0,
+          "stdout_sha256": "be02e267fa8463a6e9d6a56323be8f96f51b98b2e0e556195aefa8c662dd4b88"
+        }
+      ],
+      "case_id": "M48-mean",
+      "circumferential_elements": 48,
+      "direct_check": {
+        "dat_sha256": "5c828fa652fbcffe073935fa42b9f92ce716ac60d7972ef0ac3f8348766dd238",
+        "first_two_eigenvalues": [
+          0.0002826079,
+          0.001502882
+        ],
+        "first_two_modes": [
+          {
+            "circumferential_lobes": 2,
+            "dominant_radial_energy_fraction": 0.9999999999989846
+          },
+          {
+            "circumferential_lobes": 2,
+            "dominant_radial_energy_fraction": 0.9999999999999977
+          }
+        ],
+        "input_sha256": "c752bc0de1cc362ac070e4f84986f372275f44c21f4cdac4a79472deff2187ae",
+        "pressure_mpa": 0.04998653210742279,
+        "solver_warning_count": 0,
+        "stdout_sha256": "7cc5ef9c59294f7d4037608713c65e4d1834d0f521c1615c2690e41a70b8a040"
+      },
+      "interpolated_zero_pressure_mpa": 0.04998658010200701,
+      "radial_elements": 3,
+      "rigid_motion_gauge": "outer_lower"
+    },
+    {
+      "axial_elements": 3,
+      "bracket": [
+        {
+          "dat_sha256": "6d17f68a9cc97c400397f0c29cafb2d51f641a3baffceb341321d67d4fdf6ea5",
+          "first_two_eigenvalues": [
+            104.1879,
+            212.4772
+          ],
+          "first_two_modes": [
+            {
+              "circumferential_lobes": 2,
+              "dominant_radial_energy_fraction": 0.9904021758921242
+            },
+            {
+              "circumferential_lobes": 2,
+              "dominant_radial_energy_fraction": 0.9999720322437105
+            }
+          ],
+          "input_sha256": "fe7acdb1ddb2190395657d01c2ad84b63935fb356ac04e7f9c6aef35f4384dea",
+          "pressure_mpa": 0.0,
+          "solver_warning_count": 0,
+          "stdout_sha256": "addc7cd90695d2496f14f34932a5bf75c3e4a27fb5875b96008274855a4ab240"
+        },
+        {
+          "dat_sha256": "a4c350a29462c174b74141ab0ea165c6e71e5e22bef7a4b91bb1606e74a8b0a4",
+          "first_two_eigenvalues": [
+            -3.894973,
+            21.30261
+          ],
+          "first_two_modes": [
+            {
+              "circumferential_lobes": 2,
+              "dominant_radial_energy_fraction": 0.9999789980447222
+            },
+            {
+              "circumferential_lobes": 2,
+              "dominant_radial_energy_fraction": 0.9999942547510119
+            }
+          ],
+          "input_sha256": "951a0da81042c3d44337ce5d41213846674214f878247b888c07e4919cce94a4",
+          "pressure_mpa": 0.0517,
+          "solver_warning_count": 0,
+          "stdout_sha256": "3272e60d30cd22114c088430869377a483add4ebc2ee08d2eb662187c37a275e"
+        }
+      ],
+      "case_id": "M48-point",
+      "circumferential_elements": 48,
+      "direct_check": {
+        "dat_sha256": "8c8addc704669e82f7764b6756d0b3be2472003bbb3fa8fadf0182e264cdfed0",
+        "first_two_eigenvalues": [
+          0.001108042,
+          27.65061
+        ],
+        "first_two_modes": [
+          {
+            "circumferential_lobes": 2,
+            "dominant_radial_energy_fraction": 0.9999999999983031
+          },
+          {
+            "circumferential_lobes": 2,
+            "dominant_radial_energy_fraction": 0.9999955967349685
+          }
+        ],
+        "input_sha256": "ae5b42d51a78c76e298eb751eab95744f88ef4bb710c4f4ea0a6a8ea18cb38d1",
+        "pressure_mpa": 0.0499861323125939,
+        "solver_warning_count": 0,
+        "stdout_sha256": "4b07ddd24c0b9e890705bd70abac218c880cc2782f1148c3f3dba439dff7269b"
+      },
+      "interpolated_zero_pressure_mpa": 0.04998661973504728,
+      "radial_elements": 3,
+      "rigid_motion_gauge": "point"
+    },
+    {
+      "axial_elements": 4,
+      "bracket": [
+        {
+          "dat_sha256": "0a30fe7f2cdb7d5debfd7d1bb558eab0751dee7f7f6b23f4dcef568560fd6763",
+          "first_two_eigenvalues": [
+            260.8674,
+            260.8675
+          ],
+          "first_two_modes": [
+            {
+              "circumferential_lobes": 2,
+              "dominant_radial_energy_fraction": 0.9999999999999959
+            },
+            {
+              "circumferential_lobes": 2,
+              "dominant_radial_energy_fraction": 0.9999999999999988
+            }
+          ],
+          "input_sha256": "50e0ff7dbcc082448bb2cc709705f17588f152b2faf2b7a45f5a5033bd519955",
+          "pressure_mpa": 0.0,
+          "solver_warning_count": 0,
+          "stdout_sha256": "c9368d315342b088ae7e5d7fdd76ec15100130b76b17b0ffac754186cdc810e5"
+        },
+        {
+          "dat_sha256": "221e9c9ec6d4547f86a5b7bd0ccaf9496534c8b81c86a441152526d7fa2e5dd2",
+          "first_two_eigenvalues": [
+            -43.54624,
+            -43.54553
+          ],
+          "first_two_modes": [
+            {
+              "circumferential_lobes": 2,
+              "dominant_radial_energy_fraction": 0.9999999999997503
+            },
+            {
+              "circumferential_lobes": 2,
+              "dominant_radial_energy_fraction": 0.9999999999991925
+            }
+          ],
+          "input_sha256": "d8d5748e4020eb6307be7f0dae623c6dc6422f664d5503612ba8d98430d9a468",
+          "pressure_mpa": 0.0517,
+          "solver_warning_count": 0,
+          "stdout_sha256": "1880171425187d1e3ff79d3af78e7565b4b1fd244391eece556431cd7a0a0cce"
+        }
+      ],
+      "case_id": "M64-mean",
+      "circumferential_elements": 64,
+      "direct_check": {
+        "dat_sha256": "e052f75c49724b60605c3696abe1575f08e3046bee84bfebdf1313e4429654d1",
+        "first_two_eigenvalues": [
+          0.0004071069,
+          0.0008056245
+        ],
+        "first_two_modes": [
+          {
+            "circumferential_lobes": 2,
+            "dominant_radial_energy_fraction": 0.9999999999999072
+          },
+          {
+            "circumferential_lobes": 2,
+            "dominant_radial_energy_fraction": 0.999999999999454
+          }
+        ],
+        "input_sha256": "04f5006f78da1cee900b51206f893c11f1ea7ca25b63987f05c9a863ae35aa96",
+        "pressure_mpa": 0.044304337282652644,
+        "solver_warning_count": 0,
+        "stdout_sha256": "da69ed1faad247b6a1b8ff723766c13565ec77085ed5e0c8a8f3b947cc587c8c"
+      },
+      "interpolated_zero_pressure_mpa": 0.04430440642288553,
+      "radial_elements": 4,
+      "rigid_motion_gauge": "outer_lower"
+    },
+    {
+      "axial_elements": 4,
+      "bracket": [
+        {
+          "dat_sha256": "68d38207a90844beedebcb1b51eaeb803130a00a277062f1d211a9ef09ad9105",
+          "first_two_eigenvalues": [
+            12.73061,
+            12.73111
+          ],
+          "first_two_modes": [
+            {
+              "circumferential_lobes": 2,
+              "dominant_radial_energy_fraction": 0.999999999999997
+            },
+            {
+              "circumferential_lobes": 2,
+              "dominant_radial_energy_fraction": 0.9999999999999993
+            }
+          ],
+          "input_sha256": "5cafd7c54cabad6c788743a8801e4ade6d71fb3f588d51bf498ca092186f16a3",
+          "pressure_mpa": 0.04,
+          "solver_warning_count": 0,
+          "stdout_sha256": "7855bd5ff8badfb5ba0a79cb1c1e1255200e189595bc30f960693fa161cf2c42"
+        },
+        {
+          "dat_sha256": "a012228c8300b51a1078d7bc3dd5a97a5392a5bb02de2fda2d1940f01d18e9f1",
+          "first_two_eigenvalues": [
+            -10.82088,
+            -10.82068
+          ],
+          "first_two_modes": [
+            {
+              "circumferential_lobes": 2,
+              "dominant_radial_energy_fraction": 0.9999999999999983
+            },
+            {
+              "circumferential_lobes": 2,
+              "dominant_radial_energy_fraction": 0.9999999999999957
+            }
+          ],
+          "input_sha256": "fa21aafc6fad22bd3dd592feac6e7cf538de0e113c6d5ab9567fc81ca6929092",
+          "pressure_mpa": 0.044,
+          "solver_warning_count": 0,
+          "stdout_sha256": "77db5636dca08f2a91e8e86ca1f0114103a527d0b77d598dc7a19cf15fc6ef7b"
+        }
+      ],
+      "case_id": "M96-mean",
+      "circumferential_elements": 96,
+      "direct_check": {
+        "dat_sha256": "a8d019afbfe30a542b024369ff3e0ba67c43d0763078d0e7d791cb0d1d7b8b11",
+        "first_two_eigenvalues": [
+          -0.0001244298,
+          0.0002334084
+        ],
+        "first_two_modes": [
+          {
+            "circumferential_lobes": 2,
+            "dominant_radial_energy_fraction": 0.9999999999999991
+          },
+          {
+            "circumferential_lobes": 2,
+            "dominant_radial_energy_fraction": 0.9999999999999991
+          }
+        ],
+        "input_sha256": "3c6a62907d762c86848616bb9652133f47bb7eabb2360d16a8136a12b954c5d6",
+        "pressure_mpa": 0.0421621748773,
+        "solver_warning_count": 0,
+        "stdout_sha256": "8ababcfb2f5fa9333d446a5ee8c35b4119dfc9b1e5a3391f6d5448f68ab1d0f9"
+      },
+      "interpolated_zero_pressure_mpa": 0.042162153744270396,
+      "radial_elements": 4,
+      "rigid_motion_gauge": "outer_lower"
+    },
+    {
+      "axial_elements": 4,
+      "bracket": [
+        {
+          "dat_sha256": "f1e45fecebf975d10a4e460132f16eccfca0a0994558aef857327182a488bf5c",
+          "first_two_eigenvalues": [
+            10.53906,
+            10.53926
+          ],
+          "first_two_modes": [
+            {
+              "circumferential_lobes": 2,
+              "dominant_radial_energy_fraction": 0.9999999999999989
+            },
+            {
+              "circumferential_lobes": 2,
+              "dominant_radial_energy_fraction": 0.9999999999999925
+            }
+          ],
+          "input_sha256": "92f5568e74f37c57af41b8f9ace4a7bfa0fd79bcc22395ddb6bf2b6dcba31fbb",
+          "pressure_mpa": 0.04,
+          "solver_warning_count": 0,
+          "stdout_sha256": "b24a586e49c362ad3dab236361a8ae9c460148112035aa33e5473d62868e1256"
+        },
+        {
+          "dat_sha256": "a2867959c037fcd6b02bc72dec1d8f069e20da859287e1e9bc1ffdb94f5e37b9",
+          "first_two_eigenvalues": [
+            -13.01337,
+            -13.01297
+          ],
+          "first_two_modes": [
+            {
+              "circumferential_lobes": 2,
+              "dominant_radial_energy_fraction": 0.9999999999999334
+            },
+            {
+              "circumferential_lobes": 2,
+              "dominant_radial_energy_fraction": 0.9999999999999993
+            }
+          ],
+          "input_sha256": "f8bacd66886ea072d027acf557fcc7a868a28fe4521b2b74e224d0e192edfb8a",
+          "pressure_mpa": 0.044,
+          "solver_warning_count": 0,
+          "stdout_sha256": "448f8c8487af6f68cd3e0548e794d60983dde256c2105047db2b78243f2c00fd"
+        }
+      ],
+      "case_id": "M128-mean",
+      "circumferential_elements": 128,
+      "direct_check": {
+        "dat_sha256": "5d11247a02dc9b212291d2e84c8cb181a31f09ab405c1afe197911929a27a8a6",
+        "first_two_eigenvalues": [
+          6.550501e-05,
+          0.0002412274
+        ],
+        "first_two_modes": [
+          {
+            "circumferential_lobes": 2,
+            "dominant_radial_energy_fraction": 0.9999999999999979
+          },
+          {
+            "circumferential_lobes": 2,
+            "dominant_radial_energy_fraction": 0.9999999999999968
+          }
+        ],
+        "input_sha256": "0f050f7ab6293f4cacc7c5b2f3d935f3a2e1cc53457a9a9a3a930919e87971ae",
+        "pressure_mpa": 0.0417898891961,
+        "solver_warning_count": 0,
+        "stdout_sha256": "424ffc86439fe03083fdaab313535e8fd5fe4935c419b08deb21c66d09e86c41"
+      },
+      "interpolated_zero_pressure_mpa": 0.04178990032101242,
+      "radial_elements": 4,
+      "rigid_motion_gauge": "outer_lower"
+    }
+  ],
+  "checks": {
+    "all_retained_first_two_modes_are_n2": true,
+    "all_solver_warning_counts_are_zero": true,
+    "finest_mesh_change_fraction": 0.008907736567890309,
+    "finest_mesh_change_passes": true,
+    "finest_reference_pressure_error_fraction": 0.1918410303420533,
+    "minimum_crossing_gauge_difference_fraction": 7.928736111250143e-07,
+    "minimum_crossing_gauge_difference_passes": true,
+    "numeric_checks_pass": false,
+    "reference_pressure_error_passes": false
+  },
+  "classification": "numerical_procedure_qualification",
+  "disposition": "not qualified: one or more numeric checks failed",
+  "manifest": {
+    "dockerfile_sha256": "4210bed0102e4549493b5b26a0300d0846b2cdc75185b8909273986b32406a57",
+    "runner_sha256": "c0a0f645c8b866de0799d04821774120147ceb534133c8103a6499b7d4e1266e",
+    "shared_runner_sha256": "30bea2e3fb1ed3670f05f4dc74774d1c28d2a4a610beeb14d603b96a9c229533"
+  },
+  "procedure": {
+    "density_tonne_per_mm3": 7.85e-09,
+    "element": "C3D20",
+    "out_of_plane_condition": "Uz=0 at every node",
+    "pressure_surface": "outer radial face",
+    "steps": [
+      "STATIC,NLGEOM",
+      "FREQUENCY,PERTURBATION"
+    ]
+  },
+  "reference": {
+    "critical_pressure_mpa_approx": 0.05171,
+    "elastic_modulus_mpa": 206800.0,
+    "governing_circumferential_lobes": 2,
+    "mean_radius_mm": 2540.0,
+    "poisson_ratio": 0.0,
+    "source": "https://docs.software.vt.edu/abaqusv2025/English/SIMACAEBMKRefMap/simabmk-c-ringbuckling.htm",
+    "square_section_mm": 25.4
+  },
+  "rerun_command": "uv run python validation/fea/pressure_ring_qualification.py --work-directory /tmp/pv-calc-pressure-ring --output /tmp/pressure_ring_qualification.json",
+  "schema_version": "1.0.0",
+  "toolchain": {
+    "architecture": "arm64",
+    "calculix_version": "2.20",
+    "docker_server_version": "29.8.0",
+    "image": "pv-gen-fea:ccx2.20",
+    "image_content_size_bytes": 251556612,
+    "image_id": "sha256:4e0cc7560c9dee55446691d1f88c56b89732e38d2a0482ab8eeff508c5f3c5c5"
+  }
+}

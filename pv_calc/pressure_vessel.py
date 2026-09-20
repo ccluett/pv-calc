@@ -25,8 +25,9 @@ BUCKLING_REFERENCE_ONLY_REASON = (
     "to this part is unverified."
 )
 BUCKLING_ELASTIC_UPPER_BOUND_FAILURE_REASON = (
-    "The elastic buckling upper bound for the supplied elastic properties is below "
-    "demand including the required margin; a material correction cannot raise that bound."
+    "The elastic buckling estimate for the supplied elastic properties is below demand "
+    "including the required margin; qualified or corrected material data could only "
+    "reduce or withhold it."
 )
 BUCKLING_ELASTIC_UPPER_BOUND_STATUSES = frozenset(
     {"released_pending_plasticity", "released_unqualified_material"}
@@ -92,8 +93,8 @@ FLAT_CIRCULAR_PLATE_SOURCE = (
     "Roark's Formulas for Stress and Strain, 6th ed., Table 24 cases 10a-10b, p. 429; "
     "transverse shear is the average on the support perimeter from equilibrium, "
     "tau = p * D_free / (4 * t), the pressure load over the free area divided by the "
-    "cylindrical area pi * D_free * t it crosses; the small-deflection gate's shear-corrected "
-    "deflection estimate uses kappa = 5/6 from Reissner, J. Appl. Mech. 12 (1945) A69-A77"
+    "cylindrical area pi * D_free * t it crosses; the released center deflection adds the "
+    "Reissner transverse-shear term with kappa = 5/6, J. Appl. Mech. 12 (1945) A69-A77"
 )
 SEAT_BEARING_STRESS_SOURCE = (
     "Equilibrium on the flat annular seat: the total pressure load on the closure's outside "
@@ -223,37 +224,30 @@ HEMISPHERE_SCOPE_NOTES = (
 )
 
 FLAT_CIRCULAR_PLATE_MODEL_ID = "uniformly_loaded_flat_circular_plate"
-FLAT_CIRCULAR_PLATE_MODEL_VERSION = "4.1.0"
+FLAT_CIRCULAR_PLATE_MODEL_VERSION = "5.0.0"
 
 FLAT_CIRCULAR_PLATE_ENVELOPE_SOURCE = (
     "validation/fea/results/plate_sweep_fea_summary.json: "
-    "mesh-converged CAX8R comparison swept over D_free/t and Poisson ratio, "
-    "released against the 5% agreement budget"
+    "mesh-converged CAX8R sweep over D_free/t and Poisson ratio; corrected deflection "
+    "is qualified by abs(prediction - FEA) / abs(FEA) <= 5%"
 )
 
-# Each floor is the coarsest *solved* free-diameter/thickness ratio from which
-# every thinner solved ratio holds the mesh-converged three-dimensional
-# comparison inside the 5% budget, at every solved Poisson value in the
-# evidence band.  Floors sit on solved ratios; releasing the continuous range
-# above a floor relies on the monotone decrease of the model-form error with
-# thinness that the seven solved ratios demonstrate.  Bending stress and
-# center deflection diverge from Kirchhoff at very different rates, so they
-# carry separate floors: at D_free/t = 4 the solved result exceeds a
-# simply-supported plate's Kirchhoff center stress by at most 2.4% across the
-# band, but exceeds its Kirchhoff center deflection by up to 24.3%.  The
-# fixed-edge margin is governed by the edge radial stress, compared through
-# its convergent reaction-moment resultant — the one compared quantity
-# Kirchhoff over-predicts, so the governing comparison errs conservative at
-# the floor.  The fixed bending floor is set by the also-published center
-# stress; the fixed deflection floor is the stricter because transverse shear
-# is a larger fraction of a clamped plate's smaller deflection.
+# Each floor is the coarsest solved free-diameter/thickness ratio from which
+# every thinner solved ratio stays inside the 5% comparison budget at every
+# solved Poisson value. The bending floors use the Kirchhoff stress
+# comparisons. Deflection uses abs(shear_corrected - FEA) / abs(FEA), which
+# gives 4 for a fixed edge and 6 for a simply-supported edge; the fixed
+# deflection floor is raised to the fixed bending floor of 10 so that a
+# deflection is never released where the bending margin is withheld.
+# Releasing between and beyond the solved ratios relies on the observed
+# monotone decrease in error with thinness.
 FLAT_CIRCULAR_PLATE_BENDING_MINIMUM_RATIO: dict[str, float] = {
     "fixed": 10.0,
     "simply_supported": 4.0,
 }
 FLAT_CIRCULAR_PLATE_DEFLECTION_MINIMUM_RATIO: dict[str, float] = {
-    "fixed": 20.0,
-    "simply_supported": 10.0,
+    "fixed": 10.0,
+    "simply_supported": 6.0,
 }
 # The sweep solved Poisson ratios 0.05, 0.30, and 0.35, and every floor above
 # holds at all three.  Releasing the band interior is the judgment that a
@@ -261,26 +255,18 @@ FLAT_CIRCULAR_PLATE_DEFLECTION_MINIMUM_RATIO: dict[str, float] = {
 # monotonicity; outside the band nothing is solved at all.
 FLAT_CIRCULAR_PLATE_POISSON_EVIDENCE_BAND: tuple[float, float] = (0.05, 0.35)
 
-# The w <= t/2 small-deflection limit bounds the plate's actual deflection, so
-# the gate cannot read the Kirchhoff value the same sweep shows is low by up
-# to 24.3% at the thick end.  It reads a first-order shear-corrected estimate
-# instead: axisymmetric equilibrium fixes the transverse shear resultant at
+# The released value and the w <= t/2 gate use a first-order shear-corrected
+# deflection. Axisymmetric equilibrium fixes the transverse shear resultant at
 # Q = p*r/2 whatever the edge does, so integrating Q/(kappa*G*t) in from the
 # edge adds p*a^2/(4*kappa*G*t) at the center, with kappa = 5/6 from
 # E. Reissner, "The effect of transverse shear deformation on the bending of
-# elastic plates," J. Appl. Mech. 12 (1945) A69-A77.  The correction factor
-# is conventional, not exact: the optimal value depends on the boundary
-# realization, which is why the estimate is checked against solved evidence
-# rather than trusted.  The sweep found the estimate above the solved
-# three-dimensional deflection at every case, for both edges, and again at
-# the deep-mesh sensitivity points — including the thinnest, low-Poisson
-# corner, where the margin is smallest (about +0.005% at the deepest mesh)
-# and a deep mesh could most plausibly have overturned it.  Between solved
-# points, and beyond D_free/t = 40 (production sets no upper ratio limit),
-# the gate relies on that margin persisting; with the shear increment and
-# the Kirchhoff error both vanishing with thinness, that is an engineering
-# judgment, not a measured bound.  Only applicability reads the estimate;
-# the released deflection stays Kirchhoff.
+# elastic plates," J. Appl. Mech. 12 (1945) A69-A77. The factor is
+# conventional, so the estimate is checked against the solved evidence: it
+# sits above the solved deflection at every case and sensitivity point, by
+# as little as 0.005% at the thinnest low-Poisson corner, and would fall
+# below it only for kappa above about 0.839. Beyond D_free/t = 40 (no upper
+# ratio limit is set) release relies on the observed monotone decrease of
+# the error with thinness.
 FLAT_CIRCULAR_PLATE_SHEAR_CORRECTION_FACTOR = 5.0 / 6.0
 
 FLAT_CIRCULAR_PLATE_SCOPE_NOTES = (
@@ -295,13 +281,11 @@ FLAT_CIRCULAR_PLATE_SCOPE_NOTES = (
     "pressure and margin; it is independent of thickness and does not enter the bending margin.",
     "Bearing-contact distribution, attachment, seal compression, penetrations, and local edge "
     "details are not evaluated.",
-    "Kirchhoff theory omits transverse-shear deformation, so the center deflection is released "
-    "on its own measured floor and is withheld before the bending/yield gate closes.",
-    "The w <= t/2 small-deflection limit is applied to a shear-corrected deflection estimate "
-    "(Reissner kappa = 5/6), because the released Kirchhoff deflection is measurably below "
-    "the three-dimensional value. The swept evidence found the estimate above the solved "
-    "deflection at every solved case; between solved points, and beyond D_free/t = 40, that "
-    "margin persisting is engineering judgment, not a bound.",
+    "The released center deflection and w <= t/2 small-deflection gate use the "
+    "shear-corrected prediction (Reissner kappa = 5/6); maximum_deflection_mm retains the "
+    "underlying Kirchhoff value.",
+    "At released solved ratios, the corrected prediction is within 5% of FEA. Release between "
+    "solved points and beyond D_free/t = 40 follows the observed decrease in error with thinness.",
     "The validity floors are evidenced for 0.05 <= poisson_ratio <= 0.35; outside that band "
     "both the bending margin and the deflection are withheld.",
     "When governing bending stress exceeds the supplied material strength, the raw deflection "
@@ -332,6 +316,11 @@ SMOOTH_CYLINDER_PLASTICITY_PENDING_REASON = (
     "supplied proportional limit {limit:.6g} MPa; the pressure is an elastic upper "
     "bound because no compressive curve was supplied for the NASA correction"
 )
+SMOOTH_CYLINDER_CORRECTED_STRESS_ABOVE_YIELD_REASON = (
+    "corrected critical circumferential membrane stress {stress:.6g} MPa exceeds the "
+    "supplied yield strength {limit:.6g} MPa; the compressive curve is read beyond its "
+    "anchor, and the separate material check decides whether material failure governs"
+)
 SMOOTH_CYLINDER_SCOPE_NOTES = (
     "The NASA equations assume a thin, circular, isotropic, unstiffened shell with uniform "
     "thickness, elastic response, membrane prebuckling, and simply supported ends.",
@@ -350,13 +339,14 @@ SMOOTH_CYLINDER_SCOPE_NOTES = (
     "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube "
     "domain Roark states; NASA does not state that numeric cutoff.",
     "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving "
-    "p = p_elastic*eta(p*r/t) by bisection. NASA permits these lateral-pressure factors "
-    "for hydrostatic loading when biaxial factors are unavailable, and recommends linear "
-    "interpolation in Z for 5 < gamma*Z < 100. The corrected pressure, stress, and buckling "
+    "p = p_elastic*eta(p*r/t) by bisection. NASA Rev. 2 permits these lateral-pressure "
+    "factors for hydrostatic loading when biaxial factors are unavailable, states no factor "
+    "for 5 < gamma*Z < 100, and says linear interpolation in Z between Eqs. 30 and 31 may "
+    "give satisfactory results there. The corrected pressure, stress, and buckling "
     "coefficient include eta; ideal pressure and regime candidates remain elastic.",
     "Without a curve, a critical stress above the proportional limit retains an elastic "
-    "estimate as released_pending_plasticity with a null margin. Material strength remains "
-    "a separate check; the composed cylinder evaluates both stress and buckling.",
+    "estimate as released_pending_plasticity with a null margin. The correction imposes no "
+    "strength limit; material strength is a separate check.",
     "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released "
     "capacity follows the printed 0.855 coefficient in Eq. 24.",
     "The Roark probable-minimum pressure and its lobe count are reported only as a published "
@@ -1510,8 +1500,8 @@ def flat_circular_plate(
 
     Numeric inputs are explicitly MPa and mm. ``boundary_condition`` is
     required so a simply-supported plate can never be evaluated implicitly as
-    fixed. The result reports linear small-deflection bending, center
-    deflection, and the average transverse shear on the support perimeter.
+    fixed. The result reports linear bending, Kirchhoff and shear-corrected
+    center deflection, and the average transverse shear on the support perimeter.
     The bending margin and the released deflection are each withheld, with
     their reasons, outside their evidence floors or past the small-deflection
     limit; the formula values themselves stay published.
@@ -1726,7 +1716,7 @@ def flat_circular_plate(
         shear_corrected_deflection_estimate_over_thickness=estimate_thickness_ratio,
         deflection_status=deflection_status,
         released_maximum_deflection_mm=(
-            maximum_deflection if deflection_released else None
+            shear_corrected_deflection if deflection_released else None
         ),
         deflection_validity_violations=tuple(deflection_violations),
         bending_minimum_free_diameter_over_thickness=bending_minimum_ratio,
@@ -2058,10 +2048,10 @@ def smooth_cylinder_plasticity_factor(
 
     NASA states Eq. 30 for ``gamma*Z < 5``, Eq. 31 for
     ``100 < gamma*Z < 11.8 (r/t)^2 (1-v^2)``, and Eq. 32 above that boundary,
-    with no factor available for ``5 < gamma*Z < 100``; there the source
-    directs linear interpolation in ``Z`` between Eq. 30 and Eq. 31. Each
-    caller holds ``gamma`` fixed inside one branch, so interpolating linearly
-    in ``gamma*Z`` is the same interpolation the source asks for in ``Z``.
+    with no factor available for ``5 < gamma*Z < 100``; there the source says
+    linear interpolation in ``Z`` between Eq. 30 and Eq. 31 may give
+    satisfactory results. Each caller holds ``gamma`` fixed inside one branch,
+    so interpolating linearly in ``gamma*Z`` is that interpolation in ``Z``.
     """
     gamma_z_value = _positive_finite(gamma_z, "gamma_z")
     wave_boundary = _positive_finite(
@@ -2089,10 +2079,10 @@ def smooth_cylinder_plasticity_factor(
     def eq32() -> float:
         return secant_ratio * (0.25 + 0.75 * tangent_over_secant)
 
-    if gamma_z_value > wave_boundary:
-        return eq32(), "NASA Eq. 32"
     if gamma_z_value <= SMOOTH_CYLINDER_PLASTICITY_EQ30_GAMMA_Z_LIMIT:
         return eq30(), "NASA Eq. 30"
+    if gamma_z_value > wave_boundary:
+        return eq32(), "NASA Eq. 32"
     if gamma_z_value >= SMOOTH_CYLINDER_SHORT_GAMMA_Z_LIMIT:
         return eq31(), "NASA Eq. 31"
     span = (
@@ -2145,14 +2135,15 @@ def solve_inelastic_critical_pressure(
         return pressure - p_elastic * eta(pressure)[0]
 
     if residual(p_elastic) <= 0.0:
-        # eta >= 1 at the elastic pressure, so the curve is elastic over the
-        # whole interval and the elastic pressure is already the answer.
+        # eta is exactly 1 at the elastic pressure, so the curve is elastic
+        # over the whole interval and the elastic pressure is the answer.
         return p_elastic, eta(p_elastic)[1]
-    # residual(0) = -p_elastic < 0 and residual(p_elastic) > 0 bracket the root,
-    # and `lower` only ever moves to a point whose residual is still <= 0.
+    # `lower` only ever moves to a point whose residual is still <= 0. The
+    # budget exceeds the halvings a double can take, so the stall test below
+    # ends the loop first.
     lower = 0.0
     upper = p_elastic
-    for _ in range(128):
+    for _ in range(1100):
         midpoint = lower + (upper - lower) / 2.0
         if math.isclose(
             lower,
@@ -2479,8 +2470,8 @@ def smooth_cylinder_external_pressure_buckling(
     correction and releases a corrected capacity; supplying only a
     proportional limit keeps the elastic result, released when the correlated
     critical stress stays under that limit and reported as an upper bound
-    otherwise. Reference-only material data retain the corrected numerical
-    estimate and margin but label it ``released_unqualified_material``.
+    otherwise. Reference-only material data retain the numerical estimate and
+    margin but label it ``released_unqualified_material``.
     """
     p_mpa = _non_negative_pressure(external_pressure_mpa)
     r_mm = _positive_finite(
@@ -2617,35 +2608,37 @@ def smooth_cylinder_external_pressure_buckling(
             "shell_mid_surface_radius_mm / wall_thickness_mm must be > 10 for the "
             "Roark thin-tube overlap gate"
         )
-    if selected is not None and not validity_violations:
+    if selected is not None:
         if curve is not None and selected.correlated_critical_pressure_mpa is not None:
-            # A complete curve corrects every capacity, not only one already past
-            # the proportional limit: eta is 1 in the elastic range, so applying it
-            # throughout avoids a step at that limit.
-            hardening, proof_mpa = curve
-            inelastic_pressure, plasticity_equation = (
-                solve_inelastic_critical_pressure(
-                    elastic_critical_pressure_mpa=(
-                        selected.correlated_critical_pressure_mpa
-                    ),
-                    radius_over_thickness=radius_thickness,
+            if not validity_violations:
+                # A complete curve corrects every capacity, not only one already past
+                # the proportional limit: eta is 1 in the elastic range, so applying it
+                # throughout avoids a step at that limit. A record withheld on
+                # geometry is left uncorrected.
+                hardening, proof_mpa = curve
+                inelastic_pressure, plasticity_equation = (
+                    solve_inelastic_critical_pressure(
+                        elastic_critical_pressure_mpa=(
+                            selected.correlated_critical_pressure_mpa
+                        ),
+                        radius_over_thickness=radius_thickness,
+                        elastic_modulus_mpa=e_mpa,
+                        ramberg_osgood_n=hardening,
+                        compressive_proof_stress_mpa=proof_mpa,
+                        gamma_z=selected.gamma_z,
+                        more_than_two_wave_boundary=boundary,
+                    )
+                )
+                plasticity_factor = (
+                    inelastic_pressure / selected.correlated_critical_pressure_mpa
+                )
+                secant_modulus, tangent_modulus = ramberg_osgood_moduli(
+                    inelastic_pressure * radius_thickness,
                     elastic_modulus_mpa=e_mpa,
                     ramberg_osgood_n=hardening,
                     compressive_proof_stress_mpa=proof_mpa,
-                    gamma_z=selected.gamma_z,
-                    more_than_two_wave_boundary=boundary,
                 )
-            )
-            plasticity_factor = (
-                inelastic_pressure / selected.correlated_critical_pressure_mpa
-            )
-            secant_modulus, tangent_modulus = ramberg_osgood_moduli(
-                inelastic_pressure * radius_thickness,
-                elastic_modulus_mpa=e_mpa,
-                ramberg_osgood_n=hardening,
-                compressive_proof_stress_mpa=proof_mpa,
-            )
-            source_equations = (*source_equations, plasticity_equation)
+                source_equations = (*source_equations, plasticity_equation)
         elif proportional_mpa is None:
             validity_violations.append(
                 "a released capacity needs either proportional_limit_mpa or a complete "
@@ -2655,10 +2648,19 @@ def smooth_cylinder_external_pressure_buckling(
             selected.correlated_critical_circumferential_stress_mpa is not None
             and selected.correlated_critical_circumferential_stress_mpa > proportional_mpa
         ):
-            plasticity_pending = SMOOTH_CYLINDER_PLASTICITY_PENDING_REASON.format(
-                stress=selected.correlated_critical_circumferential_stress_mpa,
-                limit=proportional_mpa,
-            )
+            if validity_violations:
+                # Withheld on the geometry gate, the exceedance is one more
+                # violation on the withheld record, not a pending release.
+                validity_violations.append(
+                    "correlated critical circumferential membrane stress exceeds the "
+                    "supplied proportional limit and no compressive curve is available "
+                    "for the NASA correction"
+                )
+            else:
+                plasticity_pending = SMOOTH_CYLINDER_PLASTICITY_PENDING_REASON.format(
+                    stress=selected.correlated_critical_circumferential_stress_mpa,
+                    limit=proportional_mpa,
+                )
 
     capacity_status: Literal[
         "released",
@@ -2698,6 +2700,16 @@ def smooth_cylinder_external_pressure_buckling(
         and p_mpa > 0.0
         else None
     )
+    corrected_stress_above_yield = (
+        SMOOTH_CYLINDER_CORRECTED_STRESS_ABOVE_YIELD_REASON.format(
+            stress=correlated_stress, limit=yield_mpa
+        )
+        if inelastic_pressure is not None
+        and correlated_stress is not None
+        and yield_mpa is not None
+        and correlated_stress > yield_mpa
+        else None
+    )
     working_stress = p_mpa * radius_thickness
     applicability_limit, applicability_basis, elastic_applicability = (
         _elastic_applicability_screen(working_stress, proportional_mpa, yield_mpa)
@@ -2722,6 +2734,11 @@ def smooth_cylinder_external_pressure_buckling(
         *SMOOTH_CYLINDER_SCOPE_NOTES,
         *release_gate_violations,
         *((plasticity_pending,) if plasticity_pending is not None else ()),
+        *(
+            (corrected_stress_above_yield,)
+            if corrected_stress_above_yield is not None
+            else ()
+        ),
     )
     return SmoothCylinderBucklingResult(
         model_id=SMOOTH_CYLINDER_BUCKLING_MODEL_ID,

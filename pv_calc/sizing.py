@@ -882,8 +882,8 @@ def _plate_sizing_sample(
         check_margins[PLATE_SIZING_DEFLECTION_CHECK] = deflection_margin
     return _SizingSample(
         thickness_mm=result.plate_thickness_mm,
-        # Both margins rise across the released band: bending stress scales as
-        # 1/t^2 and deflection as 1/t^3. Applicability bounds that band separately.
+        # Both margins rise across the released band. Corrected deflection is
+        # the sum of terms proportional to 1/t^3 and 1/t.
         branch="released",
         states={
             "governing_check": min(
@@ -1364,8 +1364,8 @@ def _smooth_buckling_sizing_sample(
     assert tube.margin is not None  # Sizing requires positive applied pressure.
     check_margins = {
         TUBE_SIZING_CHECK: tube.margin,
-        # The caller admits only released capacities, so the margin exists;
-        # the result type cannot say so, hence the cast.
+        # Released capacities and reference-only exploratory estimates have a
+        # margin; the caller excludes every other status before this point.
         "smooth_cylinder_buckling": cast(float, buckling.margin),
     }
     governing = min(check_margins, key=lambda name: (check_margins[name], name))

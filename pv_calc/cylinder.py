@@ -11,6 +11,7 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
+from pv_calc.assessment import check_decision, summarize_checks
 from pv_calc.contracts import (
     CALC_SCHEMA_VERSION,
     Closure as Closure,
@@ -118,7 +119,7 @@ def _check(
     reasons: list[str] | None = None,
     upper_bound: float | None = None,
 ) -> dict[str, Any]:
-    """Only released, applicable capacities participate in acceptance."""
+    """Only a released capacity can pass; a non-released elastic upper bound can only fail."""
     released = applicability == "released"
     capacity = capacity if released else None
     margin = (
@@ -127,29 +128,22 @@ def _check(
         else None
     )
     notes = list(reasons or [])
-    upper_bound_failure = (
-        applicability in BUCKLING_ELASTIC_UPPER_BOUND_STATUSES
-        and demand is not None
-        and upper_bound is not None
-        and upper_bound < demand * (1.0 + required_margin)
+    decision = check_decision(
+        demand=demand, capacity=capacity, applicability=applicability,
+        required_margin=required_margin, upper_bound=upper_bound,
     )
-    if upper_bound_failure:
-        status = "fail"
+    if decision.upper_bound_failure:
         notes.append(BUCKLING_ELASTIC_UPPER_BOUND_FAILURE_REASON)
-    elif not released or demand is None or capacity is None:
-        status = "indeterminate"
+    elif not decision.eligible:
         if not notes:
             notes.append("The required calculation has no released demand or capacity.")
     elif demand == 0:
-        status = "pass"
         notes.append("Zero demand: the capacity-to-demand margin is undefined (null).")
-    else:
-        status = "pass" if capacity >= demand * (1.0 + required_margin) else "fail"
-        if status == "fail":
-            notes.append("Released capacity does not meet demand and the required margin.")
+    elif decision.status == "fail":
+        notes.append("Released capacity does not meet demand and the required margin.")
     check = {
         "id": name,
-        "status": status,
+        "status": decision.status,
         "demand": _quantity(demand, unit),
         "capacity": _quantity(capacity, unit),
         "margin": margin,
@@ -175,18 +169,6 @@ def _smooth_buckling_elastic_upper_bound(result: Any) -> float | None:
 
 
 def _assessment(checks: list[dict[str, Any]], *, closures_included: bool) -> dict[str, Any]:
-    failures = [check for check in checks if check["status"] == "fail"]
-    unresolved = [check for check in checks if check["status"] == "indeterminate"]
-    status = "fail" if failures else "indeterminate" if unresolved else "pass"
-    # The governing numerical mode is unknown if any required check is
-    # unavailable, even when a known failure already establishes rejection.
-    complete = not unresolved and all(
-        check["applicability"] == "released" for check in checks
-    )
-    candidates = sorted(
-        (check for check in checks if check["margin"] is not None and complete),
-        key=lambda check: check["margin"] - check["required_margin"],
-    )
     omissions = [
         "Seals, leak tightness, closure retention, bolts, welds, and attachment strength.",
         "Local joint stresses, grooves, penetrations, and shell/closure interaction.",
@@ -196,15 +178,8 @@ def _assessment(checks: list[dict[str, Any]], *, closures_included: bool) -> dic
     if not closures_included:
         omissions.insert(0, "End closures: no closure geometry or strength checks were requested.")
     return {
-        "status": status,
+        **summarize_checks(checks),
         "checks": checks,
-        "governing_check": candidates[0]["id"] if candidates else None,
-        "required_check_coverage": {
-            "required": [check["id"] for check in checks],
-            "evaluated": [check["id"] for check in checks if check["status"] != "indeterminate"],
-            "indeterminate": [check["id"] for check in unresolved],
-            "complete": complete,
-        },
         "scope": "Acceptance is limited to the requested, idealized component checks; "
         "it is not a housing qualification or a code-compliance determination.",
         "omissions": omissions,

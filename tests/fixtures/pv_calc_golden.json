@@ -20,7 +20,7 @@
               "source": {
                 "database": "materials.yaml",
                 "name": "Al-6061-T6",
-                "provenance": "ASTM B221 and ASTM B241 specification minimums for wrought aluminum 6061-T6 (extruded profiles and seamless extruded tube). Basis: specification minimums, 38 ksi ultimate and 35 ksi yield, stored as conversions at 1 ksi = 6.894757 MPa rounded to the nearest MPa; not statistical design allowables. ASTM B209 6061-T651 plate carries the same 35 ksi yield minimum at a higher 42 ksi ultimate, so the stored floors bound the common wrought forms. Density, elastic modulus, and Poisson ratio are not specification-governed; the stored 2700 kg/m3, 68900 MPa (average of tension and compression), and estimated 0.33 are nominal values from the ASM Aerospace Specification Metals / MatWeb data sheet \"Aluminum 6061-T6; 6061-T651\" (asm.matweb.com). Temperature: room temperature; no elevated-temperature derating is stored. The bundled compression curve and derived proportional limit are reference-only; qualify the actual product form and hoop direction before acceptance.",
+                "provenance": "ASTM B221 and ASTM B241 specification minimums for wrought aluminum 6061-T6 (extruded profiles and seamless extruded tube). Basis: specification minimums, 38 ksi ultimate and 35 ksi yield, stored as conversions at 1 ksi = 6.894757 MPa rounded to the nearest MPa; not statistical design allowables. ASTM B209 6061-T651 plate carries the same 35 ksi yield minimum at a higher 42 ksi ultimate, so the stored floors bound the common wrought forms. Density, elastic modulus, and Poisson ratio are not specification-governed; the stored 2700 kg/m3, 68900 MPa (average of tension and compression), and estimated 0.33 are nominal values from the ASM Aerospace Specification Metals / MatWeb data sheet \"Aluminum 6061-T6; 6061-T651\" (asm.matweb.com). Temperature: room temperature; no elevated-temperature derating is stored.",
                 "type": "named"
               }
             },
@@ -103,7 +103,7 @@
               "source": {
                 "database": "materials.yaml",
                 "name": "Al-6061-T6",
-                "provenance": "ASTM B221 and ASTM B241 specification minimums for wrought aluminum 6061-T6 (extruded profiles and seamless extruded tube). Basis: specification minimums, 38 ksi ultimate and 35 ksi yield, stored as conversions at 1 ksi = 6.894757 MPa rounded to the nearest MPa; not statistical design allowables. ASTM B209 6061-T651 plate carries the same 35 ksi yield minimum at a higher 42 ksi ultimate, so the stored floors bound the common wrought forms. Density, elastic modulus, and Poisson ratio are not specification-governed; the stored 2700 kg/m3, 68900 MPa (average of tension and compression), and estimated 0.33 are nominal values from the ASM Aerospace Specification Metals / MatWeb data sheet \"Aluminum 6061-T6; 6061-T651\" (asm.matweb.com). Temperature: room temperature; no elevated-temperature derating is stored. The bundled compression curve and derived proportional limit are reference-only; qualify the actual product form and hoop direction before acceptance.",
+                "provenance": "ASTM B221 and ASTM B241 specification minimums for wrought aluminum 6061-T6 (extruded profiles and seamless extruded tube). Basis: specification minimums, 38 ksi ultimate and 35 ksi yield, stored as conversions at 1 ksi = 6.894757 MPa rounded to the nearest MPa; not statistical design allowables. ASTM B209 6061-T651 plate carries the same 35 ksi yield minimum at a higher 42 ksi ultimate, so the stored floors bound the common wrought forms. Density, elastic modulus, and Poisson ratio are not specification-governed; the stored 2700 kg/m3, 68900 MPa (average of tension and compression), and estimated 0.33 are nominal values from the ASM Aerospace Specification Metals / MatWeb data sheet \"Aluminum 6061-T6; 6061-T651\" (asm.matweb.com). Temperature: room temperature; no elevated-temperature derating is stored.",
                 "type": "named"
               }
             },
@@ -286,7 +286,7 @@
               "source": {
                 "database": "materials.yaml",
                 "name": "Ti-6Al-4V",
-                "provenance": "ASTM B348 specification minimums for Ti-6Al-4V (Grade 5, UNS R56400) bar and billet, annealed; ASTM B265 Grade 5 sheet and plate states the same minimums. Basis: specification minimums, 130 ksi ultimate and 120 ksi yield, stored as conversions at 1 ksi = 6.894757 MPa rounded to the nearest MPa; not statistical design allowables. Density, elastic modulus, and Poisson ratio are not specification-governed; the stored 4430 kg/m3, 113800 MPa, and 0.34 (rounded from 0.342) are nominal values from the ASM Aerospace Specification Metals / MatWeb data sheet \"Titanium Ti-6Al-4V (Grade 5), Annealed\" (asm.matweb.com, bassnum MTP641). Temperature: room temperature; no elevated-temperature derating is stored. The bundled longitudinal annealed-extrusion curve and derived proportional limit are reference-only; they do not establish the hoop response of the generic product forms represented here.",
+                "provenance": "ASTM B348 specification minimums for Ti-6Al-4V (Grade 5, UNS R56400) bar and billet, annealed; ASTM B265 Grade 5 sheet and plate states the same minimums. Basis: specification minimums, 130 ksi ultimate and 120 ksi yield, stored as conversions at 1 ksi = 6.894757 MPa rounded to the nearest MPa; not statistical design allowables. Density, elastic modulus, and Poisson ratio are not specification-governed; the stored 4430 kg/m3, 113800 MPa, and 0.34 (rounded from 0.342) are nominal values from the ASM Aerospace Specification Metals / MatWeb data sheet \"Titanium Ti-6Al-4V (Grade 5), Annealed\" (asm.matweb.com, bassnum MTP641). Temperature: room temperature; no elevated-temperature derating is stored.",
                 "type": "named"
               }
             },
@@ -369,7 +369,7 @@
               "source": {
                 "database": "materials.yaml",
                 "name": "Ti-6Al-4V",
-                "provenance": "ASTM B348 specification minimums for Ti-6Al-4V (Grade 5, UNS R56400) bar and billet, annealed; ASTM B265 Grade 5 sheet and plate states the same minimums. Basis: specification minimums, 130 ksi ultimate and 120 ksi yield, stored as conversions at 1 ksi = 6.894757 MPa rounded to the nearest MPa; not statistical design allowables. Density, elastic modulus, and Poisson ratio are not specification-governed; the stored 4430 kg/m3, 113800 MPa, and 0.34 (rounded from 0.342) are nominal values from the ASM Aerospace Specification Metals / MatWeb data sheet \"Titanium Ti-6Al-4V (Grade 5), Annealed\" (asm.matweb.com, bassnum MTP641). Temperature: room temperature; no elevated-temperature derating is stored. The bundled longitudinal annealed-extrusion curve and derived proportional limit are reference-only; they do not establish the hoop response of the generic product forms represented here.",
+                "provenance": "ASTM B348 specification minimums for Ti-6Al-4V (Grade 5, UNS R56400) bar and billet, annealed; ASTM B265 Grade 5 sheet and plate states the same minimums. Basis: specification minimums, 130 ksi ultimate and 120 ksi yield, stored as conversions at 1 ksi = 6.894757 MPa rounded to the nearest MPa; not statistical design allowables. Density, elastic modulus, and Poisson ratio are not specification-governed; the stored 4430 kg/m3, 113800 MPa, and 0.34 (rounded from 0.342) are nominal values from the ASM Aerospace Specification Metals / MatWeb data sheet \"Titanium Ti-6Al-4V (Grade 5), Annealed\" (asm.matweb.com, bassnum MTP641). Temperature: room temperature; no elevated-temperature derating is stored.",
                 "type": "named"
               }
             },
@@ -846,8 +846,8 @@
             "Longitudinal end restraint can increase theoretical capacity, and rotational restraint can affect short cylinders; those boundary-condition sensitivities are not credited.",
             "NASA Eq. 28 states sqrt(gamma)=0.75 for Eqs. 23-25; because the source adds the gamma^2 term to Eqs. 20/22 and introduces Eq. 23 as their gamma*Z > 100 reduction, this model applies the same factor inside Eqs. 20/22 at every gamma*Z. gamma=0.90 belongs to Eqs. 26-27; the moderate/long overlap created by the two factors has no selection rule and stays withheld from capacity.",
             "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
-            "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, and recommends linear interpolation in Z for 5 < gamma*Z < 100. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
-            "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. Material strength remains a separate check; the composed cylinder evaluates both stress and buckling.",
+            "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA Rev. 2 permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, states no factor for 5 < gamma*Z < 100, and says linear interpolation in Z between Eqs. 30 and 31 may give satisfactory results there. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
+            "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. The correction imposes no strength limit; material strength is a separate check.",
             "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
             "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
             "elastic_applicability compares applied membrane stress p*r/t with the proportional limit, falling back to yield strength. It sets neither capacity nor margin."
@@ -1241,10 +1241,10 @@
           },
           "demand": {
             "unit": "mm",
-            "value": 0.0233093261719
+            "value": 0.0240218261719
           },
           "id": "closure_1.center_deflection",
-          "margin": 3.29012830584,
+          "margin": 3.16288084363,
           "reasons": [],
           "required_margin": 0.0,
           "status": "pass"
@@ -1369,7 +1369,7 @@
           "calculation_source": {
             "function": "pv_calc.pressure_vessel.flat_circular_plate",
             "model_id": "uniformly_loaded_flat_circular_plate",
-            "model_version": "4.1.0",
+            "model_version": "5.0.0",
             "package_version": "0.2.0"
           },
           "id": "closure_1",
@@ -1403,14 +1403,14 @@
               "value": null
             },
             "deflection_coefficient": 0.16708125,
-            "deflection_minimum_free_diameter_over_thickness": 20.0,
+            "deflection_minimum_free_diameter_over_thickness": 10.0,
             "deflection_status": "released",
             "deflection_validity_violations": [],
             "elastic_modulus_mpa": {
               "unit": "MPa",
               "value": 70000.0
             },
-            "envelope_source_reference": "validation/fea/results/plate_sweep_fea_summary.json: mesh-converged CAX8R comparison swept over D_free/t and Poisson ratio, released against the 5% agreement budget",
+            "envelope_source_reference": "validation/fea/results/plate_sweep_fea_summary.json: mesh-converged CAX8R sweep over D_free/t and Poisson ratio; corrected deflection is qualified by abs(prediction - FEA) / abs(FEA) <= 5%",
             "external_pressure_mpa": {
               "unit": "MPa",
               "value": 0.1
@@ -1454,7 +1454,7 @@
             },
             "maximum_tangential_stress_location": "center",
             "model_id": "uniformly_loaded_flat_circular_plate",
-            "model_version": "4.1.0",
+            "model_version": "5.0.0",
             "notes": [
               "boundary_condition: fixed edge prevents radial rotation and transverse deflection while allowing radial displacement.",
               "The free radius is half the plate free/unsupported diameter at the support or seal line.",
@@ -1463,8 +1463,8 @@
               "Transverse shear is reported as plate response and does not replace the existing bending/yield gate.",
               "With an outside radius, the seat bearing stress is the average over the annulus between the free and outside radii, reported as a positive compressive magnitude with its own failure pressure and margin; it is independent of thickness and does not enter the bending margin.",
               "Bearing-contact distribution, attachment, seal compression, penetrations, and local edge details are not evaluated.",
-              "Kirchhoff theory omits transverse-shear deformation, so the center deflection is released on its own measured floor and is withheld before the bending/yield gate closes.",
-              "The w <= t/2 small-deflection limit is applied to a shear-corrected deflection estimate (Reissner kappa = 5/6), because the released Kirchhoff deflection is measurably below the three-dimensional value. The swept evidence found the estimate above the solved deflection at every solved case; between solved points, and beyond D_free/t = 40, that margin persisting is engineering judgment, not a bound.",
+              "The released center deflection and w <= t/2 small-deflection gate use the shear-corrected prediction (Reissner kappa = 5/6); maximum_deflection_mm retains the underlying Kirchhoff value.",
+              "At released solved ratios, the corrected prediction is within 5% of FEA. Release between solved points and beyond D_free/t = 40 follows the observed decrease in error with thinness.",
               "The validity floors are evidenced for 0.05 <= poisson_ratio <= 0.35; outside that band both the bending margin and the deflection are withheld.",
               "When governing bending stress exceeds the supplied material strength, the raw deflection is an elastic estimate and released_maximum_deflection_mm is null; geometric withholding takes precedence over the elastic_estimate_material_limit status."
             ],
@@ -1484,7 +1484,7 @@
             "radial_bending_stress_coefficient": 0.75,
             "released_maximum_deflection_mm": {
               "unit": "mm",
-              "value": 0.0233093261719
+              "value": 0.0240218261719
             },
             "seat_bearing_stress_mpa": {
               "unit": "MPa",
@@ -1498,7 +1498,7 @@
             },
             "shear_corrected_deflection_estimate_over_thickness": 0.00600545654297,
             "source_equation_case": "Roark Table 24 case 10b",
-            "source_reference": "Roark's Formulas for Stress and Strain, 6th ed., Table 24 cases 10a-10b, p. 429; transverse shear is the average on the support perimeter from equilibrium, tau = p * D_free / (4 * t), the pressure load over the free area divided by the cylindrical area pi * D_free * t it crosses; the small-deflection gate's shear-corrected deflection estimate uses kappa = 5/6 from Reissner, J. Appl. Mech. 12 (1945) A69-A77",
+            "source_reference": "Roark's Formulas for Stress and Strain, 6th ed., Table 24 cases 10a-10b, p. 429; transverse shear is the average on the support perimeter from equilibrium, tau = p * D_free / (4 * t), the pressure load over the free area divided by the cylindrical area pi * D_free * t it crosses; the released center deflection adds the Reissner transverse-shear term with kappa = 5/6, J. Appl. Mech. 12 (1945) A69-A77",
             "strength_mpa": {
               "unit": "MPa",
               "value": 250.0
@@ -2005,8 +2005,8 @@
             "Longitudinal end restraint can increase theoretical capacity, and rotational restraint can affect short cylinders; those boundary-condition sensitivities are not credited.",
             "NASA Eq. 28 states sqrt(gamma)=0.75 for Eqs. 23-25; because the source adds the gamma^2 term to Eqs. 20/22 and introduces Eq. 23 as their gamma*Z > 100 reduction, this model applies the same factor inside Eqs. 20/22 at every gamma*Z. gamma=0.90 belongs to Eqs. 26-27; the moderate/long overlap created by the two factors has no selection rule and stays withheld from capacity.",
             "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
-            "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, and recommends linear interpolation in Z for 5 < gamma*Z < 100. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
-            "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. Material strength remains a separate check; the composed cylinder evaluates both stress and buckling.",
+            "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA Rev. 2 permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, states no factor for 5 < gamma*Z < 100, and says linear interpolation in Z between Eqs. 30 and 31 may give satisfactory results there. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
+            "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. The correction imposes no strength limit; material strength is a separate check.",
             "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
             "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
             "elastic_applicability compares applied membrane stress p*r/t with the proportional limit, falling back to yield strength. It sets neither capacity nor margin."
@@ -2712,7 +2712,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.flat_circular_plate",
       "model_id": "uniformly_loaded_flat_circular_plate",
-      "model_version": "4.1.0",
+      "model_version": "5.0.0",
       "package_version": "0.2.0"
     },
     "material": {
@@ -2745,16 +2745,16 @@
         "value": null
       },
       "deflection_coefficient": 0.66958125,
-      "deflection_minimum_free_diameter_over_thickness": 10.0,
+      "deflection_minimum_free_diameter_over_thickness": 6.0,
       "deflection_status": "withheld_applicability",
       "deflection_validity_violations": [
-        "free_diameter_mm / plate_thickness_mm is below 10.0, the simply_supported center-deflection evidence floor"
+        "free_diameter_mm / plate_thickness_mm is below 6.0, the simply_supported center-deflection evidence floor"
       ],
       "elastic_modulus_mpa": {
         "unit": "MPa",
         "value": 71016.0001196
       },
-      "envelope_source_reference": "validation/fea/results/plate_sweep_fea_summary.json: mesh-converged CAX8R comparison swept over D_free/t and Poisson ratio, released against the 5% agreement budget",
+      "envelope_source_reference": "validation/fea/results/plate_sweep_fea_summary.json: mesh-converged CAX8R sweep over D_free/t and Poisson ratio; corrected deflection is qualified by abs(prediction - FEA) / abs(FEA) <= 5%",
       "external_pressure_mpa": {
         "unit": "MPa",
         "value": 31.0264078193
@@ -2798,7 +2798,7 @@
       },
       "maximum_tangential_stress_location": "center",
       "model_id": "uniformly_loaded_flat_circular_plate",
-      "model_version": "4.1.0",
+      "model_version": "5.0.0",
       "notes": [
         "boundary_condition: simply-supported edge prevents transverse deflection while allowing radial rotation and displacement.",
         "The free radius is half the plate free/unsupported diameter at the support or seal line.",
@@ -2807,8 +2807,8 @@
         "Transverse shear is reported as plate response and does not replace the existing bending/yield gate.",
         "With an outside radius, the seat bearing stress is the average over the annulus between the free and outside radii, reported as a positive compressive magnitude with its own failure pressure and margin; it is independent of thickness and does not enter the bending margin.",
         "Bearing-contact distribution, attachment, seal compression, penetrations, and local edge details are not evaluated.",
-        "Kirchhoff theory omits transverse-shear deformation, so the center deflection is released on its own measured floor and is withheld before the bending/yield gate closes.",
-        "The w <= t/2 small-deflection limit is applied to a shear-corrected deflection estimate (Reissner kappa = 5/6), because the released Kirchhoff deflection is measurably below the three-dimensional value. The swept evidence found the estimate above the solved deflection at every solved case; between solved points, and beyond D_free/t = 40, that margin persisting is engineering judgment, not a bound.",
+        "The released center deflection and w <= t/2 small-deflection gate use the shear-corrected prediction (Reissner kappa = 5/6); maximum_deflection_mm retains the underlying Kirchhoff value.",
+        "At released solved ratios, the corrected prediction is within 5% of FEA. Release between solved points and beyond D_free/t = 40 follows the observed decrease in error with thinness.",
         "The validity floors are evidenced for 0.05 <= poisson_ratio <= 0.35; outside that band both the bending margin and the deflection are withheld.",
         "When governing bending stress exceeds the supplied material strength, the raw deflection is an elastic estimate and released_maximum_deflection_mm is null; geometric withholding takes precedence over the elastic_estimate_material_limit status."
       ],
@@ -2842,7 +2842,7 @@
       },
       "shear_corrected_deflection_estimate_over_thickness": 0.0107423561589,
       "source_equation_case": "Roark Table 24 case 10a",
-      "source_reference": "Roark's Formulas for Stress and Strain, 6th ed., Table 24 cases 10a-10b, p. 429; transverse shear is the average on the support perimeter from equilibrium, tau = p * D_free / (4 * t), the pressure load over the free area divided by the cylindrical area pi * D_free * t it crosses; the small-deflection gate's shear-corrected deflection estimate uses kappa = 5/6 from Reissner, J. Appl. Mech. 12 (1945) A69-A77",
+      "source_reference": "Roark's Formulas for Stress and Strain, 6th ed., Table 24 cases 10a-10b, p. 429; transverse shear is the average on the support perimeter from equilibrium, tau = p * D_free / (4 * t), the pressure load over the free area divided by the cylindrical area pi * D_free * t it crosses; the released center deflection adds the Reissner transverse-shear term with kappa = 5/6, J. Appl. Mech. 12 (1945) A69-A77",
       "strength_mpa": {
         "unit": "MPa",
         "value": 427.474952176
@@ -2877,7 +2877,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.flat_circular_plate",
       "model_id": "uniformly_loaded_flat_circular_plate",
-      "model_version": "4.1.0",
+      "model_version": "5.0.0",
       "package_version": "0.2.0"
     },
     "material": {
@@ -2914,16 +2914,14 @@
         "value": 1103.0
       },
       "deflection_coefficient": 0.80458125,
-      "deflection_minimum_free_diameter_over_thickness": 10.0,
-      "deflection_status": "withheld_applicability",
-      "deflection_validity_violations": [
-        "free_diameter_mm / plate_thickness_mm is below 10.0, the simply_supported center-deflection evidence floor"
-      ],
+      "deflection_minimum_free_diameter_over_thickness": 6.0,
+      "deflection_status": "released",
+      "deflection_validity_violations": [],
       "elastic_modulus_mpa": {
         "unit": "MPa",
         "value": 72700.0
       },
-      "envelope_source_reference": "validation/fea/results/plate_sweep_fea_summary.json: mesh-converged CAX8R comparison swept over D_free/t and Poisson ratio, released against the 5% agreement budget",
+      "envelope_source_reference": "validation/fea/results/plate_sweep_fea_summary.json: mesh-converged CAX8R sweep over D_free/t and Poisson ratio; corrected deflection is qualified by abs(prediction - FEA) / abs(FEA) <= 5%",
       "external_pressure_mpa": {
         "unit": "MPa",
         "value": 2.06842718795
@@ -2967,7 +2965,7 @@
       },
       "maximum_tangential_stress_location": "center",
       "model_id": "uniformly_loaded_flat_circular_plate",
-      "model_version": "4.1.0",
+      "model_version": "5.0.0",
       "notes": [
         "boundary_condition: simply-supported edge prevents transverse deflection while allowing radial rotation and displacement.",
         "The free radius is half the plate free/unsupported diameter at the support or seal line.",
@@ -2976,8 +2974,8 @@
         "Transverse shear is reported as plate response and does not replace the existing bending/yield gate.",
         "With an outside radius, the seat bearing stress is the average over the annulus between the free and outside radii, reported as a positive compressive magnitude with its own failure pressure and margin; it is independent of thickness and does not enter the bending margin.",
         "Bearing-contact distribution, attachment, seal compression, penetrations, and local edge details are not evaluated.",
-        "Kirchhoff theory omits transverse-shear deformation, so the center deflection is released on its own measured floor and is withheld before the bending/yield gate closes.",
-        "The w <= t/2 small-deflection limit is applied to a shear-corrected deflection estimate (Reissner kappa = 5/6), because the released Kirchhoff deflection is measurably below the three-dimensional value. The swept evidence found the estimate above the solved deflection at every solved case; between solved points, and beyond D_free/t = 40, that margin persisting is engineering judgment, not a bound.",
+        "The released center deflection and w <= t/2 small-deflection gate use the shear-corrected prediction (Reissner kappa = 5/6); maximum_deflection_mm retains the underlying Kirchhoff value.",
+        "At released solved ratios, the corrected prediction is within 5% of FEA. Release between solved points and beyond D_free/t = 40 follows the observed decrease in error with thinness.",
         "The validity floors are evidenced for 0.05 <= poisson_ratio <= 0.35; outside that band both the bending margin and the deflection are withheld.",
         "When governing bending stress exceeds the supplied material strength, the raw deflection is an elastic estimate and released_maximum_deflection_mm is null; geometric withholding takes precedence over the elastic_estimate_material_limit status.",
         "Brittle materials are intended for compression, but the convex face of a pressure-loaded plate is in tension, so the surface bending stress is compared to the ultimate tensile strength; the seat is compressive and is compared to the ultimate compressive strength."
@@ -2998,7 +2996,7 @@
       "radial_bending_stress_coefficient": 1.18875,
       "released_maximum_deflection_mm": {
         "unit": "mm",
-        "value": null
+        "value": 0.0981045114108
       },
       "seat_bearing_stress_mpa": {
         "unit": "MPa",
@@ -3012,7 +3010,7 @@
       },
       "shear_corrected_deflection_estimate_over_thickness": 0.00617981174241,
       "source_equation_case": "Roark Table 24 case 10a",
-      "source_reference": "Roark's Formulas for Stress and Strain, 6th ed., Table 24 cases 10a-10b, p. 429; transverse shear is the average on the support perimeter from equilibrium, tau = p * D_free / (4 * t), the pressure load over the free area divided by the cylindrical area pi * D_free * t it crosses; the small-deflection gate's shear-corrected deflection estimate uses kappa = 5/6 from Reissner, J. Appl. Mech. 12 (1945) A69-A77",
+      "source_reference": "Roark's Formulas for Stress and Strain, 6th ed., Table 24 cases 10a-10b, p. 429; transverse shear is the average on the support perimeter from equilibrium, tau = p * D_free / (4 * t), the pressure load over the free area divided by the cylindrical area pi * D_free * t it crosses; the released center deflection adds the Reissner transverse-shear term with kappa = 5/6, J. Appl. Mech. 12 (1945) A69-A77",
       "strength_mpa": {
         "unit": "MPa",
         "value": 48.3
@@ -3047,7 +3045,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.flat_circular_plate",
       "model_id": "uniformly_loaded_flat_circular_plate",
-      "model_version": "4.1.0",
+      "model_version": "5.0.0",
       "package_version": "0.2.0"
     },
     "material": {
@@ -3081,14 +3079,14 @@
         "value": null
       },
       "deflection_coefficient": 0.170625,
-      "deflection_minimum_free_diameter_over_thickness": 20.0,
+      "deflection_minimum_free_diameter_over_thickness": 10.0,
       "deflection_status": "released",
       "deflection_validity_violations": [],
       "elastic_modulus_mpa": {
         "unit": "MPa",
         "value": 70000.0
       },
-      "envelope_source_reference": "validation/fea/results/plate_sweep_fea_summary.json: mesh-converged CAX8R comparison swept over D_free/t and Poisson ratio, released against the 5% agreement budget",
+      "envelope_source_reference": "validation/fea/results/plate_sweep_fea_summary.json: mesh-converged CAX8R sweep over D_free/t and Poisson ratio; corrected deflection is qualified by abs(prediction - FEA) / abs(FEA) <= 5%",
       "external_pressure_mpa": {
         "unit": "MPa",
         "value": 2.0
@@ -3096,13 +3094,13 @@
       "failure_criterion": "surface_bending_stress_vs_yield_strength",
       "flexural_rigidity_n_mm": {
         "unit": "N*mm",
-        "value": 5208333.33469
+        "value": 5421261.9544
       },
       "free_diameter_mm": {
         "unit": "mm",
         "value": 200.0
       },
-      "free_diameter_over_thickness": 21.4332915916,
+      "free_diameter_over_thickness": 21.1489266975,
       "free_radius_mm": {
         "unit": "mm",
         "value": 100.0
@@ -3110,29 +3108,29 @@
       "governing_bending_direction": "radial",
       "governing_bending_stress_mpa": {
         "unit": "MPa",
-        "value": 172.269745669
+        "value": 167.728912672
       },
       "load_type": "uniform_transverse_pressure",
-      "margin": 0.451212451894,
+      "margin": 0.490500331863,
       "material_failure_category": "ductile_metal",
       "maximum_deflection_location": "center",
       "maximum_deflection_mm": {
         "unit": "mm",
-        "value": 0.599999999844
+        "value": 0.576434052862
       },
-      "maximum_deflection_over_thickness": 0.0642998747581,
+      "maximum_deflection_over_thickness": 0.0609548076497,
       "maximum_radial_bending_stress_mpa": {
         "unit": "MPa",
-        "value": 172.269745669
+        "value": 167.728912672
       },
       "maximum_radial_stress_location": "free_diameter",
       "maximum_tangential_bending_stress_mpa": {
         "unit": "MPa",
-        "value": 111.975334685
+        "value": 109.023793237
       },
       "maximum_tangential_stress_location": "center",
       "model_id": "uniformly_loaded_flat_circular_plate",
-      "model_version": "4.1.0",
+      "model_version": "5.0.0",
       "notes": [
         "boundary_condition: fixed edge prevents radial rotation and transverse deflection while allowing radial displacement.",
         "The free radius is half the plate free/unsupported diameter at the support or seal line.",
@@ -3141,8 +3139,8 @@
         "Transverse shear is reported as plate response and does not replace the existing bending/yield gate.",
         "With an outside radius, the seat bearing stress is the average over the annulus between the free and outside radii, reported as a positive compressive magnitude with its own failure pressure and margin; it is independent of thickness and does not enter the bending margin.",
         "Bearing-contact distribution, attachment, seal compression, penetrations, and local edge details are not evaluated.",
-        "Kirchhoff theory omits transverse-shear deformation, so the center deflection is released on its own measured floor and is withheld before the bending/yield gate closes.",
-        "The w <= t/2 small-deflection limit is applied to a shear-corrected deflection estimate (Reissner kappa = 5/6), because the released Kirchhoff deflection is measurably below the three-dimensional value. The swept evidence found the estimate above the solved deflection at every solved case; between solved points, and beyond D_free/t = 40, that margin persisting is engineering judgment, not a bound.",
+        "The released center deflection and w <= t/2 small-deflection gate use the shear-corrected prediction (Reissner kappa = 5/6); maximum_deflection_mm retains the underlying Kirchhoff value.",
+        "At released solved ratios, the corrected prediction is within 5% of FEA. Release between solved points and beyond D_free/t = 40 follows the observed decrease in error with thinness.",
         "The validity floors are evidenced for 0.05 <= poisson_ratio <= 0.35; outside that band both the bending margin and the deflection are withheld.",
         "When governing bending stress exceeds the supplied material strength, the raw deflection is an elastic estimate and released_maximum_deflection_mm is null; geometric withholding takes precedence over the elastic_estimate_material_limit status."
       ],
@@ -3152,7 +3150,7 @@
       },
       "plate_thickness_mm": {
         "unit": "mm",
-        "value": 9.33127789285
+        "value": 9.45674467836
       },
       "poisson_ratio": 0.3,
       "poisson_ratio_evidence_band": [
@@ -3162,7 +3160,7 @@
       "radial_bending_stress_coefficient": 0.75,
       "released_maximum_deflection_mm": {
         "unit": "mm",
-        "value": 0.599999999844
+        "value": 0.599999999753
       },
       "seat_bearing_stress_mpa": {
         "unit": "MPa",
@@ -3172,11 +3170,11 @@
       "seat_source_reference": "Equilibrium on the flat annular seat: the total pressure load on the closure's outside radius, p * pi * R_o^2, is carried by the annulus area pi * (R_o^2 - R_i^2) inside it, so the average bearing stress is sigma_seat = p * R_o^2 / (R_o^2 - R_i^2), compared to the material's uniaxial strength",
       "shear_corrected_deflection_estimate_mm": {
         "unit": "mm",
-        "value": 0.623882810474
+        "value": 0.599999999753
       },
-      "shear_corrected_deflection_estimate_over_thickness": 0.0668593109795,
+      "shear_corrected_deflection_estimate_over_thickness": 0.0634467800665,
       "source_equation_case": "Roark Table 24 case 10b",
-      "source_reference": "Roark's Formulas for Stress and Strain, 6th ed., Table 24 cases 10a-10b, p. 429; transverse shear is the average on the support perimeter from equilibrium, tau = p * D_free / (4 * t), the pressure load over the free area divided by the cylindrical area pi * D_free * t it crosses; the small-deflection gate's shear-corrected deflection estimate uses kappa = 5/6 from Reissner, J. Appl. Mech. 12 (1945) A69-A77",
+      "source_reference": "Roark's Formulas for Stress and Strain, 6th ed., Table 24 cases 10a-10b, p. 429; transverse shear is the average on the support perimeter from equilibrium, tau = p * D_free / (4 * t), the pressure load over the free area divided by the cylindrical area pi * D_free * t it crosses; the released center deflection adds the Reissner transverse-shear term with kappa = 5/6, J. Appl. Mech. 12 (1945) A69-A77",
       "strength_mpa": {
         "unit": "MPa",
         "value": 250.0
@@ -3184,11 +3182,11 @@
       "tangential_bending_stress_coefficient": 0.4875,
       "theoretical_failure_pressure_mpa": {
         "unit": "MPa",
-        "value": 2.90242490379
+        "value": 2.98100066373
       },
       "theoretical_radial_failure_pressure_mpa": {
         "unit": "MPa",
-        "value": 2.90242490379
+        "value": 2.98100066373
       },
       "theoretical_seat_failure_pressure_mpa": {
         "unit": "MPa",
@@ -3196,12 +3194,12 @@
       },
       "theoretical_tangential_failure_pressure_mpa": {
         "unit": "MPa",
-        "value": 4.46526908275
+        "value": 4.58615486727
       },
       "transverse_shear_location": "free_diameter",
       "transverse_shear_stress_mpa": {
         "unit": "MPa",
-        "value": 10.7166457958
+        "value": 10.5744633488
       },
       "validity_violations": []
     },
@@ -3256,20 +3254,20 @@
         "value": 0.6
       },
       "operation": "plate_thickness_inverse_sizing",
-      "operation_version": "2.1.0",
+      "operation_version": "3.0.0",
       "plate_thickness_tolerance": {
         "unit": "mm",
-        "value": 9.33127789285e-09
+        "value": 9.45674467836e-09
       },
       "selected_check_margins": {
-        "center_deflection": 2.60612198488e-10,
-        "flat_endcap_bending": 0.451212451894
+        "center_deflection": 4.11277456536e-10,
+        "flat_endcap_bending": 0.490500331863
       },
       "selected_governing_check": "center_deflection",
-      "selected_minimum_target_slack": 2.60612198488e-10,
+      "selected_minimum_target_slack": 4.11277456536e-10,
       "selected_plate_thickness": {
         "unit": "mm",
-        "value": 9.33127789285
+        "value": 9.45674467836
       },
       "selection_scope": "model_eligible_thicknesses",
       "solution_type": "interior_root",
@@ -3277,15 +3275,15 @@
       "verified_bracket": {
         "lower": {
           "check_margins": {
-            "center_deflection": -1.84015602755e-09,
-            "flat_endcap_bending": 0.451212449862
+            "center_deflection": -1.60734148213e-09,
+            "flat_endcap_bending": 0.490500329803
           },
-          "free_diameter_over_thickness": 21.4332916066,
+          "free_diameter_over_thickness": 21.1489267121,
           "governing_check": "center_deflection",
-          "minimum_target_slack": -1.84015602755e-09,
+          "minimum_target_slack": -1.60734148213e-09,
           "plate_thickness": {
             "unit": "mm",
-            "value": 9.33127788632
+            "value": 9.45674467183
           }
         },
         "plate_thickness_width": {
@@ -3294,15 +3292,15 @@
         },
         "upper": {
           "check_margins": {
-            "center_deflection": 2.60612198488e-10,
-            "flat_endcap_bending": 0.451212451894
+            "center_deflection": 4.11277456536e-10,
+            "flat_endcap_bending": 0.490500331863
           },
-          "free_diameter_over_thickness": 21.4332915916,
+          "free_diameter_over_thickness": 21.1489266975,
           "governing_check": "center_deflection",
-          "minimum_target_slack": 2.60612198488e-10,
+          "minimum_target_slack": 4.11277456536e-10,
           "plate_thickness": {
             "unit": "mm",
-            "value": 9.33127789285
+            "value": 9.45674467836
           }
         }
       }
@@ -3815,8 +3813,8 @@
           "Longitudinal end restraint can increase theoretical capacity, and rotational restraint can affect short cylinders; those boundary-condition sensitivities are not credited.",
           "NASA Eq. 28 states sqrt(gamma)=0.75 for Eqs. 23-25; because the source adds the gamma^2 term to Eqs. 20/22 and introduces Eq. 23 as their gamma*Z > 100 reduction, this model applies the same factor inside Eqs. 20/22 at every gamma*Z. gamma=0.90 belongs to Eqs. 26-27; the moderate/long overlap created by the two factors has no selection rule and stays withheld from capacity.",
           "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
-          "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, and recommends linear interpolation in Z for 5 < gamma*Z < 100. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
-          "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. Material strength remains a separate check; the composed cylinder evaluates both stress and buckling.",
+          "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA Rev. 2 permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, states no factor for 5 < gamma*Z < 100, and says linear interpolation in Z between Eqs. 30 and 31 may give satisfactory results there. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
+          "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. The correction imposes no strength limit; material strength is a separate check.",
           "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
           "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
           "elastic_applicability compares applied membrane stress p*r/t with the proportional limit, falling back to yield strength. It sets neither capacity nor margin."
@@ -4535,8 +4533,8 @@
           "Longitudinal end restraint can increase theoretical capacity, and rotational restraint can affect short cylinders; those boundary-condition sensitivities are not credited.",
           "NASA Eq. 28 states sqrt(gamma)=0.75 for Eqs. 23-25; because the source adds the gamma^2 term to Eqs. 20/22 and introduces Eq. 23 as their gamma*Z > 100 reduction, this model applies the same factor inside Eqs. 20/22 at every gamma*Z. gamma=0.90 belongs to Eqs. 26-27; the moderate/long overlap created by the two factors has no selection rule and stays withheld from capacity.",
           "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
-          "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, and recommends linear interpolation in Z for 5 < gamma*Z < 100. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
-          "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. Material strength remains a separate check; the composed cylinder evaluates both stress and buckling.",
+          "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA Rev. 2 permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, states no factor for 5 < gamma*Z < 100, and says linear interpolation in Z between Eqs. 30 and 31 may give satisfactory results there. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
+          "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. The correction imposes no strength limit; material strength is a separate check.",
           "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
           "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
           "elastic_applicability compares applied membrane stress p*r/t with the proportional limit, falling back to yield strength. It sets neither capacity nor margin."
@@ -5255,8 +5253,8 @@
           "Longitudinal end restraint can increase theoretical capacity, and rotational restraint can affect short cylinders; those boundary-condition sensitivities are not credited.",
           "NASA Eq. 28 states sqrt(gamma)=0.75 for Eqs. 23-25; because the source adds the gamma^2 term to Eqs. 20/22 and introduces Eq. 23 as their gamma*Z > 100 reduction, this model applies the same factor inside Eqs. 20/22 at every gamma*Z. gamma=0.90 belongs to Eqs. 26-27; the moderate/long overlap created by the two factors has no selection rule and stays withheld from capacity.",
           "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
-          "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, and recommends linear interpolation in Z for 5 < gamma*Z < 100. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
-          "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. Material strength remains a separate check; the composed cylinder evaluates both stress and buckling.",
+          "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA Rev. 2 permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, states no factor for 5 < gamma*Z < 100, and says linear interpolation in Z between Eqs. 30 and 31 may give satisfactory results there. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
+          "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. The correction imposes no strength limit; material strength is a separate check.",
           "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
           "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
           "elastic_applicability compares applied membrane stress p*r/t with the proportional limit, falling back to yield strength. It sets neither capacity nor margin."
@@ -5975,8 +5973,8 @@
           "Longitudinal end restraint can increase theoretical capacity, and rotational restraint can affect short cylinders; those boundary-condition sensitivities are not credited.",
           "NASA Eq. 28 states sqrt(gamma)=0.75 for Eqs. 23-25; because the source adds the gamma^2 term to Eqs. 20/22 and introduces Eq. 23 as their gamma*Z > 100 reduction, this model applies the same factor inside Eqs. 20/22 at every gamma*Z. gamma=0.90 belongs to Eqs. 26-27; the moderate/long overlap created by the two factors has no selection rule and stays withheld from capacity.",
           "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
-          "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, and recommends linear interpolation in Z for 5 < gamma*Z < 100. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
-          "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. Material strength remains a separate check; the composed cylinder evaluates both stress and buckling.",
+          "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA Rev. 2 permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, states no factor for 5 < gamma*Z < 100, and says linear interpolation in Z between Eqs. 30 and 31 may give satisfactory results there. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
+          "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. The correction imposes no strength limit; material strength is a separate check.",
           "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
           "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
           "elastic_applicability compares applied membrane stress p*r/t with the proportional limit, falling back to yield strength. It sets neither capacity nor margin."
@@ -6695,8 +6693,8 @@
           "Longitudinal end restraint can increase theoretical capacity, and rotational restraint can affect short cylinders; those boundary-condition sensitivities are not credited.",
           "NASA Eq. 28 states sqrt(gamma)=0.75 for Eqs. 23-25; because the source adds the gamma^2 term to Eqs. 20/22 and introduces Eq. 23 as their gamma*Z > 100 reduction, this model applies the same factor inside Eqs. 20/22 at every gamma*Z. gamma=0.90 belongs to Eqs. 26-27; the moderate/long overlap created by the two factors has no selection rule and stays withheld from capacity.",
           "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
-          "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, and recommends linear interpolation in Z for 5 < gamma*Z < 100. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
-          "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. Material strength remains a separate check; the composed cylinder evaluates both stress and buckling.",
+          "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA Rev. 2 permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, states no factor for 5 < gamma*Z < 100, and says linear interpolation in Z between Eqs. 30 and 31 may give satisfactory results there. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
+          "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. The correction imposes no strength limit; material strength is a separate check.",
           "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
           "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
           "elastic_applicability compares applied membrane stress p*r/t with the proportional limit, falling back to yield strength. It sets neither capacity nor margin."
@@ -7415,8 +7413,8 @@
           "Longitudinal end restraint can increase theoretical capacity, and rotational restraint can affect short cylinders; those boundary-condition sensitivities are not credited.",
           "NASA Eq. 28 states sqrt(gamma)=0.75 for Eqs. 23-25; because the source adds the gamma^2 term to Eqs. 20/22 and introduces Eq. 23 as their gamma*Z > 100 reduction, this model applies the same factor inside Eqs. 20/22 at every gamma*Z. gamma=0.90 belongs to Eqs. 26-27; the moderate/long overlap created by the two factors has no selection rule and stays withheld from capacity.",
           "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
-          "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, and recommends linear interpolation in Z for 5 < gamma*Z < 100. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
-          "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. Material strength remains a separate check; the composed cylinder evaluates both stress and buckling.",
+          "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA Rev. 2 permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, states no factor for 5 < gamma*Z < 100, and says linear interpolation in Z between Eqs. 30 and 31 may give satisfactory results there. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
+          "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. The correction imposes no strength limit; material strength is a separate check.",
           "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
           "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
           "elastic_applicability compares applied membrane stress p*r/t with the proportional limit, falling back to yield strength. It sets neither capacity nor margin."
@@ -8135,8 +8133,8 @@
           "Longitudinal end restraint can increase theoretical capacity, and rotational restraint can affect short cylinders; those boundary-condition sensitivities are not credited.",
           "NASA Eq. 28 states sqrt(gamma)=0.75 for Eqs. 23-25; because the source adds the gamma^2 term to Eqs. 20/22 and introduces Eq. 23 as their gamma*Z > 100 reduction, this model applies the same factor inside Eqs. 20/22 at every gamma*Z. gamma=0.90 belongs to Eqs. 26-27; the moderate/long overlap created by the two factors has no selection rule and stays withheld from capacity.",
           "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
-          "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, and recommends linear interpolation in Z for 5 < gamma*Z < 100. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
-          "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. Material strength remains a separate check; the composed cylinder evaluates both stress and buckling.",
+          "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA Rev. 2 permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, states no factor for 5 < gamma*Z < 100, and says linear interpolation in Z between Eqs. 30 and 31 may give satisfactory results there. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
+          "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. The correction imposes no strength limit; material strength is a separate check.",
           "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
           "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
           "elastic_applicability compares applied membrane stress p*r/t with the proportional limit, falling back to yield strength. It sets neither capacity nor margin."
@@ -8855,8 +8853,8 @@
           "Longitudinal end restraint can increase theoretical capacity, and rotational restraint can affect short cylinders; those boundary-condition sensitivities are not credited.",
           "NASA Eq. 28 states sqrt(gamma)=0.75 for Eqs. 23-25; because the source adds the gamma^2 term to Eqs. 20/22 and introduces Eq. 23 as their gamma*Z > 100 reduction, this model applies the same factor inside Eqs. 20/22 at every gamma*Z. gamma=0.90 belongs to Eqs. 26-27; the moderate/long overlap created by the two factors has no selection rule and stays withheld from capacity.",
           "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
-          "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, and recommends linear interpolation in Z for 5 < gamma*Z < 100. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
-          "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. Material strength remains a separate check; the composed cylinder evaluates both stress and buckling.",
+          "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA Rev. 2 permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, states no factor for 5 < gamma*Z < 100, and says linear interpolation in Z between Eqs. 30 and 31 may give satisfactory results there. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
+          "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. The correction imposes no strength limit; material strength is a separate check.",
           "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
           "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
           "elastic_applicability compares applied membrane stress p*r/t with the proportional limit, falling back to yield strength. It sets neither capacity nor margin."
@@ -9575,8 +9573,8 @@
           "Longitudinal end restraint can increase theoretical capacity, and rotational restraint can affect short cylinders; those boundary-condition sensitivities are not credited.",
           "NASA Eq. 28 states sqrt(gamma)=0.75 for Eqs. 23-25; because the source adds the gamma^2 term to Eqs. 20/22 and introduces Eq. 23 as their gamma*Z > 100 reduction, this model applies the same factor inside Eqs. 20/22 at every gamma*Z. gamma=0.90 belongs to Eqs. 26-27; the moderate/long overlap created by the two factors has no selection rule and stays withheld from capacity.",
           "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
-          "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, and recommends linear interpolation in Z for 5 < gamma*Z < 100. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
-          "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. Material strength remains a separate check; the composed cylinder evaluates both stress and buckling.",
+          "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA Rev. 2 permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, states no factor for 5 < gamma*Z < 100, and says linear interpolation in Z between Eqs. 30 and 31 may give satisfactory results there. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
+          "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. The correction imposes no strength limit; material strength is a separate check.",
           "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
           "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
           "elastic_applicability compares applied membrane stress p*r/t with the proportional limit, falling back to yield strength. It sets neither capacity nor margin."
@@ -10295,8 +10293,8 @@
           "Longitudinal end restraint can increase theoretical capacity, and rotational restraint can affect short cylinders; those boundary-condition sensitivities are not credited.",
           "NASA Eq. 28 states sqrt(gamma)=0.75 for Eqs. 23-25; because the source adds the gamma^2 term to Eqs. 20/22 and introduces Eq. 23 as their gamma*Z > 100 reduction, this model applies the same factor inside Eqs. 20/22 at every gamma*Z. gamma=0.90 belongs to Eqs. 26-27; the moderate/long overlap created by the two factors has no selection rule and stays withheld from capacity.",
           "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
-          "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, and recommends linear interpolation in Z for 5 < gamma*Z < 100. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
-          "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. Material strength remains a separate check; the composed cylinder evaluates both stress and buckling.",
+          "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA Rev. 2 permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, states no factor for 5 < gamma*Z < 100, and says linear interpolation in Z between Eqs. 30 and 31 may give satisfactory results there. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
+          "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. The correction imposes no strength limit; material strength is a separate check.",
           "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
           "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
           "elastic_applicability compares applied membrane stress p*r/t with the proportional limit, falling back to yield strength. It sets neither capacity nor margin."
@@ -10740,8 +10738,8 @@
         "Longitudinal end restraint can increase theoretical capacity, and rotational restraint can affect short cylinders; those boundary-condition sensitivities are not credited.",
         "NASA Eq. 28 states sqrt(gamma)=0.75 for Eqs. 23-25; because the source adds the gamma^2 term to Eqs. 20/22 and introduces Eq. 23 as their gamma*Z > 100 reduction, this model applies the same factor inside Eqs. 20/22 at every gamma*Z. gamma=0.90 belongs to Eqs. 26-27; the moderate/long overlap created by the two factors has no selection rule and stays withheld from capacity.",
         "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
-        "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, and recommends linear interpolation in Z for 5 < gamma*Z < 100. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
-        "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. Material strength remains a separate check; the composed cylinder evaluates both stress and buckling.",
+        "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA Rev. 2 permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, states no factor for 5 < gamma*Z < 100, and says linear interpolation in Z between Eqs. 30 and 31 may give satisfactory results there. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
+        "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. The correction imposes no strength limit; material strength is a separate check.",
         "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
         "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
         "elastic_applicability compares applied membrane stress p*r/t with the proportional limit, falling back to yield strength. It sets neither capacity nor margin.",
@@ -11040,8 +11038,8 @@
         "Longitudinal end restraint can increase theoretical capacity, and rotational restraint can affect short cylinders; those boundary-condition sensitivities are not credited.",
         "NASA Eq. 28 states sqrt(gamma)=0.75 for Eqs. 23-25; because the source adds the gamma^2 term to Eqs. 20/22 and introduces Eq. 23 as their gamma*Z > 100 reduction, this model applies the same factor inside Eqs. 20/22 at every gamma*Z. gamma=0.90 belongs to Eqs. 26-27; the moderate/long overlap created by the two factors has no selection rule and stays withheld from capacity.",
         "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
-        "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, and recommends linear interpolation in Z for 5 < gamma*Z < 100. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
-        "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. Material strength remains a separate check; the composed cylinder evaluates both stress and buckling.",
+        "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA Rev. 2 permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, states no factor for 5 < gamma*Z < 100, and says linear interpolation in Z between Eqs. 30 and 31 may give satisfactory results there. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
+        "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. The correction imposes no strength limit; material strength is a separate check.",
         "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
         "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
         "elastic_applicability compares applied membrane stress p*r/t with the proportional limit, falling back to yield strength. It sets neither capacity nor margin."
@@ -11336,8 +11334,8 @@
         "Longitudinal end restraint can increase theoretical capacity, and rotational restraint can affect short cylinders; those boundary-condition sensitivities are not credited.",
         "NASA Eq. 28 states sqrt(gamma)=0.75 for Eqs. 23-25; because the source adds the gamma^2 term to Eqs. 20/22 and introduces Eq. 23 as their gamma*Z > 100 reduction, this model applies the same factor inside Eqs. 20/22 at every gamma*Z. gamma=0.90 belongs to Eqs. 26-27; the moderate/long overlap created by the two factors has no selection rule and stays withheld from capacity.",
         "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
-        "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, and recommends linear interpolation in Z for 5 < gamma*Z < 100. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
-        "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. Material strength remains a separate check; the composed cylinder evaluates both stress and buckling.",
+        "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA Rev. 2 permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, states no factor for 5 < gamma*Z < 100, and says linear interpolation in Z between Eqs. 30 and 31 may give satisfactory results there. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
+        "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. The correction imposes no strength limit; material strength is a separate check.",
         "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
         "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
         "elastic_applicability compares applied membrane stress p*r/t with the proportional limit, falling back to yield strength. It sets neither capacity nor margin."
@@ -11632,8 +11630,8 @@
         "Longitudinal end restraint can increase theoretical capacity, and rotational restraint can affect short cylinders; those boundary-condition sensitivities are not credited.",
         "NASA Eq. 28 states sqrt(gamma)=0.75 for Eqs. 23-25; because the source adds the gamma^2 term to Eqs. 20/22 and introduces Eq. 23 as their gamma*Z > 100 reduction, this model applies the same factor inside Eqs. 20/22 at every gamma*Z. gamma=0.90 belongs to Eqs. 26-27; the moderate/long overlap created by the two factors has no selection rule and stays withheld from capacity.",
         "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
-        "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, and recommends linear interpolation in Z for 5 < gamma*Z < 100. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
-        "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. Material strength remains a separate check; the composed cylinder evaluates both stress and buckling.",
+        "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA Rev. 2 permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, states no factor for 5 < gamma*Z < 100, and says linear interpolation in Z between Eqs. 30 and 31 may give satisfactory results there. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
+        "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. The correction imposes no strength limit; material strength is a separate check.",
         "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
         "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
         "elastic_applicability compares applied membrane stress p*r/t with the proportional limit, falling back to yield strength. It sets neither capacity nor margin."
@@ -11933,8 +11931,8 @@
             "Longitudinal end restraint can increase theoretical capacity, and rotational restraint can affect short cylinders; those boundary-condition sensitivities are not credited.",
             "NASA Eq. 28 states sqrt(gamma)=0.75 for Eqs. 23-25; because the source adds the gamma^2 term to Eqs. 20/22 and introduces Eq. 23 as their gamma*Z > 100 reduction, this model applies the same factor inside Eqs. 20/22 at every gamma*Z. gamma=0.90 belongs to Eqs. 26-27; the moderate/long overlap created by the two factors has no selection rule and stays withheld from capacity.",
             "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
-            "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, and recommends linear interpolation in Z for 5 < gamma*Z < 100. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
-            "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. Material strength remains a separate check; the composed cylinder evaluates both stress and buckling.",
+            "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA Rev. 2 permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, states no factor for 5 < gamma*Z < 100, and says linear interpolation in Z between Eqs. 30 and 31 may give satisfactory results there. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
+            "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. The correction imposes no strength limit; material strength is a separate check.",
             "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
             "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
             "elastic_applicability compares applied membrane stress p*r/t with the proportional limit, falling back to yield strength. It sets neither capacity nor margin."

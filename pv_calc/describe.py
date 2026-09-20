@@ -57,6 +57,7 @@ from pv_calc.hydrostatics import (
     SubmergedMassResult,
 )
 from pv_calc.pressure_vessel import (
+    FLAT_CIRCULAR_PLATE_ENVELOPE_SOURCE,
     FLAT_CIRCULAR_PLATE_MODEL_ID,
     FLAT_CIRCULAR_PLATE_MODEL_VERSION,
     FLAT_CIRCULAR_PLATE_SCOPE_NOTES,
@@ -139,9 +140,25 @@ _RESULT_FIELD_DESCRIPTIONS: dict[str, str] = {
     "deflection_status": (
         "released requires both geometric applicability and governing bending stress"
         " no greater than the supplied material strength. elastic_estimate_material_limit"
-        " retains maximum_deflection_mm as a raw formula value while"
+        " retains the raw formula values while"
         " released_maximum_deflection_mm is null. Geometric violations take precedence"
         " as withheld_applicability."
+    ),
+    "maximum_deflection_mm": (
+        "Kirchhoff center deflection retained as the uncorrected formula value."
+    ),
+    "maximum_deflection_over_thickness": (
+        "Uncorrected Kirchhoff center deflection divided by plate thickness."
+    ),
+    "shear_corrected_deflection_estimate_mm": (
+        "Center deflection including the Reissner transverse-shear term; this becomes"
+        " released_maximum_deflection_mm when the release gates pass."
+    ),
+    "shear_corrected_deflection_estimate_over_thickness": (
+        "Shear-corrected center deflection divided by plate thickness."
+    ),
+    "released_maximum_deflection_mm": (
+        "Shear-corrected center deflection when deflection_status is released; otherwise null."
     ),
     "correlated_critical_pressure_mpa": (
         "Correlated critical pressure. Smooth-cylinder results include any supplied"
@@ -467,7 +484,12 @@ def _describe_model(
         model_id, model_version = FLAT_CIRCULAR_PLATE_MODEL_ID, FLAT_CIRCULAR_PLATE_MODEL_VERSION
         function = "flat_circular_plate"
         module = "pv_calc.pressure_vessel"
-        sources = [FLAT_CIRCULAR_PLATE_SOURCE, MATERIAL_FAILURE_SOURCE, SEAT_BEARING_STRESS_SOURCE]
+        sources = [
+            FLAT_CIRCULAR_PLATE_SOURCE,
+            FLAT_CIRCULAR_PLATE_ENVELOPE_SOURCE,
+            MATERIAL_FAILURE_SOURCE,
+            SEAT_BEARING_STRESS_SOURCE,
+        ]
         assumptions = [
             "Uniform transverse pressure on a flat circular plate.",
             "The declared fixed or simply-supported boundary is an idealization.",
@@ -923,8 +945,8 @@ def _plate_size_contract(
             " margin, and inputs.maximum_deflection is a limit, met at margin"
             " zero. Both margins keep the allowable/actual - 1 form the models"
             " use, the second against the caller's own limit.",
-            "Within the eligible interval, bending stress decreases as"
-            " (free_radius/thickness)^2 and centre deflection as 1/thickness^3."
+            "Within the eligible interval, bending stress and corrected centre deflection"
+            " both decrease monotonically as thickness increases."
             " Monotonicity is checked before a solution is returned.",
             "The two outputs carry separate FEA-derived evidence floors on"
             " free_diameter/thickness, and both are upper limits on thickness,"
@@ -969,7 +991,7 @@ def _plate_size_contract(
             "material selection, mass, and cost: one material is held fixed",
             "any second variable, including the free radius and the edge"
             " condition",
-            "thick-plate shear-deformation bending and large-deflection"
+            "thick-plate shear-deformation stress and large-deflection"
             " membrane action: both are outside the released model, so"
             " thicknesses that need them are refused rather than approximated",
         ],
@@ -977,7 +999,7 @@ def _plate_size_contract(
             "dimension": "length",
             "optional": True,
             "role": (
-                "caller serviceability limit on the released Kirchhoff centre"
+                "caller serviceability limit on the released shear-corrected centre"
                 " deflection; the"
                 f" {PLATE_SIZING_DEFLECTION_CHECK} check is declared only when"
                 " it is supplied, at target margin 0.0, and then requires that"
@@ -1047,8 +1069,9 @@ def _smooth_buckling_size_contract(cli_options: Mapping[str, str]) -> dict[str, 
             " Released tube-stress margins remain visible at the excluded endpoints."
             " The smallest eligible thickness meeting every target is selected; missing"
             " buckling capacities are not inferred.",
-            "Exact Lame tube stress and released buckling are checked at the"
-            " selected thickness. The governing check is calculated from the"
+            "Exact Lame tube stress and eligible buckling margins are checked at the"
+            " selected thickness. Reference-only data retain their qualification"
+            " and cannot pass acceptance. The governing check is calculated from the"
             " material category's own strength and reported rather than assumed.",
         ],
         "command": "pv-calc smooth-buckling size",
@@ -1082,8 +1105,6 @@ def _smooth_buckling_size_contract(cli_options: Mapping[str, str]) -> dict[str, 
             " capacity is released only as an elastic upper bound pending"
             " plasticity: neither carries a sizing capacity, so no thickness"
             " inside them can be selected",
-            "reference-only material data may select a preliminary thickness, but the"
-            " selected check remains indeterminate until qualified data replace it",
         ],
         "load_case": SMOOTH_BUCKLING_SIZING_LOAD_CASE,
         "minimum_margin": {

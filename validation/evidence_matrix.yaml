@@ -69,7 +69,7 @@ models:
       - Service, material, fabrication, temperature, and inspection inputs remain design-use blockers.
 
   - model_id: uniformly_loaded_flat_circular_plate
-    model_version: "4.1.0"
+    model_version: "5.0.0"
     maturity: verified_equation
     completeness: partial
     evidence:
@@ -95,12 +95,14 @@ models:
           validation/fea/results/tube_plate_fea_summary.json, including an 18-solve
           deep-mesh sensitivity study at the floor-adjacent and
           estimate-limiting cases; every compared quantity is
-          mesh-converged, the per-output bending and center-deflection
+          mesh-converged, the bending and shear-corrected center-deflection
           floors hold at every solved Poisson value and no within-budget
           decision changes at the deepest meshes, the fixed-edge
           margin-governing stress is compared through its convergent
-          reaction-moment resultant, and the shear-corrected deflection
-          estimate exceeds the solved deflection at every case
+          reaction-moment resultant. Corrected-deflection error is measured as
+          abs(prediction - FEA) / abs(FEA); its raw 5% floors are D_free/t = 4
+          fixed and 6 simply-supported, with the fixed release floor raised to
+          10 by the retained bending envelope
     important_limitations:
       - >-
         Fixed and simply-supported ideal boundaries only, each realized as
@@ -117,11 +119,11 @@ models:
         0.05 <= poisson_ratio <= 0.35, so those inputs stay withheld rather
         than extrapolated.
       - >-
-        The w <= t/2 small-deflection limit is applied to the shear-corrected
-        deflection estimate. The sweep found that estimate above the solved
-        deflection at every case, for both edges, with a margin that shrinks
-        toward zero at the thinnest solved ratios; that is a measured fact
-        about the solved cases, not a claimed mathematical bound.
+        The released deflection and w <= t/2 gate use the shear-corrected
+        prediction. It stayed within the 5% numerical comparison budget and
+        above the solved deflection over the released solved cases. Neither
+        behavior is claimed as a bound between solved points or beyond the
+        solved D_free/t range.
       - Service, material, fabrication, temperature, and inspection inputs remain design-use blockers.
 
   - model_id: roark_nasa_hemispherical_head_external_pressure
@@ -207,8 +209,13 @@ models:
         source: https://ntrs.nasa.gov/citations/20205011530
         status: NASA correlation data only
       - category: fea
-        source: docs/engineering.md
-        status: not executed
+        source: validation/external_pressure_coverage.md
+        status: >-
+          no qualifying benchmark; exploratory CalculiX eigenvalue runs showed
+          gauge sensitivity, and source review confirmed omitted pressure-load
+          stiffness in the selected buckling procedure. A subsequent procedure
+          including pressure-load stiffness failed the published ring benchmark,
+          so no coverage extension is supported
     important_limitations:
       - The moderate/long factor overlap withholds capacity.
       - Released capacity requires either a source-traceable proportional limit or a
@@ -224,7 +231,7 @@ models:
         A separately reported elastic upper bound may still establish conservative failure
         when it is below demand and the required margin. Neither curve establishes generic
         hoop response across the listed product forms.
-      - The R_mid/t > 10 gate is unchanged; no new thickness-domain evidence was established.
+      - The R_mid/t > 10 gate is unchanged; the exploratory study did not qualify an extension.
       - End-restraint credit and physical validation are absent.
       - UnderPressure 4.60 version-stamped captures remain open.
       - Imperfection, cycling, environment, temperature, product-form, and fabrication inputs remain design-use blockers.
@@ -251,6 +258,10 @@ models:
         status: eigenvalue cases executed and converged, nonlinear open
     important_limitations:
       - Global and inter-ring stability remain advisory.
+      - >-
+        The saved CalculiX eigenvalues omit distributed-pressure load stiffness;
+        their convergence does not validate hydrostatic bifurcation. See
+        validation/fea/README.md.
       - A global capacity whose implied membrane stress exceeds the proportional limit, or
         the yield strength when none is supplied, is labelled an elastic upper bound only;
         NASA sanctions no inelastic correction for the smeared orthotropic mode.

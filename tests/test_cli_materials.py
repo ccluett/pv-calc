@@ -128,6 +128,22 @@ def test_bundled_materials_work_outside_checkout_and_explicit_override_wins(tmp_
     assert _error_payload(missing)["error"]["code"] == "invalid_material_database"
 
 
+@pytest.mark.parametrize(("overrides", "match"), [
+    ({"ramberg_osgood_n": 1.0, "compressive_proof_stress_mpa": 241.0}, "greater than 1"),
+    ({"ramberg_osgood_n": 28.0}, "must be given together"),
+    ({"compressive_proof_stress_mpa": 241.0}, "must be given together"),
+])
+def test_material_records_reject_incomplete_or_flat_curves(
+    overrides: dict[str, float], match: str,
+) -> None:
+    with pytest.raises(ValidationError, match=match):
+        CalcMaterial(
+            source="curve fixture", failure_category="ductile_metal",
+            yield_strength_mpa=241.0, elastic_modulus_mpa=68900.0, poisson_ratio=0.33,
+            **overrides,
+        )
+
+
 def test_generic_7075_uses_the_lowest_documented_common_wrought_floor() -> None:
     request = {
         "schema_version": CALC_SCHEMA_VERSION,

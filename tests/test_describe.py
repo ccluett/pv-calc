@@ -201,6 +201,18 @@ def test_describe_reports_complete_discoverable_contracts() -> None:
 
     plate = json.loads(runner.invoke(app, ["describe", "plate", "--json"]).stdout)
     assert plate["available_operations"] == ["forward", "size"]
+    assert any(
+        "plate_sweep_fea_summary.json" in source
+        for source in plate["source_references"]
+    )
+    plate_fields = plate["output_contract"]["result_json_schema"]["properties"]
+    assert "Kirchhoff" in plate_fields["maximum_deflection_mm"]["description"]
+    assert "Reissner" in plate_fields[
+        "shear_corrected_deflection_estimate_mm"
+    ]["description"]
+    assert "Shear-corrected" in plate_fields[
+        "released_maximum_deflection_mm"
+    ]["description"]
     plate_size = plate["size_contract"]
     assert plate_size["command"] == "pv-calc plate size"
     assert plate_size["varied_input"] == "plate_thickness"

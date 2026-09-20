@@ -19,18 +19,18 @@
 # A design uses the governing code and its own qualified material data.
 #
 # `proportional_limit_mpa` is not a specification minimum: no consulted
-# handbook tabulates one. Al-6061-T6 and Ti-6Al-4V retain historical,
-# curve-derived reference values and complete compressive curves so the tool
-# can produce auditable preliminary estimates. Their
-# `buckling_data_qualification: reference_only` marker prevents those estimates
-# from becoming acceptance capacities: product form, direction, heat treatment,
-# and proof stress still need project qualification. The other metals have no
-# adopted curve or limit. The plastics remain null because their stored
+# handbook tabulates one. Al-6061-T6 and Ti-6Al-4V carry a curve-derived limit
+# and a complete compressive curve, both marked
+# `buckling_data_qualification: reference_only`: the calculation returns an
+# estimate, never an acceptance capacity, because the product form, direction,
+# and proof stress are unqualified for any given part. The other metals have
+# neither a curve nor a limit. The plastics remain null because their stored
 # allowable is a long-term quantity that no elastic-limit criterion attaches
 # to. The brittle record is null because releasing buckling capacity for a
 # flaw-dominated material on an elastic screen would claim more than its data
-# sheet supports. A null limit withholds elastic buckling capacity rather than
-# defaulting to a fraction of yield.
+# sheet supports. A record with neither a proportional limit nor a compressive
+# curve withholds elastic buckling capacity rather than defaulting to a
+# fraction of yield.
 #
 # Units are SI, MPa and kg/m^3. A source stating English units is converted
 # at 1 ksi = 6.894757 MPa, 1 Mpsi = 6894.757 MPa, and
@@ -80,9 +80,7 @@ materials:
       of tension and compression), and estimated 0.33 are nominal values
       from the ASM Aerospace Specification Metals / MatWeb data sheet
       "Aluminum 6061-T6; 6061-T651" (asm.matweb.com). Temperature: room
-      temperature; no elevated-temperature derating is stored. The bundled
-      compression curve and derived proportional limit are reference-only;
-      qualify the actual product form and hoop direction before acceptance.
+      temperature; no elevated-temperature derating is stored.
   Al-7075-T6:
     density_kg_per_m3: 2810
     elastic_modulus_mpa: 71016
@@ -149,9 +147,7 @@ materials:
       ASM Aerospace Specification Metals / MatWeb data sheet "Titanium
       Ti-6Al-4V (Grade 5), Annealed" (asm.matweb.com, bassnum MTP641).
       Temperature: room temperature; no elevated-temperature derating is
-      stored. The bundled longitudinal annealed-extrusion curve and derived
-      proportional limit are reference-only; they do not establish the hoop
-      response of the generic product forms represented here.
+      stored.
   Ti-Grade-2:
     density_kg_per_m3: 4512
     elastic_modulus_mpa: 104800

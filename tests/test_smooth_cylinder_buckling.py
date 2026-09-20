@@ -348,10 +348,20 @@ def test_source_based_thin_tube_and_proportional_limit_gates():
     assert below_limit.margin is None
     assert any("exceeds the supplied proportional limit" in item for item in below_limit.notes)
 
-    # A geometry rejection carries no note claiming a pending release.
+    # Withheld on the geometry gate, the exceedance is one more violation and
+    # the record carries no note claiming a pending release.
     withheld_and_exceeding = _kernel(radius=50.0, proportional_limit=1.0)
     assert withheld_and_exceeding.capacity_status == "withheld_applicability"
     assert any("must be > 10" in item for item in withheld_and_exceeding.validity_violations)
+    assert any(
+        "exceeds the supplied proportional limit" in item
+        for item in withheld_and_exceeding.validity_violations
+    )
+    thick_and_missing_limit = _kernel(radius=50.0, proportional_limit=None)
+    assert any(
+        "needs either proportional_limit_mpa or a complete compressive curve" in item
+        for item in thick_and_missing_limit.validity_violations
+    )
     assert withheld_and_exceeding.correlated_critical_pressure_mpa is None
     assert not any("no compressive curve was supplied" in item for item in withheld_and_exceeding.notes)
 

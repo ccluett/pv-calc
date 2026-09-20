@@ -13,7 +13,8 @@ import typer
 import yaml
 
 from pv_calc.api import _calculate_for_command, calculate
-from pv_calc.presentation import assess_response, render_csv, render_text, summarize_response
+from pv_calc.assessment import assess_response
+from pv_calc.presentation import render_csv, render_text, summarize_response
 from pv_calc.materials import list_materials, show_material
 from pv_calc.cylinder import describe_cylinder
 
@@ -1625,7 +1626,7 @@ def sweep(
     json_output: JsonOutputOption = False,
     output_format: OutputFormatOption = None,
 ) -> None:
-    """Run one forward request over an ordered external-pressure or depth axis."""
+    """Sweep one forward request over pressure, depth, or a geometric dimension."""
     try:
         if input_path is None:
             raise CalcCliError(
@@ -1688,7 +1689,7 @@ def compare_materials(
     json_output: JsonOutputOption = False,
     output_format: OutputFormatOption = None,
 ) -> None:
-    """Run one fixed forward request against an ordered list of named materials."""
+    """Compare a forward or sizing request across an ordered list of named materials."""
     try:
         if input_path is None:
             raise CalcCliError(

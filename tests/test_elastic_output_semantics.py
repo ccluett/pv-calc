@@ -79,4 +79,6 @@ def test_plate_deformation_at_material_limit_stays_released():
     )
     assert result.margin == 0.0
     assert result.deflection_status == "released"
-    assert result.released_maximum_deflection_mm == result.maximum_deflection_mm
+    assert result.released_maximum_deflection_mm == (
+        result.shear_corrected_deflection_estimate_mm
+    )

@@ -181,7 +181,7 @@ def material_capabilities(material: CalcMaterial) -> dict[str, dict[str, Any]]:
     does not promise that a capacity will be released at a particular geometry
     or load, or qualify the reference properties as design allowables. Buckling
     capabilities carry ``buckling_data_qualification`` when the record declares
-    one, so property completeness cannot be mistaken for acceptance eligibility.
+    one.
     """
     strength_field = {
         "ductile_metal": "yield_strength_mpa",

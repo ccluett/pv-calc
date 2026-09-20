@@ -43,7 +43,7 @@ SMOOTH_BUCKLING_SIZE_OPERATION_VERSION = "4.0.0"
 SMOOTH_BUCKLING_SIZING_CHECK_SET: tuple[
     Literal["cylindrical_shell_stress", "smooth_cylinder_buckling"], ...
 ] = (TUBE_SIZING_CHECK, "smooth_cylinder_buckling")
-PLATE_SIZE_OPERATION_VERSION = "2.1.0"
+PLATE_SIZE_OPERATION_VERSION = "3.0.0"
 # The plate's bending failure mode, and the caller's own serviceability limit.
 # The second is declared only when the request carries a maximum deflection.
 PLATE_SIZING_BENDING_CHECK = "flat_endcap_bending"
@@ -211,7 +211,6 @@ class ExplicitTubeMaterialInput(ContractModel):
     type: Literal["explicit"]
     name: NonBlankString | None = None
     provenance: NonBlankString | None = None
-    buckling_data_qualification: BucklingDataQualification = "qualified"
     properties: TubeMaterialProperties
 
 
@@ -220,14 +219,17 @@ class ExplicitPlateMaterialInput(ExplicitTubeMaterialInput):
 
 
 class ExplicitHemisphereMaterialInput(ExplicitTubeMaterialInput):
+    """The record for a model with a buckling capacity to qualify."""
+
+    buckling_data_qualification: BucklingDataQualification = "qualified"
     properties: HemisphereMaterialProperties
 
 
-class ExplicitCylinderMaterialInput(ExplicitTubeMaterialInput):
+class ExplicitCylinderMaterialInput(ExplicitHemisphereMaterialInput):
     properties: CylinderMaterialProperties
 
 
-class ExplicitBucklingMaterialInput(ExplicitTubeMaterialInput):
+class ExplicitBucklingMaterialInput(ExplicitHemisphereMaterialInput):
     properties: BucklingMaterialProperties
 
 
@@ -511,7 +513,18 @@ CylinderMaterial = Annotated[
     NamedMaterialInput | ExplicitCylinderMaterialInput,
     Field(discriminator="type"),
 ]
-ClosureMaterial = Annotated[
+class ExplicitPlateClosureMaterialInput(ExplicitTubeMaterialInput):
+    """A closure plate record: the hemisphere property set that 1.0.0 cylinder
+    requests already supply, without a buckling qualification to carry."""
+
+    properties: HemisphereMaterialProperties
+
+
+PlateClosureMaterial = Annotated[
+    NamedMaterialInput | ExplicitPlateClosureMaterialInput,
+    Field(discriminator="type"),
+]
+HemisphereClosureMaterial = Annotated[
     NamedMaterialInput | ExplicitHemisphereMaterialInput,
     Field(discriminator="type"),
 ]
@@ -525,14 +538,14 @@ class PlateClosure(ContractModel):
     # Accepted for explicit geometry, but must match the cylinder's outer radius.
     outside_radius: Length | None = None
     maximum_deflection: Length | None = None
-    material: ClosureMaterial
+    material: PlateClosureMaterial
 
 
 class HemisphereClosure(ContractModel):
     model: Literal["hemisphere"]
     # Defaults to the cylinder wall and must match it for this butt assembly.
     wall_thickness: Length | None = None
-    material: ClosureMaterial
+    material: HemisphereClosureMaterial
 
 
 Closure = Annotated[PlateClosure | HemisphereClosure, Field(discriminator="model")]

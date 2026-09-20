@@ -41,13 +41,7 @@ q = 10 => x = 19/21 => P/sigma_y = 80/(441 sqrt(3)) = 0.1047347427
 
 Here P is the design pressure multiplied by one plus any required margin.
 The q > 10 gate excludes the boundary itself and every stress-compliant wall
-at greater pressure. For a record without a complete compressive curve, an
-additional necessary bound follows from elastic release:
-
-```text
-P_cr >= P_target,   P_cr q <= sigma_proportional,   q > 10
-                => P_target < sigma_proportional / 10
-```
+at greater pressure.
 
 | Material | Yield, MPa | Yield/geometric boundary depth, m |
 |---|---:|---:|
@@ -59,6 +53,14 @@ P_cr >= P_target,   P_cr q <= sigma_proportional,   q > 10
 | SS-2507 | 552 | 3756.106 |
 | Ti-6Al-4V | 827 | 5627.355 |
 
+For a record without a complete compressive curve, an
+additional necessary bound follows from elastic release:
+
+```text
+P_cr >= P_target,   P_cr q <= sigma_proportional,   q > 10
+                => P_target < sigma_proportional / 10
+```
+
 The bundled generic Al-6061-T6 and Ti-6Al-4V records retain historical curves
 as reference-only data. They can produce a corrected numerical estimate and
 drive exploratory sizing, but their `released_unqualified_material` status
@@ -66,8 +68,7 @@ cannot pass acceptance. A separately retained elastic upper bound can still
 establish conservative failure when it falls below demand and the required
 margin. The other five metals carry neither a proportional limit nor a
 compressive curve. Qualified limits and curves can be supplied explicitly or
-through a deliberately scoped custom record. The correction remains inside the
-same geometric domain.
+through a custom record scoped to the part.
 
 ## The q > 10 geometric cutoff
 
@@ -80,9 +81,9 @@ q >= 4.5 because D_o/t = 2q+1; the current gate corresponds to D_o/t > 21.
 UG-28's own geometry and material charts cannot establish applicability of
 NASA's equations. ASME BPVC Section VIII, Division 1 (2025), UG-28, pp. 24-26.
 
-The model retains q > 10 and includes no thick-shell formulation, FEA evidence,
-collapse analysis, or physical validation. The material correction therefore
-establishes no new thickness coverage for the five housings above.
+The model retains q > 10 and has no thick-shell capacity, collapse analysis, or
+physical validation. The material correction therefore establishes no new
+thickness coverage for the five housings above.
 
 At q = 10.05 the composition reports these when supplied the illustrative
 titanium curve assumption (n = 21 anchored at 827 MPa) explicitly:
@@ -97,11 +98,10 @@ status; the assessment capacity remains unset. In the 16-inch row, the corrected
 estimate falls below both the elastic estimate and first yield; a simple minimum
 of the two uncorrected limits would give a different result.
 
-Within the implemented correlation, a plasticity reduction <= 1 cannot make an
-elastic estimate below demand pass. Both cases still fail; the stress check
-already established that.
+A plasticity factor <= 1 cannot make an elastic estimate below demand pass,
+and both cases fail on stress regardless.
 
-The material-source claims were checked against the actual handbook pages:
+The material-source claims were checked against the handbook pages:
 
 | MIL-HDBK-5J location | Verified content |
 |---|---|
@@ -119,6 +119,41 @@ These product and directional distinctions prevent treating any one curve as
 a universal alloy property. The generic aluminium record therefore does not
 adopt the LT-extrusion curve, and the generic titanium record does not adopt the
 longitudinal-extrusion curve, for unspecified hoop compression and product
-forms. The values above are an explicit illustrative assumption whose
-substitutions remain unverified. Source: MIL-HDBK-5J (31 January 2003), cited
-locations above.
+forms. The values above are an illustrative assumption whose substitutions
+remain unverified (MIL-HDBK-5J, 31 January 2003).
+
+## Elastic benchmark attempt
+
+A four-point continuum benchmark was specified at q values 9.313422, 10.0,
+10.5, and 20.0, with three mesh levels and separate outer-radius and NASA
+mid-surface load resultants. The target was an 8 in OD, 609.6 mm long cylinder
+with E = 113800 MPa and nu = 0.34. The comparison limits were 2% finest-mesh
+change and 5% absolute NASA error relative to FEA. It was stopped after the
+target case exposed two limitations.
+
+First, a one-node rigid-motion gauge produced a lower, mesh-sensitive `n = 1`
+mode. A symmetric mean-displacement gauge recovered a degenerate `n = 2` pair,
+but the spectrum's gauge sensitivity prevents treating that result as a unique
+physical eigenproblem. At `q = 9.313422`, the first two C3D20 meshes gave
+64.17199 and 63.73910 MPa for that `n = 2` branch, compared with the unadjusted
+NASA value 63.75088 MPa. These values are diagnostic only.
+
+More decisively, CalculiX 2.20 `*BUCKLE` uses the pressure load to establish the
+reference stress but omits the distributed-pressure load tangent from the
+eigenmatrix. This was verified in the Debian 2.20-1 source:
+[`arpackbu.c`](https://sources.debian.org/src/calculix-ccx/2.20-1/ccx_2.20/src/arpackbu.c/)
+selects the buckling matrix, while the distributed-load block in
+[`e_c3d.f`](https://sources.debian.org/src/calculix-ccx/2.20-1/ccx_2.20/src/e_c3d.f/)
+is excluded when `buckling == 1`. The matching
+[upstream source archive](https://www.dhondt.de/ccx_2.20.src.tar.bz2) has SHA-256
+`63bf6ea09e7edcae93e0145b1bb0579ea7ae82e046f6075a27c8145b72761bcf`.
+
+The partial comparison therefore cannot validate NASA's pressure-bifurcation
+prediction or the current geometric cutoff. No runner or result artifact is
+retained, and `q > 10` remains unchanged. A future study needs a verified
+pressure-load tangent, matched closure and end restraints, and evidence for
+imperfections and material nonlinearity before it can address vessel collapse.
+
+A separate [procedure qualification](sources/cylinder_solver_qualification.md)
+tested a procedure that includes pressure-load stiffness. It failed the
+published benchmark, and the four-point comparison remains unrun.

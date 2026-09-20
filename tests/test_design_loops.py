@@ -268,7 +268,8 @@ def test_plate_stock_uses_bending_and_deflection_at_each_stock_size() -> None:
     request["inputs"]["stock_thicknesses"] = [q(15), q(1), q(9.5), q(9)]
     result = evaluate_size(request)
     rows = result["sizing"]["stock_candidates"]
-    assert rows[0]["outcome"] == "unavailable"
+    # D_free/t = 13.33 is now inside the fixed corrected-deflection envelope.
+    assert rows[0]["outcome"] == "meets_targets"
     assert rows[1]["outcome"] in {"unavailable", "fails_targets"}
     assert result["sizing"]["selected_plate_thickness"] == q(9.5)
     assert set(result["sizing"]["selected_check_margins"]) == {"flat_endcap_bending", "center_deflection"}

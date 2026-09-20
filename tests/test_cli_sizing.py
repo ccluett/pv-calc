@@ -1300,12 +1300,7 @@ def _forward_plate_result(
 
 
 def test_plate_size_bending_governed_matches_independent_forward_runs() -> None:
-    """No deflection limit: bending alone decides, and its own floor alone gates.
-
-    The upper bound sits at ``D_free/t = 16.67``, below the fixed-edge
-    centre-deflection floor of 20 and above the bending floor of 10, so this
-    also shows that the unneeded output's stricter floor decides nothing.
-    """
+    """No deflection limit: bending alone decides."""
     result = runner.invoke(
         app,
         _plate_size_args(lower="6 mm", upper="12 mm", minimum_margin="0.25"),
@@ -1316,7 +1311,7 @@ def test_plate_size_bending_governed_matches_independent_forward_runs() -> None:
     sizing = payload["sizing"]
     assert payload["model"] == "plate"
     assert payload["operation"] == "size"
-    assert sizing["operation_version"] == "2.1.0"
+    assert sizing["operation_version"] == "3.0.0"
     assert sizing["solution_type"] == "interior_root"
     assert sizing["declared_check_set"] == ["flat_endcap_bending"]
     assert sizing["check_targets"] == {"flat_endcap_bending": 0.25}
@@ -1330,11 +1325,6 @@ def test_plate_size_bending_governed_matches_independent_forward_runs() -> None:
     assert sizing["selected_check_margins"] == {
         "flat_endcap_bending": forward["result"]["margin"]
     }
-    # The upper bound's deflection is withheld and was not needed.
-    withheld = _forward_plate_result(plate_thickness_mm=12.0)
-    assert withheld["result"]["deflection_status"] == "withheld_applicability"
-    assert withheld["result"]["validity_violations"] == []
-
     bracket = sizing["verified_bracket"]
     assert bracket["upper"]["plate_thickness"] == sizing["selected_plate_thickness"]
     assert bracket["lower"]["minimum_target_slack"] < 0.0 <= (
@@ -1409,8 +1399,34 @@ def test_plate_size_deflection_governed_matches_independent_forward_runs() -> No
     )
 
 
+def test_plate_size_uses_new_fixed_corrected_deflection_band() -> None:
+    result = runner.invoke(
+        app,
+        _plate_size_args(
+            lower="10 mm",
+            upper="20 mm",
+            maximum_deflection="0.16 mm",
+        ),
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.stdout)
+    selected = payload["sizing"]["selected_plate_thickness"]["value"]
+    forward = payload["result"]
+
+    # The former Kirchhoff release floor required D_free/t >= 20. This root is
+    # in the newly qualified 10 <= D_free/t < 20 fixed-edge band.
+    assert 10.0 < selected < 20.0
+    assert 10.0 <= forward["free_diameter_over_thickness"] < 20.0
+    assert forward["deflection_status"] == "released"
+    assert forward["released_maximum_deflection_mm"]["value"] <= 0.16
+    assert forward["released_maximum_deflection_mm"] == (
+        forward["shear_corrected_deflection_estimate_mm"]
+    )
+    assert forward["maximum_deflection_mm"]["value"] < 0.16
+
+
 def test_plate_size_reports_a_governing_constraint_change() -> None:
-    """Bending goes as t^2 and deflection as t^3, so which binds can change."""
+    """Bending and corrected deflection scale differently, so which binds can change."""
     result = runner.invoke(
         app,
         _plate_size_args(lower="7 mm", upper="9 mm", maximum_deflection="1.0 mm"),
@@ -1434,8 +1450,7 @@ def test_plate_size_reports_a_governing_constraint_change() -> None:
 
 def test_plate_size_searches_between_applicability_limits() -> None:
     """Withheld bounds do not hide the released band between them."""
-    # The same bounds that solved above, now with a deflection limit: the
-    # upper bound is past the fixed-edge centre-deflection floor of 20.
+    # The same bounds that solved above, now with a deflection limit.
     deflection_floor = runner.invoke(
         app,
         _plate_size_args(
@@ -1453,7 +1468,7 @@ def test_plate_size_searches_between_applicability_limits() -> None:
     assert payload["sizing"]["selected_minimum_target_slack"] >= 0.0
     assert payload["sizing"]["selection_scope"] == "model_eligible_thicknesses"
 
-    # A simply-supported plate has a deflection floor of 10, so the same
+    # A simply-supported plate has a deflection floor of 6, so the same
     # request over the same ratios is answerable for that edge.
     simply_supported = runner.invoke(
         app,
@@ -1580,9 +1595,22 @@ def test_plate_size_excludes_material_and_applicability_limits_before_sizing_def
     assert result.exit_code == 0, result.output
     payload = json.loads(result.stdout)
     metadata = payload["sizing"]
-    # Independent Kirchhoff deflection inversion; this limit controls over
-    # the bending thickness and the two lower applicability limits.
-    expected = (3.0 * (1.0 - 0.3**2) / 16.0 * 2.0 * 100.0**4 / (70000.0 * 0.6))**(1.0 / 3.0)
+    # Independent inversion of w = A/t^3 + B/t for the corrected prediction.
+    modulus = 70_000.0
+    poisson = 0.3
+    radius = 100.0
+    pressure = 2.0
+    rigidity_term = 3.0 * (1.0 - poisson**2) / 16.0 * pressure * radius**4 / modulus
+    shear_modulus = modulus / (2.0 * (1.0 + poisson))
+    shear_term = pressure * radius**2 / (4.0 * (5.0 / 6.0) * shear_modulus)
+    low, high = 4.0, 30.0
+    for _ in range(100):
+        mid = (low + high) / 2.0
+        if rigidity_term / mid**3 + shear_term / mid > 0.6:
+            low = mid
+        else:
+            high = mid
+    expected = high
     assert metadata["selected_plate_thickness"]["value"] == pytest.approx(expected, abs=3e-8)
     assert payload["result"]["bending_status"] == "released"
     assert payload["result"]["deflection_status"] == "released"
