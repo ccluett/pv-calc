@@ -154,3 +154,8 @@ prediction or the current geometric cutoff. No runner or result artifact is
 retained, and `q > 10` remains unchanged. A future study needs a verified
 pressure-load tangent, matched closure and end restraints, and evidence for
 imperfections and material nonlinearity before it can address vessel collapse.
+
+The separate [20 September procedure qualification](sources/cylinder_solver_qualification.md)
+tested an existing procedure that includes pressure-load stiffness. It failed
+the published benchmark, so the investigation is closed and the four-point
+comparison remains unrun.

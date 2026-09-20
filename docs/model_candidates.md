@@ -18,8 +18,9 @@ the raw Kirchhoff fields remain available.
 found gauge sensitivity and an omitted pressure-load stiffness term in the
 selected solver's buckling procedure. It supplies no qualifying evidence for
 an extension; the [coverage record](../validation/external_pressure_coverage.md)
-documents the source check and requirements for a future comparison. No new
-cylinder model or benchmark runner is added.
+documents the source check. That attempt added no cylinder model or benchmark
+runner. The subsequent [procedure qualification](../validation/sources/cylinder_solver_qualification.md)
+also failed; its focused benchmark is retained for reproducibility.
 
 Each addition needs a currently wrong or unavailable answer, the proposed
 improvement, and evidence that supports it. These tasks introduce no generic

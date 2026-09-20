@@ -78,11 +78,20 @@ capability and must remain open unless a separately approved continuation
 solver is added. A load-controlled nonlinear run will not be relabeled as a
 limit-point analysis.
 
-The CalculiX 2.20 `*BUCKLE` path used here omits distributed-pressure load
+The CalculiX 2.20 `*BUCKLE` path used for the ring comparisons omits pressure-load
 stiffness, as the [cylinder coverage source review](../external_pressure_coverage.md)
 establishes. This also limits the existing ring eigenvalue comparisons:
 mesh convergence of this stress-stiffness problem does not validate hydrostatic
 bifurcation. The static tube and plate comparisons are unaffected.
+
+The separate [procedure qualification](../sources/cylinder_solver_qualification.md)
+tests a native prestressed-frequency procedure that includes pressure-load
+stiffness. It fails the published reference and supplies no coverage extension.
+The [saved comparison](results/pressure_ring_qualification.json) is reproducible:
+
+```console
+uv run python validation/fea/pressure_ring_qualification.py --work-directory /tmp/pv-calc-pressure-ring --output /tmp/pressure_ring_qualification.json
+```
 
 ## Acceptance limits fixed before result comparison
 

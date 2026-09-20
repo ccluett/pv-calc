@@ -213,7 +213,9 @@ models:
         status: >-
           no qualifying benchmark; exploratory CalculiX eigenvalue runs showed
           gauge sensitivity, and source review confirmed omitted pressure-load
-          stiffness in the selected buckling procedure
+          stiffness in the selected buckling procedure. A subsequent procedure
+          including pressure-load stiffness failed the published ring benchmark;
+          the investigation is closed without a coverage extension
     important_limitations:
       - The moderate/long factor overlap withholds capacity.
       - Released capacity requires either a source-traceable proportional limit or a
