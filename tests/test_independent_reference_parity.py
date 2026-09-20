@@ -826,11 +826,35 @@ def _assert_plate_parity(
     assert [item.replace("_mm", "") for item in released.validity_violations] == (
         independent["validity_violations"]
     )
-    # The pinned oracle's deflection policy checked geometry only. Keep its
-    # equation values unchanged and check the current material-limit policy
-    # against its independently calculated bending stress.
-    expected_status = independent["deflection_status"]
-    expected_deflection_violations = list(independent["deflection_validity_violations"])
+    # The pinned oracle keeps the historical Kirchhoff release floors. Build
+    # the current corrected-deflection release policy from its independent raw
+    # values without changing that hash-pinned artifact.
+    deflection_floor = FLAT_CIRCULAR_PLATE_DEFLECTION_MINIMUM_RATIO[
+        boundary_condition
+    ]
+    expected_deflection_violations: list[str] = []
+    if independent["free_diameter_over_thickness"] < deflection_floor:
+        expected_deflection_violations.append(
+            f"free_diameter / plate_thickness is below {deflection_floor}, "
+            f"the {boundary_condition} center-deflection evidence floor"
+        )
+    poisson_low, poisson_high = FLAT_CIRCULAR_PLATE_POISSON_EVIDENCE_BAND
+    if not poisson_low <= poisson_ratio <= poisson_high:
+        expected_deflection_violations.append(
+            "poisson_ratio is outside the swept evidence band "
+            f"{poisson_low} <= poisson_ratio <= {poisson_high}"
+        )
+    if (
+        independent["shear_corrected_deflection_estimate"]
+        > independent["plate_thickness"] / 2.0
+    ):
+        expected_deflection_violations.append(
+            "shear_corrected_deflection_estimate exceeds plate_thickness / 2, "
+            "the small-deflection limit"
+        )
+    expected_status = (
+        "withheld_applicability" if expected_deflection_violations else "released"
+    )
     if independent["governing_bending_stress"] > yield_strength_mpa:
         expected_deflection_violations.append(
             "governing bending stress exceeds the supplied material strength; "
@@ -845,7 +869,7 @@ def _assert_plate_parity(
     if expected_status == "released":
         _assert_reference_close(
             released.released_maximum_deflection_mm,
-            independent["maximum_deflection"],
+            independent["shear_corrected_deflection_estimate"],
         )
     else:
         assert released.released_maximum_deflection_mm is None
@@ -863,7 +887,7 @@ def _assert_plate_parity(
     )
     assert (
         released.deflection_minimum_free_diameter_over_thickness
-        == independent["deflection_minimum_free_diameter_over_thickness"]
+        == FLAT_CIRCULAR_PLATE_DEFLECTION_MINIMUM_RATIO[boundary_condition]
     )
     for actual, key in (
         (released.free_diameter_mm, "free_diameter"),
@@ -2070,6 +2094,7 @@ def test_plate_sweep_grounds_the_released_validity_envelope() -> None:
     budget = tolerances["kirchhoff_agreement_budget"]
     recomputed_budget_flags: dict[tuple[str, str, float, float], bool] = {}
     recomputed_errors: dict[tuple[str, str, float, float], float] = {}
+    corrected_deflection_errors: dict[tuple[str, float, float], float] = {}
     estimate_residuals: dict[tuple[str, float, float], float] = {}
     kirchhoff_targets: dict[tuple[str, float, float], dict[str, float]] = {}
     for (ratio, poisson), case in sorted(cases.items()):
@@ -2223,15 +2248,13 @@ def test_plate_sweep_grounds_the_released_validity_envelope() -> None:
             estimate_residuals[(boundary, ratio, poisson)] = (
                 fea_deflection / predicted - 1.0
             )
+            corrected_deflection_errors[(boundary, ratio, poisson)] = abs(
+                predicted - fea_deflection
+            ) / abs(fea_deflection)
 
-    # Floors re-derived from the recomputed budget flags alone, and the
-    # production constants must equal the stored band floors.
-    production_floors = {
-        "bending": FLAT_CIRCULAR_PLATE_BENDING_MINIMUM_RATIO,
-        "deflection": FLAT_CIRCULAR_PLATE_DEFLECTION_MINIMUM_RATIO,
-    }
+    # Preserve and reconstruct the artifact's historical Kirchhoff floors.
     for boundary in ("fixed", "simply_supported"):
-        for output, production in production_floors.items():
+        for output in ("bending", "deflection"):
             stored = summary["derived_validity_floors"][boundary][output]
             per_poisson: dict[str, float | None] = {}
             for poisson in poisson_grid:
@@ -2252,7 +2275,51 @@ def test_plate_sweep_grounds_the_released_validity_envelope() -> None:
                 else max(value for value in band_values if value is not None)
             )
             assert stored["band_floor"] == band_floor
-            assert production[boundary] == band_floor
+            if output == "bending":
+                assert FLAT_CIRCULAR_PLATE_BENDING_MINIMUM_RATIO[boundary] == band_floor
+
+    # The current released value is the shear-corrected prediction. Derive its
+    # floor with the declared prediction-relative-to-FEA denominator, then
+    # retain the independently qualified bending floor.
+    corrected_floors: dict[str, float] = {}
+    for boundary in ("fixed", "simply_supported"):
+        per_poisson = []
+        for poisson in poisson_grid:
+            floor = next(
+                candidate
+                for index, candidate in enumerate(ratio_grid)
+                if all(
+                    corrected_deflection_errors[(boundary, ratio, poisson)]
+                    <= budget
+                    for ratio in ratio_grid[index:]
+                )
+            )
+            per_poisson.append(floor)
+        corrected_floors[boundary] = max(per_poisson)
+    assert corrected_floors == {"fixed": 4.0, "simply_supported": 6.0}
+    assert FLAT_CIRCULAR_PLATE_DEFLECTION_MINIMUM_RATIO == {
+        boundary: max(
+            corrected_floors[boundary],
+            FLAT_CIRCULAR_PLATE_BENDING_MINIMUM_RATIO[boundary],
+        )
+        for boundary in corrected_floors
+    }
+    assert corrected_deflection_errors[("simply_supported", 4.0, 0.35)] == (
+        pytest.approx(0.05446447649735382, rel=1.0e-12)
+    )
+    released_maxima = {
+        boundary: max(
+            error
+            for (error_boundary, ratio, _), error in corrected_deflection_errors.items()
+            if error_boundary == boundary
+            and ratio >= FLAT_CIRCULAR_PLATE_DEFLECTION_MINIMUM_RATIO[boundary]
+        )
+        for boundary in corrected_floors
+    }
+    assert released_maxima == {
+        "fixed": pytest.approx(0.013886684216908134, rel=1.0e-12),
+        "simply_supported": pytest.approx(0.026756438558743222, rel=1.0e-12),
+    }
     assert summary["source_inputs"]["poisson_evidence_band"] == list(
         FLAT_CIRCULAR_PLATE_POISSON_EVIDENCE_BAND
     )
@@ -2275,6 +2342,17 @@ def test_plate_sweep_grounds_the_released_validity_envelope() -> None:
                     thicker >= thinner
                     for thicker, thinner in zip(errors, errors[1:], strict=False)
                 ), (boundary, quantity, poisson, errors)
+        for poisson in poisson_grid:
+            corrected_errors = [
+                corrected_deflection_errors[(boundary, ratio, poisson)]
+                for ratio in ratio_grid
+            ]
+            assert all(
+                thicker >= thinner
+                for thicker, thinner in zip(
+                    corrected_errors, corrected_errors[1:], strict=False
+                )
+            ), (boundary, "corrected_deflection", poisson, corrected_errors)
 
     # The shear-corrected estimate summary, re-derived from the per-case
     # residuals.  Production's small-deflection gate reads this estimate, and
@@ -2398,9 +2476,18 @@ def test_plate_sweep_grounds_the_released_validity_envelope() -> None:
         )
         assert point["budget_decisions_unchanged_at_deepest"] == decisions_unchanged
         all_decisions_unchanged.append(decisions_unchanged)
+        predicted_deflection = case_entry["shear_corrected"][
+            "predicted_center_deflection_mm"
+        ]
+        deepest_deflection = point["quantities"]["center_deflection_mm"]["deepest"]
+        if ratio >= FLAT_CIRCULAR_PLATE_DEFLECTION_MINIMUM_RATIO[boundary]:
+            assert (
+                abs(predicted_deflection - deepest_deflection)
+                / abs(deepest_deflection)
+                <= budget
+            )
         estimate_exceeds = (
-            case_entry["shear_corrected"]["predicted_center_deflection_mm"]
-            >= point["quantities"]["center_deflection_mm"]["deepest"]
+            predicted_deflection >= deepest_deflection
         )
         assert (
             point["shear_corrected_estimate_exceeds_deepest_deflection"]

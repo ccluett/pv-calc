@@ -142,12 +142,28 @@ def test_plate_deflection_and_transverse_shear_match_independent_equations() -> 
     expected_simply_supported_deflection = expected_fixed_deflection * (
         (5.0 + poisson_ratio) / (1.0 + poisson_ratio)
     )
+    shear_modulus = elastic_modulus / (2.0 * (1.0 + poisson_ratio))
+    expected_shear_increment = pressure * radius**2 / (
+        4.0 * (5.0 / 6.0) * shear_modulus * thickness
+    )
     expected_shear = pressure * (2.0 * radius) / (4.0 * thickness)
 
     assert fixed.flexural_rigidity_n_mm == pytest.approx(rigidity)
     assert fixed.maximum_deflection_mm == pytest.approx(expected_fixed_deflection)
     assert simply_supported.maximum_deflection_mm == pytest.approx(
         expected_simply_supported_deflection
+    )
+    assert fixed.shear_corrected_deflection_estimate_mm == pytest.approx(
+        expected_fixed_deflection + expected_shear_increment
+    )
+    assert simply_supported.shear_corrected_deflection_estimate_mm == pytest.approx(
+        expected_simply_supported_deflection + expected_shear_increment
+    )
+    assert fixed.released_maximum_deflection_mm == pytest.approx(
+        expected_fixed_deflection + expected_shear_increment
+    )
+    assert simply_supported.released_maximum_deflection_mm == pytest.approx(
+        expected_simply_supported_deflection + expected_shear_increment
     )
     assert fixed.transverse_shear_stress_mpa == pytest.approx(expected_shear)
     assert simply_supported.transverse_shear_stress_mpa == pytest.approx(expected_shear)
@@ -193,11 +209,7 @@ def test_plate_validity_envelope_is_reported_by_typed_result() -> None:
     assert large_deflection.margin is None
 
 
-def test_bending_and_deflection_carry_separate_evidence_floors() -> None:
-    # Swept CAX8R evidence: at D_free/t = 4 the mesh-converged result stays
-    # within a few percent of a simply-supported plate's Kirchhoff center
-    # stress but exceeds its Kirchhoff center deflection by roughly a
-    # quarter, so the two outputs are released independently.
+def test_bending_and_corrected_deflection_carry_separate_evidence_floors() -> None:
     common = {
         "external_pressure_mpa": 1.0,
         "free_radius_mm": 50.0,
@@ -210,23 +222,33 @@ def test_bending_and_deflection_carry_separate_evidence_floors() -> None:
         **common, plate_thickness_mm=25.0, boundary_condition="simply_supported"
     )
     assert thick.bending_minimum_free_diameter_over_thickness == 4.0
-    assert thick.deflection_minimum_free_diameter_over_thickness == 10.0
+    assert thick.deflection_minimum_free_diameter_over_thickness == 6.0
     # Bending released, deflection withheld, at one geometry.
     assert not thick.validity_violations
     assert thick.deflection_status == "withheld_applicability"
     assert thick.released_maximum_deflection_mm is None
     assert thick.maximum_deflection_mm > 0.0
     assert thick.deflection_validity_violations == (
-        "free_diameter_mm / plate_thickness_mm is below 10.0, "
+        "free_diameter_mm / plate_thickness_mm is below 6.0, "
         "the simply_supported center-deflection evidence floor",
     )
 
-    thin = flat_circular_plate(
-        **common, plate_thickness_mm=10.0, boundary_condition="simply_supported"
+    at_supported_floor = flat_circular_plate(
+        **common,
+        plate_thickness_mm=100.0 / 6.0,
+        boundary_condition="simply_supported",
     )
-    assert thin.deflection_status == "released"
-    assert thin.released_maximum_deflection_mm == thin.maximum_deflection_mm
-    assert thin.deflection_validity_violations == ()
+    assert at_supported_floor.deflection_status == "released"
+    assert at_supported_floor.released_maximum_deflection_mm == (
+        at_supported_floor.shear_corrected_deflection_estimate_mm
+    )
+    assert at_supported_floor.deflection_validity_violations == ()
+    below_supported_floor = flat_circular_plate(
+        **common,
+        plate_thickness_mm=100.0 / 6.0 + 1.0e-4,
+        boundary_condition="simply_supported",
+    )
+    assert below_supported_floor.deflection_status == "withheld_applicability"
 
     # The simply-supported bending floor sits at D_free/t = 4: released at
     # the floor (the thick case above), withheld just below it.
@@ -238,23 +260,21 @@ def test_bending_and_deflection_carry_separate_evidence_floors() -> None:
         "the simply_supported bending-stress evidence floor",
     )
 
-    # A fixed edge carries the stricter floors from the same evidence.
+    # Fixed corrected deflection is accurate from D/t = 4, but its existing
+    # bending envelope keeps the released result at D/t >= 10.
     fixed = flat_circular_plate(
         **common, plate_thickness_mm=10.0, boundary_condition="fixed"
     )
     assert fixed.bending_minimum_free_diameter_over_thickness == 10.0
-    assert fixed.deflection_minimum_free_diameter_over_thickness == 20.0
+    assert fixed.deflection_minimum_free_diameter_over_thickness == 10.0
     assert not fixed.validity_violations
-    assert fixed.deflection_status == "withheld_applicability"
-
-    # And its deflection floor sits at D_free/t = 20: released at the floor,
-    # withheld just below it.
-    fixed_at_deflection_floor = flat_circular_plate(
-        **common, plate_thickness_mm=5.0, boundary_condition="fixed"
+    assert fixed.deflection_status == "released"
+    assert fixed.released_maximum_deflection_mm == (
+        fixed.shear_corrected_deflection_estimate_mm
     )
-    assert fixed_at_deflection_floor.deflection_status == "released"
+
     fixed_below_deflection_floor = flat_circular_plate(
-        **common, plate_thickness_mm=5.0001, boundary_condition="fixed"
+        **common, plate_thickness_mm=10.0001, boundary_condition="fixed"
     )
     assert fixed_below_deflection_floor.deflection_status == "withheld_applicability"
 

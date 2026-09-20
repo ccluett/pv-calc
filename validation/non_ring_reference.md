@@ -73,15 +73,12 @@ an elastic pressure estimate when plasticity is pending. Tests continue to
 check that pressure and its historical ratio, while requiring current
 production to report a usable margin only for `capacity_status="released"`.
 
-The pinned plate reference predates `elastic_estimate_material_limit`: its
-deflection status tests geometry only. Plate parity therefore compares the
-raw stresses and deflections unchanged, then checks current release policy
-separately using the reference's governing bending stress and the supplied
-strength. Above that strength, production retains the formula value and
-withholds the released deflection; geometric violations still take status
-precedence. Tests cover either side of the material limit, equality, and
-combined material and geometric violations. The historical oracle and FEA
-hashes remain unchanged.
+The pinned plate reference predates the corrected-deflection release and
+`elastic_estimate_material_limit`. Plate parity compares its raw Kirchhoff and
+shear-corrected values unchanged, then checks current floors and release policy
+separately. Production releases the corrected value only inside the qualified
+geometry with bending stress no greater than the supplied strength. The
+historical oracle and FEA hashes remain unchanged.
 
 The inspected external PDFs are not vendored:
 

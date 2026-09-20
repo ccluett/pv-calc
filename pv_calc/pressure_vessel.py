@@ -92,8 +92,8 @@ FLAT_CIRCULAR_PLATE_SOURCE = (
     "Roark's Formulas for Stress and Strain, 6th ed., Table 24 cases 10a-10b, p. 429; "
     "transverse shear is the average on the support perimeter from equilibrium, "
     "tau = p * D_free / (4 * t), the pressure load over the free area divided by the "
-    "cylindrical area pi * D_free * t it crosses; the small-deflection gate's shear-corrected "
-    "deflection estimate uses kappa = 5/6 from Reissner, J. Appl. Mech. 12 (1945) A69-A77"
+    "cylindrical area pi * D_free * t it crosses; the released center deflection adds the "
+    "Reissner transverse-shear term with kappa = 5/6, J. Appl. Mech. 12 (1945) A69-A77"
 )
 SEAT_BEARING_STRESS_SOURCE = (
     "Equilibrium on the flat annular seat: the total pressure load on the closure's outside "
@@ -223,37 +223,29 @@ HEMISPHERE_SCOPE_NOTES = (
 )
 
 FLAT_CIRCULAR_PLATE_MODEL_ID = "uniformly_loaded_flat_circular_plate"
-FLAT_CIRCULAR_PLATE_MODEL_VERSION = "4.1.0"
+FLAT_CIRCULAR_PLATE_MODEL_VERSION = "5.0.0"
 
 FLAT_CIRCULAR_PLATE_ENVELOPE_SOURCE = (
     "validation/fea/results/plate_sweep_fea_summary.json: "
-    "mesh-converged CAX8R comparison swept over D_free/t and Poisson ratio, "
-    "released against the 5% agreement budget"
+    "mesh-converged CAX8R sweep over D_free/t and Poisson ratio; corrected deflection "
+    "is qualified by abs(prediction - FEA) / abs(FEA) <= 5%"
 )
 
-# Each floor is the coarsest *solved* free-diameter/thickness ratio from which
-# every thinner solved ratio holds the mesh-converged three-dimensional
-# comparison inside the 5% budget, at every solved Poisson value in the
-# evidence band.  Floors sit on solved ratios; releasing the continuous range
-# above a floor relies on the monotone decrease of the model-form error with
-# thinness that the seven solved ratios demonstrate.  Bending stress and
-# center deflection diverge from Kirchhoff at very different rates, so they
-# carry separate floors: at D_free/t = 4 the solved result exceeds a
-# simply-supported plate's Kirchhoff center stress by at most 2.4% across the
-# band, but exceeds its Kirchhoff center deflection by up to 24.3%.  The
-# fixed-edge margin is governed by the edge radial stress, compared through
-# its convergent reaction-moment resultant — the one compared quantity
-# Kirchhoff over-predicts, so the governing comparison errs conservative at
-# the floor.  The fixed bending floor is set by the also-published center
-# stress; the fixed deflection floor is the stricter because transverse shear
-# is a larger fraction of a clamped plate's smaller deflection.
+# Each floor is the coarsest solved free-diameter/thickness ratio from which
+# every thinner solved ratio stays inside the 5% comparison budget at every
+# solved Poisson value. The bending floors use the Kirchhoff stress
+# comparisons. Deflection uses abs(shear_corrected - FEA) / abs(FEA): its raw
+# corrected floors are 4 for a fixed edge and 6 for a simply-supported edge.
+# The fixed release floor stays at 10 because released deflection also requires
+# the existing bending envelope. Releasing between and beyond the solved
+# ratios relies on the observed monotone decrease in error with thinness.
 FLAT_CIRCULAR_PLATE_BENDING_MINIMUM_RATIO: dict[str, float] = {
     "fixed": 10.0,
     "simply_supported": 4.0,
 }
 FLAT_CIRCULAR_PLATE_DEFLECTION_MINIMUM_RATIO: dict[str, float] = {
-    "fixed": 20.0,
-    "simply_supported": 10.0,
+    "fixed": 10.0,
+    "simply_supported": 6.0,
 }
 # The sweep solved Poisson ratios 0.05, 0.30, and 0.35, and every floor above
 # holds at all three.  Releasing the band interior is the judgment that a
@@ -261,10 +253,8 @@ FLAT_CIRCULAR_PLATE_DEFLECTION_MINIMUM_RATIO: dict[str, float] = {
 # monotonicity; outside the band nothing is solved at all.
 FLAT_CIRCULAR_PLATE_POISSON_EVIDENCE_BAND: tuple[float, float] = (0.05, 0.35)
 
-# The w <= t/2 small-deflection limit bounds the plate's actual deflection, so
-# the gate cannot read the Kirchhoff value the same sweep shows is low by up
-# to 24.3% at the thick end.  It reads a first-order shear-corrected estimate
-# instead: axisymmetric equilibrium fixes the transverse shear resultant at
+# The released value and w <= t/2 gate use a first-order shear-corrected
+# deflection. Axisymmetric equilibrium fixes the transverse shear resultant at
 # Q = p*r/2 whatever the edge does, so integrating Q/(kappa*G*t) in from the
 # edge adds p*a^2/(4*kappa*G*t) at the center, with kappa = 5/6 from
 # E. Reissner, "The effect of transverse shear deformation on the bending of
@@ -279,8 +269,7 @@ FLAT_CIRCULAR_PLATE_POISSON_EVIDENCE_BAND: tuple[float, float] = (0.05, 0.35)
 # points, and beyond D_free/t = 40 (production sets no upper ratio limit),
 # the gate relies on that margin persisting; with the shear increment and
 # the Kirchhoff error both vanishing with thinness, that is an engineering
-# judgment, not a measured bound.  Only applicability reads the estimate;
-# the released deflection stays Kirchhoff.
+# judgment, not a measured bound.
 FLAT_CIRCULAR_PLATE_SHEAR_CORRECTION_FACTOR = 5.0 / 6.0
 
 FLAT_CIRCULAR_PLATE_SCOPE_NOTES = (
@@ -295,13 +284,11 @@ FLAT_CIRCULAR_PLATE_SCOPE_NOTES = (
     "pressure and margin; it is independent of thickness and does not enter the bending margin.",
     "Bearing-contact distribution, attachment, seal compression, penetrations, and local edge "
     "details are not evaluated.",
-    "Kirchhoff theory omits transverse-shear deformation, so the center deflection is released "
-    "on its own measured floor and is withheld before the bending/yield gate closes.",
-    "The w <= t/2 small-deflection limit is applied to a shear-corrected deflection estimate "
-    "(Reissner kappa = 5/6), because the released Kirchhoff deflection is measurably below "
-    "the three-dimensional value. The swept evidence found the estimate above the solved "
-    "deflection at every solved case; between solved points, and beyond D_free/t = 40, that "
-    "margin persisting is engineering judgment, not a bound.",
+    "The released center deflection and w <= t/2 small-deflection gate use the "
+    "shear-corrected prediction (Reissner kappa = 5/6); maximum_deflection_mm retains the "
+    "underlying Kirchhoff value.",
+    "At released solved ratios, the corrected prediction is within 5% of FEA. Release between "
+    "solved points and beyond D_free/t = 40 follows the observed decrease in error with thinness.",
     "The validity floors are evidenced for 0.05 <= poisson_ratio <= 0.35; outside that band "
     "both the bending margin and the deflection are withheld.",
     "When governing bending stress exceeds the supplied material strength, the raw deflection "
@@ -1510,8 +1497,8 @@ def flat_circular_plate(
 
     Numeric inputs are explicitly MPa and mm. ``boundary_condition`` is
     required so a simply-supported plate can never be evaluated implicitly as
-    fixed. The result reports linear small-deflection bending, center
-    deflection, and the average transverse shear on the support perimeter.
+    fixed. The result reports linear bending, Kirchhoff and shear-corrected
+    center deflection, and the average transverse shear on the support perimeter.
     The bending margin and the released deflection are each withheld, with
     their reasons, outside their evidence floors or past the small-deflection
     limit; the formula values themselves stay published.
@@ -1726,7 +1713,7 @@ def flat_circular_plate(
         shear_corrected_deflection_estimate_over_thickness=estimate_thickness_ratio,
         deflection_status=deflection_status,
         released_maximum_deflection_mm=(
-            maximum_deflection if deflection_released else None
+            shear_corrected_deflection if deflection_released else None
         ),
         deflection_validity_violations=tuple(deflection_violations),
         bending_minimum_free_diameter_over_thickness=bending_minimum_ratio,

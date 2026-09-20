@@ -80,9 +80,9 @@ q >= 4.5 because D_o/t = 2q+1; the current gate corresponds to D_o/t > 21.
 UG-28's own geometry and material charts cannot establish applicability of
 NASA's equations. ASME BPVC Section VIII, Division 1 (2025), UG-28, pp. 24-26.
 
-The model retains q > 10 and includes no thick-shell formulation, FEA evidence,
-collapse analysis, or physical validation. The material correction therefore
-establishes no new thickness coverage for the five housings above.
+The model retains q > 10 and has no thick-shell capacity, collapse analysis, or
+physical validation. The material correction therefore establishes no new
+thickness coverage for the five housings above.
 
 At q = 10.05 the composition reports these when supplied the illustrative
 titanium curve assumption (n = 21 anchored at 827 MPa) explicitly:
@@ -122,3 +122,35 @@ longitudinal-extrusion curve, for unspecified hoop compression and product
 forms. The values above are an explicit illustrative assumption whose
 substitutions remain unverified. Source: MIL-HDBK-5J (31 January 2003), cited
 locations above.
+
+## Bounded elastic benchmark outcome
+
+A four-point continuum benchmark was specified at q values 9.313422, 10.0,
+10.5, and 20.0, with three mesh levels and separate outer-radius and NASA
+mid-surface load resultants. The target was an 8 in OD, 609.6 mm long cylinder
+with E = 113800 MPa and nu = 0.34. The comparison limits were 2% finest-mesh
+change and 5% absolute NASA error relative to FEA. It was stopped after the
+target case exposed two limitations.
+
+First, a one-node rigid-motion gauge produced a lower, mesh-sensitive `n = 1`
+mode. A symmetric mean-displacement gauge recovered a degenerate `n = 2` pair,
+but the spectrum's gauge sensitivity prevents treating that result as a unique
+physical eigenproblem. At `q = 9.313422`, the first two C3D20 meshes gave
+64.17199 and 63.73910 MPa for that `n = 2` branch, compared with the unadjusted
+NASA value 63.75088 MPa. These values are diagnostic only.
+
+More decisively, CalculiX 2.20 `*BUCKLE` uses the pressure load to establish the
+reference stress but omits the distributed-pressure load tangent from the
+eigenmatrix. This was verified in the Debian 2.20-1 source:
+[`arpackbu.c`](https://sources.debian.org/src/calculix-ccx/2.20-1/ccx_2.20/src/arpackbu.c/)
+selects the buckling matrix, while the distributed-load block in
+[`e_c3d.f`](https://sources.debian.org/src/calculix-ccx/2.20-1/ccx_2.20/src/e_c3d.f/)
+is excluded when `buckling == 1`. The matching
+[upstream source archive](https://www.dhondt.de/ccx_2.20.src.tar.bz2) has SHA-256
+`63bf6ea09e7edcae93e0145b1bb0579ea7ae82e046f6075a27c8145b72761bcf`.
+
+The partial comparison therefore cannot validate NASA's pressure-bifurcation
+prediction or the current geometric cutoff. No runner or result artifact is
+retained, and `q > 10` remains unchanged. A future study needs a verified
+pressure-load tangent, matched closure and end restraints, and evidence for
+imperfections and material nonlinearity before it can address vessel collapse.

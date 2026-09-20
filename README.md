@@ -142,7 +142,7 @@ typed request objects and an optional `materials_file` override.
 | `cylinder` | Shared-geometry tube stress and buckling; optional two-closure housing, payload, mass, and buoyancy |
 | `tube` | Closed-end tube stress, failure pressure, margin, and elastic displacement |
 | `tube size` | The wall thickness meeting a `cylindrical_shell_stress` margin, inside bounds |
-| `plate` | Flat circular plate bending, shear, centre deflection, and seat bearing stress |
+| `plate` | Flat circular plate bending, shear-corrected centre deflection, and seat bearing stress |
 | `plate size` | The plate thickness meeting a bending margin and an optional deflection limit |
 | `hemisphere` | Hemispherical head stress, NASA SP-8032 buckling, displacement, and seat stress |
 | `smooth-buckling` | NASA SP-8007 smooth-cylinder external-pressure buckling |

@@ -9,6 +9,10 @@ model; both predate this changelog.
 
 ## [Unreleased]
 
+- Release shear-corrected plate deflection for `D_free/t >= 10` (fixed) or
+  `>= 6` (simply supported), retaining the stress, material, and small-deflection
+  gates. Plate model 5.0.0 and sizing operation 3.0.0 use the corrected value;
+  raw Kirchhoff fields remain available.
 - Mark the illustrative titanium curve as reference-only, consistent with its
   source assumptions. Shorten repeated qualification notes in documentation and
   output; text reports show shared check/estimate reasons once.

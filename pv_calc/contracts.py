@@ -43,7 +43,7 @@ SMOOTH_BUCKLING_SIZE_OPERATION_VERSION = "4.0.0"
 SMOOTH_BUCKLING_SIZING_CHECK_SET: tuple[
     Literal["cylindrical_shell_stress", "smooth_cylinder_buckling"], ...
 ] = (TUBE_SIZING_CHECK, "smooth_cylinder_buckling")
-PLATE_SIZE_OPERATION_VERSION = "2.1.0"
+PLATE_SIZE_OPERATION_VERSION = "3.0.0"
 # The plate's bending failure mode, and the caller's own serviceability limit.
 # The second is declared only when the request carries a maximum deflection.
 PLATE_SIZING_BENDING_CHECK = "flat_endcap_bending"

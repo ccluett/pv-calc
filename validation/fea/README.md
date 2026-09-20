@@ -78,6 +78,12 @@ capability and must remain open unless a separately approved continuation
 solver is added. A load-controlled nonlinear run will not be relabeled as a
 limit-point analysis.
 
+The CalculiX 2.20 `*BUCKLE` path used here omits distributed-pressure load
+stiffness, as the [cylinder coverage source review](../external_pressure_coverage.md)
+establishes. This also limits the existing ring eigenvalue comparisons:
+mesh convergence of this stress-stiffness problem does not validate hydrostatic
+bifurcation. The static tube and plate comparisons are unaffected.
+
 ## Acceptance limits fixed before result comparison
 
 These numerical limits were selected on 2026-07-22 before examining final FEA
@@ -262,14 +268,14 @@ is at most 0.027%, the drift from the primary finest mesh to the deepest is
 at most 0.23%, and no within-budget decision changes at the deepest mesh,
 so no floor reading hinges on residual discretization drift.
 
-Production reuses the first-order shear increment `q a^2 / (4 kappa G t)`
-for its small-deflection applicability gate. Because Kirchhoff sits below
-the solved deflection everywhere, comparing the raw Kirchhoff value with
+Production uses the first-order shear increment `q a^2 / (4 kappa G t)`
+for released deflection and its small-deflection applicability gate. Because
+Kirchhoff sits below the solved deflection everywhere, comparing its raw value with
 `t/2` releases results whose actual deflection is already past the
 small-deflection limit, so the released model applies that limit to
 `Kirchhoff + Mindlin` instead, with `kappa = 5/6` after Reissner (J. Appl.
 Mech. 12, 1945); the correction factor is conventional, not exact, which is
-why the estimate is checked against solved evidence rather than trusted.
+why the prediction is checked against solved evidence rather than assumed exact.
 The sweep found that estimate above the solved deflection at every one of
 the 42 combinations (residuals from -5.17% to -0.006%) and above the
 deepest solved deflection at every sensitivity point — including the
@@ -278,19 +284,18 @@ thinnest, low-Poisson corner, where the deepest-mesh margin is about
 shrinks toward zero with thinness because the increment and the Kirchhoff
 error both vanish there, so this is a measured fact about the solved cases,
 not a claimed mathematical bound; between solved points, and beyond
-`D_free/t = 40` (production sets no upper ratio limit), the gate relies on
-that margin persisting as an engineering judgment. The released deflection
-remains the Kirchhoff value; only applicability reads the estimate.
+`D_free/t = 40` (production sets no upper ratio limit), release relies on
+that margin persisting as an engineering judgment.
 
-Deflection and bending stress leave the 5% budget at very different ratios,
-so the released model gates them separately. Each floor is the coarsest
-**solved** ratio from which every thinner solved ratio stays inside the
-budget, at every solved Poisson value:
+Using `abs(prediction - FEA) / abs(FEA)`, the corrected-deflection error is
+within 5% from `D_free/t = 4` for fixed edges and from `6` for simply-supported
+edges. The simply-supported `D_free/t = 4, nu = 0.35` case remains outside at
+5.446%. The release floors retain the independently qualified bending gate:
 
 | Released output | Fixed | Simply supported |
 |---|---:|---:|
 | Bending stresses (edge stress sets the fixed margin) | `D_free/t >= 10` | `D_free/t >= 4` |
-| Center deflection | `D_free/t >= 20` | `D_free/t >= 10` |
+| Corrected center deflection | `D_free/t >= 10` | `D_free/t >= 6` |
 
 Floors sit on solved ratios; releasing the continuous range above a floor
 relies on the monotone decrease of the model-form error with thinness that
@@ -302,9 +307,10 @@ from `D_free/t = 10` up, so no single monotone Poisson trend covers every
 quantity. Outside `0.05 <= nu <= 0.35`, and below `D_free/t = 4`, nothing
 is solved and the production model withholds rather than extrapolates.
 
-Retained failures, not tuned away: against the 5% budget, the
-simply-supported deflection fails at `D_free/t = 4` and `6`, and the fixed
-deflection fails through `14`, at every solved Poisson value. The fixed
+The committed Kirchhoff comparisons remain historical evidence: against the
+same budget, simply-supported Kirchhoff deflection fails at `D_free/t = 4`
+and `6`, and fixed Kirchhoff deflection fails through `14`, at every solved
+Poisson value. The fixed
 center stress fails at `4` for all three Poisson values (`+8.04%` even at
 `nu = 0.05`) and at `6` only for `nu >= 0.30`. The fixed edge-moment
 comparison fails at `4` only for `nu >= 0.30` (`-0.91%` at `nu = 0.05`).

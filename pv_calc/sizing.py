@@ -882,8 +882,8 @@ def _plate_sizing_sample(
         check_margins[PLATE_SIZING_DEFLECTION_CHECK] = deflection_margin
     return _SizingSample(
         thickness_mm=result.plate_thickness_mm,
-        # Both margins rise across the released band: bending stress scales as
-        # 1/t^2 and deflection as 1/t^3. Applicability bounds that band separately.
+        # Both margins rise across the released band. Corrected deflection is
+        # the sum of terms proportional to 1/t^3 and 1/t.
         branch="released",
         states={
             "governing_check": min(
