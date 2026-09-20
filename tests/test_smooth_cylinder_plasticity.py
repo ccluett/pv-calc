@@ -23,6 +23,7 @@ from pv_calc.contracts import CALC_SCHEMA_VERSION
 from pv_calc.presentation import assess_response
 from pv_calc.pressure_vessel import (
     SMOOTH_CYLINDER_MORE_THAN_TWO_WAVE_COEFFICIENT,
+    closed_end_tube_stress,
     ramberg_osgood_moduli,
     smooth_cylinder_external_pressure_buckling,
     smooth_cylinder_plasticity_factor,
@@ -823,10 +824,10 @@ def test_the_correction_is_not_a_strength_limit() -> None:
     """A short thick shell can still correct to a stress above the material's.
 
     NASA Eqs. 30-32 reduce an elastic instability pressure through the secant
-    and tangent moduli. They impose no squash load, so a corrected critical
-    stress above the material strength is a signal that instability is not the
-    governing mode, not a defect in the correction. The shell stress check is
-    what catches that, and the composed cylinder runs both.
+    and tangent moduli and impose no squash load. A corrected critical membrane
+    stress above the material strength does not say which mode governs: the
+    exact Lame von Mises stress differs from p*r/t, so only the separate shell
+    stress check decides, and the composed cylinder runs both.
     """
     result = _kernel(
         external_pressure_mpa=1.0,
@@ -845,6 +846,26 @@ def test_the_correction_is_not_a_strength_limit() -> None:
     assert corrected > 827.0
     assert result.capacity_status == "released"
     assert any("exceeds the supplied yield strength" in note for note in result.notes)
+    # Hoop membrane stress above yield with buckling still governing: the
+    # corrected pressure is below the closed-end first-yield pressure.
+    governing = _kernel(
+        external_pressure_mpa=1.0,
+        shell_mid_surface_radius_mm=100.0,
+        wall_thickness_mm=8.0,
+        unsupported_length_mm=150.0,
+        ramberg_osgood_n=21.0,
+        compressive_proof_stress_mpa=827.0,
+    )
+    assert governing.correlated_critical_circumferential_stress_mpa > 827.0
+    assert any("exceeds the supplied yield strength" in note for note in governing.notes)
+    first_yield = closed_end_tube_stress(
+        external_pressure_mpa=governing.correlated_critical_pressure_mpa,
+        internal_radius_mm=96.0, wall_thickness_mm=8.0,
+        material_failure_category="ductile_metal", strength_mpa=827.0,
+    )
+    assert governing.correlated_critical_pressure_mpa == pytest.approx(66.661612, abs=5e-6)
+    assert first_yield.theoretical_failure_pressure_mpa == pytest.approx(70.631460, abs=5e-6)
+    assert first_yield.governing_stress_mpa < 827.0
     within = _kernel(
         external_pressure_mpa=1.0,
         shell_mid_surface_radius_mm=100.0,

@@ -319,7 +319,7 @@ SMOOTH_CYLINDER_PLASTICITY_PENDING_REASON = (
 SMOOTH_CYLINDER_CORRECTED_STRESS_ABOVE_YIELD_REASON = (
     "corrected critical circumferential membrane stress {stress:.6g} MPa exceeds the "
     "supplied yield strength {limit:.6g} MPa; the compressive curve is read beyond its "
-    "anchor, and material failure, checked separately, governs before instability"
+    "anchor, and the separate material check decides whether material failure governs"
 )
 SMOOTH_CYLINDER_SCOPE_NOTES = (
     "The NASA equations assume a thin, circular, isotropic, unstiffened shell with uniform "

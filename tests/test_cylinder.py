@@ -401,3 +401,45 @@ def test_examples_are_finite_and_evaluable(name: str) -> None:
     response = evaluate(json.loads(example.read_text()))
     assert response["assessment"]["status"] == "pass"
     json.dumps(response, allow_nan=False)
+
+
+def test_plate_closure_material_rejects_a_buckling_qualification() -> None:
+    """Only a closure with a buckling capacity carries the qualification field."""
+    closure_material = {
+        "type": "explicit",
+        "name": "Closure",
+        "buckling_data_qualification": "reference_only",
+        "properties": {
+            "failure_category": "ductile_metal",
+            "yield_strength": q(250.0, "MPa"),
+            "elastic_modulus": q(70_000.0, "MPa"),
+            "poisson_ratio": 0.3,
+        },
+    }
+    base = {
+        "schema_version": "5.0.0",
+        "model": "cylinder",
+        "inputs": {
+            "external_pressure": q(0.1, "MPa"),
+            "internal_radius": q(50.0),
+            "wall_thickness": q(1.0),
+            "unsupported_length": q(300.0),
+        },
+        "material": {"type": "named", "name": "Al-6061-T6"},
+    }
+    hemispheres = copy.deepcopy(base)
+    hemispheres["inputs"]["closures"] = [
+        {"model": "hemisphere", "material": closure_material},
+        {"model": "hemisphere", "material": closure_material},
+    ]
+    CylinderRequest.model_validate(hemispheres)
+
+    plates = copy.deepcopy(base)
+    plates["inputs"]["closures"] = [
+        {"model": "plate", "plate_thickness": q(4.0), "boundary_condition": "fixed",
+         "material": closure_material},
+        {"model": "plate", "plate_thickness": q(4.0), "boundary_condition": "fixed",
+         "material": closure_material},
+    ]
+    with pytest.raises(ValidationError, match="buckling_data_qualification"):
+        CylinderRequest.model_validate(plates)

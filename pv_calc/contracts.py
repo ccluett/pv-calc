@@ -513,7 +513,18 @@ CylinderMaterial = Annotated[
     NamedMaterialInput | ExplicitCylinderMaterialInput,
     Field(discriminator="type"),
 ]
-ClosureMaterial = Annotated[
+class ExplicitPlateClosureMaterialInput(ExplicitTubeMaterialInput):
+    """A closure plate record: the hemisphere property set that 1.0.0 cylinder
+    requests already supply, without a buckling qualification to carry."""
+
+    properties: HemisphereMaterialProperties
+
+
+PlateClosureMaterial = Annotated[
+    NamedMaterialInput | ExplicitPlateClosureMaterialInput,
+    Field(discriminator="type"),
+]
+HemisphereClosureMaterial = Annotated[
     NamedMaterialInput | ExplicitHemisphereMaterialInput,
     Field(discriminator="type"),
 ]
@@ -527,14 +538,14 @@ class PlateClosure(ContractModel):
     # Accepted for explicit geometry, but must match the cylinder's outer radius.
     outside_radius: Length | None = None
     maximum_deflection: Length | None = None
-    material: ClosureMaterial
+    material: PlateClosureMaterial
 
 
 class HemisphereClosure(ContractModel):
     model: Literal["hemisphere"]
     # Defaults to the cylinder wall and must match it for this butt assembly.
     wall_thickness: Length | None = None
-    material: ClosureMaterial
+    material: HemisphereClosureMaterial
 
 
 Closure = Annotated[PlateClosure | HemisphereClosure, Field(discriminator="model")]
