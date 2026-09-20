@@ -317,10 +317,13 @@ material density: a tube of its `axial_length` with weightless closures, a
 plate as the solid disc of its `outside_radius`, a hemispherical shell, and a
 smooth cylinder as the closed shell of its unsupported length at the
 mid-surface radius plus or minus half the wall; each block states the formulas
-it used as `volume_basis`, and a tube or plate without the length or radius the
-volume needs is refused as `invalid_request`. The density comes from the named
-record or from an explicit record's `density`; without one the request is
-refused as `invalid_material` rather than answered without weights.
+it used as `volume_basis`. Smooth-shell mass additionally requires
+`R_mid - t/2 > 0`; this positive-bore geometry invariant is separate from the
+thin-shell buckling gate, so a physically valid thick shell retains mass while
+its buckling capacity may be withheld. A tube or plate without the length or
+radius the volume needs is refused as `invalid_request`. The density comes from
+the named record or from an explicit record's `density`; without one the
+request is refused as `invalid_material` rather than answered without weights.
 `failure_depths` expresses that model's failure pressures, an explicit per-model
 list of result fields, as `h = p / (rho * g)` in the same fluid, the inverse of
 the depth axis's conversion, with a withheld pressure keeping its null. The
