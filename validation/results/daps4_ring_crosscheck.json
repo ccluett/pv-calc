@@ -1,0 +1,1106 @@
+{
+  "archived_controls": [
+    {
+      "expected_results": [
+        {
+          "circumferential_lobes_n": 2,
+          "ideal_pressure_psi": 300.1
+        },
+        {
+          "circumferential_lobes_n": 2,
+          "ideal_pressure_psi": 300.1
+        },
+        {
+          "circumferential_lobes_n": 2,
+          "ideal_pressure_psi": 190.8
+        },
+        {
+          "circumferential_lobes_n": 2,
+          "ideal_pressure_psi": 190.8
+        },
+        {
+          "circumferential_lobes_n": 2,
+          "ideal_pressure_psi": 160.5
+        },
+        {
+          "circumferential_lobes_n": 2,
+          "ideal_pressure_psi": 160.5
+        },
+        {
+          "circumferential_lobes_n": 3,
+          "ideal_pressure_psi": 462.0
+        },
+        {
+          "circumferential_lobes_n": 3,
+          "ideal_pressure_psi": 462.0
+        }
+      ],
+      "fixture": "SS",
+      "input_sha256": "6784de37db3ca4c692d161972664e94bb383e96122e44eadc779f9ebb6fb5f25",
+      "raw_output_sha256": "906b5237bcdc3be6ffef6ceda9ace7f34d8b45876ce61f1d7567efb71196e9c1",
+      "reported_precision_match": true,
+      "reported_revision": "Revision E.3.6, March 2026",
+      "results": [
+        {
+          "circumferential_lobes_n": 2,
+          "ideal_pressure_psi": 300.1
+        },
+        {
+          "circumferential_lobes_n": 2,
+          "ideal_pressure_psi": 300.1
+        },
+        {
+          "circumferential_lobes_n": 2,
+          "ideal_pressure_psi": 190.8
+        },
+        {
+          "circumferential_lobes_n": 2,
+          "ideal_pressure_psi": 190.8
+        },
+        {
+          "circumferential_lobes_n": 2,
+          "ideal_pressure_psi": 160.5
+        },
+        {
+          "circumferential_lobes_n": 2,
+          "ideal_pressure_psi": 160.5
+        },
+        {
+          "circumferential_lobes_n": 3,
+          "ideal_pressure_psi": 462.0
+        },
+        {
+          "circumferential_lobes_n": 3,
+          "ideal_pressure_psi": 462.0
+        }
+      ],
+      "solver_notices": [
+        "* * * WARNING: EGI/IGI uses L = nearest integer multiple of LF * * *"
+      ],
+      "stderr": "Note: The following floating-point exceptions are signalling: IEEE_UNDERFLOW_FLAG\nSTOP  NORMAL TERMINATION"
+    },
+    {
+      "expected_results": [
+        {
+          "circumferential_lobes_n": 3,
+          "ideal_pressure_psi": 507.2
+        },
+        {
+          "circumferential_lobes_n": 3,
+          "ideal_pressure_psi": 507.2
+        },
+        {
+          "circumferential_lobes_n": 3,
+          "ideal_pressure_psi": 461.1
+        },
+        {
+          "circumferential_lobes_n": 3,
+          "ideal_pressure_psi": 461.1
+        },
+        {
+          "circumferential_lobes_n": 2,
+          "ideal_pressure_psi": 416.3
+        },
+        {
+          "circumferential_lobes_n": 2,
+          "ideal_pressure_psi": 416.3
+        },
+        {
+          "circumferential_lobes_n": 3,
+          "ideal_pressure_psi": 788.5
+        },
+        {
+          "circumferential_lobes_n": 3,
+          "ideal_pressure_psi": 788.5
+        }
+      ],
+      "fixture": "CL",
+      "input_sha256": "ac786659db453ccbb8022323dba64e0a00f45e6105e5e3ec268ffe40858c8b0f",
+      "raw_output_sha256": "9dcb1ed4132e2788070073692f8a11dc344c5be15073af4ac28e30aab6b5abe1",
+      "reported_precision_match": true,
+      "reported_revision": "Revision E.3.6, March 2026",
+      "results": [
+        {
+          "circumferential_lobes_n": 3,
+          "ideal_pressure_psi": 507.2
+        },
+        {
+          "circumferential_lobes_n": 3,
+          "ideal_pressure_psi": 507.2
+        },
+        {
+          "circumferential_lobes_n": 3,
+          "ideal_pressure_psi": 461.1
+        },
+        {
+          "circumferential_lobes_n": 3,
+          "ideal_pressure_psi": 461.1
+        },
+        {
+          "circumferential_lobes_n": 2,
+          "ideal_pressure_psi": 416.3
+        },
+        {
+          "circumferential_lobes_n": 2,
+          "ideal_pressure_psi": 416.3
+        },
+        {
+          "circumferential_lobes_n": 3,
+          "ideal_pressure_psi": 788.5
+        },
+        {
+          "circumferential_lobes_n": 3,
+          "ideal_pressure_psi": 788.5
+        }
+      ],
+      "solver_notices": [
+        "* * * WARNING: EGI/IGI uses L = nearest integer multiple of LF * * *"
+      ],
+      "stderr": "Note: The following floating-point exceptions are signalling: IEEE_UNDERFLOW_FLAG\nSTOP  NORMAL TERMINATION"
+    }
+  ],
+  "cautions": [
+    "Archived controls contain repeated geometries under idealized support options; 16 outputs are not 16 independent experiments.",
+    "The Table 1 fixture lengths are consistent with rounded published L/D times the shell OD; DAPS4 further rounds the global-analysis length to an integer pitch multiple.",
+    "Specified-restraint probes do not reproduce all archived outputs; they are excluded from validation and fixture-stiffness calibration.",
+    "Only global elastic pressure and lobe count were audited; other DAPS4 outputs are outside this comparison.",
+    "The DAPS4 ring-frame-instability output changes with the reference pressure in these runs; it is not used or qualified.",
+    "DAPS4 prints finite precision and run timestamps; raw-output hashes identify this execution, not a portable numerical golden.",
+    "Some runs report floating-point underflow/denormal flags; stderr is retained. Normal termination and archived global reproduction were checked."
+  ],
+  "compiler": "GNU Fortran (Homebrew GCC 15.2.0) 15.2.0",
+  "compiler_flags": [
+    "-O2",
+    "-std=legacy",
+    "-fallow-argument-mismatch",
+    "-ffixed-line-length-none"
+  ],
+  "release_member_hashes": [
+    {
+      "member": "Source Code/Fortran/GFortran/BLAS.for",
+      "sha256": "5c1ccd9e3f06226d6d93b36024aa670eae1561b9fa3d988d7793bfb203f2671c"
+    },
+    {
+      "member": "Source Code/Fortran/GFortran/DAPS4e.for",
+      "sha256": "ab25f070f5bcdad21071c0760be12b6161df8cd86297283cebbbc9f3529a8723"
+    },
+    {
+      "member": "Source Code/Fortran/GFortran/LAPACK.for",
+      "sha256": "0ebc1949c0e442873786c77a5ceb4b4ff9821edc69955f950c722a72de876d74"
+    },
+    {
+      "member": "Source Code/Fortran/GFortran/Source2.for",
+      "sha256": "1b8cb561b557338273b8c7b988b23e8705156062509550be7e7553033bc9c7fa"
+    },
+    {
+      "member": "Source Code/Fortran/GFortran/Source3.for",
+      "sha256": "adf12d5edd652cd377f4c299f446a818e40ce56226167946fc35141a485ecc61"
+    },
+    {
+      "member": "Source Code/Fortran/GFortran/Source4.for",
+      "sha256": "0db457e7fbcb7625d2dfccd96f56ec167674cc931bcb05ca370a274f194c69c8"
+    },
+    {
+      "member": "Source Code/Fortran/GFortran/Source5.for",
+      "sha256": "18bc3e86d95837c0a3a08f3e4b0d2a560c1567229619b09305e69459f8e6acc5"
+    },
+    {
+      "member": "Source Code/Fortran/GFortran/Source6.for",
+      "sha256": "f5d7d1fda429e9404d88fb985116f973101eab48da4c6a606334211d08fbeebf"
+    },
+    {
+      "member": "Validation Problems/DTMB Models/1324/Rev E.2/daps4inp.SS.dp4",
+      "sha256": "6784de37db3ca4c692d161972664e94bb383e96122e44eadc779f9ebb6fb5f25"
+    },
+    {
+      "member": "Validation Problems/DTMB Models/1324/Rev E.2/daps4out.SS.txt",
+      "sha256": "9255dd8338660ff041b9845bd0b6bece1f19c55fe9cab9edd71719beb806805c"
+    },
+    {
+      "member": "Validation Problems/DTMB Models/1324/Rev E.2/daps4inp.CL.dp4",
+      "sha256": "ac786659db453ccbb8022323dba64e0a00f45e6105e5e3ec268ffe40858c8b0f"
+    },
+    {
+      "member": "Validation Problems/DTMB Models/1324/Rev E.2/daps4out.CL.txt",
+      "sha256": "979ffc662315e2229499d8859c661ecc1feb83a3730cb2c5da7030c90272e830"
+    },
+    {
+      "member": "Validation Problems/DTMB Models/1324/Rev E.2/daps4inp.Jer = 0.dp4",
+      "sha256": "cc20005e1930e805bad3612c2d07de04f9fdc83a9cc032d023af36cb5ac0eadc"
+    },
+    {
+      "member": "Validation Problems/DTMB Models/1324/Rev E.2/daps4out.Jer = 0.txt",
+      "sha256": "5aaea1952135abe43997ab1b8642b015e4cfbc69057b7a7c190c310b18c42142"
+    },
+    {
+      "member": "Validation Problems/DTMB Models/1324/Rev E.2/daps4inp.Jer = IXer.dp4",
+      "sha256": "02cc4d005431af16b45900ff455997e46498859448733eb3eabb6b81f9c5ad81"
+    },
+    {
+      "member": "Validation Problems/DTMB Models/1324/Rev E.2/daps4out.Jer = IXer.txt",
+      "sha256": "694c1d9c937df5f66a4b461ec35bcfc13c3e56ab589a20c30431be0efd40993a"
+    }
+  ],
+  "release_url": "https://sourceforge.net/projects/daps4/files/DAPS4e.6.zip/download",
+  "schema_version": "1.1.0",
+  "scope": "independent global elastic theory comparison, not NASA-equation parity or housing capacity validation",
+  "specified_restraint_audit": [
+    {
+      "disposition": "not qualified; diagnostic probe only",
+      "expected_results": [
+        {
+          "circumferential_lobes_n": 2,
+          "ideal_pressure_psi": 316.3
+        },
+        {
+          "circumferential_lobes_n": 2,
+          "ideal_pressure_psi": 343.0
+        },
+        {
+          "circumferential_lobes_n": 2,
+          "ideal_pressure_psi": 196.9
+        },
+        {
+          "circumferential_lobes_n": 2,
+          "ideal_pressure_psi": 209.6
+        },
+        {
+          "circumferential_lobes_n": 2,
+          "ideal_pressure_psi": 163.6
+        },
+        {
+          "circumferential_lobes_n": 2,
+          "ideal_pressure_psi": 170.5
+        },
+        {
+          "circumferential_lobes_n": 3,
+          "ideal_pressure_psi": 502.9
+        },
+        {
+          "circumferential_lobes_n": 3,
+          "ideal_pressure_psi": 518.4
+        }
+      ],
+      "fixture": "Jer = 0",
+      "input_sha256": "cc20005e1930e805bad3612c2d07de04f9fdc83a9cc032d023af36cb5ac0eadc",
+      "matching_rows": 0,
+      "raw_output_sha256": "f3efa19d91f8dce4bbc8591bc9264ce2666c4ec1c794ecbf7b2b1b8f7afb26a1",
+      "reported_precision_match": false,
+      "reported_revision": "Revision E.3.6, March 2026",
+      "results": [
+        {
+          "circumferential_lobes_n": 2,
+          "ideal_pressure_psi": 10000000000.0
+        },
+        {
+          "circumferential_lobes_n": 2,
+          "ideal_pressure_psi": 10000000000.0
+        },
+        {
+          "circumferential_lobes_n": 2,
+          "ideal_pressure_psi": 10000000000.0
+        },
+        {
+          "circumferential_lobes_n": 2,
+          "ideal_pressure_psi": 10000000000.0
+        },
+        {
+          "circumferential_lobes_n": 2,
+          "ideal_pressure_psi": 10000000000.0
+        },
+        {
+          "circumferential_lobes_n": 2,
+          "ideal_pressure_psi": 10000000000.0
+        },
+        {
+          "circumferential_lobes_n": 2,
+          "ideal_pressure_psi": 10000000000.0
+        },
+        {
+          "circumferential_lobes_n": 2,
+          "ideal_pressure_psi": 10000000000.0
+        }
+      ],
+      "sentinel_rows": 8,
+      "solver_notices": [
+        "* * * WARNING: EGI/IGI uses L = nearest integer multiple of LF * * *"
+      ],
+      "stderr": "Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_UNDERFLOW_FLAG\nSTOP  NORMAL TERMINATION"
+    },
+    {
+      "disposition": "not qualified; diagnostic probe only",
+      "expected_results": [
+        {
+          "circumferential_lobes_n": 2,
+          "ideal_pressure_psi": 498.7
+        },
+        {
+          "circumferential_lobes_n": 3,
+          "ideal_pressure_psi": 507.2
+        },
+        {
+          "circumferential_lobes_n": 2,
+          "ideal_pressure_psi": 283.3
+        },
+        {
+          "circumferential_lobes_n": 3,
+          "ideal_pressure_psi": 461.1
+        },
+        {
+          "circumferential_lobes_n": 2,
+          "ideal_pressure_psi": 214.4
+        },
+        {
+          "circumferential_lobes_n": 2,
+          "ideal_pressure_psi": 416.3
+        },
+        {
+          "circumferential_lobes_n": 3,
+          "ideal_pressure_psi": 788.5
+        },
+        {
+          "circumferential_lobes_n": 3,
+          "ideal_pressure_psi": 788.5
+        }
+      ],
+      "fixture": "Jer = IXer",
+      "input_sha256": "02cc4d005431af16b45900ff455997e46498859448733eb3eabb6b81f9c5ad81",
+      "matching_rows": 5,
+      "raw_output_sha256": "0d170d16989fd41e0e35a326c1cff7953f29bd17d82e986cc6b4a751fc9fb81a",
+      "reported_precision_match": false,
+      "reported_revision": "Revision E.3.6, March 2026",
+      "results": [
+        {
+          "circumferential_lobes_n": 3,
+          "ideal_pressure_psi": 507.2
+        },
+        {
+          "circumferential_lobes_n": 3,
+          "ideal_pressure_psi": 507.2
+        },
+        {
+          "circumferential_lobes_n": 3,
+          "ideal_pressure_psi": 461.1
+        },
+        {
+          "circumferential_lobes_n": 3,
+          "ideal_pressure_psi": 461.1
+        },
+        {
+          "circumferential_lobes_n": 2,
+          "ideal_pressure_psi": 416.3
+        },
+        {
+          "circumferential_lobes_n": 2,
+          "ideal_pressure_psi": 416.3
+        },
+        {
+          "circumferential_lobes_n": 3,
+          "ideal_pressure_psi": 788.5
+        },
+        {
+          "circumferential_lobes_n": 3,
+          "ideal_pressure_psi": 788.5
+        }
+      ],
+      "sentinel_rows": 0,
+      "solver_notices": [
+        "(CAUTION: CLAMPED BC WERE FORCED.)",
+        "* * * WARNING: EGI/IGI uses L = nearest integer multiple of LF * * *"
+      ],
+      "stderr": "Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_UNDERFLOW_FLAG\nSTOP  NORMAL TERMINATION"
+    }
+  ],
+  "table_2": [
+    {
+      "clamped": {
+        "circumferential_lobes_n": 3,
+        "ideal_pressure_psi": 640.7,
+        "preload_invariance_1_vs_500_psi": true,
+        "primary_run": {
+          "input_sha256": "eb5c3a60f7387444fa73cbafd46c8593477e006289a4a08bd8a89471b48c3ac7",
+          "raw_output_sha256": "1600d9524d23ee06acd9cdffdab81ef6a94ffbf8da2fb07bcfaa7f203208619f",
+          "reported_revision": "Revision E.3.6, March 2026",
+          "results": [
+            {
+              "circumferential_lobes_n": 3,
+              "ideal_pressure_psi": 640.7
+            }
+          ],
+          "solver_notices": [],
+          "stderr": "Note: The following floating-point exceptions are signalling: IEEE_UNDERFLOW_FLAG\nSTOP  NORMAL TERMINATION"
+        },
+        "scaling_check_run": {
+          "input_sha256": "3ba35985df8173393a4be9fe35d4d170935064ad28902491d4361337825197df",
+          "raw_output_sha256": "a0c718a56beda0b32e9d48adf0a6370f09064afc4ff52688c88d5ae4658638a2",
+          "reported_revision": "Revision E.3.6, March 2026",
+          "results": [
+            {
+              "circumferential_lobes_n": 3,
+              "ideal_pressure_psi": 640.7
+            }
+          ],
+          "solver_notices": [],
+          "stderr": "Note: The following floating-point exceptions are signalling: IEEE_UNDERFLOW_FLAG\nSTOP  NORMAL TERMINATION"
+        }
+      },
+      "frame_spaces": 17,
+      "simply_supported": {
+        "circumferential_lobes_n": 3,
+        "ideal_pressure_psi": 408.9,
+        "preload_invariance_1_vs_500_psi": true,
+        "primary_run": {
+          "input_sha256": "a176a88e158768755561784ffb076360fa2805d2e4a5cdc87ae60c252a79c7e6",
+          "raw_output_sha256": "7fb3c0e894f66ce9a3aa701c15f96f1366feb84d9231e6e05c599244e06493d5",
+          "reported_revision": "Revision E.3.6, March 2026",
+          "results": [
+            {
+              "circumferential_lobes_n": 3,
+              "ideal_pressure_psi": 408.9
+            }
+          ],
+          "solver_notices": [],
+          "stderr": "Note: The following floating-point exceptions are signalling: IEEE_UNDERFLOW_FLAG\nSTOP  NORMAL TERMINATION"
+        },
+        "scaling_check_run": {
+          "input_sha256": "c6be1052aaeedb83fa7d16082440435e203f0298c77c047e0d78ab013b92f9fa",
+          "raw_output_sha256": "02b357ed1a65a9629e0f67be82df85610a2ad6653fef52d8e9c74b10341730b8",
+          "reported_revision": "Revision E.3.6, March 2026",
+          "results": [
+            {
+              "circumferential_lobes_n": 3,
+              "ideal_pressure_psi": 408.9
+            }
+          ],
+          "solver_notices": [],
+          "stderr": "Note: The following floating-point exceptions are signalling: IEEE_UNDERFLOW_FLAG\nSTOP  NORMAL TERMINATION"
+        }
+      }
+    },
+    {
+      "clamped": {
+        "circumferential_lobes_n": 3,
+        "ideal_pressure_psi": 545.6,
+        "preload_invariance_1_vs_500_psi": true,
+        "primary_run": {
+          "input_sha256": "a9d3ee2eaf990963083a9ff3af0bfa5bd4267d45a4038bf52de98edf7d89418f",
+          "raw_output_sha256": "6ff1ae6126a15afcca2e5303985cef5c52ab6eb5500334f30aac54334b5e0961",
+          "reported_revision": "Revision E.3.6, March 2026",
+          "results": [
+            {
+              "circumferential_lobes_n": 3,
+              "ideal_pressure_psi": 545.6
+            }
+          ],
+          "solver_notices": [
+            "* * * WARNING: EGI/IGI uses L = nearest integer multiple of LF * * *"
+          ],
+          "stderr": "Note: The following floating-point exceptions are signalling: IEEE_UNDERFLOW_FLAG\nSTOP  NORMAL TERMINATION"
+        },
+        "scaling_check_run": {
+          "input_sha256": "adb6c8f02677f2c647fc4aba453779c41d204f1e702c8e2241ab141811ca661f",
+          "raw_output_sha256": "42dcd31209a2495faf07aa81f44db282b9c12601d113910f5abe04a3f8982d94",
+          "reported_revision": "Revision E.3.6, March 2026",
+          "results": [
+            {
+              "circumferential_lobes_n": 3,
+              "ideal_pressure_psi": 545.6
+            }
+          ],
+          "solver_notices": [
+            "* * * WARNING: EGI/IGI uses L = nearest integer multiple of LF * * *"
+          ],
+          "stderr": "Note: The following floating-point exceptions are signalling: IEEE_UNDERFLOW_FLAG\nSTOP  NORMAL TERMINATION"
+        }
+      },
+      "frame_spaces": 21,
+      "simply_supported": {
+        "circumferential_lobes_n": 3,
+        "ideal_pressure_psi": 386.2,
+        "preload_invariance_1_vs_500_psi": true,
+        "primary_run": {
+          "input_sha256": "2e004233cd9d62637b2bcd60d9696ac1ec8504c0974fb57e80ca01abe62f521e",
+          "raw_output_sha256": "e53cd3beb326546421e79b7acf6253cc5732a21cc0491d933c676f853bed0d72",
+          "reported_revision": "Revision E.3.6, March 2026",
+          "results": [
+            {
+              "circumferential_lobes_n": 3,
+              "ideal_pressure_psi": 386.2
+            }
+          ],
+          "solver_notices": [
+            "* * * WARNING: EGI/IGI uses L = nearest integer multiple of LF * * *"
+          ],
+          "stderr": "Note: The following floating-point exceptions are signalling: IEEE_UNDERFLOW_FLAG\nSTOP  NORMAL TERMINATION"
+        },
+        "scaling_check_run": {
+          "input_sha256": "3f2ca205e6d38e78d465b1f2cd228d785acc0b4c6c9fc76da1eaeac44631129b",
+          "raw_output_sha256": "7b601c2f983d5163e00e244c97b376659a24d686f8eb6d21267b7fd2c2a54a34",
+          "reported_revision": "Revision E.3.6, March 2026",
+          "results": [
+            {
+              "circumferential_lobes_n": 3,
+              "ideal_pressure_psi": 386.2
+            }
+          ],
+          "solver_notices": [
+            "* * * WARNING: EGI/IGI uses L = nearest integer multiple of LF * * *"
+          ],
+          "stderr": "Note: The following floating-point exceptions are signalling: IEEE_UNDERFLOW_FLAG\nSTOP  NORMAL TERMINATION"
+        }
+      }
+    },
+    {
+      "clamped": {
+        "circumferential_lobes_n": 3,
+        "ideal_pressure_psi": 518.1,
+        "preload_invariance_1_vs_500_psi": true,
+        "primary_run": {
+          "input_sha256": "f5b7f2158527706e722d9fb876e84ab485bd549586fe9662f51c58d36422ae99",
+          "raw_output_sha256": "ad71933a356242c3dfd35130a8236c969fd36ec68a99ebefc4b36a3c63e3599b",
+          "reported_revision": "Revision E.3.6, March 2026",
+          "results": [
+            {
+              "circumferential_lobes_n": 3,
+              "ideal_pressure_psi": 518.1
+            }
+          ],
+          "solver_notices": [],
+          "stderr": "Note: The following floating-point exceptions are signalling: IEEE_UNDERFLOW_FLAG\nSTOP  NORMAL TERMINATION"
+        },
+        "scaling_check_run": {
+          "input_sha256": "1856af07a7d00742f209900774929a40ea1dd470b93b634bbd967287a42ab1cb",
+          "raw_output_sha256": "33064f5d8c55177290a0ff44b4691827f50d5e13c3b9c335361a9f88b6285846",
+          "reported_revision": "Revision E.3.6, March 2026",
+          "results": [
+            {
+              "circumferential_lobes_n": 3,
+              "ideal_pressure_psi": 518.1
+            }
+          ],
+          "solver_notices": [],
+          "stderr": "Note: The following floating-point exceptions are signalling: IEEE_UNDERFLOW_FLAG\nSTOP  NORMAL TERMINATION"
+        }
+      },
+      "frame_spaces": 23,
+      "simply_supported": {
+        "circumferential_lobes_n": 2,
+        "ideal_pressure_psi": 331.3,
+        "preload_invariance_1_vs_500_psi": true,
+        "primary_run": {
+          "input_sha256": "2f160059d662a8c19fafea3f67c77ab76f54ff4dbb6175df65e399694f2e7376",
+          "raw_output_sha256": "043980259e39c36f6816cde802197fdebeb667baf220a01320725aa4d6082323",
+          "reported_revision": "Revision E.3.6, March 2026",
+          "results": [
+            {
+              "circumferential_lobes_n": 2,
+              "ideal_pressure_psi": 331.3
+            }
+          ],
+          "solver_notices": [],
+          "stderr": "Note: The following floating-point exceptions are signalling: IEEE_UNDERFLOW_FLAG\nSTOP  NORMAL TERMINATION"
+        },
+        "scaling_check_run": {
+          "input_sha256": "13824e1c230a3115221567877f51cbc84e2d60c5d8d56fc85c950afb73d81532",
+          "raw_output_sha256": "281b142a6ee6c32df31185d102c6a0a1ec46b83c6a6233d763df8aeeb6e41404",
+          "reported_revision": "Revision E.3.6, March 2026",
+          "results": [
+            {
+              "circumferential_lobes_n": 2,
+              "ideal_pressure_psi": 331.3
+            }
+          ],
+          "solver_notices": [],
+          "stderr": "Note: The following floating-point exceptions are signalling: IEEE_UNDERFLOW_FLAG\nSTOP  NORMAL TERMINATION"
+        }
+      }
+    },
+    {
+      "clamped": {
+        "circumferential_lobes_n": 3,
+        "ideal_pressure_psi": 497.8,
+        "preload_invariance_1_vs_500_psi": true,
+        "primary_run": {
+          "input_sha256": "14849e6bc826d1ddbda5acb801ebab9135e250f3bb6bf288924ba8f4df730fd6",
+          "raw_output_sha256": "c4433a1ee266be6f565bc1e8752909187fe0feb53cfe1c40f62c6ebffefeea13",
+          "reported_revision": "Revision E.3.6, March 2026",
+          "results": [
+            {
+              "circumferential_lobes_n": 3,
+              "ideal_pressure_psi": 497.8
+            }
+          ],
+          "solver_notices": [
+            "* * * WARNING: EGI/IGI uses L = nearest integer multiple of LF * * *"
+          ],
+          "stderr": "Note: The following floating-point exceptions are signalling: IEEE_UNDERFLOW_FLAG\nSTOP  NORMAL TERMINATION"
+        },
+        "scaling_check_run": {
+          "input_sha256": "148b030256adafd396a7e2265231a657cc42d772a40497c17b91392b162f6d96",
+          "raw_output_sha256": "a67bb1cc3e3309be29b61feb4d7f75371fd542163971751cdfeb1e7b06a0f38b",
+          "reported_revision": "Revision E.3.6, March 2026",
+          "results": [
+            {
+              "circumferential_lobes_n": 3,
+              "ideal_pressure_psi": 497.8
+            }
+          ],
+          "solver_notices": [
+            "* * * WARNING: EGI/IGI uses L = nearest integer multiple of LF * * *"
+          ],
+          "stderr": "Note: The following floating-point exceptions are signalling: IEEE_UNDERFLOW_FLAG\nSTOP  NORMAL TERMINATION"
+        }
+      },
+      "frame_spaces": 25,
+      "simply_supported": {
+        "circumferential_lobes_n": 2,
+        "ideal_pressure_psi": 274.6,
+        "preload_invariance_1_vs_500_psi": true,
+        "primary_run": {
+          "input_sha256": "3322a84e429fe3a7b97e1412fc08dcc1a94c87bd8abf33939f4b0516271c4ef1",
+          "raw_output_sha256": "50d05f9a564a1fca8fe9ce592a40280d3cf247b43c18fe8022a045bd3adcceea",
+          "reported_revision": "Revision E.3.6, March 2026",
+          "results": [
+            {
+              "circumferential_lobes_n": 2,
+              "ideal_pressure_psi": 274.6
+            }
+          ],
+          "solver_notices": [
+            "* * * WARNING: EGI/IGI uses L = nearest integer multiple of LF * * *"
+          ],
+          "stderr": "Note: The following floating-point exceptions are signalling: IEEE_UNDERFLOW_FLAG\nSTOP  NORMAL TERMINATION"
+        },
+        "scaling_check_run": {
+          "input_sha256": "ad3fa7c326fbc7526e7fa54e440e1a6f4f6c6d73b2d0198e28f216efdfd0c434",
+          "raw_output_sha256": "f3f077013f34fea3da938dfa09fa85d8e7068b0b2dbbf2601ecb3b663c577bbe",
+          "reported_revision": "Revision E.3.6, March 2026",
+          "results": [
+            {
+              "circumferential_lobes_n": 2,
+              "ideal_pressure_psi": 274.6
+            }
+          ],
+          "solver_notices": [
+            "* * * WARNING: EGI/IGI uses L = nearest integer multiple of LF * * *"
+          ],
+          "stderr": "Note: The following floating-point exceptions are signalling: IEEE_UNDERFLOW_FLAG\nSTOP  NORMAL TERMINATION"
+        }
+      }
+    },
+    {
+      "clamped": {
+        "circumferential_lobes_n": 3,
+        "ideal_pressure_psi": 489.6,
+        "preload_invariance_1_vs_500_psi": true,
+        "primary_run": {
+          "input_sha256": "3ca1db00b12ea532a268d26e37465d08f16717510e8e705bcbb5e53520106417",
+          "raw_output_sha256": "e584594bb544f6552c8ae7c36cd0c66021c9b595a7e237a5ecc3847e28d97e00",
+          "reported_revision": "Revision E.3.6, March 2026",
+          "results": [
+            {
+              "circumferential_lobes_n": 3,
+              "ideal_pressure_psi": 489.6
+            }
+          ],
+          "solver_notices": [
+            "* * * WARNING: EGI/IGI uses L = nearest integer multiple of LF * * *"
+          ],
+          "stderr": "Note: The following floating-point exceptions are signalling: IEEE_UNDERFLOW_FLAG\nSTOP  NORMAL TERMINATION"
+        },
+        "scaling_check_run": {
+          "input_sha256": "36e90002dcced5a549d1a3efbb52f6d93b8c18b07ed62f479b0eb711104130ac",
+          "raw_output_sha256": "709bb352dc4e06a82a0ecf1c7eafab99f1aebc3390760d7bb26884dcc0dc00c1",
+          "reported_revision": "Revision E.3.6, March 2026",
+          "results": [
+            {
+              "circumferential_lobes_n": 3,
+              "ideal_pressure_psi": 489.6
+            }
+          ],
+          "solver_notices": [
+            "* * * WARNING: EGI/IGI uses L = nearest integer multiple of LF * * *"
+          ],
+          "stderr": "Note: The following floating-point exceptions are signalling: IEEE_UNDERFLOW_FLAG\nSTOP  NORMAL TERMINATION"
+        }
+      },
+      "frame_spaces": 26,
+      "simply_supported": {
+        "circumferential_lobes_n": 2,
+        "ideal_pressure_psi": 253.6,
+        "preload_invariance_1_vs_500_psi": true,
+        "primary_run": {
+          "input_sha256": "077d1cdc9fbb624ad7e69131136cca3d0c0a7bd50c2f7c5c83e3320304e07cb3",
+          "raw_output_sha256": "30ebc99c90ad0eb3b0c1f0e4f18fd0d05b0ddc84d9570bcacfcd6d5b81abeb32",
+          "reported_revision": "Revision E.3.6, March 2026",
+          "results": [
+            {
+              "circumferential_lobes_n": 2,
+              "ideal_pressure_psi": 253.6
+            }
+          ],
+          "solver_notices": [
+            "* * * WARNING: EGI/IGI uses L = nearest integer multiple of LF * * *"
+          ],
+          "stderr": "Note: The following floating-point exceptions are signalling: IEEE_UNDERFLOW_FLAG\nSTOP  NORMAL TERMINATION"
+        },
+        "scaling_check_run": {
+          "input_sha256": "023292372ec49626304e4ebb2302576df2cd38524419f1b669c0473709d4ae6a",
+          "raw_output_sha256": "325a13b7d40041e635ecd89fa1bb172394945759169591dd6566e9b500d5fe4d",
+          "reported_revision": "Revision E.3.6, March 2026",
+          "results": [
+            {
+              "circumferential_lobes_n": 2,
+              "ideal_pressure_psi": 253.6
+            }
+          ],
+          "solver_notices": [
+            "* * * WARNING: EGI/IGI uses L = nearest integer multiple of LF * * *"
+          ],
+          "stderr": "Note: The following floating-point exceptions are signalling: IEEE_UNDERFLOW_FLAG\nSTOP  NORMAL TERMINATION"
+        }
+      }
+    },
+    {
+      "clamped": {
+        "circumferential_lobes_n": 3,
+        "ideal_pressure_psi": 482.4,
+        "preload_invariance_1_vs_500_psi": true,
+        "primary_run": {
+          "input_sha256": "b4f7c86da490ffffa3ea3232c90944c6a981dd12549d9f07d8128ea96f1faccd",
+          "raw_output_sha256": "1953aa6f3a4abe3dd1e7231eb8e6b25824dae48917de24475a8b4858a82049fb",
+          "reported_revision": "Revision E.3.6, March 2026",
+          "results": [
+            {
+              "circumferential_lobes_n": 3,
+              "ideal_pressure_psi": 482.4
+            }
+          ],
+          "solver_notices": [],
+          "stderr": "Note: The following floating-point exceptions are signalling: IEEE_UNDERFLOW_FLAG\nSTOP  NORMAL TERMINATION"
+        },
+        "scaling_check_run": {
+          "input_sha256": "66faeca189faeb9a9f7a10d536865813ac2bf167cc1f47ed586bf67e92ba5196",
+          "raw_output_sha256": "173ac3ee27c3c8f343dd1b87f303f141702cdb0dc5d430a107a9e1c67ec57964",
+          "reported_revision": "Revision E.3.6, March 2026",
+          "results": [
+            {
+              "circumferential_lobes_n": 3,
+              "ideal_pressure_psi": 482.4
+            }
+          ],
+          "solver_notices": [],
+          "stderr": "Note: The following floating-point exceptions are signalling: IEEE_UNDERFLOW_FLAG\nSTOP  NORMAL TERMINATION"
+        }
+      },
+      "frame_spaces": 27,
+      "simply_supported": {
+        "circumferential_lobes_n": 2,
+        "ideal_pressure_psi": 236.1,
+        "preload_invariance_1_vs_500_psi": true,
+        "primary_run": {
+          "input_sha256": "0376ef83c977861b12291719aed8d8a528381001d785457bd08645256263b1fb",
+          "raw_output_sha256": "be75cf038f7e5d166567311cd9ea272ca37aa22ec6b03789294273367fcc9ee5",
+          "reported_revision": "Revision E.3.6, March 2026",
+          "results": [
+            {
+              "circumferential_lobes_n": 2,
+              "ideal_pressure_psi": 236.1
+            }
+          ],
+          "solver_notices": [],
+          "stderr": "Note: The following floating-point exceptions are signalling: IEEE_UNDERFLOW_FLAG\nSTOP  NORMAL TERMINATION"
+        },
+        "scaling_check_run": {
+          "input_sha256": "4519a8d109c23065f6003871e9daaf05523e3a91c359954944670e2743a1fc55",
+          "raw_output_sha256": "be39cbccb5cdb719e87e029f7ea44d2cda81efe940c73bba4cae96572d29ba84",
+          "reported_revision": "Revision E.3.6, March 2026",
+          "results": [
+            {
+              "circumferential_lobes_n": 2,
+              "ideal_pressure_psi": 236.1
+            }
+          ],
+          "solver_notices": [],
+          "stderr": "Note: The following floating-point exceptions are signalling: IEEE_UNDERFLOW_FLAG\nSTOP  NORMAL TERMINATION"
+        }
+      }
+    },
+    {
+      "clamped": {
+        "circumferential_lobes_n": 3,
+        "ideal_pressure_psi": 476.1,
+        "preload_invariance_1_vs_500_psi": true,
+        "primary_run": {
+          "input_sha256": "1859c6d2f6b5989026d0f12052d5d93f2b2168eec03495c6593312ca97dcacc6",
+          "raw_output_sha256": "cd10981003b445dc9be8944dfc02a0a451cd869d376f554ebecaa4f3d2b12fd3",
+          "reported_revision": "Revision E.3.6, March 2026",
+          "results": [
+            {
+              "circumferential_lobes_n": 3,
+              "ideal_pressure_psi": 476.1
+            }
+          ],
+          "solver_notices": [],
+          "stderr": "Note: The following floating-point exceptions are signalling: IEEE_UNDERFLOW_FLAG\nSTOP  NORMAL TERMINATION"
+        },
+        "scaling_check_run": {
+          "input_sha256": "a3a3833b26f72c05d55116de8648e60fc99c65b7fd8d7463def0c464e0a4249c",
+          "raw_output_sha256": "8de609e11f5d7089788514ccbe787ae8d07f1b47adb3615bd9fd031d04e8decd",
+          "reported_revision": "Revision E.3.6, March 2026",
+          "results": [
+            {
+              "circumferential_lobes_n": 3,
+              "ideal_pressure_psi": 476.1
+            }
+          ],
+          "solver_notices": [],
+          "stderr": "Note: The following floating-point exceptions are signalling: IEEE_UNDERFLOW_FLAG\nSTOP  NORMAL TERMINATION"
+        }
+      },
+      "frame_spaces": 28,
+      "simply_supported": {
+        "circumferential_lobes_n": 2,
+        "ideal_pressure_psi": 221.7,
+        "preload_invariance_1_vs_500_psi": true,
+        "primary_run": {
+          "input_sha256": "c937d6bf5966e1321b49e9cc6b424e799701ece7e88096ecbfbceea46f8ec05d",
+          "raw_output_sha256": "60574e200b2d179999f05df9e5102e777ce37b8a8f2f9852064ef483bbf875d2",
+          "reported_revision": "Revision E.3.6, March 2026",
+          "results": [
+            {
+              "circumferential_lobes_n": 2,
+              "ideal_pressure_psi": 221.7
+            }
+          ],
+          "solver_notices": [],
+          "stderr": "Note: The following floating-point exceptions are signalling: IEEE_UNDERFLOW_FLAG\nSTOP  NORMAL TERMINATION"
+        },
+        "scaling_check_run": {
+          "input_sha256": "89efa1cdd69b728a1ba1d68a83decd2094e3da631caa5eaf15de314c359ef9f7",
+          "raw_output_sha256": "2d62ef361917e5acabd1de1eeff9680a1fd4e0022dcaf1e6a4619026790fcf37",
+          "reported_revision": "Revision E.3.6, March 2026",
+          "results": [
+            {
+              "circumferential_lobes_n": 2,
+              "ideal_pressure_psi": 221.7
+            }
+          ],
+          "solver_notices": [],
+          "stderr": "Note: The following floating-point exceptions are signalling: IEEE_UNDERFLOW_FLAG\nSTOP  NORMAL TERMINATION"
+        }
+      }
+    },
+    {
+      "clamped": {
+        "circumferential_lobes_n": 3,
+        "ideal_pressure_psi": 470.5,
+        "preload_invariance_1_vs_500_psi": true,
+        "primary_run": {
+          "input_sha256": "63844d8bf283fdca0208c98bdccaa3b490d0923c7dac367d638cfd6e81b0fa38",
+          "raw_output_sha256": "c4dc7806c46202172dc06c69f6537f30d85f7a1369cf5019d7ad13312b941a7d",
+          "reported_revision": "Revision E.3.6, March 2026",
+          "results": [
+            {
+              "circumferential_lobes_n": 3,
+              "ideal_pressure_psi": 470.5
+            }
+          ],
+          "solver_notices": [
+            "* * * WARNING: EGI/IGI uses L = nearest integer multiple of LF * * *"
+          ],
+          "stderr": "Note: The following floating-point exceptions are signalling: IEEE_UNDERFLOW_FLAG\nSTOP  NORMAL TERMINATION"
+        },
+        "scaling_check_run": {
+          "input_sha256": "ee3d0ed3557eee4a70680f17a118ec172f20681e1911c209232344f8d813bce8",
+          "raw_output_sha256": "f9e5e50007e8d9f5e69232ce87dd55f4c515e139a38fbc17ffd0e725b6cb20ec",
+          "reported_revision": "Revision E.3.6, March 2026",
+          "results": [
+            {
+              "circumferential_lobes_n": 3,
+              "ideal_pressure_psi": 470.5
+            }
+          ],
+          "solver_notices": [
+            "* * * WARNING: EGI/IGI uses L = nearest integer multiple of LF * * *"
+          ],
+          "stderr": "Note: The following floating-point exceptions are signalling: IEEE_UNDERFLOW_FLAG\nSTOP  NORMAL TERMINATION"
+        }
+      },
+      "frame_spaces": 29,
+      "simply_supported": {
+        "circumferential_lobes_n": 2,
+        "ideal_pressure_psi": 209.6,
+        "preload_invariance_1_vs_500_psi": true,
+        "primary_run": {
+          "input_sha256": "93746ce126d3aa5809b031c92bbb2ee2e0eab62831ec763b60393748f17f05fe",
+          "raw_output_sha256": "c967d5d118fab173e7e7b71361a285c2ed0fe576ea0a360e231630d2588d81e0",
+          "reported_revision": "Revision E.3.6, March 2026",
+          "results": [
+            {
+              "circumferential_lobes_n": 2,
+              "ideal_pressure_psi": 209.6
+            }
+          ],
+          "solver_notices": [
+            "* * * WARNING: EGI/IGI uses L = nearest integer multiple of LF * * *"
+          ],
+          "stderr": "Note: The following floating-point exceptions are signalling: IEEE_UNDERFLOW_FLAG\nSTOP  NORMAL TERMINATION"
+        },
+        "scaling_check_run": {
+          "input_sha256": "f75a23622c2727507d589320bd418eb2d0a6ced37340197ac63b2bb1fec15479",
+          "raw_output_sha256": "1b256a3b5c12b672e6ae4802a60ef6753c36ac3abf1a1ae2108efc64d3e16dc1",
+          "reported_revision": "Revision E.3.6, March 2026",
+          "results": [
+            {
+              "circumferential_lobes_n": 2,
+              "ideal_pressure_psi": 209.6
+            }
+          ],
+          "solver_notices": [
+            "* * * WARNING: EGI/IGI uses L = nearest integer multiple of LF * * *"
+          ],
+          "stderr": "Note: The following floating-point exceptions are signalling: IEEE_UNDERFLOW_FLAG\nSTOP  NORMAL TERMINATION"
+        }
+      }
+    },
+    {
+      "clamped": {
+        "circumferential_lobes_n": 3,
+        "ideal_pressure_psi": 461.1,
+        "preload_invariance_1_vs_500_psi": true,
+        "primary_run": {
+          "input_sha256": "6c3c889260f7f7cfae6a7ade9b321cda72fefc90005117cdee331bee8bd8a05d",
+          "raw_output_sha256": "de8be637828dced6e6ae8e046ed5151328a87270f1ca3da7c1591bb2b6e29b54",
+          "reported_revision": "Revision E.3.6, March 2026",
+          "results": [
+            {
+              "circumferential_lobes_n": 3,
+              "ideal_pressure_psi": 461.1
+            }
+          ],
+          "solver_notices": [
+            "* * * WARNING: EGI/IGI uses L = nearest integer multiple of LF * * *"
+          ],
+          "stderr": "Note: The following floating-point exceptions are signalling: IEEE_UNDERFLOW_FLAG\nSTOP  NORMAL TERMINATION"
+        },
+        "scaling_check_run": {
+          "input_sha256": "1f8fc90971a1d6e4c05d84e619a30b64d50acfd3ffc1f75cb68024d2cda6476d",
+          "raw_output_sha256": "5c9cbdbf0a1025448f374c56fb7046d4eb23ddf823efa14f709b48d02efdb189",
+          "reported_revision": "Revision E.3.6, March 2026",
+          "results": [
+            {
+              "circumferential_lobes_n": 3,
+              "ideal_pressure_psi": 461.1
+            }
+          ],
+          "solver_notices": [
+            "* * * WARNING: EGI/IGI uses L = nearest integer multiple of LF * * *"
+          ],
+          "stderr": "Note: The following floating-point exceptions are signalling: IEEE_UNDERFLOW_FLAG\nSTOP  NORMAL TERMINATION"
+        }
+      },
+      "frame_spaces": 31,
+      "simply_supported": {
+        "circumferential_lobes_n": 2,
+        "ideal_pressure_psi": 190.8,
+        "preload_invariance_1_vs_500_psi": true,
+        "primary_run": {
+          "input_sha256": "b6716899fbd822e990ae56727174608e8164464eee4d0fe5f478a7102e19af13",
+          "raw_output_sha256": "fadc1145b5c634ab5833643422eca18b6199974fed455b4bc192c5bc17f8c689",
+          "reported_revision": "Revision E.3.6, March 2026",
+          "results": [
+            {
+              "circumferential_lobes_n": 2,
+              "ideal_pressure_psi": 190.8
+            }
+          ],
+          "solver_notices": [
+            "* * * WARNING: EGI/IGI uses L = nearest integer multiple of LF * * *"
+          ],
+          "stderr": "Note: The following floating-point exceptions are signalling: IEEE_UNDERFLOW_FLAG\nSTOP  NORMAL TERMINATION"
+        },
+        "scaling_check_run": {
+          "input_sha256": "c08beefd58fd8455c7c78727c9f7aea308a90ce577d513643afd4e65a91df1fb",
+          "raw_output_sha256": "0a2e4652f26648327b5d40ced7ef42b7c12134d177a1b4924a767ab22b3b6cfa",
+          "reported_revision": "Revision E.3.6, March 2026",
+          "results": [
+            {
+              "circumferential_lobes_n": 2,
+              "ideal_pressure_psi": 190.8
+            }
+          ],
+          "solver_notices": [
+            "* * * WARNING: EGI/IGI uses L = nearest integer multiple of LF * * *"
+          ],
+          "stderr": "Note: The following floating-point exceptions are signalling: IEEE_UNDERFLOW_FLAG\nSTOP  NORMAL TERMINATION"
+        }
+      }
+    },
+    {
+      "clamped": {
+        "circumferential_lobes_n": 3,
+        "ideal_pressure_psi": 453.5,
+        "preload_invariance_1_vs_500_psi": true,
+        "primary_run": {
+          "input_sha256": "546afd52212b72d81ba754a5d7c2509aac5bbfde8529fe655b6df6df82a164cc",
+          "raw_output_sha256": "0a119e984fc4c55f70e44bd8b93eb0d5ae09c5b8f29fced184e4be381e77d105",
+          "reported_revision": "Revision E.3.6, March 2026",
+          "results": [
+            {
+              "circumferential_lobes_n": 3,
+              "ideal_pressure_psi": 453.5
+            }
+          ],
+          "solver_notices": [],
+          "stderr": "Note: The following floating-point exceptions are signalling: IEEE_UNDERFLOW_FLAG\nSTOP  NORMAL TERMINATION"
+        },
+        "scaling_check_run": {
+          "input_sha256": "c7032b1ec29001811e25730ba9820b5f367f218a68f490f8ed7abe4132dea8bd",
+          "raw_output_sha256": "1ceacf895075e8835385a773616751b88c5b5d4653ec4271bd13f7d39339d3cc",
+          "reported_revision": "Revision E.3.6, March 2026",
+          "results": [
+            {
+              "circumferential_lobes_n": 3,
+              "ideal_pressure_psi": 453.5
+            }
+          ],
+          "solver_notices": [],
+          "stderr": "Note: The following floating-point exceptions are signalling: IEEE_UNDERFLOW_FLAG\nSTOP  NORMAL TERMINATION"
+        }
+      },
+      "frame_spaces": 33,
+      "simply_supported": {
+        "circumferential_lobes_n": 2,
+        "ideal_pressure_psi": 177.4,
+        "preload_invariance_1_vs_500_psi": true,
+        "primary_run": {
+          "input_sha256": "c70c185a51e11205ffd26e0a0a03da527fa8cbec67ddff59dcfc30eacc7ae900",
+          "raw_output_sha256": "f5cd6d0aad85d76cd29d5d50f402d279ee1e9461a0dbb79fc4a4ee119c9dacc9",
+          "reported_revision": "Revision E.3.6, March 2026",
+          "results": [
+            {
+              "circumferential_lobes_n": 2,
+              "ideal_pressure_psi": 177.4
+            }
+          ],
+          "solver_notices": [],
+          "stderr": "Note: The following floating-point exceptions are signalling: IEEE_UNDERFLOW_FLAG\nSTOP  NORMAL TERMINATION"
+        },
+        "scaling_check_run": {
+          "input_sha256": "12bbb05ed216c2e05c63b63db7490104ee37bef5af6948833f6974b28df390fd",
+          "raw_output_sha256": "37950c0379c649f52dc41c39b50b62fa50a6b708caeaeadab1fb240dcb6f4235",
+          "reported_revision": "Revision E.3.6, March 2026",
+          "results": [
+            {
+              "circumferential_lobes_n": 2,
+              "ideal_pressure_psi": 177.4
+            }
+          ],
+          "solver_notices": [],
+          "stderr": "Note: The following floating-point exceptions are signalling: IEEE_UNDERFLOW_FLAG\nSTOP  NORMAL TERMINATION"
+        }
+      }
+    }
+  ]
+}

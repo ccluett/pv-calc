@@ -648,7 +648,7 @@ class SmoothCylinderBucklingResult:
 
 
 RING_SHELL_MODEL_ID = "nasa_ring_stiffened_shell_external_pressure"
-RING_SHELL_MODEL_VERSION = "4.0.0"
+RING_SHELL_MODEL_VERSION = "4.1.0"
 RING_SHELL_EQ64_ADJUSTMENT_FACTOR = 0.75
 RING_SHELL_MIN_RADIUS_THICKNESS_RATIO = 10.0
 RING_SHELL_DEFAULT_MAX_MODE_EVALUATIONS = 2_000_000
@@ -659,7 +659,18 @@ RING_SHELL_SECTION_SOURCE = (
     "NASA/TP-2011-216882, Appendix A, Eq. A16, p. 100"
 )
 RING_SHELL_BENCHMARK_SOURCE = (
-    "DTMB Report 1324, Figure 2 and Table 2, case-17 rectangular-ring cylinders"
+    "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings"
+)
+RING_SHELL_BOUNDARY_ASSUMPTIONS = (
+    "Global ends are restrained against radial displacement and free to rotate; "
+    "closed-end pressure supplies the axial compression in NASA Eq. 65.",
+    "Closure stiffness, contact, and shell continuing beyond a support are not modeled.",
+    "Inter-ring bays assume ideal circular supports at ring center lines.",
+)
+RING_SHELL_PARTIAL_SCOPE_REASON = (
+    "Global ring-shell buckling is advisory: the mode search covers m >= 1, n >= 2 only, "
+    "and axisymmetric (n=0) buckling, actual end restraint, the long-cylinder transition, "
+    "and local failure modes are not covered."
 )
 GENERAL_INSTABILITY_SCOPE_NOTE = (
     "Ring material stress, frame tripping/crippling, attachment and weld effects, fabrication "
@@ -755,6 +766,7 @@ class RingModeSearchIteration:
 @dataclass(frozen=True)
 class RingGlobalBucklingResult:
     ring_torsion_included: bool
+    mode_domain: Literal["m>=1,n>=2"]
     converged: bool
     termination_reason: Literal[
         "stable_interior_governing_mode",
@@ -787,6 +799,7 @@ class RingModeDisposition:
     mode: str
     disposition: Literal[
         "implemented_advisory",
+        "not_implemented",
         "not_applicable",
         "external_blocker",
     ]
@@ -808,6 +821,7 @@ class RingShellResult:
     ]
     load_case: Literal["hydrostatic_closed_end"]
     boundary_condition: Literal["simply_supported"]
+    boundary_assumptions: tuple[str, ...]
     radius_convention: Literal["shell_mid_surface"]
     external_pressure_mpa: float
     shell_mid_surface_radius_mm: float
@@ -2247,7 +2261,7 @@ def _ring_stiffened_orthotropic_external_pressure_pcr(
     include_ring_torsion: bool,
     max_mode_evaluations: int = RING_SHELL_DEFAULT_MAX_MODE_EVALUATIONS,
 ) -> RingGlobalBucklingResult:
-    """Evaluate NASA Eq. 64/65 with an expanding, evidenced mode search."""
+    """Evaluate NASA Eq. 64/65 with an expanding, evidenced mode search over m >= 1, n >= 2."""
     e_mpa = elastic_modulus_mpa
     v = poisson_ratio
     r_mm = shell_mid_surface_radius_mm
@@ -2416,6 +2430,7 @@ def _ring_stiffened_orthotropic_external_pressure_pcr(
     ideal_pressure = best[2] if converged and best is not None else None
     return RingGlobalBucklingResult(
         ring_torsion_included=include_ring_torsion,
+        mode_domain="m>=1,n>=2",
         converged=converged,
         termination_reason=termination_reason,
         ideal_critical_pressure_mpa=ideal_pressure,
@@ -3027,9 +3042,10 @@ def ring_stiffened_shell_external_pressure(
                 "corrections are not implemented for the smeared orthotropic mode"
             )
 
-    # Every candidate pressure is an elastic upper bound on its mode, so the
-    # minimum over all of them is the tightest bound the model can state;
-    # dropping a labelled bound could only raise it.
+    # Every candidate pressure is an elastic upper bound on its own mode, so the
+    # minimum over the available modes is the tightest value the model can state;
+    # dropping a labelled bound could only raise it. Modes outside the search
+    # are not represented.
     advisory_candidates: list[tuple[str, float, RingShellAdvisoryStatus]] = []
     if capacity_status == "advisory" and global_pressure is not None:
         advisory_candidates.append(
@@ -3073,8 +3089,28 @@ def ring_stiffened_shell_external_pressure(
             source_reference=RING_SHELL_SOURCE,
             basis=(
                 "Equation and rectangular-section mapping are verified and DTMB-compared, but "
-                "NASA reports 10-40% low-lobe theory error and gives no numeric Eq. 64/Eq. 66 "
-                "finite-to-long transition; in-service pressure-hull use is not justified."
+                "the predicted lobe transition disagrees with the DTMB data and NASA gives no "
+                "numeric Eq. 64/Eq. 66 finite-to-long transition; in-service pressure-hull use "
+                "is not justified."
+            ),
+        ),
+        RingModeDisposition(
+            mode="axisymmetric_hydrostatic_buckling",
+            disposition="not_implemented",
+            source_reference="NASA TN D-3647, pp. 6-7; NASA/SP-8007-2020/REV 2 Eqs. 64-65",
+            basis=(
+                "The n=0 branch driven by axial end compression is outside the m >= 1, n >= 2 "
+                "search; NASA TN D-3647 shows it can govern when the axial wavelength "
+                "approaches the ring spacing."
+            ),
+        ),
+        RingModeDisposition(
+            mode="physical_end_restraint",
+            disposition="external_blocker",
+            source_reference="DTMB Report 1324, Fig. 3 and Tables 1-2, pp. 5-10",
+            basis=(
+                "Only ideal simple supports are modeled; closure stiffness, contact, and "
+                "shell continuing beyond a support are not represented."
             ),
         ),
         RingModeDisposition(
@@ -3161,8 +3197,7 @@ def ring_stiffened_shell_external_pressure(
         "bounds; advisory_governing_mode selects their minimum. Withheld modes are excluded.",
         "advisory_governing_status describes the selected mode. "
         "global_elastic_applicability separately reports the global mode's material limit.",
-        "Ring pressures remain advisory: the Eq. 64/66 transition and local failure modes "
-        "are outside this calculation. NASA also reports 10-40% theory error for low-lobe modes.",
+        RING_SHELL_PARTIAL_SCOPE_REASON,
         GENERAL_INSTABILITY_SMEARED_NOTE,
         GENERAL_INSTABILITY_SCOPE_NOTE,
         *((BUCKLING_REFERENCE_ONLY_REASON,) if data_qualification == "reference_only" else ()),
@@ -3177,6 +3212,7 @@ def ring_stiffened_shell_external_pressure(
         capacity_status=capacity_status,
         load_case="hydrostatic_closed_end",
         boundary_condition="simply_supported",
+        boundary_assumptions=RING_SHELL_BOUNDARY_ASSUMPTIONS,
         radius_convention="shell_mid_surface",
         external_pressure_mpa=p_mpa,
         shell_mid_surface_radius_mm=r_mm,

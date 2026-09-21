@@ -342,6 +342,7 @@ def test_describe_reports_complete_discoverable_contracts() -> None:
     ]["material"]["properties_used"].keys()
     assert any("global capacity" in item and "unstiffened" in item for item in ring["known_omissions"])
     assert any("Eq. 64/Eq. 66" in item for item in ring["known_omissions"])
+    assert any("axisymmetric" in item for item in ring["known_omissions"])
 
     mass = json.loads(runner.invoke(app, ["describe", "mass-properties", "--json"]).stdout)
     assert mass["available_operations"] == ["forward"]

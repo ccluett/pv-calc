@@ -17,6 +17,7 @@ from pv_calc.errors import CalcCliError
 from pv_calc.pressure_vessel import (
     BUCKLING_ELASTIC_UPPER_BOUND_FAILURE_REASON,
     BUCKLING_ELASTIC_UPPER_BOUND_STATUSES,
+    RING_SHELL_PARTIAL_SCOPE_REASON,
 )
 
 
@@ -233,7 +234,7 @@ def _result_checks(payload: dict[str, Any]) -> list[dict[str, Any]]:
         return [
             _check("ring_shell_global_buckling", pressure, None, None,
                    result.get("capacity_status", "unavailable"),
-                   [*result.get("validity_violations", []), "Global ring-shell buckling is advisory: the long-cylinder transition and local failure modes are not covered."]),
+                   [*result.get("validity_violations", []), RING_SHELL_PARTIAL_SCOPE_REASON]),
             inter_ring,
         ]
     return []

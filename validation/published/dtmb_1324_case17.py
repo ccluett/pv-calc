@@ -173,7 +173,13 @@ def build_results() -> dict[str, Any]:
         "case 17 no-torsion adjusted",
     )
     return {
-        "benchmark": "DTMB Report 1324 Figure 2 and Table 2 rectangular-ring cases",
+        "benchmark": "DTMB Report 1324 Table 2: cylinder 4-A at ten internal-bulkhead spacings",
+        "specimen_count": 1,
+        "measurement_method": "nondestructive Southwell estimates of elastic buckling",
+        "model_boundary_condition": primary.boundary_condition,
+        "model_mode_domain": primary.global_with_ring_torsion.mode_domain,
+        "model_id": primary.model_id,
+        "model_version": primary.model_version,
         "source_record": "https://dome.mit.edu/handle/1721.3/48982",
         "source_pdf_sha256": "975aaf2ef7f4b0adde9cd15dd8dc5ea378e91e097d5f145d60923aeeede728a2",
         "public_geometry_path": "solid_rectangle",

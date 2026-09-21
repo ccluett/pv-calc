@@ -1,0 +1,1131 @@
+{
+  "controlled_input_perturbations": [
+    {
+      "change_percent": 1.1200107783964963,
+      "frame_spaces": 17,
+      "ideal_pressure_psi": 544.0760835276617,
+      "mode": [
+        1,
+        3
+      ],
+      "perturbation": "use_inner_radius"
+    },
+    {
+      "change_percent": -1.0974271014066117,
+      "frame_spaces": 17,
+      "ideal_pressure_psi": 532.1451619640446,
+      "mode": [
+        1,
+        3
+      ],
+      "perturbation": "use_outer_radius"
+    },
+    {
+      "change_percent": 1.9049031605616884,
+      "frame_spaces": 17,
+      "ideal_pressure_psi": 548.2991959461817,
+      "mode": [
+        1,
+        3
+      ],
+      "perturbation": "one_fewer_frame_space"
+    },
+    {
+      "change_percent": -1.3311622449528215,
+      "frame_spaces": 17,
+      "ideal_pressure_psi": 530.8875503350063,
+      "mode": [
+        1,
+        3
+      ],
+      "perturbation": "one_more_frame_space"
+    },
+    {
+      "change_percent": -0.5940832367165361,
+      "frame_spaces": 17,
+      "ideal_pressure_psi": 534.8534029586823,
+      "mode": [
+        1,
+        3
+      ],
+      "perturbation": "wall_thickness_-1_percent"
+    },
+    {
+      "change_percent": 0.5951153913125617,
+      "frame_spaces": 17,
+      "ideal_pressure_psi": 541.2518845954422,
+      "mode": [
+        1,
+        3
+      ],
+      "perturbation": "wall_thickness_+1_percent"
+    },
+    {
+      "change_percent": -0.7047276895630339,
+      "frame_spaces": 17,
+      "ideal_pressure_psi": 534.2580806272724,
+      "mode": [
+        1,
+        3
+      ],
+      "perturbation": "ring_axial_width_-1_percent"
+    },
+    {
+      "change_percent": 0.7023918521356975,
+      "frame_spaces": 17,
+      "ideal_pressure_psi": 541.8290854502491,
+      "mode": [
+        1,
+        3
+      ],
+      "perturbation": "ring_axial_width_+1_percent"
+    },
+    {
+      "change_percent": -2.234319596080059,
+      "frame_spaces": 17,
+      "ideal_pressure_psi": 526.0281134082501,
+      "mode": [
+        1,
+        3
+      ],
+      "perturbation": "ring_radial_height_-1_percent"
+    },
+    {
+      "change_percent": 2.2713495033352737,
+      "frame_spaces": 17,
+      "ideal_pressure_psi": 550.2708600061889,
+      "mode": [
+        1,
+        3
+      ],
+      "perturbation": "ring_radial_height_+1_percent"
+    },
+    {
+      "change_percent": -0.9999999999989906,
+      "frame_spaces": 17,
+      "ideal_pressure_psi": 532.6693683536135,
+      "mode": [
+        1,
+        3
+      ],
+      "perturbation": "elastic_modulus_-1_percent"
+    },
+    {
+      "change_percent": 0.9999999999989573,
+      "frame_spaces": 17,
+      "ideal_pressure_psi": 543.4303656940795,
+      "mode": [
+        1,
+        3
+      ],
+      "perturbation": "elastic_modulus_+1_percent"
+    },
+    {
+      "change_percent": -0.053971675954000986,
+      "frame_spaces": 21,
+      "ideal_pressure_psi": 449.98829234191885,
+      "mode": [
+        1,
+        2
+      ],
+      "perturbation": "use_inner_radius"
+    },
+    {
+      "change_percent": 0.06965704424692909,
+      "frame_spaces": 21,
+      "ideal_pressure_psi": 450.54490752333726,
+      "mode": [
+        1,
+        2
+      ],
+      "perturbation": "use_outer_radius"
+    },
+    {
+      "change_percent": 10.963217488054934,
+      "frame_spaces": 21,
+      "ideal_pressure_psi": 499.59112520533864,
+      "mode": [
+        1,
+        2
+      ],
+      "perturbation": "one_fewer_frame_space"
+    },
+    {
+      "change_percent": -8.742667318742658,
+      "frame_spaces": 21,
+      "ideal_pressure_psi": 410.86906589001114,
+      "mode": [
+        1,
+        2
+      ],
+      "perturbation": "one_more_frame_space"
+    },
+    {
+      "change_percent": -0.8229063734453423,
+      "frame_spaces": 21,
+      "ideal_pressure_psi": 446.5263077363402,
+      "mode": [
+        1,
+        2
+      ],
+      "perturbation": "wall_thickness_-1_percent"
+    },
+    {
+      "change_percent": 0.8236663079147499,
+      "frame_spaces": 21,
+      "ideal_pressure_psi": 453.9396931557168,
+      "mode": [
+        1,
+        2
+      ],
+      "perturbation": "wall_thickness_+1_percent"
+    },
+    {
+      "change_percent": -0.32422524607903513,
+      "frame_spaces": 21,
+      "ideal_pressure_psi": 448.771526207645,
+      "mode": [
+        1,
+        2
+      ],
+      "perturbation": "ring_axial_width_-1_percent"
+    },
+    {
+      "change_percent": 0.3232531625859014,
+      "frame_spaces": 21,
+      "ideal_pressure_psi": 451.6866765976011,
+      "mode": [
+        1,
+        2
+      ],
+      "perturbation": "ring_axial_width_+1_percent"
+    },
+    {
+      "change_percent": -1.0690200386939908,
+      "frame_spaces": 21,
+      "ideal_pressure_psi": 445.4182270071272,
+      "mode": [
+        1,
+        2
+      ],
+      "perturbation": "ring_radial_height_-1_percent"
+    },
+    {
+      "change_percent": 1.0877911490616787,
+      "frame_spaces": 21,
+      "ideal_pressure_psi": 455.12886583446937,
+      "mode": [
+        1,
+        2
+      ],
+      "perturbation": "ring_radial_height_+1_percent"
+    },
+    {
+      "change_percent": -1.0000000000039977,
+      "frame_spaces": 21,
+      "ideal_pressure_psi": 445.7289768174827,
+      "mode": [
+        1,
+        2
+      ],
+      "perturbation": "elastic_modulus_-1_percent"
+    },
+    {
+      "change_percent": 0.9999999999970255,
+      "frame_spaces": 21,
+      "ideal_pressure_psi": 454.7336026117802,
+      "mode": [
+        1,
+        2
+      ],
+      "perturbation": "elastic_modulus_+1_percent"
+    },
+    {
+      "change_percent": 0.712676083755337,
+      "frame_spaces": 29,
+      "ideal_pressure_psi": 282.9175892456726,
+      "mode": [
+        1,
+        2
+      ],
+      "perturbation": "use_inner_radius"
+    },
+    {
+      "change_percent": -0.6916527770682301,
+      "frame_spaces": 29,
+      "ideal_pressure_psi": 278.9726108054025,
+      "mode": [
+        1,
+        2
+      ],
+      "perturbation": "use_outer_radius"
+    },
+    {
+      "change_percent": 3.4028363291273678,
+      "frame_spaces": 29,
+      "ideal_pressure_psi": 290.47466826393105,
+      "mode": [
+        1,
+        2
+      ],
+      "perturbation": "one_fewer_frame_space"
+    },
+    {
+      "change_percent": -2.833587657985581,
+      "frame_spaces": 29,
+      "ideal_pressure_psi": 272.95558220091584,
+      "mode": [
+        1,
+        2
+      ],
+      "perturbation": "one_more_frame_space"
+    },
+    {
+      "change_percent": -0.6773252298192145,
+      "frame_spaces": 29,
+      "ideal_pressure_psi": 279.0128591165895,
+      "mode": [
+        1,
+        2
+      ],
+      "perturbation": "wall_thickness_-1_percent"
+    },
+    {
+      "change_percent": 0.6783094007374091,
+      "frame_spaces": 29,
+      "ideal_pressure_psi": 282.82104788178594,
+      "mode": [
+        1,
+        2
+      ],
+      "perturbation": "wall_thickness_+1_percent"
+    },
+    {
+      "change_percent": -0.568040675714665,
+      "frame_spaces": 29,
+      "ideal_pressure_psi": 279.31985644593595,
+      "mode": [
+        1,
+        2
+      ],
+      "perturbation": "ring_axial_width_-1_percent"
+    },
+    {
+      "change_percent": 0.5662035507862928,
+      "frame_spaces": 29,
+      "ideal_pressure_psi": 282.50612509309815,
+      "mode": [
+        1,
+        2
+      ],
+      "perturbation": "ring_axial_width_+1_percent"
+    },
+    {
+      "change_percent": -1.8378763140281196,
+      "frame_spaces": 29,
+      "ideal_pressure_psi": 275.7526904098442,
+      "mode": [
+        1,
+        2
+      ],
+      "perturbation": "ring_radial_height_-1_percent"
+    },
+    {
+      "change_percent": 1.8691854624607096,
+      "frame_spaces": 29,
+      "ideal_pressure_psi": 286.1664041723183,
+      "mode": [
+        1,
+        2
+      ],
+      "perturbation": "ring_radial_height_+1_percent"
+    },
+    {
+      "change_percent": -1.0000000000112474,
+      "frame_spaces": 29,
+      "ideal_pressure_psi": 278.10641544293304,
+      "mode": [
+        1,
+        2
+      ],
+      "perturbation": "elastic_modulus_-1_percent"
+    },
+    {
+      "change_percent": 0.9999999999956488,
+      "frame_spaces": 29,
+      "ideal_pressure_psi": 283.7247268660426,
+      "mode": [
+        1,
+        2
+      ],
+      "perturbation": "elastic_modulus_+1_percent"
+    },
+    {
+      "change_percent": 0.9377168126583957,
+      "frame_spaces": 33,
+      "ideal_pressure_psi": 258.4318919270228,
+      "mode": [
+        1,
+        2
+      ],
+      "perturbation": "use_inner_radius"
+    },
+    {
+      "change_percent": -0.9156322483607982,
+      "frame_spaces": 33,
+      "ideal_pressure_psi": 253.6867429444148,
+      "mode": [
+        1,
+        2
+      ],
+      "perturbation": "use_outer_radius"
+    },
+    {
+      "change_percent": 1.8328722042630696,
+      "frame_spaces": 33,
+      "ideal_pressure_psi": 260.7237676373723,
+      "mode": [
+        1,
+        2
+      ],
+      "perturbation": "one_fewer_frame_space"
+    },
+    {
+      "change_percent": -1.5459222542975048,
+      "frame_spaces": 33,
+      "ideal_pressure_psi": 252.07300485086114,
+      "mode": [
+        1,
+        2
+      ],
+      "perturbation": "one_more_frame_space"
+    },
+    {
+      "change_percent": -0.6313584376132719,
+      "frame_spaces": 33,
+      "ideal_pressure_psi": 254.41457215490843,
+      "mode": [
+        1,
+        2
+      ],
+      "perturbation": "wall_thickness_-1_percent"
+    },
+    {
+      "change_percent": 0.6323559774791931,
+      "frame_spaces": 33,
+      "ideal_pressure_psi": 257.650073387356,
+      "mode": [
+        1,
+        2
+      ],
+      "perturbation": "wall_thickness_+1_percent"
+    },
+    {
+      "change_percent": -0.6416455041524105,
+      "frame_spaces": 33,
+      "ideal_pressure_psi": 254.3882340708697,
+      "mode": [
+        1,
+        2
+      ],
+      "perturbation": "ring_axial_width_-1_percent"
+    },
+    {
+      "change_percent": 0.6395297047022241,
+      "frame_spaces": 33,
+      "ideal_pressure_psi": 257.66844035618544,
+      "mode": [
+        1,
+        2
+      ],
+      "perturbation": "ring_axial_width_+1_percent"
+    },
+    {
+      "change_percent": -2.061411168476024,
+      "frame_spaces": 33,
+      "ideal_pressure_psi": 250.7531931930859,
+      "mode": [
+        1,
+        2
+      ],
+      "perturbation": "ring_radial_height_-1_percent"
+    },
+    {
+      "change_percent": 2.096169146005855,
+      "frame_spaces": 33,
+      "ideal_pressure_psi": 261.3978895507843,
+      "mode": [
+        1,
+        2
+      ],
+      "perturbation": "ring_radial_height_+1_percent"
+    },
+    {
+      "change_percent": -1.0000000000082054,
+      "frame_spaces": 33,
+      "ideal_pressure_psi": 253.47073530758328,
+      "mode": [
+        1,
+        2
+      ],
+      "perturbation": "elastic_modulus_-1_percent"
+    },
+    {
+      "change_percent": 0.9999999999923626,
+      "frame_spaces": 33,
+      "ideal_pressure_psi": 258.5913562228899,
+      "mode": [
+        1,
+        2
+      ],
+      "perturbation": "elastic_modulus_+1_percent"
+    }
+  ],
+  "long_cylinder_diagnostic": {
+    "adjusted_eq64_limit_psi": 176.42288430709974,
+    "effective_circumferential_bending_lbf_in": 3983.786020248126,
+    "eq64_n2_ideal_limit_numerical_psi": 235.2305124065648,
+    "eq64_n2_ideal_limit_psi": 235.23051240946631,
+    "eq64_over_eq66": 1.3333333333333333,
+    "eq66_ideal_pressure_psi": 176.42288430709974,
+    "scope": "asymptotic check only; not a finite-length transition selector"
+  },
+  "m1_mode_curves": [
+    {
+      "frame_spaces": 17.0,
+      "m1_n2_psi": 743.3698310939042,
+      "m1_n3_psi": 538.0498670238466
+    },
+    {
+      "frame_spaces": 17.25,
+      "m1_n2_psi": 715.3783269421252,
+      "m1_n3_psi": 536.0123184284727
+    },
+    {
+      "frame_spaces": 17.5,
+      "m1_n2_psi": 689.1273604619371,
+      "m1_n3_psi": 534.149126749591
+    },
+    {
+      "frame_spaces": 17.75,
+      "m1_n2_psi": 664.4947278928902,
+      "m1_n3_psi": 532.4453822485023
+    },
+    {
+      "frame_spaces": 18.0,
+      "m1_n2_psi": 641.3677220952604,
+      "m1_n3_psi": 530.8875503350063
+    },
+    {
+      "frame_spaces": 18.25,
+      "m1_n2_psi": 619.6423332330843,
+      "m1_n3_psi": 529.4633335792555
+    },
+    {
+      "frame_spaces": 18.5,
+      "m1_n2_psi": 599.2225206799968,
+      "m1_n3_psi": 528.16154871689
+    },
+    {
+      "frame_spaces": 18.75,
+      "m1_n2_psi": 580.0195496127404,
+      "m1_n3_psi": 526.9720168970503
+    },
+    {
+      "frame_spaces": 19.0,
+      "m1_n2_psi": 561.9513863499353,
+      "m1_n3_psi": 525.8854656408012
+    },
+    {
+      "frame_spaces": 19.25,
+      "m1_n2_psi": 544.9421470357679,
+      "m1_n3_psi": 524.8934411663065
+    },
+    {
+      "frame_spaces": 19.5,
+      "m1_n2_psi": 528.9215947666477,
+      "m1_n3_psi": 523.9882299017972
+    },
+    {
+      "frame_spaces": 19.58481188334978,
+      "m1_n2_psi": 523.6995944033885,
+      "m1_n3_psi": 523.6995944033823
+    },
+    {
+      "frame_spaces": 19.75,
+      "m1_n2_psi": 513.8246807133698,
+      "m1_n3_psi": 523.1627881502357
+    },
+    {
+      "frame_spaces": 20.0,
+      "m1_n2_psi": 499.59112520533864,
+      "m1_n3_psi": 522.4106789945481
+    },
+    {
+      "frame_spaces": 20.25,
+      "m1_n2_psi": 486.1650351212449,
+      "m1_n3_psi": 521.7260156409585
+    },
+    {
+      "frame_spaces": 20.5,
+      "m1_n2_psi": 473.4945542728995,
+      "m1_n3_psi": 521.1034104929726
+    },
+    {
+      "frame_spaces": 20.75,
+      "m1_n2_psi": 461.5315437798035,
+      "m1_n3_psi": 520.5379293319155
+    },
+    {
+      "frame_spaces": 21.0,
+      "m1_n2_psi": 450.2312897146472,
+      "m1_n3_psi": 520.0250500522593
+    },
+    {
+      "frame_spaces": 21.25,
+      "m1_n2_psi": 439.55223555505796,
+      "m1_n3_psi": 519.5606254639748
+    },
+    {
+      "frame_spaces": 21.5,
+      "m1_n2_psi": 429.45573720833477,
+      "m1_n3_psi": 519.1408497301695
+    },
+    {
+      "frame_spaces": 21.75,
+      "m1_n2_psi": 419.9058385854869,
+      "m1_n3_psi": 518.7622280569304
+    },
+    {
+      "frame_spaces": 22.0,
+      "m1_n2_psi": 410.86906589001114,
+      "m1_n3_psi": 518.4215492959441
+    },
+    {
+      "frame_spaces": 22.25,
+      "m1_n2_psi": 402.3142389587324,
+      "m1_n3_psi": 518.115861158109
+    },
+    {
+      "frame_spaces": 22.5,
+      "m1_n2_psi": 394.21229814617544,
+      "m1_n3_psi": 517.842447770024
+    },
+    {
+      "frame_spaces": 22.75,
+      "m1_n2_psi": 386.53614538493815,
+      "m1_n3_psi": 517.5988093346282
+    },
+    {
+      "frame_spaces": 23.0,
+      "m1_n2_psi": 379.2604981803311,
+      "m1_n3_psi": 517.382643683403
+    },
+    {
+      "frame_spaces": 23.25,
+      "m1_n2_psi": 372.3617554127536,
+      "m1_n3_psi": 517.1918295304795
+    },
+    {
+      "frame_spaces": 23.5,
+      "m1_n2_psi": 365.8178739247271,
+      "m1_n3_psi": 517.0244112595778
+    },
+    {
+      "frame_spaces": 23.75,
+      "m1_n2_psi": 359.60825496280376,
+      "m1_n3_psi": 516.8785850923405
+    },
+    {
+      "frame_spaces": 24.0,
+      "m1_n2_psi": 353.7136396298437,
+      "m1_n3_psi": 516.7526865031401
+    },
+    {
+      "frame_spaces": 24.25,
+      "m1_n2_psi": 348.11601257967766,
+      "m1_n3_psi": 516.645178759155
+    },
+    {
+      "frame_spaces": 24.5,
+      "m1_n2_psi": 342.7985132555463,
+      "m1_n3_psi": 516.554642477349
+    },
+    {
+      "frame_spaces": 24.75,
+      "m1_n2_psi": 337.7453540363807,
+      "m1_n3_psi": 516.4797661012645
+    },
+    {
+      "frame_spaces": 25.0,
+      "m1_n2_psi": 332.94174471259004,
+      "m1_n3_psi": 516.4193372101264
+    },
+    {
+      "frame_spaces": 25.25,
+      "m1_n2_psi": 328.37382276368925,
+      "m1_n3_psi": 516.372234582165
+    },
+    {
+      "frame_spaces": 25.5,
+      "m1_n2_psi": 324.02858895748477,
+      "m1_n3_psi": 516.3374209415059
+    },
+    {
+      "frame_spaces": 25.75,
+      "m1_n2_psi": 319.8938478329967,
+      "m1_n3_psi": 516.3139363253845
+    },
+    {
+      "frame_spaces": 26.0,
+      "m1_n2_psi": 315.9581526668377,
+      "m1_n3_psi": 516.3008920144044
+    },
+    {
+      "frame_spaces": 26.25,
+      "m1_n2_psi": 312.2107545593957,
+      "m1_n3_psi": 516.2974649746003
+    },
+    {
+      "frame_spaces": 26.5,
+      "m1_n2_psi": 308.6415553062747,
+      "m1_n3_psi": 516.3028927646955
+    },
+    {
+      "frame_spaces": 26.75,
+      "m1_n2_psi": 305.2410637524303,
+      "m1_n3_psi": 516.3164688668737
+    },
+    {
+      "frame_spaces": 27.0,
+      "m1_n2_psi": 302.00035534939275,
+      "m1_n3_psi": 516.3375384029049
+    },
+    {
+      "frame_spaces": 27.25,
+      "m1_n2_psi": 298.91103466210154,
+      "m1_n3_psi": 516.3654942018046
+    },
+    {
+      "frame_spaces": 27.5,
+      "m1_n2_psi": 295.9652005921936,
+      "m1_n3_psi": 516.3997731876581
+    },
+    {
+      "frame_spaces": 27.75,
+      "m1_n2_psi": 293.15541410485434,
+      "m1_n3_psi": 516.4398530599021
+    },
+    {
+      "frame_spaces": 28.0,
+      "m1_n2_psi": 290.47466826393185,
+      "m1_n3_psi": 516.485249240392
+    },
+    {
+      "frame_spaces": 28.25,
+      "m1_n2_psi": 287.91636039660085,
+      "m1_n3_psi": 516.535512064418
+    },
+    {
+      "frame_spaces": 28.5,
+      "m1_n2_psi": 285.4742662233243,
+      "m1_n3_psi": 516.5902241946508
+    },
+    {
+      "frame_spaces": 28.75,
+      "m1_n2_psi": 283.14251580290164,
+      "m1_n3_psi": 516.6489982390469
+    },
+    {
+      "frame_spaces": 29.0,
+      "m1_n2_psi": 280.91557115450973,
+      "m1_n3_psi": 516.7114745555085
+    },
+    {
+      "frame_spaces": 29.25,
+      "m1_n2_psi": 278.78820542954634,
+      "m1_n3_psi": 516.7773192274727
+    },
+    {
+      "frame_spaces": 29.5,
+      "m1_n2_psi": 276.7554835175268,
+      "m1_n3_psi": 516.8462221964339
+    },
+    {
+      "frame_spaces": 29.75,
+      "m1_n2_psi": 274.81274397803594,
+      "m1_n3_psi": 516.9178955380021
+    },
+    {
+      "frame_spaces": 30.0,
+      "m1_n2_psi": 272.95558220091584,
+      "m1_n3_psi": 516.9920718699925
+    },
+    {
+      "frame_spaces": 30.25,
+      "m1_n2_psi": 271.17983470373025,
+      "m1_n3_psi": 517.068502881592
+    },
+    {
+      "frame_spaces": 30.5,
+      "m1_n2_psi": 269.48156448324113,
+      "m1_n3_psi": 517.1469579737861
+    },
+    {
+      "frame_spaces": 30.75,
+      "m1_n2_psi": 267.85704734377066,
+      "m1_n3_psi": 517.2272230019651
+    },
+    {
+      "frame_spaces": 31.0,
+      "m1_n2_psi": 266.30275913205503,
+      "m1_n3_psi": 517.3090991126755
+    },
+    {
+      "frame_spaces": 31.25,
+      "m1_n2_psi": 264.81536381280836,
+      "m1_n3_psi": 517.3924016667863
+    },
+    {
+      "frame_spaces": 31.5,
+      "m1_n2_psi": 263.391702325284,
+      "m1_n3_psi": 517.4769592424034
+    },
+    {
+      "frame_spaces": 31.75,
+      "m1_n2_psi": 262.0287821645877,
+      "m1_n3_psi": 517.5626127110983
+    },
+    {
+      "frame_spaces": 32.0,
+      "m1_n2_psi": 260.7237676373723,
+      "m1_n3_psi": 517.6492143817771
+    },
+    {
+      "frame_spaces": 32.25,
+      "m1_n2_psi": 259.47397074336567,
+      "m1_n3_psi": 517.7366272068438
+    },
+    {
+      "frame_spaces": 32.5,
+      "m1_n2_psi": 258.2768426398601,
+      "m1_n3_psi": 517.8247240459591
+    },
+    {
+      "frame_spaces": 32.75,
+      "m1_n2_psi": 257.1299656482725,
+      "m1_n3_psi": 517.9133869828007
+    },
+    {
+      "frame_spaces": 33.0,
+      "m1_n2_psi": 256.03104576525686,
+      "m1_n3_psi": 518.0025066908431
+    }
+  ],
+  "mode_scan": {
+    "m": [
+      1,
+      128
+    ],
+    "n": [
+      2,
+      64
+    ]
+  },
+  "n2_n3_crossing": {
+    "adjusted_pressure_psi": 392.7746958025414,
+    "frame_spaces": 19.58481188334978,
+    "ideal_pressure_psi": 523.6995944033885,
+    "length_in": 22.561703289618944
+  },
+  "perturbation_scope": "diagnostics, not manufacturing tolerances or uncertainty bounds",
+  "purpose": "diagnostic investigation, no calibration or production method change",
+  "schema_version": "1.0.0",
+  "source_experiment": {
+    "measurement": "Southwell nondestructive estimate of elastic buckling pressure",
+    "number_of_physical_cylinders_in_table_2": 1,
+    "number_of_support_configurations": 10,
+    "pdf_sha256": "975aaf2ef7f4b0adde9cd15dd8dc5ea378e91e097d5f145d60923aeeede728a2",
+    "specimen": "DTMB 1324 cylinder 4-A"
+  },
+  "table_1_support_sensitivity": [
+    {
+      "case_I_lobes": 3,
+      "case_I_pressure_psi": 504,
+      "case_V_increase_over_case_I_percent": 38.888888888888886,
+      "case_V_lobes": 3,
+      "case_V_pressure_psi": 700,
+      "kendrick_pressure_psi": 499,
+      "specimen": "6"
+    },
+    {
+      "case_I_lobes": 2,
+      "case_I_pressure_psi": 339,
+      "case_V_increase_over_case_I_percent": 20.64896755162242,
+      "case_V_lobes": 3,
+      "case_V_pressure_psi": 409,
+      "kendrick_pressure_psi": 317,
+      "specimen": "2-A"
+    },
+    {
+      "case_I_lobes": 2,
+      "case_I_pressure_psi": 229,
+      "case_V_increase_over_case_I_percent": 65.06550218340612,
+      "case_V_lobes": 2,
+      "case_V_pressure_psi": 378,
+      "kendrick_pressure_psi": 216,
+      "specimen": "3-A"
+    },
+    {
+      "case_I_lobes": 2,
+      "case_I_pressure_psi": 178,
+      "case_V_increase_over_case_I_percent": 62.35955056179776,
+      "case_V_lobes": 2,
+      "case_V_pressure_psi": 289,
+      "kendrick_pressure_psi": 180,
+      "specimen": "4-A"
+    }
+  ],
+  "table_2": [
+    {
+      "adjusted_pressure_psi": 403.5374002678849,
+      "adjusted_vs_experiment_percent": -14.685539055415454,
+      "adjusted_vs_kendrick_percent": -5.715560685073628,
+      "decimal_schur_vs_float_relative_difference": -3.3306690738754696e-15,
+      "experimental_lobes": 3,
+      "frame_spaces": 17,
+      "ideal_pressure_psi": 538.0498670238466,
+      "ideal_vs_experiment_percent": 13.752614592779388,
+      "ideal_vs_kendrick_percent": 25.712585753235185,
+      "kendrick_lobes": 3,
+      "kendrick_pressure_psi": 428,
+      "lateral_only_pressure_at_same_mode_psi": 550.8325453782168,
+      "m1_n2_ideal_pressure_psi": 743.3698310939042,
+      "m1_n3_adjusted_pressure_psi": 403.5374002678849,
+      "m1_n3_ideal_pressure_psi": 538.0498670238466,
+      "model_mode": [
+        1,
+        3
+      ],
+      "published_length_over_diameter": 2.4,
+      "southwell_experimental_pressure_psi": 473,
+      "torsion_increment_percent_at_governing_mode": 0.2807123443844928
+    },
+    {
+      "adjusted_pressure_psi": 337.6734672859854,
+      "adjusted_vs_experiment_percent": -19.982590690524795,
+      "adjusted_vs_kendrick_percent": -16.417458592577873,
+      "decimal_schur_vs_float_relative_difference": 1.7985612998927536e-14,
+      "experimental_lobes": 3,
+      "frame_spaces": 21,
+      "ideal_pressure_psi": 450.2312897146472,
+      "ideal_vs_experiment_percent": 6.689879079300276,
+      "ideal_vs_kendrick_percent": 11.443388543229505,
+      "kendrick_lobes": 3,
+      "kendrick_pressure_psi": 404,
+      "lateral_only_pressure_at_same_mode_psi": 466.0029269015935,
+      "m1_n2_ideal_pressure_psi": 450.2312897146472,
+      "m1_n3_adjusted_pressure_psi": 390.0187875391945,
+      "m1_n3_ideal_pressure_psi": 520.0250500522593,
+      "model_mode": [
+        1,
+        2
+      ],
+      "published_length_over_diameter": 2.96,
+      "southwell_experimental_pressure_psi": 422,
+      "torsion_increment_percent_at_governing_mode": 0.2173086618740161
+    },
+    {
+      "adjusted_pressure_psi": 284.44537363524836,
+      "adjusted_vs_experiment_percent": -30.9598607681436,
+      "adjusted_vs_kendrick_percent": -22.494448600749763,
+      "decimal_schur_vs_float_relative_difference": 1.2212453270876722e-14,
+      "experimental_lobes": 3,
+      "frame_spaces": 23,
+      "ideal_pressure_psi": 379.2604981803311,
+      "ideal_vs_experiment_percent": -7.946481024191476,
+      "ideal_vs_kendrick_percent": 3.340735199000311,
+      "kendrick_lobes": 2,
+      "kendrick_pressure_psi": 367,
+      "lateral_only_pressure_at_same_mode_psi": 390.33595460370924,
+      "m1_n2_ideal_pressure_psi": 379.2604981803311,
+      "m1_n3_adjusted_pressure_psi": 388.03698276255227,
+      "m1_n3_ideal_pressure_psi": 517.382643683403,
+      "model_mode": [
+        1,
+        2
+      ],
+      "published_length_over_diameter": 3.25,
+      "southwell_experimental_pressure_psi": 412,
+      "torsion_increment_percent_at_governing_mode": 0.21627462194138136
+    },
+    {
+      "adjusted_pressure_psi": 249.70630853444254,
+      "adjusted_vs_experiment_percent": -37.72910011609911,
+      "adjusted_vs_kendrick_percent": -18.129079169035233,
+      "decimal_schur_vs_float_relative_difference": 4.8405723873656825e-14,
+      "experimental_lobes": 3,
+      "frame_spaces": 25,
+      "ideal_pressure_psi": 332.94174471259004,
+      "ideal_vs_experiment_percent": -16.972133488132158,
+      "ideal_vs_kendrick_percent": 9.161227774619674,
+      "kendrick_lobes": 2,
+      "kendrick_pressure_psi": 305,
+      "lateral_only_pressure_at_same_mode_psi": 341.17114006979983,
+      "m1_n2_ideal_pressure_psi": 332.94174471259004,
+      "m1_n3_adjusted_pressure_psi": 387.31450290759483,
+      "m1_n3_ideal_pressure_psi": 516.4193372101264,
+      "model_mode": [
+        1,
+        2
+      ],
+      "published_length_over_diameter": 3.53,
+      "southwell_experimental_pressure_psi": 401,
+      "torsion_increment_percent_at_governing_mode": 0.20941981881255067
+    },
+    {
+      "adjusted_pressure_psi": 236.96861450012827,
+      "adjusted_vs_experiment_percent": -40.46014711052054,
+      "adjusted_vs_kendrick_percent": -15.66953220636005,
+      "decimal_schur_vs_float_relative_difference": 1.0436096431476471e-13,
+      "experimental_lobes": 3,
+      "frame_spaces": 26,
+      "ideal_pressure_psi": 315.9581526668377,
+      "ideal_vs_experiment_percent": -20.613529480694048,
+      "ideal_vs_kendrick_percent": 12.44062372485326,
+      "kendrick_lobes": 2,
+      "kendrick_pressure_psi": 281,
+      "lateral_only_pressure_at_same_mode_psi": 323.17857437995684,
+      "m1_n2_ideal_pressure_psi": 315.9581526668377,
+      "m1_n3_adjusted_pressure_psi": 387.22566901080336,
+      "m1_n3_ideal_pressure_psi": 516.3008920144044,
+      "model_mode": [
+        1,
+        2
+      ],
+      "published_length_over_diameter": 3.67,
+      "southwell_experimental_pressure_psi": 398,
+      "torsion_increment_percent_at_governing_mode": 0.2043897095083569
+    },
+    {
+      "adjusted_pressure_psi": 226.50026651204456,
+      "adjusted_vs_experiment_percent": -42.51262271267905,
+      "adjusted_vs_kendrick_percent": -13.549516598456279,
+      "decimal_schur_vs_float_relative_difference": 4.9960036108132044e-14,
+      "experimental_lobes": 3,
+      "frame_spaces": 27,
+      "ideal_pressure_psi": 302.00035534939275,
+      "ideal_vs_experiment_percent": -23.350163616905395,
+      "ideal_vs_kendrick_percent": 15.267311202058309,
+      "kendrick_lobes": 2,
+      "kendrick_pressure_psi": 262,
+      "lateral_only_pressure_at_same_mode_psi": 308.40005539716907,
+      "m1_n2_ideal_pressure_psi": 302.00035534939275,
+      "m1_n3_adjusted_pressure_psi": 387.25315380217864,
+      "m1_n3_ideal_pressure_psi": 516.3375384029049,
+      "model_mode": [
+        1,
+        2
+      ],
+      "published_length_over_diameter": 3.81,
+      "southwell_experimental_pressure_psi": 394,
+      "torsion_increment_percent_at_governing_mode": 0.19860090243395412
+    },
+    {
+      "adjusted_pressure_psi": 217.8560011979489,
+      "adjusted_vs_experiment_percent": -44.28235263479567,
+      "adjusted_vs_kendrick_percent": -11.440649919532964,
+      "decimal_schur_vs_float_relative_difference": 4.8405723873656825e-14,
+      "experimental_lobes": 3,
+      "frame_spaces": 28,
+      "ideal_pressure_psi": 290.47466826393185,
+      "ideal_vs_experiment_percent": -25.709803513060912,
+      "ideal_vs_kendrick_percent": 18.07913344062271,
+      "kendrick_lobes": 2,
+      "kendrick_pressure_psi": 246,
+      "lateral_only_pressure_at_same_mode_psi": 296.19830279642514,
+      "m1_n2_ideal_pressure_psi": 290.47466826393185,
+      "m1_n3_adjusted_pressure_psi": 387.363936930294,
+      "m1_n3_ideal_pressure_psi": 516.485249240392,
+      "model_mode": [
+        1,
+        2
+      ],
+      "published_length_over_diameter": 3.96,
+      "southwell_experimental_pressure_psi": 391,
+      "torsion_increment_percent_at_governing_mode": 0.19226361158619643
+    },
+    {
+      "adjusted_pressure_psi": 210.6866783658823,
+      "adjusted_vs_experiment_percent": -44.990423403163895,
+      "adjusted_vs_kendrick_percent": -9.576532890179267,
+      "decimal_schur_vs_float_relative_difference": 6.439293542825908e-15,
+      "experimental_lobes": 2,
+      "frame_spaces": 29,
+      "ideal_pressure_psi": 280.91557115450973,
+      "ideal_vs_experiment_percent": -26.65389787088519,
+      "ideal_vs_kendrick_percent": 20.564622813094303,
+      "kendrick_lobes": 2,
+      "kendrick_pressure_psi": 233,
+      "lateral_only_pressure_at_same_mode_psi": 286.07568769911614,
+      "m1_n2_ideal_pressure_psi": 280.91557115450973,
+      "m1_n3_adjusted_pressure_psi": 387.53360591663136,
+      "m1_n3_ideal_pressure_psi": 516.7114745555085,
+      "model_mode": [
+        1,
+        2
+      ],
+      "published_length_over_diameter": 4.1,
+      "southwell_experimental_pressure_psi": 383,
+      "torsion_increment_percent_at_governing_mode": 0.1855622925788003
+    },
+    {
+      "adjusted_pressure_psi": 199.72706934904127,
+      "adjusted_vs_experiment_percent": -39.292684088437305,
+      "adjusted_vs_kendrick_percent": -5.7891182315843,
+      "decimal_schur_vs_float_relative_difference": 2.220446049250313e-14,
+      "experimental_lobes": 2,
+      "frame_spaces": 31,
+      "ideal_pressure_psi": 266.30275913205503,
+      "ideal_vs_experiment_percent": -19.056912117916404,
+      "ideal_vs_kendrick_percent": 25.614509024554266,
+      "kendrick_lobes": 2,
+      "kendrick_pressure_psi": 212,
+      "lateral_only_pressure_at_same_mode_psi": 270.58362846653273,
+      "m1_n2_ideal_pressure_psi": 266.30275913205503,
+      "m1_n3_adjusted_pressure_psi": 387.98182433450665,
+      "m1_n3_ideal_pressure_psi": 517.3090991126755,
+      "model_mode": [
+        1,
+        2
+      ],
+      "published_length_over_diameter": 4.38,
+      "southwell_experimental_pressure_psi": 329,
+      "torsion_increment_percent_at_governing_mode": 0.17166490756119757
+    },
+    {
+      "adjusted_pressure_psi": 192.02328432394265,
+      "adjusted_vs_experiment_percent": -31.66431162849016,
+      "adjusted_vs_kendrick_percent": -2.5262516122118495,
+      "decimal_schur_vs_float_relative_difference": 7.904787935331115e-14,
+      "experimental_lobes": 2,
+      "frame_spaces": 33,
+      "ideal_pressure_psi": 256.03104576525686,
+      "ideal_vs_experiment_percent": -8.885748837986885,
+      "ideal_vs_kendrick_percent": 29.9649978503842,
+      "kendrick_lobes": 2,
+      "kendrick_pressure_psi": 197,
+      "lateral_only_pressure_at_same_mode_psi": 259.66303409089585,
+      "m1_n2_ideal_pressure_psi": 256.03104576525686,
+      "m1_n3_adjusted_pressure_psi": 388.50188001813234,
+      "m1_n3_ideal_pressure_psi": 518.0025066908431,
+      "model_mode": [
+        1,
+        2
+      ],
+      "published_length_over_diameter": 4.66,
+      "southwell_experimental_pressure_psi": 281,
+      "torsion_increment_percent_at_governing_mode": 0.15783687186661233
+    }
+  ]
+}

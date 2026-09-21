@@ -9,6 +9,18 @@ model; both predate this changelog.
 
 ## [Unreleased]
 
+- Ring-shell model 4.1.0: report the `m>=1,n>=2` mode domain and the boundary
+  assumptions, and add `not_implemented` (axisymmetric `n=0` buckling) and
+  `external_blocker` (physical end restraint) mode dispositions. Calculated
+  pressures, factors, and mode limits are unchanged.
+- Describe the DTMB Report 1324 evidence as the report gives it: Southwell
+  estimates for cylinder 4-A at ten internal-bulkhead spacings. Drop the
+  attribution of NASA's 10-40% low-lobe warning, which concerns axial
+  compression, to this pressure calculation.
+- Add the ring-shell investigation: a DAPS4 cross-check, a DTMB Table 1
+  end-closure comparison at reconstructed spans, the long-cylinder limit, and
+  an `n=0` diagnostic.
+
 ## [0.3.0] - 2026-09-20
 
 - Release shear-corrected plate deflection for `D_free/t >= 10` (fixed) or

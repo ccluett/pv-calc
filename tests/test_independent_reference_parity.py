@@ -2766,7 +2766,7 @@ def test_evidence_matrix_pins_executed_fea_and_advisory_ring_status() -> None:
         for item in by_model[RING_SHELL_MODEL_ID]["evidence"]
     }
     assert ring_evidence["fea"]["status"] == (
-        "eigenvalue cases executed and converged, nonlinear open"
+        "eigenvalue cases executed and converged, pressure-load stiffness omitted, nonlinear open"
     )
     assert by_model[RING_SHELL_MODEL_ID]["maturity"] == "benchmark_compared"
     assert by_model[RING_SHELL_MODEL_ID]["completeness"] == "partial"

@@ -4,6 +4,18 @@ This record compares the public ring-shell calculation with the
 rectangular-ring cylinder data in DTMB Report 1324. The model is not
 calibrated to it.
 
+Table 2 reports one cylinder, 4-A, tested at ten internal-bulkhead spacings.
+The pressures are nondestructive Southwell estimates of elastic buckling.
+The disks sit beneath rings and the shell continues beyond them, so the only
+rotational restraint comes from shell continuity; the report describes this
+as its closest approximation to simple support. The
+[discrepancy investigation](../ring_shell_investigation.md) separates
+boundary effects, the NASA adjustment, and theory differences, and adds a
+DAPS4 comparison; its
+[follow-up](../sources/ring_boundary_and_nasa_evidence.md) compares the
+Table 1 end-closure tests at reconstructed spans and traces the experimental
+sources NASA cites for Eq. 64.
+
 ## Primary sources
 
 - Reynolds and Blumenberg, *General Instability of Ring-Stiffened Cylindrical
@@ -96,10 +108,16 @@ the predicted `n=3` and `n=2` regions are:
 | 29 | 233 (2) | 383 (2) | 280.915571 | 210.686678 | `(1,2)` |
 | 33 | 197 (2) | 281 (2) | 256.031046 | 192.023284 | `(1,2)` |
 
-The model transitions from `n=3` to `n=2` between 19 and 20 frame spaces;
+The model transitions from `n=3` to `n=2` at 19.584812 frame spaces;
 Kendrick transitions between 21 and 23 and the experiment between 28 and 29.
 This discrepancy is retained as a model limitation rather than removed by
 calibration.
+
+Across all ten rows, the **ideal** pv-calc pressure is 3.3–30.0% above
+Kendrick; after the prescribed 0.75 factor it is 2.5–22.5% below. Relative to
+the Southwell estimates, the ideal result ranges from 13.8% above to 26.7%
+below, and the adjusted result is 14.7–45.0% below. A uniform pressure factor
+cannot move the lobe transition.
 
 ## Applicability and maturity
 
@@ -114,20 +132,23 @@ not change this model's applicability boundary.
 
 The result remains `benchmark_compared`, `partial`, and advisory because:
 
-- NASA cautions that the shared formulation is less accurate for moderately
-  long low-lobe cases; DTMB governs at `n=2–3`;
+- NASA cautions that the shared formulation is less accurate for low-lobe
+  cases (its 10–40% figure is given for axial compression); DTMB governs at
+  `n=2–3`;
 - NASA says Eq. 66 replaces Eq. 64 for long cylinders but provides no numeric
   transition criterion;
 - the isolated-bay smooth-shell calculation is an ideal simply-supported
   advisory, not a validated treatment of finite ring width, rolling, or
-  local/global interaction; and
+  local/global interaction;
+- the global search excludes axisymmetric hydrostatic instability (`n=0`),
+  recorded as `not_implemented` in the result; and
 - ring material strength/crippling, frame tripping, attachments/welds,
   fabrication effects, and nonlinear interaction need additional geometry,
   specialist analysis, FEA, or test evidence.
 
-The typed result records every implemented-advisory, not-applicable, and
-externally blocked complementary mode. A global pass is never represented as
-complete pressure-hull coverage.
+The typed result records every implemented-advisory, not-implemented,
+not-applicable, and externally blocked complementary mode. A global pass is
+never represented as complete pressure-hull coverage.
 
 ## Reproduction
 

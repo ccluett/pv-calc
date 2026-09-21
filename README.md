@@ -274,8 +274,9 @@ empty; `message` always says what went wrong. The codes:
   models, sources, sizing and batch operation contracts, failure coverage,
   and validation approach.
 - [validation/](https://github.com/ccluett/pv-calc/tree/main/validation):
-  independent reference implementations, published benchmarks (DTMB report
-  1324 case 17), and FEA comparisons. The reference implementations
+  independent reference implementations, published benchmarks (DTMB Report
+  1324, cylinder 4-A at ten bulkhead spacings), and FEA comparisons. The
+  reference implementations
   derive the published equations independently of the production code. This
   separation catches calculation regressions, although it cannot rule out a
   shared interpretation error in the source material.

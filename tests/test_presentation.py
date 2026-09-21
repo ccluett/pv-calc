@@ -5,6 +5,7 @@ from __future__ import annotations
 import csv
 import io
 import json
+import math
 from copy import deepcopy
 from pathlib import Path
 
@@ -163,6 +164,60 @@ def test_reference_only_ring_bay_remains_advisory_and_unqualified() -> None:
     assert check["eligible"] is False
     assert check["capacity"]["value"] is None
     assert check["status"] == "indeterminate"
+
+
+def test_converged_lobar_search_cannot_pass_with_a_lower_excluded_axisymmetric_mode() -> None:
+    # An independent n=0 reduction of the smeared equations gives a lower
+    # elastic pressure than the converged lobar search for this geometry.
+    # It is a scope counterexample, not a validated axisymmetric capacity.
+    e, nu, r, t, length, pitch, width, height = 70_000, 0.33, 100, 1, 500, 20, 2, 20
+    dx = e*t**3/(12*(1-nu**2))
+    membrane = e*(t + width*height/pitch)
+    continuous_m = length/math.pi * (membrane/(dx*r*r))**0.25
+    axisymmetric_pressure = min(
+        2/r * (dx*(m*math.pi/length)**2 + membrane/(r*r*(m*math.pi/length)**2))
+        for m in (math.floor(continuous_m), math.ceil(continuous_m))
+    )
+    response = calculate({
+        "schema_version": CALC_SCHEMA_VERSION, "model": "ring-shell",
+        "inputs": {
+            "external_pressure": _q(0.1),
+            "shell_mid_surface_radius": _q(r, "mm"),
+            "wall_thickness": _q(t, "mm"),
+            "unsupported_length": _q(length, "mm"),
+            "ring_spacing": _q(pitch, "mm"),
+            "ring_axial_width": _q(width, "mm"),
+            "ring_radial_height": _q(height, "mm"),
+            "ring_location": "external",
+        },
+        "material": {"type": "explicit", "properties": {
+            "failure_category": "ductile_metal",
+            "elastic_modulus": _q(e), "poisson_ratio": nu,
+            "proportional_limit": _q(10_000), "yield_strength": _q(10_000),
+        }},
+    })
+    result = response["result"]
+    lobar = result["global_with_ring_torsion"]
+    assert lobar["converged"] is True
+    assert lobar["mode_domain"] == "m>=1,n>=2"
+    assert axisymmetric_pressure < lobar["ideal_critical_pressure_mpa"]["value"]
+    assert result["global_elastic_applicability"] == "within"
+    dispositions = {item["mode"]: item["disposition"] for item in result["mode_dispositions"]}
+    assert dispositions["axisymmetric_hydrostatic_buckling"] == "not_implemented"
+    assert dispositions["physical_end_restraint"] == "external_blocker"
+
+    selected = summarize_response(response, ["ring_shell_global_buckling"])
+    check = selected["assessment"]["checks"][0]
+    assert selected["assessment"]["status"] == "indeterminate"
+    assert check["eligible"] is False
+    assert check["capacity"]["value"] is None
+    assert check["margin"] is None
+    assert "n=0" in " ".join(check["reasons"])
+    assert "n=0" in render_text(selected)
+    row = next(csv.DictReader(io.StringIO(render_csv(selected))))
+    assert row["status"] == "indeterminate"
+    assert row["capacity"] == ""
+    assert "n=0" in row["reasons"]
 
 
 def _uncorrected_titanium() -> dict:

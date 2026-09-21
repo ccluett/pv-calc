@@ -240,8 +240,16 @@ _RESULT_FIELD_DESCRIPTIONS: dict[str, str] = {
     ),
     "advisory_candidate_modes": (
         "Modes with available pressures, including elastic upper bounds, that entered "
-        "the governing-pressure minimum. Absent modes were withheld; their capacity_status "
-        "fields give the reason."
+        "the governing-pressure minimum. Withheld and unimplemented modes are absent; "
+        "capacity_status and mode_dispositions record them."
+    ),
+    "advisory_margin": (
+        "The advisory governing pressure divided by the applied pressure, minus one; null "
+        "at zero demand or without a pressure. It is not an acceptance margin."
+    ),
+    "mode_domain": (
+        "Integer modes searched: m >= 1 axial half-waves and n >= 2 circumferential "
+        "lobes. Convergence refers to this domain; n=0 and n=1 are not searched."
     ),
 }
 
@@ -589,7 +597,7 @@ def _describe_model(
             SMOOTH_CYLINDER_BUCKLING_SOURCE,
         ]
         assumptions = [
-            "Hydrostatic closed-end pressure and simply supported global boundary idealization.",
+            "Hydrostatic closed-end pressure; global ends remain circular and rotate freely.",
             "Shell radius is the shell mid-surface radius.",
             "Shell and ring use one isotropic material record.",
             "The physical ring is one non-overlapping solid rectangle.",
@@ -601,14 +609,16 @@ def _describe_model(
         checks = [
             "solid rectangular A_r, centroidal I_r, eccentricity, and exact Saint-Venant J_r",
             "NASA Eq. 64/65 global pressure before and after the separate Eq. 91 torsion term",
-            "expanding integer m,n search with stability, frontier, bounds, and termination evidence",
+            "expanding integer mode search over m >= 1, n >= 2 with stability, frontier, bounds, and termination evidence",
             "source-gated advisory isolated-bay smooth-shell buckling",
             "optional NASA Eq. 30-32 inelastic correction of the inter-ring bay only",
             "the global capacity's implied membrane stress against the proportional limit or yield strength",
             "advisory minimum over every mode that produced a pressure, tagged when it is an elastic upper bound",
-            "machine-readable implemented, advisory, not-applicable, and external-blocker dispositions",
+            "machine-readable advisory, not-implemented, not-applicable, and external-blocker dispositions",
         ]
         omissions = [
+            "axisymmetric hydrostatic instability (n=0); the mode search starts at n=2",
+            "actual closure stiffness, contact, and shell continuing beyond a support",
             "capacity for in-service use because NASA gives no numeric Eq. 64/Eq. 66 long-cylinder transition",
             "inelastic correction of an over-limit global capacity: NASA states plasticity factors for unstiffened cylinders only",
             "validated finite-width inter-ring local skin buckling and local/global interaction",

@@ -237,25 +237,25 @@ models:
       - Imperfection, cycling, environment, temperature, product-form, and fabrication inputs remain design-use blockers.
 
   - model_id: nasa_ring_stiffened_shell_external_pressure
-    model_version: "4.0.0"
+    model_version: "4.1.0"
     maturity: benchmark_compared
     completeness: partial
     evidence:
       - category: independent_equation
         source: validation/ring_shell_reference.py
-        status: complete
+        status: complete over m >= 1, n >= 2
       - category: software_parity
-        source: docs/engineering.md
-        status: not applicable, no software oracle selected
+        source: validation/ring_shell_investigation.md
+        status: DAPS4 cross-check, different theory; no same-equation oracle selected
       - category: published_theory
         source: validation/sources/nasa_sp8007_eq64_eq66_transition.md
         status: Eqs. 64/65 and 82-91 transcribed, Eq. 66 transition open
       - category: experiment
         source: validation/published/dtmb_1324_case17.md
-        status: ten DTMB Table 2 cases compared
+        status: cylinder 4-A at ten bulkhead spacings compared, Southwell estimates; Table 1 closures compared at reconstructed spans
       - category: fea
         source: validation/fea/results/ring_shell_eigenvalue_fea_summary.json
-        status: eigenvalue cases executed and converged, nonlinear open
+        status: eigenvalue cases executed and converged, pressure-load stiffness omitted, nonlinear open
     important_limitations:
       - Global and inter-ring stability remain advisory.
       - >-
@@ -269,6 +269,19 @@ models:
         result. The orthotropic global mode remains elastic and advisory; the corrected
         inter-ring pressure can change the advisory governing candidate.
       - Numeric Eq. 64/Eq. 66 transition remains an external blocker.
+      - >-
+        The mode search excludes axisymmetric hydrostatic instability (n=0),
+        reported as not_implemented. It does not govern the DTMB cases; NASA
+        TN D-3647 shows it can govern elsewhere. See
+        validation/sources/ring_boundary_and_nasa_evidence.md.
+      - >-
+        The DTMB Table 2 bulkhead supports approximate simple support, with
+        rotational restraint from the continuing shell; the predicted lobe
+        transition comes earlier than Kendrick's or the observed one. Table 1
+        closure comparisons use reconstructed spans.
+      - >-
+        The ideal Eq. 64 long-cylinder limit is 4/3 of Eq. 66; the 0.75 factor
+        cancels that difference in the limit but is not a finite-length selector.
       - Low-lobe accuracy, ring strength and tripping, attachment, fabrication, and interaction remain unresolved.
       - Imperfection, cycling, environment, temperature, product-form, manufacturing-route, and inspection inputs remain design-use blockers.
 

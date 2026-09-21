@@ -5,6 +5,10 @@
   [`results/ring_shell_eigenvalue_fea_summary.json`](results/ring_shell_eigenvalue_fea_summary.json).
   `RS-EIG-17-J0`, the refined ring representation, and both continuation cases
   remain open for the exact reasons recorded there.
+- **Qualification:** The saved CalculiX `*BUCKLE` results omit distributed-
+  pressure load stiffness, so they do not validate hydrostatic buckling; see
+  the [FEA README](README.md) and the
+  [procedure qualification](../sources/cylinder_solver_qualification.md).
 - **Purpose:** Define later independent, discrete-stiffener eigenvalue and
   geometrically nonlinear evidence for the advisory ring-shell model
 - **Modeling boundary:** Executable- and solver-neutral; not a solver
@@ -14,6 +18,10 @@ The first executed FEA set uses DTMB Report 1324 because its published geometry,
 elastic properties, pressures, and lobe counts support an idealized comparison.
 The source does not provide enough as-built, fixture, or imperfection information
 to reproduce its experiments as a validated nonlinear model.
+Its Table 2 gives Southwell estimates for one cylinder at ten movable
+internal-bulkhead spacings; see the
+[discrepancy investigation](../ring_shell_investigation.md) for the support
+question.
 
 ## 1. Source geometry and comparison set
 

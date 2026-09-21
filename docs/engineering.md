@@ -138,7 +138,7 @@ changes from 0.1.0 on are recorded in the [changelog](../CHANGELOG.md).
 | `uniformly_loaded_flat_circular_plate` | 5.0.0 | Roark cases 10a/10b for fixed or simply-supported edges, with a Reissner shear correction for released center deflection. Bending margins require `D_free/t >= 10` (fixed) or `>= 4` (simply supported); deflection requires `>= 10` or `>= 6`, respectively. Both require `0.05 <= nu <= 0.35` and corrected `w <= t/2`; released deflection also requires stress within the supplied material strength. Optional outside radius adds average annular seat bearing |
 | `roark_nasa_hemispherical_head_external_pressure` | 5.0.0 | Exact Lamé sphere stress under the category's criterion, as for the tube, plus NASA SP-8032 clamped-cap buckling; capacity released only for a thin shell with `lambda > 2` and a source-traceable proportional limit. Reference-only limits retain the numerical result as `released_unqualified_material` but cannot support acceptance. Exact spherical radial displacement at both wall surfaces, away from the equator. The average seat bearing stress on the equator annulus, its failure pressure, and margin, report-only |
 | `nasa_smooth_cylinder_external_pressure_buckling` | 5.0.0 | NASA SP-8007 Rev. 2 Eqs. 19-29 at shell mid-surface radius; capacity released at every `gamma*Z` except the moderate/long correlation overlap. A complete compressive Ramberg-Osgood curve (`ramberg_osgood_n` with `compressive_proof_stress`) applies the Eqs. 30-32 correction and releases the corrected capacity and margin. Without a curve, a result above the proportional limit remains an elastic upper bound with a null margin (`released_pending_plasticity`). Reference-only data retain the numerical result and margin as `released_unqualified_material`. Requires `R_mid/t > 10`. Reports Roark Table 35 case 20 as a comparator that sets no capacity. The `elastic_applicability` screen labels the applied `p*r/t` comparison and sets no margin |
-| `nasa_ring_stiffened_shell_external_pressure` | 4.0.0 | NASA SP-8007 Rev. 2 Eq. 64/65 with Eqs. 82-91 ring stiffnesses and Eq. 91 torsion, fixed 0.75 adjustment, expanding mode search; advisory only. Its inter-ring bay reuses the smooth-cylinder model, including the Eqs. 30-32 correction when a complete compressive curve is supplied. The orthotropic global modes remain elastic: `global_elastic_applicability` labels an over-limit global pressure as an elastic upper bound but neither corrects nor withholds it. Low-lobe theory error and the fixed 0.75 factor remain limitations |
+| `nasa_ring_stiffened_shell_external_pressure` | 4.1.0 | NASA SP-8007 Rev. 2 Eq. 64/65 with Eqs. 82-91 ring stiffnesses and Eq. 91 torsion, fixed 0.75 adjustment, expanding mode search over `m>=1,n>=2`; advisory only. The result reports its boundary assumptions and the excluded axisymmetric (`n=0`) mode. Its inter-ring bay reuses the smooth-cylinder model, including the Eqs. 30-32 correction when a complete compressive curve is supplied. The orthotropic global modes remain elastic: `global_elastic_applicability` labels an over-limit global pressure as an elastic upper bound but neither corrects nor withholds it. The predicted lobe transition disagrees with the DTMB data, and the fixed 0.75 factor remains a limitation |
 | `archimedes_submerged_mass_and_buoyancy` | 1.0.0 | Archimedes' principle in Lautrup's constant-gravity form for a fully submerged, rigid, closed, non-flooded body; structural air mass, displaced-fluid mass, net submerged mass, and buoyant-force magnitude from two resolved volumes, two densities, and gravity |
 | `hydrostatic_external_pressure_from_depth` | 1.0.0 | Lautrup Eq. (4-3) `p - p0 = rho0*g0*h` in a fluid of one uniform density under uniform gravity; service and design differential external pressure across the wall with the interior at zero gauge, the design pressure scaled by the caller's policy factor |
 
@@ -552,15 +552,22 @@ Where a source gives no rule, capacity is withheld instead of guessed:
   long-cylinder transition has no numeric selector in either NASA edition
   ([source record](../validation/sources/nasa_sp8007_eq64_eq66_transition.md)),
   ring strength/tripping, attachment, and local/global interaction are outside
-  the model, and NASA warns of low-lobe formulation error for `n <= 4`. Those
+  the model, and NASA warns of low-lobe formulation error for `n <= 4` in its
+  discussion of the shared equations under axial compression. Those
   four ring modes carry `external_blocker` dispositions
   ([source record](../validation/sources/ring_failure_mode_selection.md)):
   DAPS4e.6 supplies Pulos-Salerno-based ring-stress source, Kendrick
   ring-frame-instability material, and fixed BR-7M validation artifacts, but
   none of them is yet mapped independently to this repository's solid-ring
-  geometry, conventions, and applicability gates. The software-parity
-  cross-check recorded under Sources covers no ring-stiffened case, so these
-  modes have no software oracle either.
+  geometry, conventions, and applicability gates. The UnderPressure comparison
+  covers no ring-stiffened case. The
+  [ring-shell investigation](../validation/ring_shell_investigation.md)
+  reproduces DAPS4's archived global elastic results and compares end-restraint
+  assumptions, and its
+  [follow-up](../validation/sources/ring_boundary_and_nasa_evidence.md)
+  identifies the excluded axisymmetric hydrostatic branch: the production
+  search starts at `n=2`. That branch does not govern the DTMB cases, but
+  NASA TN D-3647 shows it can govern elsewhere.
 
 ## Failure coverage
 
@@ -581,12 +588,12 @@ plus an optional yield strength that only bounds the proportional limit. Structu
 below, which is documentation: no runtime registry or enum enumerates it.
 
 Column conventions. *Calculated* is what the kernel returns. *Missing* uses
-the two omission tokens the ring result already publishes in
+the omission tokens the ring result publishes in
 `RingModeDisposition` — `not_applicable` (cannot arise for the supported
 section or method) and `external_blocker` (an input or source this repository
 does not have) — plus `not_implemented` for a mode that is in scope and
-sourceable but simply not built. `not_implemented` is a label in this record
-only; `RingModeDisposition` does not define it.
+sourceable but not built. The ring result uses `not_implemented` for the
+excluded axisymmetric hydrostatic mode.
 
 | Geometry (model, version) | Material behavior | Structural failures calculated | Known missing structural failures |
 |---|---|---|---|
@@ -594,7 +601,7 @@ only; `RingModeDisposition` does not define it.
 | Flat circular plate (`uniformly_loaded_flat_circular_plate` 5.0.0) | Governing surface bending stress against the yield strength (`ductile_metal`), working strength (`plastic`), or ultimate tensile strength (`brittle`); a brittle seat reads the ultimate compressive strength | Maximum radial and tangential bending stress with locations and governing direction, and the margin, released inside the evidence floors; transverse shear `p*D_free/(4*t)` at the support; shear-corrected center deflection, released within its qualified envelope; raw Kirchhoff deflection retained; with an outside radius, the average seat bearing stress `p*R_o^2/(R_o^2 - R_free^2)`, its failure pressure, and margin | Thick-plate shear-deformation bending below the released `D_free/t` floors — `not_implemented`, those requests are withheld rather than approximated; large-deflection membrane action past `w <= t/2` — `not_implemented`, gated rather than modeled; bearing-contact distribution beyond the average seat stress, attachment, seal, penetration, and compliant real edge restraint — `external_blocker` |
 | Hemispherical head (`roark_nasa_hemispherical_head_external_pressure` 5.0.0) | The category's criterion for the stress check, as for the tube; released buckling additionally requires a source-traceable proportional limit at or above the correlated critical membrane stress. Reference-only data return an estimate but not an acceptance capacity. The displacement is linearly elastic and reads the elastic modulus and Poisson ratio this model already requires | Exact Lamé meridional, hoop, and radial stress, von Mises, the category's failure criterion and stress margin; classical sphere critical pressure; NASA SP-8032 clamped-cap correlated pressure and buckling margin, released only for a thin shell with `lambda > 2` and proportional-limit support. The Roark Table 35 case 22 probable minimum is a published comparator and sets no capacity. Exact spherical radial displacement at both wall surfaces, away from the equator. The average seat bearing stress on the equator annulus, its failure pressure, and margin | Equator junction bending, actual restraint, attachments, penetrations, imperfections, residual stress, and plastic interaction — `external_blocker`, and equally why the equator boundary layer is outside the displacement; inelastic buckling correction — `not_implemented`, capacity is withheld instead |
 | Smooth cylinder buckling (`nasa_smooth_cylinder_external_pressure_buckling` 5.0.0) | Isotropic; linear elastic unless a complete compressive Ramberg-Osgood curve is supplied. With only a proportional limit, a correlated stress above it remains an elastic upper bound as `released_pending_plasticity`; with a curve, NASA Eqs. 30-32 correct the capacity and release its margin | External-pressure instability of an unstiffened, simply supported cylinder: short, moderate, and long candidates, regime selection, corrected or elastic critical pressure and membrane stress, and margin; the Roark case-20 probable minimum is a comparator only | Moderate/long factor-transition correlation — `external_blocker`: NASA gives no rule where `gamma=0.5625` and `gamma=0.90` both apply; biaxial hydrostatic plasticity factors — `external_blocker`: NASA supplies none and directs the lateral-pressure Eqs. 30-32 in their place; collapse below the `R_mid/t > 10` thin-shell gate — `not_implemented`, withheld rather than approximated; longitudinal and rotational end-restraint credit — `not_implemented`, no capacity increase is taken |
-| Ring-stiffened shell (`nasa_ring_stiffened_shell_external_pressure` 4.0.0) | One isotropic material for shell and ring. A complete curve corrects the inter-ring smooth-shell result. The orthotropic global mode remains elastic; its applicability screen may use the proportional limit or yield strength but only labels the advisory result | `global_ring_stiffened_shell_eq64_eq91` (Eq. 64/65 with Eqs. 82-91 smeared ring stiffnesses, Eq. 91 rectangular-ring torsion, the fixed 0.75 adjustment, and an expanding mode search) and `inter_ring_shell_buckling` (the smooth kernel over ring center-to-center spacing, corrected by a supplied curve); both are `implemented_advisory`, because NASA reports 10-40% low-lobe theory error and states no numeric Eq. 64/Eq. 66 transition | `long_cylinder_global_eq66_transition`, `ring_material_strength_and_crippling`, `frame_tripping_or_out_of_plane_rolling`, `attachment_weld_and_fabrication_effects`, and `local_global_interaction` — `external_blocker`, the last four surveyed and left open in [the ring failure-mode selection record](../validation/sources/ring_failure_mode_selection.md); `separate_frame_inertia_rule`, `web_and_flange_local_slenderness`, and `classification_inter_stiffener_strength` — `not_applicable` |
+| Ring-stiffened shell (`nasa_ring_stiffened_shell_external_pressure` 4.1.0) | One isotropic material for shell and ring. A complete curve corrects the inter-ring smooth-shell result. The orthotropic global mode remains elastic; its applicability screen may use the proportional limit or yield strength but only labels the advisory result | `global_ring_stiffened_shell_eq64_eq91` (Eq. 64/65 with Eqs. 82-91 smeared ring stiffnesses, Eq. 91 rectangular-ring torsion, the fixed 0.75 adjustment, and an expanding `m>=1,n>=2` search) and `inter_ring_shell_buckling` (the smooth kernel over ring center-to-center spacing, corrected by a supplied curve); both are `implemented_advisory`, because the predicted lobe transition disagrees with the DTMB data and NASA states no numeric Eq. 64/Eq. 66 transition | `axisymmetric_hydrostatic_buckling` — `not_implemented`; `physical_end_restraint`, `long_cylinder_global_eq66_transition`, `ring_material_strength_and_crippling`, `frame_tripping_or_out_of_plane_rolling`, `attachment_weld_and_fabrication_effects`, and `local_global_interaction` — `external_blocker`, the last four surveyed in [the ring failure-mode selection record](../validation/sources/ring_failure_mode_selection.md); `separate_frame_inertia_rule`, `web_and_flange_local_slenderness`, and `classification_inter_stiffener_strength` — `not_applicable` |
 
 Every row also inherits the service, fabrication, and environment inputs a
 real design would still need — tolerances, as-built imperfections, corrosion,
@@ -602,6 +609,12 @@ residual stress, attachment route and welds, fatigue and cycling, creep,
 temperature, and material variability. Those are design inputs the calculator
 does not take rather than omitted equations, so the matrix names one only
 where a released result publishes it as its own disposition.
+
+Both ring global results publish their `mode_domain`, `m>=1,n>=2`, which is
+the domain the convergence evidence covers, and the `boundary_assumptions`
+field states the ideal supports. The
+[validation README](../validation/README.md) summarizes what each ring
+evidence item establishes and the next qualification steps.
 
 ## Sources
 
@@ -620,7 +633,8 @@ where a released result publishes it as its own disposition.
 | Smooth-cylinder rounded Eq. 25 comparator | NASA SP-8007 Rev. 2, Eq. 25, printed p. 27, which states it only for `nu = 0.316`; its rounded `0.926` stands 0.0873% above the Eq. 24 capacity at that ratio, so it is reported beside Eq. 24 and sets no capacity |
 | Ring-stiffened global instability | NASA SP-8007 Rev. 2, Eq. 64/65 and Eqs. 82-91 |
 | Rectangular ring torsion constant | NASA/TP-2011-216882, Eq. A16 |
-| Experimental ring benchmark | DTMB Report 1324, all ten Table 2 geometries |
+| Experimental ring benchmark | DTMB Report 1324 Table 2: cylinder 4-A at ten internal-bulkhead spacings, Southwell estimates of elastic buckling pressure |
+| Ring discrepancy investigation | [DTMB/NASA/DAPS4 investigation](../validation/ring_shell_investigation.md): ideal and adjusted pressures, mode transitions, support sensitivity, and the long-cylinder limit |
 | Submerged mass and buoyancy | Archimedes, On Floating Bodies, Book I, Props. 6-7; Lautrup, Physics of Continuous Matter, sec. 5.1, Eqs. (5-5)-(5-8) |
 | Hydrostatic pressure at depth | Lautrup, Physics of Continuous Matter, sec. 4.1 "Incompressible sea", Eqs. (4-3) and (4-4) |
 
@@ -671,10 +685,13 @@ ancestry.
   caller-resolved volumes. Kernel and CLI parity is tested for identical
   inputs.
 - **Published benchmark.** The Eq. 64/91 model is compared with Kendrick
-  Part III and experiment across the DTMB Table 2 series and reproduces the
-  reported `n = 3` and `n = 2` modes. For case 17 the adjusted result is 5.7%
-  below Kendrick Part III and 14.7% below experiment; nothing was calibrated
-  to the experiment. This establishes
+  Part III and the Southwell estimates for DTMB cylinder 4-A at ten
+  internal-bulkhead spacings. The adjusted result is 2.5–22.5% below Kendrick
+  and 15–45% below the estimates, and the predicted lobe transition comes
+  earlier than either; nothing was calibrated to the data. The report's
+  bulkhead arrangement approximates simple support, with rotational restraint
+  from the continuing shell. A separate comparison with the report's Table 1
+  end-closure tests uses reconstructed spans. This establishes
   `benchmark_compared` maturity for the ring model, not general accuracy.
 - **FEA.** A pinned, opt-in CalculiX 2.20 container ran the P5-03 tube/plate
   CAX8R comparisons and the P5-04 perfect-geometry ring eigenvalue cases.
@@ -694,8 +711,9 @@ ancestry.
   ideal-corner stress is singular and is not used. Across the ten-length ring
   series the finest-mesh eigenvalues run from 14.3% below to 17.3% above the
   unadjusted equation, and two of the ten comparisons cross mode families.
-  Nonlinear ring cases stay open: CalculiX has no documented arc-length
-  method.
+  The ring eigenvalues omit pressure-load stiffness, so they do not validate
+  hydrostatic buckling. Nonlinear ring cases stay open: CalculiX has no
+  documented arc-length method.
 - **Evidence matrix.** [evidence_matrix.yaml](../validation/evidence_matrix.yaml)
   carries one row per released model: maturity (`experimental`,
   `verified_equation`, `benchmark_compared`, `validated_for_scope`),
