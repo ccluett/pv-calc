@@ -67,9 +67,7 @@ are zero, capacities retain their applicability gates, and capacity/demand
 margins are null. Sizing requires positive pressure.
 
 Smooth-cylinder and hemispherical buckling require shell mid-surface radius /
-thickness `> 10`. Thicker shells need a separate collapse model. The
-[6000 m housing study](validation/external_pressure_coverage.md) reaches
-`R_mid/t = 9.3`, outside this domain even with the NASA plasticity correction.
+thickness `> 10`. Thicker shells need a separate collapse model.
 
 For a direct depth load, density, gravity, and the design factor are all
 required; there is no default factor. The resulting design differential
@@ -272,21 +270,17 @@ empty; `message` always says what went wrong. The codes:
 
 - [docs/engineering.md](https://github.com/ccluett/pv-calc/blob/main/docs/engineering.md):
   models, sources, sizing and batch operation contracts, failure coverage,
-  and validation approach.
-- [validation/](https://github.com/ccluett/pv-calc/tree/main/validation):
-  independent reference implementations, published benchmarks (DTMB Report
-  1324, cylinder 4-A at ten bulkhead spacings), and FEA comparisons. The
-  reference implementations
-  derive the published equations independently of the production code. This
-  separation catches calculation regressions, although it cannot rule out a
-  shared interpretation error in the source material.
+  and testing.
+- [tests/reference/](https://github.com/ccluett/pv-calc/tree/main/tests/reference):
+  independent reference implementations of the source equations, which the
+  tests compare against production results.
 - [examples/](https://github.com/ccluett/pv-calc/tree/main/examples):
   committed example requests for every command; a golden-response test pins
   their output.
 
 Links are absolute because this file is also the PyPI page, and the packaged
-distribution ships the reference material database but not the docs,
-validation artifacts, or examples.
+distribution ships the reference material database but not the docs, tests,
+or examples.
 
 Released under the
 [MIT License](https://github.com/ccluett/pv-calc/blob/main/LICENSE). Changes

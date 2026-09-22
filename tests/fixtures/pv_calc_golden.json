@@ -1410,7 +1410,7 @@
               "unit": "MPa",
               "value": 70000.0
             },
-            "envelope_source_reference": "validation/fea/results/plate_sweep_fea_summary.json: mesh-converged CAX8R sweep over D_free/t and Poisson ratio; corrected deflection is qualified by abs(prediction - FEA) / abs(FEA) <= 5%",
+            "envelope_source_reference": "Project FEA: mesh-converged CalculiX CAX8R sweep over D_free/t and Poisson ratio; corrected deflection is qualified by abs(prediction - FEA) / abs(FEA) <= 5%",
             "external_pressure_mpa": {
               "unit": "MPa",
               "value": 0.1
@@ -2754,7 +2754,7 @@
         "unit": "MPa",
         "value": 71016.0001196
       },
-      "envelope_source_reference": "validation/fea/results/plate_sweep_fea_summary.json: mesh-converged CAX8R sweep over D_free/t and Poisson ratio; corrected deflection is qualified by abs(prediction - FEA) / abs(FEA) <= 5%",
+      "envelope_source_reference": "Project FEA: mesh-converged CalculiX CAX8R sweep over D_free/t and Poisson ratio; corrected deflection is qualified by abs(prediction - FEA) / abs(FEA) <= 5%",
       "external_pressure_mpa": {
         "unit": "MPa",
         "value": 31.0264078193
@@ -2921,7 +2921,7 @@
         "unit": "MPa",
         "value": 72700.0
       },
-      "envelope_source_reference": "validation/fea/results/plate_sweep_fea_summary.json: mesh-converged CAX8R sweep over D_free/t and Poisson ratio; corrected deflection is qualified by abs(prediction - FEA) / abs(FEA) <= 5%",
+      "envelope_source_reference": "Project FEA: mesh-converged CalculiX CAX8R sweep over D_free/t and Poisson ratio; corrected deflection is qualified by abs(prediction - FEA) / abs(FEA) <= 5%",
       "external_pressure_mpa": {
         "unit": "MPa",
         "value": 2.06842718795
@@ -3086,7 +3086,7 @@
         "unit": "MPa",
         "value": 70000.0
       },
-      "envelope_source_reference": "validation/fea/results/plate_sweep_fea_summary.json: mesh-converged CAX8R sweep over D_free/t and Poisson ratio; corrected deflection is qualified by abs(prediction - FEA) / abs(FEA) <= 5%",
+      "envelope_source_reference": "Project FEA: mesh-converged CalculiX CAX8R sweep over D_free/t and Poisson ratio; corrected deflection is qualified by abs(prediction - FEA) / abs(FEA) <= 5%",
       "external_pressure_mpa": {
         "unit": "MPa",
         "value": 2.0

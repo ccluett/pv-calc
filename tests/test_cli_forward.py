@@ -239,8 +239,8 @@ def test_plate_outside_radius_option_and_json_release_the_same_seat_stress() -> 
 
     assert json.loads(from_options.stdout)["result"] == json.loads(from_json.stdout)["result"]
     result = json.loads(from_json.stdout)["result"]
-    # The comparison software's Example 2 seat failure, displayed as 15,658 psi;
-    # validation/published/ records which tool that is and where it prints.
+    # UnderPressure 4.0 User Manual, Example 2: seat failure displayed as
+    # 15,658 psi (printed p. 21).
     assert magnitude(
         Q_(result["theoretical_seat_failure_pressure_mpa"]["value"], "MPa"), "psi"
     ) == pytest.approx(15_658.0, abs=0.5)
@@ -981,11 +981,9 @@ SEAWATER_64_LB_PER_FT3 = ["--fluid-density", "64 lb/ft^3", "--gravity", "9.80665
 
 
 def test_submergence_adds_the_manual_tube_weights_and_failure_depths() -> None:
-    """The comparison software's Example 1: 6061-T6, 6.00 in I.D., 1.03 in wall,
+    """UnderPressure 4.0 User Manual, Example 1: 6061-T6, 6.00 in I.D., 1.03 in wall,
     24 in long, weight in air 53.503 lb and in water 8.1464 lb (printed p. 16),
-    that manual's seawater being 64 lb/ft^3 to its displayed precision.
-
-    validation/published/ records which tool the displayed weights come from."""
+    that manual's seawater being 64 lb/ft^3 to its displayed precision."""
     options = [
         "tube",
         "--external-pressure", "4500 psi",

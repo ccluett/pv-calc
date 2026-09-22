@@ -45,8 +45,7 @@ NON_RING_COVERAGE_INVENTORY = [
     {
         "case_id": "tube_radial_displacement_and_axial_strain",
         "artifacts": [
-            "validation/tube_displacement_reference.py",
-            "validation/sources/tube_scalar_displacement.md",
+            "tests/reference/tube_displacement_reference.py",
             "tests/test_tube_stress.py",
             "tests/test_independent_reference_parity.py",
             "tests/test_cli_forward.py",
@@ -56,8 +55,7 @@ NON_RING_COVERAGE_INVENTORY = [
     {
         "case_id": "hemisphere_historical_membrane_radial_displacement",
         "artifacts": [
-            "validation/hemisphere_displacement_reference.py",
-            "validation/sources/hemisphere_scalar_displacement.md",
+            "tests/reference/hemisphere_displacement_reference.py",
             "tests/test_hemisphere.py",
             "tests/test_independent_reference_parity.py",
             "tests/test_cli_forward.py",
@@ -72,7 +70,6 @@ NON_RING_COVERAGE_INVENTORY = [
     {
         "case_id": "hemisphere_exact_radial_displacement",
         "artifacts": [
-            "validation/sources/hemisphere_scalar_displacement.md",
             "tests/test_hemisphere.py",
             "tests/test_exact_shell_stress.py",
             "tests/test_independent_reference_parity.py",
@@ -90,8 +87,6 @@ NON_RING_COVERAGE_INVENTORY = [
     {
         "case_id": "shell_small_deformation_release_policy",
         "artifacts": [
-            "validation/sources/tube_scalar_displacement.md",
-            "validation/sources/hemisphere_scalar_displacement.md",
             "tests/test_shell_deformation_gates.py",
         ],
         "provenance": "release_policy",
@@ -100,7 +95,6 @@ NON_RING_COVERAGE_INVENTORY = [
         "case_id": "hemisphere_underpressure_manual_example",
         "artifacts": [
             "tests/test_independent_reference_parity.py",
-            "validation/published/underpressure_hemisphere_example.md",
         ],
         "provenance": "independent_equation_plus_accepted_manual_4_0_display",
     },
@@ -119,7 +113,6 @@ NON_RING_COVERAGE_INVENTORY = [
             "tests/test_flat_circular_plate.py",
             "tests/test_cli_forward.py",
             "examples/plate_9_0384_ksi.json",
-            "validation/published/underpressure_example2_flat_plate.md",
         ],
         "provenance": "independent_equation_plus_manual_display",
     },
@@ -185,7 +178,6 @@ NON_RING_COVERAGE_INVENTORY = [
         "case_id": "smooth_underpressure_example_4_valid_overlap",
         "artifacts": [
             "tests/fixtures/software_parity/underpressure_example4_tube_buckling.yaml",
-            "validation/published/underpressure_example4_smooth_buckling.md",
             "tests/test_smooth_cylinder_buckling.py",
             "tests/test_independent_reference_parity.py",
         ],

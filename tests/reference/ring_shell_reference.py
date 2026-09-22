@@ -2,7 +2,7 @@
 
 Run from the ``pv-calc`` directory with::
 
-    uv run python validation/ring_shell_reference.py
+    uv run python tests/reference/ring_shell_reference.py
 
 This module intentionally uses only the Python standard library.  It does not
 import PV-Gen calculations, section helpers, adapters, or regression
