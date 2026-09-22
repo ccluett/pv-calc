@@ -647,7 +647,7 @@ class SmoothCylinderBucklingResult:
 
 
 RING_SHELL_MODEL_ID = "nasa_ring_stiffened_shell_external_pressure"
-RING_SHELL_MODEL_VERSION = "4.2.0"
+RING_SHELL_MODEL_VERSION = "5.0.0"
 RING_SHELL_EQ64_ADJUSTMENT_FACTOR = 0.75
 RING_SHELL_MIN_RADIUS_THICKNESS_RATIO = 10.0
 RING_SHELL_DEFAULT_MAX_MODE_EVALUATIONS = 2_000_000
@@ -707,9 +707,8 @@ RING_SHELL_ADVISORY_STATUS_BY_INTER_RING_STATUS: dict[str, RingShellAdvisoryStat
 
 
 def capacity_status_not_withheld(capacity_status: str) -> bool:
-    """The advisory admission rule: every status outside the ``withheld_*``
-    family produced a pressure, so it may enter a comparison; a withheld one
-    has no number to compare."""
+    """Every status outside the ``withheld_*`` family produced a pressure; a
+    withheld one has no number to report."""
     return not capacity_status.startswith("withheld")
 
 
@@ -3055,21 +3054,40 @@ def ring_stiffened_shell_external_pressure(
                 RING_SHELL_ADVISORY_STATUS_BY_APPLICABILITY[global_applicability],
             )
         )
+    inter_ring_pressure = inter_ring.correlated_critical_pressure_mpa
+    inter_ring_status: RingShellAdvisoryStatus | None = None
+    if inter_ring_pressure is not None:
+        # A KeyError here is a new non-withheld status the advisory taxonomy
+        # has not classified yet; fail loudly over mislabeling.
+        inter_ring_status = RING_SHELL_ADVISORY_STATUS_BY_INTER_RING_STATUS[
+            inter_ring.capacity_status
+        ]
+    elif proportional_mpa is None and ramberg_osgood_n is None:
+        # The bay's own release gate withholds it without a proportional limit
+        # or curve. It enters at its elastic pressure instead, screened like
+        # the global mode, so the minimum never drops a buckling mode for want
+        # of material data.
+        inter_ring_pressure = next(
+            (
+                item.correlated_critical_pressure_mpa
+                for item in inter_ring.candidates
+                if item.regime == inter_ring.regime
+            ),
+            None,
+        )
+        if inter_ring_pressure is not None:
+            inter_ring_status = RING_SHELL_ADVISORY_STATUS_BY_APPLICABILITY[
+                _elastic_applicability_screen(
+                    inter_ring_pressure * r_mm / t_mm, proportional_mpa, yield_mpa
+                )[2]
+            ]
     if (
         capacity_status == "advisory"
-        and capacity_status_not_withheld(inter_ring.capacity_status)
-        and inter_ring.correlated_critical_pressure_mpa is not None
+        and inter_ring_pressure is not None
+        and inter_ring_status is not None
     ):
         advisory_candidates.append(
-            (
-                "inter_ring_smooth_shell",
-                inter_ring.correlated_critical_pressure_mpa,
-                # A KeyError here is a new non-withheld status the advisory
-                # taxonomy has not classified yet; fail loudly over mislabeling.
-                RING_SHELL_ADVISORY_STATUS_BY_INTER_RING_STATUS[
-                    inter_ring.capacity_status
-                ],
-            )
+            ("inter_ring_smooth_shell", inter_ring_pressure, inter_ring_status)
         )
     if advisory_candidates:
         advisory_mode, advisory_pressure, advisory_status = min(

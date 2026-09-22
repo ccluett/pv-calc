@@ -302,12 +302,12 @@ def test_completeness_dispositions_are_machine_readable():
         assert gap in scope
 
 
-def test_advisory_candidate_modes_separate_a_withheld_inter_ring_from_a_compared_one():
-    # advisory_governing_mode alone cannot carry this distinction: it names the
-    # cheapest candidate that produced a pressure, so an inter-ring result
-    # withheld for want of a number and one that simply lost both leave the
-    # global mode named. The only difference between these two runs is the
-    # optional proportional limit, which every bundled material record omits.
+def test_inter_ring_bay_enters_the_minimum_without_a_proportional_limit():
+    # The only difference between these runs is the optional proportional limit,
+    # which every bundled material record omits. Without it the smooth kernel
+    # withholds the bay, but the ring model still compares the bay's elastic
+    # pressure, screened like the global mode, so the governing pressure does
+    # not jump to the global mode 38 times higher.
     geometry = dict(
         external_pressure_mpa=0.05,
         shell_mid_surface_radius_mm=497.5,
@@ -327,21 +327,27 @@ def test_advisory_candidate_modes_separate_a_withheld_inter_ring_from_a_compared
     withheld = ring_stiffened_shell_external_pressure(
         proportional_limit_mpa=None, **geometry
     )
+    no_limit = ring_stiffened_shell_external_pressure(
+        **{**geometry, "yield_strength_mpa": None}
+    )
 
     assert compared.inter_ring_shell_buckling.capacity_status == "released"
-    assert compared.advisory_candidate_modes == (
-        "global_eq64_with_eq91_ring_torsion",
-        "inter_ring_smooth_shell",
-    )
-    assert compared.advisory_governing_mode == "inter_ring_smooth_shell"
-
     assert withheld.inter_ring_shell_buckling.capacity_status == "withheld_applicability"
-    assert withheld.advisory_candidate_modes == ("global_eq64_with_eq91_ring_torsion",)
-    assert withheld.advisory_governing_mode == "global_eq64_with_eq91_ring_torsion"
-
-    # The margin the two runs publish differs by a factor the governing-mode
-    # string does not explain, which is what the candidate list is there for.
-    assert withheld.advisory_margin > 40.0 * compared.advisory_margin
+    for result in (compared, withheld, no_limit):
+        assert result.advisory_candidate_modes == (
+            "global_eq64_with_eq91_ring_torsion",
+            "inter_ring_smooth_shell",
+        )
+        assert result.advisory_governing_mode == "inter_ring_smooth_shell"
+        assert result.advisory_governing_pressure_mpa == pytest.approx(0.2465562230804379)
+        assert (
+            38.0 * result.advisory_governing_pressure_mpa
+            < result.global_with_ring_torsion.adjusted_critical_pressure_mpa
+        )
+    # The bay's elastic stress is within the yield strength; with no limit at
+    # all the screen is undetermined, as it is for the global mode.
+    assert withheld.advisory_governing_status == "advisory"
+    assert no_limit.advisory_governing_status == "advisory_plasticity_undetermined"
 
 
 def _over_limit_case(**overrides) -> RingShellResult:
@@ -363,9 +369,9 @@ def _over_limit_case(**overrides) -> RingShellResult:
 
 
 def test_global_capacity_above_the_material_limit_is_published_as_an_elastic_bound():
-    # Nothing else in this geometry objects: the mode search converges, no
-    # validity gate fires, and the inter-ring bay has no proportional limit to
-    # screen. Only the implied shell stress says the pressure is unreachable.
+    # Nothing else in this geometry objects: the mode search converges and no
+    # validity gate fires. Only the implied shell stress says the global
+    # pressure is unreachable.
     result = _over_limit_case()
 
     assert result.capacity_status == "advisory"
@@ -379,9 +385,14 @@ def test_global_capacity_above_the_material_limit_is_published_as_an_elastic_bou
     assert result.elastic_applicability_limit_mpa == 250.0
     assert result.elastic_applicability_limit_basis == "yield_strength"
     assert result.global_elastic_applicability == "exceeded"
-    # The pressure is still published; the model releases nothing either way.
-    assert result.advisory_governing_mode == "global_eq64_with_eq91_ring_torsion"
-    assert result.advisory_governing_pressure_mpa == pytest.approx(37.262265529490506)
+    # The pressure is still compared; the model releases nothing either way.
+    # The inter-ring bay's elastic bound, also above yield, is lower.
+    assert result.advisory_candidate_modes == (
+        "global_eq64_with_eq91_ring_torsion",
+        "inter_ring_smooth_shell",
+    )
+    assert result.advisory_governing_mode == "inter_ring_smooth_shell"
+    assert result.advisory_governing_pressure_mpa == pytest.approx(15.143474789029423)
     assert result.advisory_governing_status == "advisory_pending_plasticity"
     assert any("because NASA provides no plasticity correction" in note for note in result.notes)
 
@@ -415,8 +426,8 @@ def test_no_material_limit_leaves_the_global_screen_undetermined():
 def test_pending_plasticity_inter_ring_bound_governs_the_advisory_minimum():
     # A released_pending_plasticity inter-ring result is an elastic upper bound,
     # so it is a valid minimand: dropping it could only raise the reported
-    # pressure. Supplying the proportional limit must therefore never make the
-    # advisory number rosier than withholding it.
+    # pressure. Without the proportional limit the bay's elastic pressure is
+    # screened against yield instead, so both runs report the same bound.
     screened = _over_limit_case(
         elastic_modulus_mpa=200_000.0,
         poisson_ratio=0.3,
@@ -439,11 +450,9 @@ def test_pending_plasticity_inter_ring_bound_governs_the_advisory_minimum():
     assert screened.advisory_governing_status == "advisory_pending_plasticity"
 
     assert unscreened.inter_ring_shell_buckling.capacity_status == "withheld_applicability"
-    assert unscreened.advisory_governing_pressure_mpa == pytest.approx(106.68713690205723)
-    assert (
-        screened.advisory_governing_pressure_mpa
-        < unscreened.advisory_governing_pressure_mpa
-    )
+    assert unscreened.advisory_governing_mode == "inter_ring_smooth_shell"
+    assert unscreened.advisory_governing_pressure_mpa == screened.advisory_governing_pressure_mpa
+    assert unscreened.advisory_governing_status == "advisory_pending_plasticity"
 
 
 def test_withheld_record_reports_the_exceedance_as_a_violation_not_a_pending_note():

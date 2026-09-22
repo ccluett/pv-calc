@@ -239,8 +239,10 @@ _RESULT_FIELD_DESCRIPTIONS: dict[str, str] = {
     ),
     "advisory_candidate_modes": (
         "Modes with available pressures, including elastic upper bounds, that entered "
-        "the governing-pressure minimum. Withheld and unimplemented modes are absent; "
-        "capacity_status and mode_dispositions record them."
+        "the governing-pressure minimum. Without a proportional limit or compressive "
+        "curve, the inter-ring bay enters at its elastic pressure, screened like the "
+        "global mode. Withheld and unimplemented modes are absent; capacity_status and "
+        "mode_dispositions record them."
     ),
     "advisory_margin": (
         "The advisory governing pressure divided by the applied pressure, minus one; null "
