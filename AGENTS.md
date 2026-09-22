@@ -7,7 +7,7 @@ independent reference implementations of the source equations in
 
 ## Checks
 
-- `uv run pytest`
+- `uv run --extra test pytest`
 - `uvx ruff@0.16.3 check`
 - `uv run --isolated --python 3.11 --with mypy==2.3.1 mypy pv_calc` (Python 3.11,
   as in CI; `--isolated` leaves the project environment alone)

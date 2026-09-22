@@ -632,3 +632,11 @@ Tests compare them with production at tight tolerances (non-ring values at
 [examples](../examples/) cover every command, including the published worked
 cases and the ten DTMB ring geometries, and a golden-response test pins their
 output.
+
+Against DTMB Report 1324 Table 2, the global pressure with NASA's 0.75 factor
+is 15–45% below the report's Southwell estimates for cylinder 4-A at all ten
+bulkhead spacings, and nothing is calibrated to those tests. The model changes
+from three to two lobes at 21 frame spaces; the tests show three lobes up to 28.
+
+The FEA sweep behind the plate validity limits is kept at the
+[v0.3.0 tag](https://github.com/ccluett/pv-calc/blob/v0.3.0/validation/fea/results/plate_sweep_fea_summary.json).

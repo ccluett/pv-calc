@@ -227,8 +227,10 @@ FLAT_CIRCULAR_PLATE_MODEL_ID = "uniformly_loaded_flat_circular_plate"
 FLAT_CIRCULAR_PLATE_MODEL_VERSION = "5.0.0"
 
 FLAT_CIRCULAR_PLATE_ENVELOPE_SOURCE = (
-    "Project FEA: mesh-converged CalculiX CAX8R sweep over D_free/t and Poisson ratio; "
-    "corrected deflection is qualified by abs(prediction - FEA) / abs(FEA) <= 5%"
+    "Mesh-converged CalculiX CAX8R sweep over D_free/t and Poisson ratio; corrected "
+    "deflection is qualified by abs(prediction - FEA) / abs(FEA) <= 5%. Results: "
+    "https://github.com/ccluett/pv-calc/blob/v0.3.0/validation/fea/results/"
+    "plate_sweep_fea_summary.json"
 )
 
 # Each floor is the coarsest solved free-diameter/thickness ratio from which

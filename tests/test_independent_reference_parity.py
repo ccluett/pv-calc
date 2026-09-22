@@ -19,7 +19,6 @@ from pv_calc.pressure_vessel import (
     ring_stiffened_shell_external_pressure,
     smooth_cylinder_external_pressure_buckling,
 )
-from reference.coverage_inventory import NON_RING_COVERAGE_INVENTORY
 from reference.non_ring_reference import (
     REFERENCE_ABSOLUTE_TOLERANCE,
     REFERENCE_RELATIVE_TOLERANCE,
@@ -189,61 +188,6 @@ def _assert_optional_reference_close(
             rel=rel,
             abs=REFERENCE_ABSOLUTE_TOLERANCE,
         )
-
-
-def test_non_ring_inventory_covers_every_golden_and_released_example() -> None:
-    evidence = build_non_ring_evidence()
-    inventory = NON_RING_COVERAGE_INVENTORY
-    expected_case_ids = {
-        "tube_underpressure_example_1_failure",
-        "tube_lame_intermediates",
-        "tube_exact_surfaces_and_former_branch_boundary",
-        "tube_cli_sizing_golden",
-        "tube_worked_component_stresses",
-        "tube_radial_displacement_and_axial_strain",
-        "hemisphere_historical_membrane_radial_displacement",
-        "shell_exact_stress_force_balance_and_compatibility",
-        "hemisphere_exact_radial_displacement",
-        "elastic_output_material_limit_policy",
-        "shell_small_deformation_release_policy",
-        "hemisphere_underpressure_manual_example",
-        "hemisphere_cli_and_release_gates",
-        "plate_underpressure_example_2_failure",
-        "plate_appendix_e_fixed_and_simply_supported",
-        "plate_deflection_shear_and_validity_boundaries",
-        "plate_fixed_worked_example",
-        "smooth_short_lateral_and_hydrostatic",
-        "smooth_moderate_and_eq25",
-        "smooth_long_and_mid_surface_migration",
-        "smooth_inelastic_correction_eq30_eq32",
-        "smooth_gap_overlap_and_applicability_boundaries",
-        "smooth_underpressure_example_1_invalid_manual_parity",
-        "smooth_underpressure_example_4_valid_overlap",
-        "smooth_roark_case20_regime_matrix",
-    }
-    case_ids = [item["case_id"] for item in inventory]
-    assert len(case_ids) == len(set(case_ids))
-    assert set(case_ids) == expected_case_ids
-    for item in inventory:
-        assert item["provenance"] in {
-            "independent_equation",
-            "independent_equation_plus_manual_display",
-            "independent_equation_plus_accepted_manual_4_0_display",
-            "release_policy",
-        }
-        for artifact in item["artifacts"]:
-            assert Path(artifact).exists(), artifact
-    assert evidence["published_values"]["underpressure_4_60_capture"] == {
-        "status": "open_human_operated_item",
-        "accepted_as_4_60_evidence": False,
-    }
-    assert {
-        "source_inputs",
-        "published_values",
-        "calculated_values",
-        "tolerances",
-        "comparisons",
-    } <= evidence.keys()
 
 
 def _assert_tube_parity(

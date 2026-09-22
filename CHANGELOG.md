@@ -19,6 +19,10 @@ model; both predate this changelog.
   yield and tripping, and ring spacing are not checked, and that the ends warp
   freely. Routine notes are shorter. Status codes and acceptance rules are
   unchanged.
+- Research records (`validation/`) leave the repository and remain at the
+  v0.3.0 tag. The independent reference implementations move to
+  `tests/reference/`, and the plate result's `envelope_source_reference` links
+  the FEA sweep at that tag.
 - Ring-shell model 4.1.0: report the `m>=1,n>=2` mode domain and the boundary
   assumptions, and add `not_implemented` (axisymmetric `n=0` buckling) and
   `external_blocker` (physical end restraint) mode dispositions. Calculated
@@ -222,7 +226,7 @@ Initial release.
   records over the three failure categories, with every value cited to its own
   source and documented as a calculation input.
 - Validation evidence under
-  [validation/](https://github.com/ccluett/pv-calc/tree/main/validation):
+  [validation/](https://github.com/ccluett/pv-calc/tree/v0.1.0/validation):
   independent reference implementations, the DTMB report 1324 case 17
   benchmark, and FEA comparisons, with a golden response-contract snapshot
   test. The committed FEA summaries are named for their content:
