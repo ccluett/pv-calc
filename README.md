@@ -61,10 +61,12 @@ the elastic upper bound is below demand including the required margin.
 `ring-shell` implements NASA SP-8007 Eqs. 64/65 and 82-91, verified against
 an independent calculation. It reports the lowest buckling pressure and its
 mode: global buckling including NASA's recommended 0.75 factor, or buckling of
-the shell between rings. This is a buckling estimate, not a collapse pressure.
-The global calculation is elastic; the inter-ring bay includes NASA's
-plasticity correction when a complete compressive curve is supplied. Shell
-yield between rings, ring yield and tripping, and ring spacing are not checked,
+the shell between rings. The global calculation is elastic; the inter-ring bay
+includes NASA's plasticity correction when a complete compressive curve is
+supplied. With a yield strength it also reports Pc5 and ring yield: the
+pressures at which the mean hoop stress in the shell at mid-bay, and in the
+rings, reaches yield in a perfect periodic bay. None of these is a collapse
+pressure. Interframe collapse, ring tripping, and ring spacing are not checked,
 so `check` stays indeterminate.
 
 Thickness sizing selects the smallest solution among model-eligible intervals
@@ -159,7 +161,7 @@ typed request objects and an optional `materials_file` override.
 | `hemisphere` | Hemispherical head stress, NASA SP-8032 buckling, displacement, and seat stress |
 | `smooth-buckling` | NASA SP-8007 smooth-cylinder external-pressure buckling |
 | `smooth-buckling size` | The wall thickness meeting a margin across shell stress and buckling |
-| `ring-shell` | NASA SP-8007 ring-stiffened shell elastic buckling pressure and mode (advisory) |
+| `ring-shell` | NASA SP-8007 ring-stiffened shell elastic buckling pressure and mode, and shell and ring mean hoop yield pressures (advisory) |
 | `mass-properties` | Submerged mass and buoyancy from resolved volumes, fluid density, and gravity |
 | `sweep` | One forward request over pressure, depth, or a supported geometric dimension |
 | `compare-materials` | One forward or sizing request against an ordered list of named materials |
