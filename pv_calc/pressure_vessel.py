@@ -673,8 +673,7 @@ RING_SHELL_BOUNDARY_ASSUMPTIONS = (
 RING_SHELL_PARTIAL_SCOPE_REASON = (
     "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. "
     "Shell yield between rings, ring yield and tripping, ring spacing, axisymmetric "
-    "buckling (n=0), and the long-cylinder Eq. 66 transition are not checked; when one "
-    "of them governs, collapse can occur well below the reported buckling pressure."
+    "buckling (n=0), and the long-cylinder Eq. 66 transition are not checked."
 )
 RING_SHELL_ADJUSTED_VALUE_NOTE = (
     "The global buckling pressure includes the 0.75 factor recommended by NASA "
@@ -696,11 +695,6 @@ RingShellAdvisoryStatus = Literal[
     "advisory_pending_plasticity",
     "advisory_plasticity_undetermined",
 ]
-RING_SHELL_ADVISORY_STATUS_BY_APPLICABILITY: dict[str, RingShellAdvisoryStatus] = {
-    "within": "advisory",
-    "exceeded": "advisory_pending_plasticity",
-    "undetermined": "advisory_plasticity_undetermined",
-}
 RING_SHELL_ADVISORY_STATUS_BY_INTER_RING_STATUS: dict[str, RingShellAdvisoryStatus] = {
     "released": "advisory",
     "released_unqualified_material": "advisory_unqualified_material",
@@ -725,12 +719,13 @@ def _elastic_applicability_screen(
 ]:
     """Resolve the elastic-applicability limit and compare a stress with it.
 
-    The limit is the proportional limit, falling back to the yield strength;
-    yield is a valid fallback because ``proportional_limit_mpa <= yield_mpa``,
-    so yield bounds every admissible proportional limit from above. Returns
-    ``(limit_mpa, basis, verdict)`` with basis one of ``proportional_limit`` /
-    ``yield_strength`` / ``unavailable`` and verdict one of ``within`` /
-    ``exceeded`` / ``undetermined``.
+    The limit is the proportional limit, falling back to the yield strength.
+    Because ``proportional_limit_mpa <= yield_mpa``, a stress above yield is
+    above every admissible proportional limit; a stress at or below yield
+    shows nothing about the proportional limit. Returns ``(limit_mpa, basis,
+    verdict)`` with basis one of ``proportional_limit`` / ``yield_strength`` /
+    ``unavailable`` and verdict one of ``within`` / ``exceeded`` /
+    ``undetermined``.
     """
     limit: float | None
     basis: Literal["proportional_limit", "yield_strength", "unavailable"]
@@ -748,6 +743,23 @@ def _elastic_applicability_screen(
     else:
         verdict = "within"
     return limit, basis, verdict
+
+
+def _ring_advisory_status(
+    verdict: Literal["within", "exceeded", "undetermined"],
+    basis: Literal["proportional_limit", "yield_strength", "unavailable"],
+) -> RingShellAdvisoryStatus:
+    """Label a ring mode pressure from its elastic-applicability screen.
+
+    Only a supplied proportional limit shows a pressure is elastic. With the
+    yield strength alone, a stress above yield marks an elastic upper bound and
+    a stress below it stays undetermined.
+    """
+    if verdict == "exceeded":
+        return "advisory_pending_plasticity"
+    if verdict == "within" and basis == "proportional_limit":
+        return "advisory"
+    return "advisory_plasticity_undetermined"
 
 
 @dataclass(frozen=True)
@@ -3053,7 +3065,7 @@ def ring_stiffened_shell_external_pressure(
             (
                 "global_eq64_with_eq91_ring_torsion",
                 global_pressure,
-                RING_SHELL_ADVISORY_STATUS_BY_APPLICABILITY[global_applicability],
+                _ring_advisory_status(global_applicability, applicability_basis),
             )
         )
     inter_ring_pressure = inter_ring.correlated_critical_pressure_mpa
@@ -3078,11 +3090,10 @@ def ring_stiffened_shell_external_pressure(
             None,
         )
         if inter_ring_pressure is not None:
-            inter_ring_status = RING_SHELL_ADVISORY_STATUS_BY_APPLICABILITY[
-                _elastic_applicability_screen(
-                    inter_ring_pressure * r_mm / t_mm, proportional_mpa, yield_mpa
-                )[2]
-            ]
+            _, bay_basis, bay_applicability = _elastic_applicability_screen(
+                inter_ring_pressure * r_mm / t_mm, proportional_mpa, yield_mpa
+            )
+            inter_ring_status = _ring_advisory_status(bay_applicability, bay_basis)
     if (
         capacity_status == "advisory"
         and inter_ring_pressure is not None
@@ -3108,9 +3119,7 @@ def ring_stiffened_shell_external_pressure(
             disposition="implemented_advisory",
             source_reference=RING_SHELL_SOURCE,
             basis=(
-                "Verified implementation of NASA Eq. 64/65 with Eqs. 82-91 ring stiffnesses "
-                "and torsion. An independent transcription reproduces its pressures and "
-                "modes."
+                "NASA Eq. 64/65 with Eqs. 82-91 ring stiffnesses and Eq. 91 ring torsion."
             ),
         ),
         RingModeDisposition(
@@ -3212,7 +3221,9 @@ def ring_stiffened_shell_external_pressure(
     )
     notes = (
         RING_SHELL_ADJUSTED_VALUE_NOTE,
-        "The elastic material screen uses nominal p*r/t at the NASA-adjusted global pressure.",
+        "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional "
+        "limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t "
+        "exceeds yield and undetermined otherwise.",
         RING_SHELL_PARTIAL_SCOPE_REASON,
         GENERAL_INSTABILITY_SMEARED_NOTE,
         *((BUCKLING_REFERENCE_ONLY_REASON,) if data_qualification == "reference_only" else ()),

@@ -18,6 +18,7 @@ DTMB_YIELD_MPA = 85_000.0 * PSI_TO_MPA
 def _dtmb_case(
     frame_spaces: int,
     yield_strength_mpa: float = DTMB_YIELD_MPA,
+    proportional_limit_mpa: float | None = None,
 ) -> RingShellResult:
     return ring_stiffened_shell_external_pressure(
         external_pressure_mpa=1.0 * PSI_TO_MPA,
@@ -31,6 +32,7 @@ def _dtmb_case(
         elastic_modulus_mpa=30_000_000.0 * PSI_TO_MPA,
         poisson_ratio=0.3,
         yield_strength_mpa=yield_strength_mpa,
+        proportional_limit_mpa=proportional_limit_mpa,
     )
 
 
@@ -344,9 +346,11 @@ def test_inter_ring_bay_enters_the_minimum_without_a_proportional_limit():
             38.0 * result.advisory_governing_pressure_mpa
             < result.global_with_ring_torsion.adjusted_critical_pressure_mpa
         )
-    # The bay's elastic stress is within the yield strength; with no limit at
-    # all the screen is undetermined, as it is for the global mode.
-    assert withheld.advisory_governing_status == "advisory"
+    # Only the proportional limit shows the bay's stress is elastic. Below
+    # yield without one, or with no limit at all, the label is undetermined,
+    # so supplying less material data never gives a cleaner label.
+    assert compared.advisory_governing_status == "advisory"
+    assert withheld.advisory_governing_status == "advisory_plasticity_undetermined"
     assert no_limit.advisory_governing_status == "advisory_plasticity_undetermined"
 
 
@@ -399,13 +403,18 @@ def test_global_capacity_above_the_material_limit_is_published_as_an_elastic_bou
 
 def test_global_capacity_at_the_material_limit_stays_unflagged():
     # The screen is a strict `stress > limit`, so equality is the last unflagged
-    # case. DTMB case 17 sits well inside it; these two runs move the limit onto
-    # and just under the stress to pin which side of the comparison it sits on.
-    stress = _dtmb_case(17).global_critical_circumferential_membrane_stress_mpa
-    at_limit = _dtmb_case(17, yield_strength_mpa=stress)
-    just_under = _dtmb_case(17, yield_strength_mpa=stress * (1.0 - 1e-12))
+    # case. These runs move the proportional limit onto and just under the
+    # global stress of DTMB case 17 to pin which side of the comparison it sits
+    # on. With the yield strength alone, a stress below yield stays undetermined.
+    yield_only = _dtmb_case(17)
+    stress = yield_only.global_critical_circumferential_membrane_stress_mpa
+    at_limit = _dtmb_case(17, proportional_limit_mpa=stress)
+    just_under = _dtmb_case(17, proportional_limit_mpa=stress * (1.0 - 1e-12))
 
+    assert yield_only.global_elastic_applicability == "within"
+    assert yield_only.advisory_governing_status == "advisory_plasticity_undetermined"
     assert at_limit.global_elastic_applicability == "within"
+    assert at_limit.advisory_governing_mode == "global_eq64_with_eq91_ring_torsion"
     assert at_limit.advisory_governing_status == "advisory"
     assert not any(
         "because NASA provides no plasticity correction" in note for note in at_limit.notes

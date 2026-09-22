@@ -174,7 +174,7 @@ _RING_MODE_LABELS = {
 }
 _RING_STATUS_LABELS = {
     "advisory_pending_plasticity": "elastic upper bound: stress exceeds the material limit",
-    "advisory_plasticity_undetermined": "material limit not supplied",
+    "advisory_plasticity_undetermined": "proportional limit not supplied",
     "advisory_unqualified_material": "reference-only material data",
 }
 

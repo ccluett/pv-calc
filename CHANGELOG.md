@@ -10,19 +10,22 @@ model; both predate this changelog.
 ## [Unreleased]
 
 - Ring-shell model 5.0.0: without a proportional limit or compressive curve,
-  the inter-ring bay enters the lowest buckling pressure at its elastic value,
-  screened against the yield strength as the global pressure is, instead of
-  being left out. The lowest pressure can therefore be below what 4.x
-  reported. Text and summary output show the lowest buckling pressure and its
-  mode, with the heading still giving the assessment status. The result states
-  that the global calculation is elastic, that shell yield between rings, ring
-  yield and tripping, and ring spacing are not checked, and that the ends warp
-  freely. Routine notes are shorter. Status codes and acceptance rules are
-  unchanged.
-- Research records (`validation/`) leave the repository and remain at the
-  v0.3.0 tag. The independent reference implementations move to
-  `tests/reference/`, and the plate result's `envelope_source_reference` links
-  the FEA sweep at that tag.
+  the inter-ring bay enters the lowest buckling pressure at its elastic value
+  instead of being left out, so the lowest pressure can be below what 4.x
+  reported. A mode pressure is `advisory` only when its nominal stress is
+  within a supplied proportional limit or a compressive curve corrects it; with
+  only a yield strength it is an elastic upper bound above yield and
+  `advisory_plasticity_undetermined` below it. Text and summary output show the
+  lowest buckling pressure and its mode, with the heading still giving the
+  assessment status. The result states that the global calculation is elastic,
+  that shell yield between rings, ring yield and tripping, and ring spacing are
+  not checked, and that the ends warp freely. Routine notes are shorter.
+  Acceptance rules are unchanged.
+- Research records (`validation/`) leave the repository; they remain in its
+  history at [446ac81](https://github.com/ccluett/pv-calc/tree/446ac81/validation).
+  The independent reference implementations move to `tests/reference/`, and the
+  plate result's `envelope_source_reference` links the FEA sweep at the v0.3.0
+  tag.
 - Ring-shell model 4.1.0: report the `m>=1,n>=2` mode domain and the boundary
   assumptions, and add `not_implemented` (axisymmetric `n=0` buckling) and
   `external_blocker` (physical end restraint) mode dispositions. Calculated

@@ -3359,7 +3359,7 @@
         "unit": "MPa",
         "value": 2.78229243356
       },
-      "advisory_governing_status": "advisory",
+      "advisory_governing_status": "advisory_plasticity_undetermined",
       "advisory_margin": -0.146855390554,
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
       "boundary_assumptions": [
@@ -3889,7 +3889,7 @@
       "load_case": "hydrostatic_closed_end",
       "mode_dispositions": [
         {
-          "basis": "Verified implementation of NASA Eq. 64/65 with Eqs. 82-91 ring stiffnesses and torsion. An independent transcription reproduces its pressures and modes.",
+          "basis": "NASA Eq. 64/65 with Eqs. 82-91 ring stiffnesses and Eq. 91 ring torsion.",
           "disposition": "implemented_advisory",
           "mode": "global_ring_stiffened_shell_eq64_eq91",
           "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 64-65 and 82-91, pp. 37 and 40-42"
@@ -3965,8 +3965,8 @@
       "model_version": "5.0.0",
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
-        "The elastic material screen uses nominal p*r/t at the NASA-adjusted global pressure.",
-        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Shell yield between rings, ring yield and tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked; when one of them governs, collapse can occur well below the reported buckling pressure.",
+        "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
+        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Shell yield between rings, ring yield and tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
         "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing screen is applied; widely spaced rings need a discrete-ring or code-rule check."
       ],
       "poisson_ratio": 0.3,
@@ -4094,7 +4094,7 @@
         "unit": "MPa",
         "value": 2.32817660128
       },
-      "advisory_governing_status": "advisory",
+      "advisory_governing_status": "advisory_plasticity_undetermined",
       "advisory_margin": -0.199825906905,
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
       "boundary_assumptions": [
@@ -4624,7 +4624,7 @@
       "load_case": "hydrostatic_closed_end",
       "mode_dispositions": [
         {
-          "basis": "Verified implementation of NASA Eq. 64/65 with Eqs. 82-91 ring stiffnesses and torsion. An independent transcription reproduces its pressures and modes.",
+          "basis": "NASA Eq. 64/65 with Eqs. 82-91 ring stiffnesses and Eq. 91 ring torsion.",
           "disposition": "implemented_advisory",
           "mode": "global_ring_stiffened_shell_eq64_eq91",
           "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 64-65 and 82-91, pp. 37 and 40-42"
@@ -4700,8 +4700,8 @@
       "model_version": "5.0.0",
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
-        "The elastic material screen uses nominal p*r/t at the NASA-adjusted global pressure.",
-        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Shell yield between rings, ring yield and tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked; when one of them governs, collapse can occur well below the reported buckling pressure.",
+        "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
+        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Shell yield between rings, ring yield and tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
         "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing screen is applied; widely spaced rings need a discrete-ring or code-rule check."
       ],
       "poisson_ratio": 0.3,
@@ -4829,7 +4829,7 @@
         "unit": "MPa",
         "value": 1.96118181438
       },
-      "advisory_governing_status": "advisory",
+      "advisory_governing_status": "advisory_plasticity_undetermined",
       "advisory_margin": -0.309598607681,
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
       "boundary_assumptions": [
@@ -5359,7 +5359,7 @@
       "load_case": "hydrostatic_closed_end",
       "mode_dispositions": [
         {
-          "basis": "Verified implementation of NASA Eq. 64/65 with Eqs. 82-91 ring stiffnesses and torsion. An independent transcription reproduces its pressures and modes.",
+          "basis": "NASA Eq. 64/65 with Eqs. 82-91 ring stiffnesses and Eq. 91 ring torsion.",
           "disposition": "implemented_advisory",
           "mode": "global_ring_stiffened_shell_eq64_eq91",
           "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 64-65 and 82-91, pp. 37 and 40-42"
@@ -5435,8 +5435,8 @@
       "model_version": "5.0.0",
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
-        "The elastic material screen uses nominal p*r/t at the NASA-adjusted global pressure.",
-        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Shell yield between rings, ring yield and tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked; when one of them governs, collapse can occur well below the reported buckling pressure.",
+        "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
+        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Shell yield between rings, ring yield and tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
         "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing screen is applied; widely spaced rings need a discrete-ring or code-rule check."
       ],
       "poisson_ratio": 0.3,
@@ -5564,7 +5564,7 @@
         "unit": "MPa",
         "value": 1.72166439192
       },
-      "advisory_governing_status": "advisory",
+      "advisory_governing_status": "advisory_plasticity_undetermined",
       "advisory_margin": -0.377291001161,
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
       "boundary_assumptions": [
@@ -6094,7 +6094,7 @@
       "load_case": "hydrostatic_closed_end",
       "mode_dispositions": [
         {
-          "basis": "Verified implementation of NASA Eq. 64/65 with Eqs. 82-91 ring stiffnesses and torsion. An independent transcription reproduces its pressures and modes.",
+          "basis": "NASA Eq. 64/65 with Eqs. 82-91 ring stiffnesses and Eq. 91 ring torsion.",
           "disposition": "implemented_advisory",
           "mode": "global_ring_stiffened_shell_eq64_eq91",
           "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 64-65 and 82-91, pp. 37 and 40-42"
@@ -6170,8 +6170,8 @@
       "model_version": "5.0.0",
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
-        "The elastic material screen uses nominal p*r/t at the NASA-adjusted global pressure.",
-        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Shell yield between rings, ring yield and tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked; when one of them governs, collapse can occur well below the reported buckling pressure.",
+        "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
+        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Shell yield between rings, ring yield and tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
         "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing screen is applied; widely spaced rings need a discrete-ring or code-rule check."
       ],
       "poisson_ratio": 0.3,
@@ -6299,7 +6299,7 @@
         "unit": "MPa",
         "value": 1.63384108308
       },
-      "advisory_governing_status": "advisory",
+      "advisory_governing_status": "advisory_plasticity_undetermined",
       "advisory_margin": -0.404601471105,
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
       "boundary_assumptions": [
@@ -6829,7 +6829,7 @@
       "load_case": "hydrostatic_closed_end",
       "mode_dispositions": [
         {
-          "basis": "Verified implementation of NASA Eq. 64/65 with Eqs. 82-91 ring stiffnesses and torsion. An independent transcription reproduces its pressures and modes.",
+          "basis": "NASA Eq. 64/65 with Eqs. 82-91 ring stiffnesses and Eq. 91 ring torsion.",
           "disposition": "implemented_advisory",
           "mode": "global_ring_stiffened_shell_eq64_eq91",
           "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 64-65 and 82-91, pp. 37 and 40-42"
@@ -6905,8 +6905,8 @@
       "model_version": "5.0.0",
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
-        "The elastic material screen uses nominal p*r/t at the NASA-adjusted global pressure.",
-        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Shell yield between rings, ring yield and tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked; when one of them governs, collapse can occur well below the reported buckling pressure.",
+        "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
+        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Shell yield between rings, ring yield and tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
         "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing screen is applied; widely spaced rings need a discrete-ring or code-rule check."
       ],
       "poisson_ratio": 0.3,
@@ -7034,7 +7034,7 @@
         "unit": "MPa",
         "value": 1.56166436444
       },
-      "advisory_governing_status": "advisory",
+      "advisory_governing_status": "advisory_plasticity_undetermined",
       "advisory_margin": -0.425126227127,
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
       "boundary_assumptions": [
@@ -7564,7 +7564,7 @@
       "load_case": "hydrostatic_closed_end",
       "mode_dispositions": [
         {
-          "basis": "Verified implementation of NASA Eq. 64/65 with Eqs. 82-91 ring stiffnesses and torsion. An independent transcription reproduces its pressures and modes.",
+          "basis": "NASA Eq. 64/65 with Eqs. 82-91 ring stiffnesses and Eq. 91 ring torsion.",
           "disposition": "implemented_advisory",
           "mode": "global_ring_stiffened_shell_eq64_eq91",
           "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 64-65 and 82-91, pp. 37 and 40-42"
@@ -7640,8 +7640,8 @@
       "model_version": "5.0.0",
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
-        "The elastic material screen uses nominal p*r/t at the NASA-adjusted global pressure.",
-        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Shell yield between rings, ring yield and tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked; when one of them governs, collapse can occur well below the reported buckling pressure.",
+        "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
+        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Shell yield between rings, ring yield and tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
         "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing screen is applied; widely spaced rings need a discrete-ring or code-rule check."
       ],
       "poisson_ratio": 0.3,
@@ -7769,7 +7769,7 @@
         "unit": "MPa",
         "value": 1.50206425312
       },
-      "advisory_governing_status": "advisory",
+      "advisory_governing_status": "advisory_plasticity_undetermined",
       "advisory_margin": -0.442823526348,
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
       "boundary_assumptions": [
@@ -8299,7 +8299,7 @@
       "load_case": "hydrostatic_closed_end",
       "mode_dispositions": [
         {
-          "basis": "Verified implementation of NASA Eq. 64/65 with Eqs. 82-91 ring stiffnesses and torsion. An independent transcription reproduces its pressures and modes.",
+          "basis": "NASA Eq. 64/65 with Eqs. 82-91 ring stiffnesses and Eq. 91 ring torsion.",
           "disposition": "implemented_advisory",
           "mode": "global_ring_stiffened_shell_eq64_eq91",
           "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 64-65 and 82-91, pp. 37 and 40-42"
@@ -8375,8 +8375,8 @@
       "model_version": "5.0.0",
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
-        "The elastic material screen uses nominal p*r/t at the NASA-adjusted global pressure.",
-        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Shell yield between rings, ring yield and tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked; when one of them governs, collapse can occur well below the reported buckling pressure.",
+        "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
+        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Shell yield between rings, ring yield and tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
         "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing screen is applied; widely spaced rings need a discrete-ring or code-rule check."
       ],
       "poisson_ratio": 0.3,
@@ -8504,7 +8504,7 @@
         "unit": "MPa",
         "value": 1.45263351224
       },
-      "advisory_governing_status": "advisory",
+      "advisory_governing_status": "advisory_plasticity_undetermined",
       "advisory_margin": -0.449904234032,
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
       "boundary_assumptions": [
@@ -9034,7 +9034,7 @@
       "load_case": "hydrostatic_closed_end",
       "mode_dispositions": [
         {
-          "basis": "Verified implementation of NASA Eq. 64/65 with Eqs. 82-91 ring stiffnesses and torsion. An independent transcription reproduces its pressures and modes.",
+          "basis": "NASA Eq. 64/65 with Eqs. 82-91 ring stiffnesses and Eq. 91 ring torsion.",
           "disposition": "implemented_advisory",
           "mode": "global_ring_stiffened_shell_eq64_eq91",
           "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 64-65 and 82-91, pp. 37 and 40-42"
@@ -9110,8 +9110,8 @@
       "model_version": "5.0.0",
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
-        "The elastic material screen uses nominal p*r/t at the NASA-adjusted global pressure.",
-        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Shell yield between rings, ring yield and tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked; when one of them governs, collapse can occur well below the reported buckling pressure.",
+        "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
+        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Shell yield between rings, ring yield and tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
         "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing screen is applied; widely spaced rings need a discrete-ring or code-rule check."
       ],
       "poisson_ratio": 0.3,
@@ -9239,7 +9239,7 @@
         "unit": "MPa",
         "value": 1.37706966804
       },
-      "advisory_governing_status": "advisory",
+      "advisory_governing_status": "advisory_plasticity_undetermined",
       "advisory_margin": -0.392926840884,
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
       "boundary_assumptions": [
@@ -9769,7 +9769,7 @@
       "load_case": "hydrostatic_closed_end",
       "mode_dispositions": [
         {
-          "basis": "Verified implementation of NASA Eq. 64/65 with Eqs. 82-91 ring stiffnesses and torsion. An independent transcription reproduces its pressures and modes.",
+          "basis": "NASA Eq. 64/65 with Eqs. 82-91 ring stiffnesses and Eq. 91 ring torsion.",
           "disposition": "implemented_advisory",
           "mode": "global_ring_stiffened_shell_eq64_eq91",
           "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 64-65 and 82-91, pp. 37 and 40-42"
@@ -9845,8 +9845,8 @@
       "model_version": "5.0.0",
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
-        "The elastic material screen uses nominal p*r/t at the NASA-adjusted global pressure.",
-        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Shell yield between rings, ring yield and tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked; when one of them governs, collapse can occur well below the reported buckling pressure.",
+        "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
+        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Shell yield between rings, ring yield and tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
         "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing screen is applied; widely spaced rings need a discrete-ring or code-rule check."
       ],
       "poisson_ratio": 0.3,
@@ -9974,7 +9974,7 @@
         "unit": "MPa",
         "value": 1.32395394005
       },
-      "advisory_governing_status": "advisory",
+      "advisory_governing_status": "advisory_plasticity_undetermined",
       "advisory_margin": -0.316643116285,
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
       "boundary_assumptions": [
@@ -10504,7 +10504,7 @@
       "load_case": "hydrostatic_closed_end",
       "mode_dispositions": [
         {
-          "basis": "Verified implementation of NASA Eq. 64/65 with Eqs. 82-91 ring stiffnesses and torsion. An independent transcription reproduces its pressures and modes.",
+          "basis": "NASA Eq. 64/65 with Eqs. 82-91 ring stiffnesses and Eq. 91 ring torsion.",
           "disposition": "implemented_advisory",
           "mode": "global_ring_stiffened_shell_eq64_eq91",
           "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 64-65 and 82-91, pp. 37 and 40-42"
@@ -10580,8 +10580,8 @@
       "model_version": "5.0.0",
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
-        "The elastic material screen uses nominal p*r/t at the NASA-adjusted global pressure.",
-        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Shell yield between rings, ring yield and tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked; when one of them governs, collapse can occur well below the reported buckling pressure.",
+        "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
+        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Shell yield between rings, ring yield and tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
         "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing screen is applied; widely spaced rings need a discrete-ring or code-rule check."
       ],
       "poisson_ratio": 0.3,

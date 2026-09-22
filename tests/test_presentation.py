@@ -82,7 +82,7 @@ def test_ring_pressure_display_retains_applicable_material_limits(yield_mpa) -> 
     assert summary["ring_buckling"]["advisory_governing_status"] == expected
     text = render_text(response)
     assert "Lowest buckling pressure: " in text
-    assert ("material limit not supplied" if yield_mpa is None else "elastic upper bound") in text
+    assert ("proportional limit not supplied" if yield_mpa is None else "elastic upper bound") in text
     assert summary["assessment"]["status"] == "indeterminate"
 
 

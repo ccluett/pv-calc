@@ -205,9 +205,10 @@ _RESULT_FIELD_DESCRIPTIONS: dict[str, str] = {
     "elastic_applicability_limit_mpa": (
         "The stress limit the elastic-applicability screen compared against: the "
         "proportional limit when one was supplied, otherwise the yield strength, "
-        "otherwise null. elastic_applicability_limit_basis names which. Yield is a "
-        "valid fallback because this model already requires proportional_limit_mpa <= "
-        "yield_strength_mpa, so yield bounds every admissible proportional limit."
+        "otherwise null. elastic_applicability_limit_basis names which. Because the model "
+        "requires proportional_limit_mpa <= yield_strength_mpa, a stress above yield is "
+        "above any admissible proportional limit; a stress below yield does not show the "
+        "response is elastic."
     ),
     "global_critical_circumferential_membrane_stress_mpa": (
         "Nominal shell circumferential stress p*r/t at the 0.75-adjusted global "
@@ -222,14 +223,15 @@ _RESULT_FIELD_DESCRIPTIONS: dict[str, str] = {
         "For withheld results, an exceedance is recorded in validity_violations."
     ),
     "advisory_governing_status": (
-        "Whether the selected advisory_governing_pressure_mpa is an elastic upper "
-        "bound: 'advisory_pending_plasticity' when the winning mode's critical "
-        "membrane stress exceeds elastic_applicability_limit_mpa, "
-        "'advisory_unqualified_material' when the winning inter-ring estimate uses "
-        "reference-only material data, "
-        "'advisory_plasticity_undetermined' when no limit was available to screen it, "
-        "and 'advisory' otherwise. Null when every mode was withheld. This describes "
-        "the selected mode; global_elastic_applicability separately reports the global mode."
+        "Whether the selected advisory_governing_pressure_mpa is shown to be elastic: "
+        "'advisory' when its nominal stress is within a supplied proportional limit or a "
+        "compressive curve corrects it; 'advisory_pending_plasticity' when the stress "
+        "exceeds the proportional limit, or the yield strength without one, so the "
+        "pressure is an elastic upper bound; 'advisory_unqualified_material' when the "
+        "winning inter-ring estimate uses reference-only material data; and "
+        "'advisory_plasticity_undetermined' otherwise, such as a stress below yield with no "
+        "proportional limit. Null when every mode was withheld. This describes the selected "
+        "mode; global_elastic_applicability separately reports the global mode."
     ),
     "working_circumferential_membrane_stress_mpa": (
         "Applied thin-shell circumferential membrane stress p*r/t at the mid-surface "
