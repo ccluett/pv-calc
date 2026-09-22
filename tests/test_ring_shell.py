@@ -292,6 +292,14 @@ def test_completeness_dispositions_are_machine_readable():
     assert dispositions["classification_inter_stiffener_strength"] == "not_applicable"
     assert dispositions["long_cylinder_global_eq66_transition"] == "external_blocker"
     assert dispositions["local_global_interaction"] == "external_blocker"
+    assert dispositions["physical_end_restraint"] == "external_blocker"
+    assert any("freely warping" in item.basis for item in result.mode_dispositions
+               if item.mode == "physical_end_restraint")
+    assert any("warp freely" in item or "free to warp" in item for item in result.boundary_assumptions)
+    assert any("0.75 factor recommended by NASA" in note for note in result.notes)
+    scope = next(note for note in result.notes if note.startswith("Global buckling is elastic"))
+    for gap in ("Shell yield between rings", "ring yield", "ring spacing"):
+        assert gap in scope
 
 
 def test_advisory_candidate_modes_separate_a_withheld_inter_ring_from_a_compared_one():

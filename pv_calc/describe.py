@@ -210,10 +210,9 @@ _RESULT_FIELD_DESCRIPTIONS: dict[str, str] = {
         "yield_strength_mpa, so yield bounds every admissible proportional limit."
     ),
     "global_critical_circumferential_membrane_stress_mpa": (
-        "The shell circumferential membrane stress p*r/t the global Eq. 64/65 advisory "
-        "capacity implies, as a positive compression magnitude. It is the demand the "
-        "global mode would have to reach, and exists to make the "
-        "global_elastic_applicability comparison readable."
+        "Nominal shell circumferential stress p*r/t at the 0.75-adjusted global "
+        "pressure, as a positive compression magnitude. This is the stress used by "
+        "global_elastic_applicability."
     ),
     "global_elastic_applicability": (
         "Compares global critical membrane stress with elastic_applicability_limit_mpa. "
@@ -597,29 +596,35 @@ def _describe_model(
             SMOOTH_CYLINDER_BUCKLING_SOURCE,
         ]
         assumptions = [
-            "Hydrostatic closed-end pressure; global ends remain circular and rotate freely.",
+            "Hydrostatic closed-end pressure; global ends remain circular, rotate freely, and warp freely"
+            " (incremental N_x = 0 at the supports).",
             "Shell radius is the shell mid-surface radius.",
             "Shell and ring use one isotropic material record.",
             "The physical ring is one non-overlapping solid rectangle.",
             "The global result uses NASA Eqs. 64-65 and 82-91, including exact rectangular-ring torsion.",
-            "The 0.75 global pressure multiplier is source-recommended and not user-adjustable.",
-            "The inter-ring calculation is an advisory isolated smooth bay over ring center"
+            "NASA recommends a 0.75 pressure multiplier (printed p. 38). Both the ideal"
+            " and adjusted pressures are reported; the adjusted pressure enters the mode comparison.",
+            "The inter-ring calculation treats an isolated smooth bay over ring center"
             " spacing; a supplied compressive curve corrects this bay only.",
         ]
         checks = [
             "solid rectangular A_r, centroidal I_r, eccentricity, and exact Saint-Venant J_r",
             "NASA Eq. 64/65 global pressure before and after the separate Eq. 91 torsion term",
             "expanding integer mode search over m >= 1, n >= 2 with stability, frontier, bounds, and termination evidence",
-            "source-gated advisory isolated-bay smooth-shell buckling",
+            "isolated-bay smooth-shell buckling with its own applicability checks",
             "optional NASA Eq. 30-32 inelastic correction of the inter-ring bay only",
-            "the global capacity's implied membrane stress against the proportional limit or yield strength",
-            "advisory minimum over every mode that produced a pressure, tagged when it is an elastic upper bound",
-            "machine-readable advisory, not-implemented, not-applicable, and external-blocker dispositions",
+            "nominal stress at the adjusted global pressure against the proportional limit or yield strength",
+            "minimum over the available mode pressures, with the selected mode's material status",
+            "structured method coverage and source references",
         ]
         omissions = [
+            "shell yield between rings and its interaction with inter-ring buckling (interframe collapse)",
+            "a ring-spacing screen for the smeared global model",
             "axisymmetric hydrostatic instability (n=0); the mode search starts at n=2",
-            "actual closure stiffness, contact, and shell continuing beyond a support",
-            "capacity for in-service use because NASA gives no numeric Eq. 64/Eq. 66 long-cylinder transition",
+            "discrete-ring global deformation and alternative classical shell formulations;"
+            " this calculation implements NASA's smeared Eq. 64/65",
+            "actual closure stiffness, contact, axial warping restraint, and shell continuing beyond a support",
+            "automatic Eq. 64/Eq. 66 selection for long cylinders; NASA gives no numeric transition",
             "inelastic correction of an over-limit global capacity: NASA states plasticity factors for unstiffened cylinders only",
             "validated finite-width inter-ring local skin buckling and local/global interaction",
             "ring material strength, stiffener crippling, and frame tripping or rolling",

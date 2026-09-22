@@ -9,6 +9,12 @@ model; both predate this changelog.
 
 ## [Unreleased]
 
+- Ring-shell model 4.2.0: state that the global buckling calculation is
+  elastic and that shell yield between rings, ring yield and tripping, and
+  ring spacing are not checked. State the freely warping end assumption. Text and summary
+  output show the lowest buckling pressure and its mode, with the heading
+  still giving the assessment status. Routine notes are shorter. Pressures,
+  status codes, and acceptance rules are unchanged.
 - Ring-shell model 4.1.0: report the `m>=1,n>=2` mode domain and the boundary
   assumptions, and add `not_implemented` (axisymmetric `n=0` buckling) and
   `external_blocker` (physical end restraint) mode dispositions. Calculated

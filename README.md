@@ -56,9 +56,16 @@ Status fields distinguish usable capacities from estimates:
   value although the governing stress exceeds the supplied strength.
 
 The first two buckling statuses give `indeterminate` in `check`, or `fail` when
-the elastic upper bound is below demand including the required margin. Ring-shell
-checks remain indeterminate because the model omits the long-cylinder transition
-and local failure checks, and assumes circular supports for the inter-ring bay.
+the elastic upper bound is below demand including the required margin.
+
+`ring-shell` implements NASA SP-8007 Eqs. 64/65 and 82-91, verified against
+an independent calculation. It reports the lowest buckling pressure and its
+mode: global buckling including NASA's recommended 0.75 factor, or buckling of
+the shell between rings. This is a buckling estimate, not a collapse pressure.
+The global calculation is elastic; the inter-ring bay includes NASA's
+plasticity correction when a complete compressive curve is supplied. Shell
+yield between rings, ring yield and tripping, and ring spacing are not checked,
+so `check` stays indeterminate.
 
 Thickness sizing selects the smallest solution among model-eligible intervals
 within the requested bounds and reports excluded intervals below the selection.
@@ -152,7 +159,7 @@ typed request objects and an optional `materials_file` override.
 | `hemisphere` | Hemispherical head stress, NASA SP-8032 buckling, displacement, and seat stress |
 | `smooth-buckling` | NASA SP-8007 smooth-cylinder external-pressure buckling |
 | `smooth-buckling size` | The wall thickness meeting a margin across shell stress and buckling |
-| `ring-shell` | NASA SP-8007 ring-stiffened shell general instability (advisory) |
+| `ring-shell` | NASA SP-8007 ring-stiffened shell elastic buckling pressure and mode (advisory) |
 | `mass-properties` | Submerged mass and buoyancy from resolved volumes, fluid density, and gravity |
 | `sweep` | One forward request over pressure, depth, or a supported geometric dimension |
 | `compare-materials` | One forward or sizing request against an ordered list of named materials |

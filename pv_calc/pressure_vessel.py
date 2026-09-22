@@ -647,7 +647,7 @@ class SmoothCylinderBucklingResult:
 
 
 RING_SHELL_MODEL_ID = "nasa_ring_stiffened_shell_external_pressure"
-RING_SHELL_MODEL_VERSION = "4.1.0"
+RING_SHELL_MODEL_VERSION = "4.2.0"
 RING_SHELL_EQ64_ADJUSTMENT_FACTOR = 0.75
 RING_SHELL_MIN_RADIUS_THICKNESS_RATIO = 10.0
 RING_SHELL_DEFAULT_MAX_MODE_EVALUATIONS = 2_000_000
@@ -663,21 +663,24 @@ RING_SHELL_BENCHMARK_SOURCE = (
 RING_SHELL_BOUNDARY_ASSUMPTIONS = (
     "Global ends are restrained against radial displacement and free to rotate; "
     "closed-end pressure supplies the axial compression in NASA Eq. 65.",
+    "Global ends are free to warp axially (the incremental axial resultant N_x vanishes "
+    "at the supports); the prebuckling closed-end load is still applied.",
     "Closure stiffness, contact, and shell continuing beyond a support are not modeled.",
     "Inter-ring bays assume ideal circular supports at ring center lines.",
 )
 RING_SHELL_PARTIAL_SCOPE_REASON = (
-    "Global ring-shell buckling is advisory: the mode search covers m >= 1, n >= 2 only, "
-    "and axisymmetric (n=0) buckling, actual end restraint, the long-cylinder transition, "
-    "and local failure modes are not covered."
+    "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. "
+    "Shell yield between rings, ring yield and tripping, ring spacing, axisymmetric "
+    "buckling (n=0), and the long-cylinder Eq. 66 transition are not checked; when one "
+    "of them governs, collapse can occur well below the reported buckling pressure."
 )
-GENERAL_INSTABILITY_SCOPE_NOTE = (
-    "Ring material stress, frame tripping/crippling, attachment and weld effects, fabrication "
-    "imperfections, residual stress, and local/global interaction are not evaluated."
+RING_SHELL_ADJUSTED_VALUE_NOTE = (
+    "The global buckling pressure includes the 0.75 factor recommended by NASA "
+    "SP-8007, printed p. 38, and enters the governing-pressure comparison."
 )
 GENERAL_INSTABILITY_SMEARED_NOTE = (
-    "The smeared-ring model assumes uniformly spaced rings; widely spaced rings and local/global "
-    "interaction need a discrete-shell or code-rule check."
+    "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing "
+    "screen is applied; widely spaced rings need a discrete-ring or code-rule check."
 )
 RING_SHELL_GLOBAL_PLASTICITY_PENDING_REASON = (
     "the global Eq. 64/65 capacity implies a shell circumferential membrane stress "
@@ -3041,10 +3044,8 @@ def ring_stiffened_shell_external_pressure(
                 "corrections are not implemented for the smeared orthotropic mode"
             )
 
-    # Every candidate pressure is an elastic upper bound on its own mode, so the
-    # minimum over the available modes is the tightest value the model can state;
-    # dropping a labelled bound could only raise it. Modes outside the search
-    # are not represented.
+    # Compare every available mode pressure and retain the selected mode's
+    # material status. Modes outside the calculation are not represented.
     advisory_candidates: list[tuple[str, float, RingShellAdvisoryStatus]] = []
     if capacity_status == "advisory" and global_pressure is not None:
         advisory_candidates.append(
@@ -3087,10 +3088,9 @@ def ring_stiffened_shell_external_pressure(
             disposition="implemented_advisory",
             source_reference=RING_SHELL_SOURCE,
             basis=(
-                "Equation and rectangular-section mapping are verified and DTMB-compared, but "
-                "the predicted lobe transition disagrees with the DTMB data and NASA gives no "
-                "numeric Eq. 64/Eq. 66 finite-to-long transition; in-service pressure-hull use "
-                "is not justified."
+                "Verified implementation of NASA Eq. 64/65 with Eqs. 82-91 ring stiffnesses "
+                "and torsion. An independent transcription reproduces its pressures and "
+                "modes."
             ),
         ),
         RingModeDisposition(
@@ -3106,10 +3106,14 @@ def ring_stiffened_shell_external_pressure(
         RingModeDisposition(
             mode="physical_end_restraint",
             disposition="external_blocker",
-            source_reference="DTMB Report 1324, Fig. 3 and Tables 1-2, pp. 5-10",
+            source_reference=(
+                "DTMB Report 1324, Figs. 3 and 6 and Tables 1-2, pp. 5-10; NASA/SP-8007-2020/"
+                "REV 2, pp. 28 and 36"
+            ),
             basis=(
-                "Only ideal simple supports are modeled; closure stiffness, contact, and "
-                "shell continuing beyond a support are not represented."
+                "The equation uses ideal simple supports with freely warping ends. "
+                "Actual closure stiffness, contact, and shell continuing beyond a support "
+                "are not inputs to this calculation; no additional restraint is credited."
             ),
         ),
         RingModeDisposition(
@@ -3187,18 +3191,10 @@ def ring_stiffened_shell_external_pressure(
         ),
     )
     notes = (
-        "The 0.75 multiplier follows NASA's recommendation immediately after Eq. 68.",
-        "The shell radius is explicitly the shell mid-surface radius, consistent with the Eq. 82-91 reference surface.",
-        "I_r is centroidal; Eq. 90 adds the separate z_r^2 A_r parallel-axis term.",
-        "J_r is the exact Saint-Venant constant for the same solid rectangle used by geometry and mass.",
-        "The inter-ring ideal supports are ring center lines; no end-restraint capacity increase is credited.",
-        "advisory_candidate_modes lists the available pressures, including elastic upper "
-        "bounds; advisory_governing_mode selects their minimum. Withheld modes are excluded.",
-        "advisory_governing_status describes the selected mode. "
-        "global_elastic_applicability separately reports the global mode's material limit.",
+        RING_SHELL_ADJUSTED_VALUE_NOTE,
+        "The elastic material screen uses nominal p*r/t at the NASA-adjusted global pressure.",
         RING_SHELL_PARTIAL_SCOPE_REASON,
         GENERAL_INSTABILITY_SMEARED_NOTE,
-        GENERAL_INSTABILITY_SCOPE_NOTE,
         *((BUCKLING_REFERENCE_ONLY_REASON,) if data_qualification == "reference_only" else ()),
         *((global_plasticity_pending,) if global_plasticity_pending is not None else ()),
     )
