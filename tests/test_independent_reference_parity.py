@@ -48,6 +48,16 @@ from reference.ring_shell_reference import (
     dtmb_case,
     solve_case,
 )
+from reference.ring_yield_reference import (
+    JMSE_2020_AREA_RULE,
+    JMSE_2020_PRINTED_PRECISION_MPA,
+    JMSE_2020_PUBLISHED_PC5_MPA,
+    JMSE_2020_WORKED_EXAMPLE,
+    PARITY_CASES as RING_YIELD_PARITY_CASES,
+    YieldCase,
+    direct_solution as ring_yield_direct_solution,
+    printed_form as ring_yield_printed_form,
+)
 
 
 PACKAGE_ROOT = Path(__file__).resolve().parents[1]
@@ -115,8 +125,15 @@ def _assert_mode_parity(case: RingCase) -> None:
         )
 
 
-def test_independent_reference_has_no_production_imports() -> None:
-    reference_path = Path("tests/reference/ring_shell_reference.py")
+@pytest.mark.parametrize(
+    "reference",
+    [
+        "tests/reference/ring_shell_reference.py",
+        "tests/reference/ring_yield_reference.py",
+    ],
+)
+def test_independent_reference_has_no_production_imports(reference: str) -> None:
+    reference_path = Path(reference)
     tree = ast.parse(reference_path.read_text(encoding="utf-8"))
     imported_modules = {
         node.module
@@ -1458,3 +1475,94 @@ def test_reference_output_separates_inputs_published_calculated_and_comparisons(
             published_length_over_diameter,
             abs=DTMB_LENGTH_DIAMETER_ABSOLUTE_TOLERANCE,
         )
+
+
+# The two ring-yield reference routes and production use different numerics
+# (direct hyperbolics, a scaled 3x3 solve, and exp(-x)-scaled closed forms),
+# so agreement is to rounding, not bit-for-bit.
+RING_YIELD_RELATIVE_TOLERANCE = 1.0e-12
+
+
+def _ring_yield_production(case: YieldCase) -> RingShellResult:
+    return ring_stiffened_shell_external_pressure(
+        external_pressure_mpa=1.0,
+        shell_mid_surface_radius_mm=case.shell_mid_surface_radius,
+        wall_thickness_mm=case.wall_thickness,
+        unsupported_length_mm=10.0 * case.ring_spacing,
+        ring_spacing_mm=case.ring_spacing,
+        ring_axial_width_mm=case.ring_axial_width,
+        ring_radial_height_mm=case.ring_radial_height,
+        ring_location=case.ring_location,
+        elastic_modulus_mpa=200_000.0,
+        poisson_ratio=case.poisson_ratio,
+        yield_strength_mpa=case.yield_strength,
+    )
+
+
+def test_ring_yield_parity_cases_span_location_and_bay_length() -> None:
+    bay_parameters = [
+        ring_yield_printed_form(case)["clear_bay_parameter"]
+        for case in RING_YIELD_PARITY_CASES
+    ]
+    assert {case.ring_location for case in RING_YIELD_PARITY_CASES} == {"internal", "external"}
+    # From a bay much shorter than the shell decay length to a very long one.
+    assert min(bay_parameters) < 0.5
+    assert max(bay_parameters) > 30.0
+
+
+@pytest.mark.parametrize("case", RING_YIELD_PARITY_CASES, ids=lambda case: case.case_id)
+def test_ring_yield_matches_the_independent_printed_form(case: YieldCase) -> None:
+    independent = ring_yield_printed_form(case)
+    production = _ring_yield_production(case)
+    stress = production.axisymmetric_stress
+
+    assert stress is not None
+    for actual, key in (
+        (stress.clear_bay_mm, "clear_bay"),
+        (stress.clear_bay_parameter, "clear_bay_parameter"),
+        (stress.n_function, "n_function"),
+        (stress.effective_ring_area_mm2, "effective_ring_area"),
+        (stress.frame_parameter_gamma, "gamma"),
+        (stress.midbay_shell_hoop_stress_per_unit_pressure, "shell_hoop_stress_per_unit_pressure"),
+        (stress.ring_hoop_stress_per_unit_pressure, "ring_hoop_stress_per_unit_pressure"),
+        (production.shell_yield_between_rings_pressure_mpa, "shell_yield_pressure"),
+        (production.ring_yield_pressure_mpa, "ring_yield_pressure"),
+    ):
+        assert actual == pytest.approx(independent[key], rel=RING_YIELD_RELATIVE_TOLERANCE), key
+    # G changes sign in long bays, so it is compared absolutely.
+    assert stress.g_function == pytest.approx(
+        independent["g_function"], rel=0.0, abs=RING_YIELD_RELATIVE_TOLERANCE
+    )
+
+
+@pytest.mark.parametrize("case", RING_YIELD_PARITY_CASES, ids=lambda case: case.case_id)
+def test_ring_yield_printed_form_matches_the_direct_bay_solution(case: YieldCase) -> None:
+    # The printed closed form and the direct half-bay solution share only the
+    # governing equation, so this checks the closed-form algebra, including
+    # the ring stress, which has no published check.
+    printed = ring_yield_printed_form(case)
+    direct = ring_yield_direct_solution(case)
+    for key in ("shell_hoop_stress_per_unit_pressure", "ring_hoop_stress_per_unit_pressure"):
+        assert printed[key] == pytest.approx(direct[key], rel=RING_YIELD_RELATIVE_TOLERANCE), key
+
+
+def test_jmse_2020_worked_example_mean_hoop_yield_pressure() -> None:
+    # JMSE 8 (2020) 515 prints Pc5 = 14.95 MPa for an internal 6.35 mm square
+    # ring. With the example's own flange-tip radius in the modified ring area,
+    # the reference reproduces it at the printed precision. The bay is long
+    # (beta*L = 8.3), so the ring moves Pc5 by only about 0.5% here; the parity
+    # cases above cover short bays.
+    reference = ring_yield_printed_form(JMSE_2020_WORKED_EXAMPLE, JMSE_2020_AREA_RULE)
+    assert reference["shell_yield_pressure"] == pytest.approx(
+        JMSE_2020_PUBLISHED_PC5_MPA, abs=JMSE_2020_PRINTED_PRECISION_MPA
+    )
+
+    # Production uses DTMB 1639's internal-ring area A_f (R/R_c), not the
+    # example's A_f (R/R_f)^2, which moves Pc5 by +0.06% here.
+    production = _ring_yield_production(JMSE_2020_WORKED_EXAMPLE)
+    assert production.shell_yield_between_rings_pressure_mpa == pytest.approx(
+        14.959541298679, rel=1.0e-12
+    )
+    assert production.shell_yield_between_rings_pressure_mpa == pytest.approx(
+        JMSE_2020_PUBLISHED_PC5_MPA, rel=1.0e-3
+    )
