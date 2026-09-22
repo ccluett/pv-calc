@@ -75,6 +75,7 @@ from pv_calc.pressure_vessel import (
     RING_SHELL_MODEL_VERSION,
     RING_SHELL_SECTION_SOURCE,
     RING_SHELL_SOURCE,
+    RING_SHELL_YIELD_SOURCE,
     SEAT_BEARING_STRESS_SOURCE,
     SMOOTH_CYLINDER_BUCKLING_MODEL_ID,
     SMOOTH_CYLINDER_BUCKLING_MODEL_VERSION,
@@ -98,6 +99,7 @@ from pv_calc.serialize import (
     HEMISPHERE_STRESS_STATE_UNITS,
     MASS_PROPERTIES_RESULT_UNITS,
     PLATE_RESULT_UNITS,
+    RING_AXISYMMETRIC_STRESS_UNITS,
     RING_GLOBAL_RESULT_UNITS,
     RING_MODE_SEARCH_ITERATION_UNITS,
     RING_SHELL_RESULT_UNITS,
@@ -249,6 +251,26 @@ _RESULT_FIELD_DESCRIPTIONS: dict[str, str] = {
     "advisory_margin": (
         "The advisory governing pressure divided by the applied pressure, minus one; null "
         "at zero demand or without a pressure. It is not an acceptance margin."
+    ),
+    "shell_yield_between_rings_pressure_mpa": (
+        "Pc5: the pressure at which the mean hoop stress in the shell at mid-bay reaches "
+        "the yield strength, from axisymmetric_stress. Not part of "
+        "advisory_governing_pressure_mpa. Null without a yield strength or valid geometry."
+    ),
+    "ring_yield_pressure_mpa": (
+        "The pressure at which the ring's mean hoop stress, at its centroid radius, reaches "
+        "the yield strength. Null without a yield strength or valid geometry."
+    ),
+    "axisymmetric_stress": (
+        "Axisymmetric solution of a periodic bay between identical rings behind the yield "
+        "pressures. Null when the geometry is invalid."
+    ),
+    "midbay_shell_hoop_stress_per_unit_pressure": (
+        "Mean hoop stress in the shell at mid-bay divided by the applied pressure, "
+        "(R/t)(1 - gamma*G); the yield strength divided by it is Pc5."
+    ),
+    "ring_hoop_stress_per_unit_pressure": (
+        "The ring's mean hoop stress at its centroid radius divided by the applied pressure."
     ),
     "mode_domain": (
         "Integer modes searched: m >= 1 axial half-waves and n >= 2 circumferential "
@@ -598,6 +620,7 @@ def _describe_model(
             RING_SHELL_SECTION_SOURCE,
             RING_SHELL_BENCHMARK_SOURCE,
             SMOOTH_CYLINDER_BUCKLING_SOURCE,
+            RING_SHELL_YIELD_SOURCE,
         ]
         assumptions = [
             "Hydrostatic closed-end pressure; global ends remain circular, rotate freely, and warp freely"
@@ -610,6 +633,9 @@ def _describe_model(
             " and adjusted pressures are reported; the adjusted pressure enters the mode comparison.",
             "The inter-ring calculation treats an isolated smooth bay over ring center"
             " spacing; a supplied compressive curve corrects this bay only.",
+            "Shell and ring yield use the axisymmetric solution of a periodic bay between"
+            " identical rings, away from the ends, for a perfectly circular, linearly"
+            " elastic shell; they need a yield strength.",
         ]
         checks = [
             "solid rectangular A_r, centroidal I_r, eccentricity, and exact Saint-Venant J_r",
@@ -619,10 +645,12 @@ def _describe_model(
             "optional NASA Eq. 30-32 inelastic correction of the inter-ring bay only",
             "nominal stress at the adjusted global pressure against the proportional limit or yield strength",
             "minimum over the available mode pressures, with the selected mode's material status",
+            "mid-bay shell and ring mean hoop stresses of the periodic bay, and the pressures at"
+            " which each reaches the yield strength",
             "structured method coverage and source references",
         ]
         omissions = [
-            "shell yield between rings and its interaction with inter-ring buckling (interframe collapse)",
+            "interframe collapse: the interaction of shell yield, inter-ring buckling, and imperfections",
             "a ring-spacing screen for the smeared global model",
             "axisymmetric hydrostatic instability (n=0); the mode search starts at n=2",
             "discrete-ring global deformation and alternative classical shell formulations;"
@@ -631,7 +659,7 @@ def _describe_model(
             "automatic Eq. 64/Eq. 66 selection for long cylinders; NASA gives no numeric transition",
             "inelastic correction of an over-limit global capacity: NASA states plasticity factors for unstiffened cylinders only",
             "validated finite-width inter-ring local skin buckling and local/global interaction",
-            "ring material strength, stiffener crippling, and frame tripping or rolling",
+            "ring bending from out-of-roundness, stiffener crippling, and frame tripping or rolling",
             "attachment, weld, residual-stress, tolerance, and fabrication effects",
             "code allowables and safety factors",
         ]
@@ -643,9 +671,9 @@ def _describe_model(
             "yield_strength": {
                 **_BUCKLING_STRENGTH_CONTRACTS["yield_strength"],
                 "role": (
-                    "ductile_metal only; read to bound the proportional limit and, failing"
-                    " one, as the elastic applicability limit the global capacity is"
-                    " screened against"
+                    "ductile_metal only; read to bound the proportional limit, to set the"
+                    " shell and ring yield pressures, and, failing a proportional limit, as"
+                    " the elastic applicability limit the global capacity is screened against"
                 ),
             },
             "proportional_limit": {
@@ -666,6 +694,7 @@ def _describe_model(
             nested_definitions=(
                 ("RingGlobalBucklingResult", RING_GLOBAL_RESULT_UNITS),
                 ("RingModeSearchIteration", RING_MODE_SEARCH_ITERATION_UNITS),
+                ("RingAxisymmetricStressResult", RING_AXISYMMETRIC_STRESS_UNITS),
                 ("SmoothCylinderBucklingResult", SMOOTH_BUCKLING_RESULT_UNITS),
                 ("SmoothCylinderBucklingCandidate", SMOOTH_BUCKLING_CANDIDATE_UNITS),
             ),

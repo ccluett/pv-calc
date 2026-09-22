@@ -3310,7 +3310,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "5.0.0",
+      "model_version": "5.1.0",
       "package_version": "0.3.0"
     },
     "material": {
@@ -3361,6 +3361,23 @@
       },
       "advisory_governing_status": "advisory_plasticity_undetermined",
       "advisory_margin": -0.146855390554,
+      "axisymmetric_stress": {
+        "clear_bay_mm": {
+          "unit": "mm",
+          "value": 27.0764
+        },
+        "clear_bay_parameter": 3.62760607855,
+        "effective_ring_area_mm2": {
+          "unit": "mm^2",
+          "value": 8.92455703574
+        },
+        "frame_parameter_gamma": 0.301805214012,
+        "g_function": 0.255037587944,
+        "midbay_shell_hoop_stress_per_unit_pressure": 107.506427763,
+        "n_function": 1.07516730811,
+        "ring_hoop_stress_per_unit_pressure": 62.2904320264,
+        "source_reference": "von Sanden and Guenther periodic-bay solution (DTMB Report 1497, Pulos and Salerno, 1961) without the beam-column term, in the Wilson and PD 5500 Pc5 form printed by Morandi (1994, University of Glasgow PhD thesis), Eqs. 48-53; effective ring area from DTMB Report 1639 (Pulos, 1963), Eq. (9); ring stress from DTMB 1497 Eq. [58] and DTMB 1639 Eq. (175), at the ring centroid radius"
+      },
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
       "boundary_assumptions": [
         "Global ends are restrained against radial displacement and free to rotate; closed-end pressure supplies the axial compression in NASA Eq. 65.",
@@ -3937,7 +3954,7 @@
           "source_reference": "classification-society rules, no edition retained"
         },
         {
-          "basis": "NASA requires stiffener buckling/crippling investigation; a source-verified local stress model and attachment restraint are not available for the current geometry.",
+          "basis": "Ring mean hoop yield is reported as ring_yield_pressure_mpa. NASA also requires stiffener crippling to be investigated; a source-verified criterion and attachment restraint are not available for the current geometry.",
           "disposition": "external_blocker",
           "mode": "ring_material_strength_and_crippling",
           "source_reference": "NASA/SP-8007-2020/REV 2, orthotropic-cylinder scope, p. 34"
@@ -3962,12 +3979,13 @@
         }
       ],
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "5.0.0",
+      "model_version": "5.1.0",
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
         "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
-        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Shell yield between rings, ring yield and tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
-        "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing screen is applied; widely spaced rings need a discrete-ring or code-rule check."
+        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
+        "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing screen is applied; widely spaced rings need a discrete-ring or code-rule check.",
+        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay. They are not collapse pressures."
       ],
       "poisson_ratio": 0.3,
       "proportional_limit_mpa": {
@@ -4009,10 +4027,18 @@
         "unit": "mm^4",
         "value": 10.1506448772
       },
+      "ring_yield_pressure_mpa": {
+        "unit": "MPa",
+        "value": 9.40841716544
+      },
       "section_source_reference": "NASA/TP-2011-216882, Appendix A, Eq. A16, p. 100",
       "shell_mid_surface_radius_mm": {
         "unit": "mm",
         "value": 103.5431
+      },
+      "shell_yield_between_rings_pressure_mpa": {
+        "unit": "MPa",
+        "value": 5.45134260446
       },
       "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 64-65 and 82-91, pp. 37 and 40-42",
       "torsion_adjusted_pressure_effect_mpa": {
@@ -4045,7 +4071,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "5.0.0",
+      "model_version": "5.1.0",
       "package_version": "0.3.0"
     },
     "material": {
@@ -4096,6 +4122,23 @@
       },
       "advisory_governing_status": "advisory_plasticity_undetermined",
       "advisory_margin": -0.199825906905,
+      "axisymmetric_stress": {
+        "clear_bay_mm": {
+          "unit": "mm",
+          "value": 27.0764
+        },
+        "clear_bay_parameter": 3.62760607855,
+        "effective_ring_area_mm2": {
+          "unit": "mm^2",
+          "value": 8.92455703574
+        },
+        "frame_parameter_gamma": 0.301805214012,
+        "g_function": 0.255037587944,
+        "midbay_shell_hoop_stress_per_unit_pressure": 107.506427763,
+        "n_function": 1.07516730811,
+        "ring_hoop_stress_per_unit_pressure": 62.2904320264,
+        "source_reference": "von Sanden and Guenther periodic-bay solution (DTMB Report 1497, Pulos and Salerno, 1961) without the beam-column term, in the Wilson and PD 5500 Pc5 form printed by Morandi (1994, University of Glasgow PhD thesis), Eqs. 48-53; effective ring area from DTMB Report 1639 (Pulos, 1963), Eq. (9); ring stress from DTMB 1497 Eq. [58] and DTMB 1639 Eq. (175), at the ring centroid radius"
+      },
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
       "boundary_assumptions": [
         "Global ends are restrained against radial displacement and free to rotate; closed-end pressure supplies the axial compression in NASA Eq. 65.",
@@ -4672,7 +4715,7 @@
           "source_reference": "classification-society rules, no edition retained"
         },
         {
-          "basis": "NASA requires stiffener buckling/crippling investigation; a source-verified local stress model and attachment restraint are not available for the current geometry.",
+          "basis": "Ring mean hoop yield is reported as ring_yield_pressure_mpa. NASA also requires stiffener crippling to be investigated; a source-verified criterion and attachment restraint are not available for the current geometry.",
           "disposition": "external_blocker",
           "mode": "ring_material_strength_and_crippling",
           "source_reference": "NASA/SP-8007-2020/REV 2, orthotropic-cylinder scope, p. 34"
@@ -4697,12 +4740,13 @@
         }
       ],
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "5.0.0",
+      "model_version": "5.1.0",
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
         "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
-        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Shell yield between rings, ring yield and tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
-        "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing screen is applied; widely spaced rings need a discrete-ring or code-rule check."
+        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
+        "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing screen is applied; widely spaced rings need a discrete-ring or code-rule check.",
+        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay. They are not collapse pressures."
       ],
       "poisson_ratio": 0.3,
       "proportional_limit_mpa": {
@@ -4744,10 +4788,18 @@
         "unit": "mm^4",
         "value": 10.1506448772
       },
+      "ring_yield_pressure_mpa": {
+        "unit": "MPa",
+        "value": 9.40841716544
+      },
       "section_source_reference": "NASA/TP-2011-216882, Appendix A, Eq. A16, p. 100",
       "shell_mid_surface_radius_mm": {
         "unit": "mm",
         "value": 103.5431
+      },
+      "shell_yield_between_rings_pressure_mpa": {
+        "unit": "MPa",
+        "value": 5.45134260446
       },
       "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 64-65 and 82-91, pp. 37 and 40-42",
       "torsion_adjusted_pressure_effect_mpa": {
@@ -4780,7 +4832,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "5.0.0",
+      "model_version": "5.1.0",
       "package_version": "0.3.0"
     },
     "material": {
@@ -4831,6 +4883,23 @@
       },
       "advisory_governing_status": "advisory_plasticity_undetermined",
       "advisory_margin": -0.309598607681,
+      "axisymmetric_stress": {
+        "clear_bay_mm": {
+          "unit": "mm",
+          "value": 27.0764
+        },
+        "clear_bay_parameter": 3.62760607855,
+        "effective_ring_area_mm2": {
+          "unit": "mm^2",
+          "value": 8.92455703574
+        },
+        "frame_parameter_gamma": 0.301805214012,
+        "g_function": 0.255037587944,
+        "midbay_shell_hoop_stress_per_unit_pressure": 107.506427763,
+        "n_function": 1.07516730811,
+        "ring_hoop_stress_per_unit_pressure": 62.2904320264,
+        "source_reference": "von Sanden and Guenther periodic-bay solution (DTMB Report 1497, Pulos and Salerno, 1961) without the beam-column term, in the Wilson and PD 5500 Pc5 form printed by Morandi (1994, University of Glasgow PhD thesis), Eqs. 48-53; effective ring area from DTMB Report 1639 (Pulos, 1963), Eq. (9); ring stress from DTMB 1497 Eq. [58] and DTMB 1639 Eq. (175), at the ring centroid radius"
+      },
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
       "boundary_assumptions": [
         "Global ends are restrained against radial displacement and free to rotate; closed-end pressure supplies the axial compression in NASA Eq. 65.",
@@ -5407,7 +5476,7 @@
           "source_reference": "classification-society rules, no edition retained"
         },
         {
-          "basis": "NASA requires stiffener buckling/crippling investigation; a source-verified local stress model and attachment restraint are not available for the current geometry.",
+          "basis": "Ring mean hoop yield is reported as ring_yield_pressure_mpa. NASA also requires stiffener crippling to be investigated; a source-verified criterion and attachment restraint are not available for the current geometry.",
           "disposition": "external_blocker",
           "mode": "ring_material_strength_and_crippling",
           "source_reference": "NASA/SP-8007-2020/REV 2, orthotropic-cylinder scope, p. 34"
@@ -5432,12 +5501,13 @@
         }
       ],
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "5.0.0",
+      "model_version": "5.1.0",
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
         "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
-        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Shell yield between rings, ring yield and tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
-        "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing screen is applied; widely spaced rings need a discrete-ring or code-rule check."
+        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
+        "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing screen is applied; widely spaced rings need a discrete-ring or code-rule check.",
+        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay. They are not collapse pressures."
       ],
       "poisson_ratio": 0.3,
       "proportional_limit_mpa": {
@@ -5479,10 +5549,18 @@
         "unit": "mm^4",
         "value": 10.1506448772
       },
+      "ring_yield_pressure_mpa": {
+        "unit": "MPa",
+        "value": 9.40841716544
+      },
       "section_source_reference": "NASA/TP-2011-216882, Appendix A, Eq. A16, p. 100",
       "shell_mid_surface_radius_mm": {
         "unit": "mm",
         "value": 103.5431
+      },
+      "shell_yield_between_rings_pressure_mpa": {
+        "unit": "MPa",
+        "value": 5.45134260446
       },
       "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 64-65 and 82-91, pp. 37 and 40-42",
       "torsion_adjusted_pressure_effect_mpa": {
@@ -5515,7 +5593,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "5.0.0",
+      "model_version": "5.1.0",
       "package_version": "0.3.0"
     },
     "material": {
@@ -5566,6 +5644,23 @@
       },
       "advisory_governing_status": "advisory_plasticity_undetermined",
       "advisory_margin": -0.377291001161,
+      "axisymmetric_stress": {
+        "clear_bay_mm": {
+          "unit": "mm",
+          "value": 27.0764
+        },
+        "clear_bay_parameter": 3.62760607855,
+        "effective_ring_area_mm2": {
+          "unit": "mm^2",
+          "value": 8.92455703574
+        },
+        "frame_parameter_gamma": 0.301805214012,
+        "g_function": 0.255037587944,
+        "midbay_shell_hoop_stress_per_unit_pressure": 107.506427763,
+        "n_function": 1.07516730811,
+        "ring_hoop_stress_per_unit_pressure": 62.2904320264,
+        "source_reference": "von Sanden and Guenther periodic-bay solution (DTMB Report 1497, Pulos and Salerno, 1961) without the beam-column term, in the Wilson and PD 5500 Pc5 form printed by Morandi (1994, University of Glasgow PhD thesis), Eqs. 48-53; effective ring area from DTMB Report 1639 (Pulos, 1963), Eq. (9); ring stress from DTMB 1497 Eq. [58] and DTMB 1639 Eq. (175), at the ring centroid radius"
+      },
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
       "boundary_assumptions": [
         "Global ends are restrained against radial displacement and free to rotate; closed-end pressure supplies the axial compression in NASA Eq. 65.",
@@ -6142,7 +6237,7 @@
           "source_reference": "classification-society rules, no edition retained"
         },
         {
-          "basis": "NASA requires stiffener buckling/crippling investigation; a source-verified local stress model and attachment restraint are not available for the current geometry.",
+          "basis": "Ring mean hoop yield is reported as ring_yield_pressure_mpa. NASA also requires stiffener crippling to be investigated; a source-verified criterion and attachment restraint are not available for the current geometry.",
           "disposition": "external_blocker",
           "mode": "ring_material_strength_and_crippling",
           "source_reference": "NASA/SP-8007-2020/REV 2, orthotropic-cylinder scope, p. 34"
@@ -6167,12 +6262,13 @@
         }
       ],
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "5.0.0",
+      "model_version": "5.1.0",
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
         "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
-        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Shell yield between rings, ring yield and tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
-        "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing screen is applied; widely spaced rings need a discrete-ring or code-rule check."
+        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
+        "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing screen is applied; widely spaced rings need a discrete-ring or code-rule check.",
+        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay. They are not collapse pressures."
       ],
       "poisson_ratio": 0.3,
       "proportional_limit_mpa": {
@@ -6214,10 +6310,18 @@
         "unit": "mm^4",
         "value": 10.1506448772
       },
+      "ring_yield_pressure_mpa": {
+        "unit": "MPa",
+        "value": 9.40841716544
+      },
       "section_source_reference": "NASA/TP-2011-216882, Appendix A, Eq. A16, p. 100",
       "shell_mid_surface_radius_mm": {
         "unit": "mm",
         "value": 103.5431
+      },
+      "shell_yield_between_rings_pressure_mpa": {
+        "unit": "MPa",
+        "value": 5.45134260446
       },
       "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 64-65 and 82-91, pp. 37 and 40-42",
       "torsion_adjusted_pressure_effect_mpa": {
@@ -6250,7 +6354,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "5.0.0",
+      "model_version": "5.1.0",
       "package_version": "0.3.0"
     },
     "material": {
@@ -6301,6 +6405,23 @@
       },
       "advisory_governing_status": "advisory_plasticity_undetermined",
       "advisory_margin": -0.404601471105,
+      "axisymmetric_stress": {
+        "clear_bay_mm": {
+          "unit": "mm",
+          "value": 27.0764
+        },
+        "clear_bay_parameter": 3.62760607855,
+        "effective_ring_area_mm2": {
+          "unit": "mm^2",
+          "value": 8.92455703574
+        },
+        "frame_parameter_gamma": 0.301805214012,
+        "g_function": 0.255037587944,
+        "midbay_shell_hoop_stress_per_unit_pressure": 107.506427763,
+        "n_function": 1.07516730811,
+        "ring_hoop_stress_per_unit_pressure": 62.2904320264,
+        "source_reference": "von Sanden and Guenther periodic-bay solution (DTMB Report 1497, Pulos and Salerno, 1961) without the beam-column term, in the Wilson and PD 5500 Pc5 form printed by Morandi (1994, University of Glasgow PhD thesis), Eqs. 48-53; effective ring area from DTMB Report 1639 (Pulos, 1963), Eq. (9); ring stress from DTMB 1497 Eq. [58] and DTMB 1639 Eq. (175), at the ring centroid radius"
+      },
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
       "boundary_assumptions": [
         "Global ends are restrained against radial displacement and free to rotate; closed-end pressure supplies the axial compression in NASA Eq. 65.",
@@ -6877,7 +6998,7 @@
           "source_reference": "classification-society rules, no edition retained"
         },
         {
-          "basis": "NASA requires stiffener buckling/crippling investigation; a source-verified local stress model and attachment restraint are not available for the current geometry.",
+          "basis": "Ring mean hoop yield is reported as ring_yield_pressure_mpa. NASA also requires stiffener crippling to be investigated; a source-verified criterion and attachment restraint are not available for the current geometry.",
           "disposition": "external_blocker",
           "mode": "ring_material_strength_and_crippling",
           "source_reference": "NASA/SP-8007-2020/REV 2, orthotropic-cylinder scope, p. 34"
@@ -6902,12 +7023,13 @@
         }
       ],
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "5.0.0",
+      "model_version": "5.1.0",
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
         "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
-        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Shell yield between rings, ring yield and tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
-        "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing screen is applied; widely spaced rings need a discrete-ring or code-rule check."
+        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
+        "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing screen is applied; widely spaced rings need a discrete-ring or code-rule check.",
+        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay. They are not collapse pressures."
       ],
       "poisson_ratio": 0.3,
       "proportional_limit_mpa": {
@@ -6949,10 +7071,18 @@
         "unit": "mm^4",
         "value": 10.1506448772
       },
+      "ring_yield_pressure_mpa": {
+        "unit": "MPa",
+        "value": 9.40841716544
+      },
       "section_source_reference": "NASA/TP-2011-216882, Appendix A, Eq. A16, p. 100",
       "shell_mid_surface_radius_mm": {
         "unit": "mm",
         "value": 103.5431
+      },
+      "shell_yield_between_rings_pressure_mpa": {
+        "unit": "MPa",
+        "value": 5.45134260446
       },
       "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 64-65 and 82-91, pp. 37 and 40-42",
       "torsion_adjusted_pressure_effect_mpa": {
@@ -6985,7 +7115,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "5.0.0",
+      "model_version": "5.1.0",
       "package_version": "0.3.0"
     },
     "material": {
@@ -7036,6 +7166,23 @@
       },
       "advisory_governing_status": "advisory_plasticity_undetermined",
       "advisory_margin": -0.425126227127,
+      "axisymmetric_stress": {
+        "clear_bay_mm": {
+          "unit": "mm",
+          "value": 27.0764
+        },
+        "clear_bay_parameter": 3.62760607855,
+        "effective_ring_area_mm2": {
+          "unit": "mm^2",
+          "value": 8.92455703574
+        },
+        "frame_parameter_gamma": 0.301805214012,
+        "g_function": 0.255037587944,
+        "midbay_shell_hoop_stress_per_unit_pressure": 107.506427763,
+        "n_function": 1.07516730811,
+        "ring_hoop_stress_per_unit_pressure": 62.2904320264,
+        "source_reference": "von Sanden and Guenther periodic-bay solution (DTMB Report 1497, Pulos and Salerno, 1961) without the beam-column term, in the Wilson and PD 5500 Pc5 form printed by Morandi (1994, University of Glasgow PhD thesis), Eqs. 48-53; effective ring area from DTMB Report 1639 (Pulos, 1963), Eq. (9); ring stress from DTMB 1497 Eq. [58] and DTMB 1639 Eq. (175), at the ring centroid radius"
+      },
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
       "boundary_assumptions": [
         "Global ends are restrained against radial displacement and free to rotate; closed-end pressure supplies the axial compression in NASA Eq. 65.",
@@ -7612,7 +7759,7 @@
           "source_reference": "classification-society rules, no edition retained"
         },
         {
-          "basis": "NASA requires stiffener buckling/crippling investigation; a source-verified local stress model and attachment restraint are not available for the current geometry.",
+          "basis": "Ring mean hoop yield is reported as ring_yield_pressure_mpa. NASA also requires stiffener crippling to be investigated; a source-verified criterion and attachment restraint are not available for the current geometry.",
           "disposition": "external_blocker",
           "mode": "ring_material_strength_and_crippling",
           "source_reference": "NASA/SP-8007-2020/REV 2, orthotropic-cylinder scope, p. 34"
@@ -7637,12 +7784,13 @@
         }
       ],
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "5.0.0",
+      "model_version": "5.1.0",
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
         "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
-        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Shell yield between rings, ring yield and tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
-        "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing screen is applied; widely spaced rings need a discrete-ring or code-rule check."
+        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
+        "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing screen is applied; widely spaced rings need a discrete-ring or code-rule check.",
+        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay. They are not collapse pressures."
       ],
       "poisson_ratio": 0.3,
       "proportional_limit_mpa": {
@@ -7684,10 +7832,18 @@
         "unit": "mm^4",
         "value": 10.1506448772
       },
+      "ring_yield_pressure_mpa": {
+        "unit": "MPa",
+        "value": 9.40841716544
+      },
       "section_source_reference": "NASA/TP-2011-216882, Appendix A, Eq. A16, p. 100",
       "shell_mid_surface_radius_mm": {
         "unit": "mm",
         "value": 103.5431
+      },
+      "shell_yield_between_rings_pressure_mpa": {
+        "unit": "MPa",
+        "value": 5.45134260446
       },
       "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 64-65 and 82-91, pp. 37 and 40-42",
       "torsion_adjusted_pressure_effect_mpa": {
@@ -7720,7 +7876,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "5.0.0",
+      "model_version": "5.1.0",
       "package_version": "0.3.0"
     },
     "material": {
@@ -7771,6 +7927,23 @@
       },
       "advisory_governing_status": "advisory_plasticity_undetermined",
       "advisory_margin": -0.442823526348,
+      "axisymmetric_stress": {
+        "clear_bay_mm": {
+          "unit": "mm",
+          "value": 27.0764
+        },
+        "clear_bay_parameter": 3.62760607855,
+        "effective_ring_area_mm2": {
+          "unit": "mm^2",
+          "value": 8.92455703574
+        },
+        "frame_parameter_gamma": 0.301805214012,
+        "g_function": 0.255037587944,
+        "midbay_shell_hoop_stress_per_unit_pressure": 107.506427763,
+        "n_function": 1.07516730811,
+        "ring_hoop_stress_per_unit_pressure": 62.2904320264,
+        "source_reference": "von Sanden and Guenther periodic-bay solution (DTMB Report 1497, Pulos and Salerno, 1961) without the beam-column term, in the Wilson and PD 5500 Pc5 form printed by Morandi (1994, University of Glasgow PhD thesis), Eqs. 48-53; effective ring area from DTMB Report 1639 (Pulos, 1963), Eq. (9); ring stress from DTMB 1497 Eq. [58] and DTMB 1639 Eq. (175), at the ring centroid radius"
+      },
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
       "boundary_assumptions": [
         "Global ends are restrained against radial displacement and free to rotate; closed-end pressure supplies the axial compression in NASA Eq. 65.",
@@ -8347,7 +8520,7 @@
           "source_reference": "classification-society rules, no edition retained"
         },
         {
-          "basis": "NASA requires stiffener buckling/crippling investigation; a source-verified local stress model and attachment restraint are not available for the current geometry.",
+          "basis": "Ring mean hoop yield is reported as ring_yield_pressure_mpa. NASA also requires stiffener crippling to be investigated; a source-verified criterion and attachment restraint are not available for the current geometry.",
           "disposition": "external_blocker",
           "mode": "ring_material_strength_and_crippling",
           "source_reference": "NASA/SP-8007-2020/REV 2, orthotropic-cylinder scope, p. 34"
@@ -8372,12 +8545,13 @@
         }
       ],
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "5.0.0",
+      "model_version": "5.1.0",
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
         "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
-        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Shell yield between rings, ring yield and tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
-        "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing screen is applied; widely spaced rings need a discrete-ring or code-rule check."
+        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
+        "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing screen is applied; widely spaced rings need a discrete-ring or code-rule check.",
+        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay. They are not collapse pressures."
       ],
       "poisson_ratio": 0.3,
       "proportional_limit_mpa": {
@@ -8419,10 +8593,18 @@
         "unit": "mm^4",
         "value": 10.1506448772
       },
+      "ring_yield_pressure_mpa": {
+        "unit": "MPa",
+        "value": 9.40841716544
+      },
       "section_source_reference": "NASA/TP-2011-216882, Appendix A, Eq. A16, p. 100",
       "shell_mid_surface_radius_mm": {
         "unit": "mm",
         "value": 103.5431
+      },
+      "shell_yield_between_rings_pressure_mpa": {
+        "unit": "MPa",
+        "value": 5.45134260446
       },
       "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 64-65 and 82-91, pp. 37 and 40-42",
       "torsion_adjusted_pressure_effect_mpa": {
@@ -8455,7 +8637,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "5.0.0",
+      "model_version": "5.1.0",
       "package_version": "0.3.0"
     },
     "material": {
@@ -8506,6 +8688,23 @@
       },
       "advisory_governing_status": "advisory_plasticity_undetermined",
       "advisory_margin": -0.449904234032,
+      "axisymmetric_stress": {
+        "clear_bay_mm": {
+          "unit": "mm",
+          "value": 27.0764
+        },
+        "clear_bay_parameter": 3.62760607855,
+        "effective_ring_area_mm2": {
+          "unit": "mm^2",
+          "value": 8.92455703574
+        },
+        "frame_parameter_gamma": 0.301805214012,
+        "g_function": 0.255037587944,
+        "midbay_shell_hoop_stress_per_unit_pressure": 107.506427763,
+        "n_function": 1.07516730811,
+        "ring_hoop_stress_per_unit_pressure": 62.2904320264,
+        "source_reference": "von Sanden and Guenther periodic-bay solution (DTMB Report 1497, Pulos and Salerno, 1961) without the beam-column term, in the Wilson and PD 5500 Pc5 form printed by Morandi (1994, University of Glasgow PhD thesis), Eqs. 48-53; effective ring area from DTMB Report 1639 (Pulos, 1963), Eq. (9); ring stress from DTMB 1497 Eq. [58] and DTMB 1639 Eq. (175), at the ring centroid radius"
+      },
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
       "boundary_assumptions": [
         "Global ends are restrained against radial displacement and free to rotate; closed-end pressure supplies the axial compression in NASA Eq. 65.",
@@ -9082,7 +9281,7 @@
           "source_reference": "classification-society rules, no edition retained"
         },
         {
-          "basis": "NASA requires stiffener buckling/crippling investigation; a source-verified local stress model and attachment restraint are not available for the current geometry.",
+          "basis": "Ring mean hoop yield is reported as ring_yield_pressure_mpa. NASA also requires stiffener crippling to be investigated; a source-verified criterion and attachment restraint are not available for the current geometry.",
           "disposition": "external_blocker",
           "mode": "ring_material_strength_and_crippling",
           "source_reference": "NASA/SP-8007-2020/REV 2, orthotropic-cylinder scope, p. 34"
@@ -9107,12 +9306,13 @@
         }
       ],
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "5.0.0",
+      "model_version": "5.1.0",
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
         "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
-        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Shell yield between rings, ring yield and tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
-        "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing screen is applied; widely spaced rings need a discrete-ring or code-rule check."
+        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
+        "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing screen is applied; widely spaced rings need a discrete-ring or code-rule check.",
+        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay. They are not collapse pressures."
       ],
       "poisson_ratio": 0.3,
       "proportional_limit_mpa": {
@@ -9154,10 +9354,18 @@
         "unit": "mm^4",
         "value": 10.1506448772
       },
+      "ring_yield_pressure_mpa": {
+        "unit": "MPa",
+        "value": 9.40841716544
+      },
       "section_source_reference": "NASA/TP-2011-216882, Appendix A, Eq. A16, p. 100",
       "shell_mid_surface_radius_mm": {
         "unit": "mm",
         "value": 103.5431
+      },
+      "shell_yield_between_rings_pressure_mpa": {
+        "unit": "MPa",
+        "value": 5.45134260446
       },
       "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 64-65 and 82-91, pp. 37 and 40-42",
       "torsion_adjusted_pressure_effect_mpa": {
@@ -9190,7 +9398,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "5.0.0",
+      "model_version": "5.1.0",
       "package_version": "0.3.0"
     },
     "material": {
@@ -9241,6 +9449,23 @@
       },
       "advisory_governing_status": "advisory_plasticity_undetermined",
       "advisory_margin": -0.392926840884,
+      "axisymmetric_stress": {
+        "clear_bay_mm": {
+          "unit": "mm",
+          "value": 27.0764
+        },
+        "clear_bay_parameter": 3.62760607855,
+        "effective_ring_area_mm2": {
+          "unit": "mm^2",
+          "value": 8.92455703574
+        },
+        "frame_parameter_gamma": 0.301805214012,
+        "g_function": 0.255037587944,
+        "midbay_shell_hoop_stress_per_unit_pressure": 107.506427763,
+        "n_function": 1.07516730811,
+        "ring_hoop_stress_per_unit_pressure": 62.2904320264,
+        "source_reference": "von Sanden and Guenther periodic-bay solution (DTMB Report 1497, Pulos and Salerno, 1961) without the beam-column term, in the Wilson and PD 5500 Pc5 form printed by Morandi (1994, University of Glasgow PhD thesis), Eqs. 48-53; effective ring area from DTMB Report 1639 (Pulos, 1963), Eq. (9); ring stress from DTMB 1497 Eq. [58] and DTMB 1639 Eq. (175), at the ring centroid radius"
+      },
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
       "boundary_assumptions": [
         "Global ends are restrained against radial displacement and free to rotate; closed-end pressure supplies the axial compression in NASA Eq. 65.",
@@ -9817,7 +10042,7 @@
           "source_reference": "classification-society rules, no edition retained"
         },
         {
-          "basis": "NASA requires stiffener buckling/crippling investigation; a source-verified local stress model and attachment restraint are not available for the current geometry.",
+          "basis": "Ring mean hoop yield is reported as ring_yield_pressure_mpa. NASA also requires stiffener crippling to be investigated; a source-verified criterion and attachment restraint are not available for the current geometry.",
           "disposition": "external_blocker",
           "mode": "ring_material_strength_and_crippling",
           "source_reference": "NASA/SP-8007-2020/REV 2, orthotropic-cylinder scope, p. 34"
@@ -9842,12 +10067,13 @@
         }
       ],
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "5.0.0",
+      "model_version": "5.1.0",
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
         "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
-        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Shell yield between rings, ring yield and tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
-        "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing screen is applied; widely spaced rings need a discrete-ring or code-rule check."
+        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
+        "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing screen is applied; widely spaced rings need a discrete-ring or code-rule check.",
+        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay. They are not collapse pressures."
       ],
       "poisson_ratio": 0.3,
       "proportional_limit_mpa": {
@@ -9889,10 +10115,18 @@
         "unit": "mm^4",
         "value": 10.1506448772
       },
+      "ring_yield_pressure_mpa": {
+        "unit": "MPa",
+        "value": 9.40841716544
+      },
       "section_source_reference": "NASA/TP-2011-216882, Appendix A, Eq. A16, p. 100",
       "shell_mid_surface_radius_mm": {
         "unit": "mm",
         "value": 103.5431
+      },
+      "shell_yield_between_rings_pressure_mpa": {
+        "unit": "MPa",
+        "value": 5.45134260446
       },
       "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 64-65 and 82-91, pp. 37 and 40-42",
       "torsion_adjusted_pressure_effect_mpa": {
@@ -9925,7 +10159,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "5.0.0",
+      "model_version": "5.1.0",
       "package_version": "0.3.0"
     },
     "material": {
@@ -9976,6 +10210,23 @@
       },
       "advisory_governing_status": "advisory_plasticity_undetermined",
       "advisory_margin": -0.316643116285,
+      "axisymmetric_stress": {
+        "clear_bay_mm": {
+          "unit": "mm",
+          "value": 27.0764
+        },
+        "clear_bay_parameter": 3.62760607855,
+        "effective_ring_area_mm2": {
+          "unit": "mm^2",
+          "value": 8.92455703574
+        },
+        "frame_parameter_gamma": 0.301805214012,
+        "g_function": 0.255037587944,
+        "midbay_shell_hoop_stress_per_unit_pressure": 107.506427763,
+        "n_function": 1.07516730811,
+        "ring_hoop_stress_per_unit_pressure": 62.2904320264,
+        "source_reference": "von Sanden and Guenther periodic-bay solution (DTMB Report 1497, Pulos and Salerno, 1961) without the beam-column term, in the Wilson and PD 5500 Pc5 form printed by Morandi (1994, University of Glasgow PhD thesis), Eqs. 48-53; effective ring area from DTMB Report 1639 (Pulos, 1963), Eq. (9); ring stress from DTMB 1497 Eq. [58] and DTMB 1639 Eq. (175), at the ring centroid radius"
+      },
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
       "boundary_assumptions": [
         "Global ends are restrained against radial displacement and free to rotate; closed-end pressure supplies the axial compression in NASA Eq. 65.",
@@ -10552,7 +10803,7 @@
           "source_reference": "classification-society rules, no edition retained"
         },
         {
-          "basis": "NASA requires stiffener buckling/crippling investigation; a source-verified local stress model and attachment restraint are not available for the current geometry.",
+          "basis": "Ring mean hoop yield is reported as ring_yield_pressure_mpa. NASA also requires stiffener crippling to be investigated; a source-verified criterion and attachment restraint are not available for the current geometry.",
           "disposition": "external_blocker",
           "mode": "ring_material_strength_and_crippling",
           "source_reference": "NASA/SP-8007-2020/REV 2, orthotropic-cylinder scope, p. 34"
@@ -10577,12 +10828,13 @@
         }
       ],
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "5.0.0",
+      "model_version": "5.1.0",
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
         "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
-        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Shell yield between rings, ring yield and tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
-        "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing screen is applied; widely spaced rings need a discrete-ring or code-rule check."
+        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
+        "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing screen is applied; widely spaced rings need a discrete-ring or code-rule check.",
+        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay. They are not collapse pressures."
       ],
       "poisson_ratio": 0.3,
       "proportional_limit_mpa": {
@@ -10624,10 +10876,18 @@
         "unit": "mm^4",
         "value": 10.1506448772
       },
+      "ring_yield_pressure_mpa": {
+        "unit": "MPa",
+        "value": 9.40841716544
+      },
       "section_source_reference": "NASA/TP-2011-216882, Appendix A, Eq. A16, p. 100",
       "shell_mid_surface_radius_mm": {
         "unit": "mm",
         "value": 103.5431
+      },
+      "shell_yield_between_rings_pressure_mpa": {
+        "unit": "MPa",
+        "value": 5.45134260446
       },
       "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 64-65 and 82-91, pp. 37 and 40-42",
       "torsion_adjusted_pressure_effect_mpa": {
