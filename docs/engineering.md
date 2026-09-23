@@ -591,11 +591,9 @@ ideal supports.
 | Tube, plate, and hemisphere stress | Roark's Formulas for Stress and Strain, 6th ed.: Table 32 cases 1a-1d (tube), Table 24 cases 10a-10b, p. 429 (plate), Table 32 cases 2a-2b, p. 640 (hemisphere) |
 | Plate center deflection | Roark cases 10a/10b plus `p*a^2/(4*kappa*G*t)`, with `kappa = 5/6`; [Reissner (1945)](https://doi.org/10.1115/1.4009435); the committed plate FEA sweep sets the released envelope |
 | Probable-minimum buckling comparators | Roark's Formulas for Stress and Strain, 6th ed., Table 35 case 22, p. 691 (sphere) and Table 35 case 20 (cylinder), the table's probable minimums; each is reported beside the released capacity and sets none |
-| Historical tube membrane limit | DTMB Report 1497 (Pulos and Salerno, 1961), Eq. [5] with Eqs. [A7]-[A10] |
 | Exact tube radial displacement and axial strain | Boresi and Schmidt, *Advanced Mechanics of Materials*, 6th ed., Eqs. (11.24) and (11.15) |
 | Exact spherical radial displacement | Spherical strain compatibility and 3D Hooke's law; [Coreform verification manual, section 6](https://docs.coreform.com/cifa/verification-manual/problems/solid_mechanics/linear_elastic_stress/pressurized-sphere/pressurized-sphere.html) |
 | Hemisphere external-pressure buckling | NASA SP-8032, Section 4.2.1.1, Eqs. 1-4 |
-| Historical hemisphere membrane limit | NASA Technical Memorandum 4579 (Ko, 1994), Eq. (5), printed p. 6 |
 | Smooth-cylinder buckling | NASA SP-8007 Rev. 2, Eqs. 19-32 |
 | Compressive Ramberg-Osgood material curves | MIL-HDBK-5J (31 January 2003), Section 9.8.4.1.2 for the 0.002 power-law form, Section 1.4.4.2 for the proportional-limit convention, and Figures 3.6.2.2.6(i) and 5.4.1.1.6(b,c) for the explicitly supplied illustrative exponents |
 | Smooth-cylinder rounded Eq. 25 comparator | NASA SP-8007 Rev. 2, Eq. 25, printed p. 27, which states it only for `nu = 0.316`; its rounded `0.926` stands 0.0873% above the Eq. 24 capacity at that ratio, so it is reported beside Eq. 24 and sets no capacity |
@@ -608,7 +606,6 @@ ideal supports.
 
 - [NASA/SP-8007-2020/REV 2](https://ntrs.nasa.gov/api/citations/20205011530/downloads/20205011530%20Rev%202FINALa%201-2023.pdf)
 - [NASA SP-8032](https://shellbuckling.com/papers/classicNASAReports/NASASP-8032.pdf)
-- [NASA TM-4579](https://ntrs.nasa.gov/api/citations/19950011002/downloads/19950011002.pdf)
 - [NASA/TP-2011-216882](https://ntrs.nasa.gov/api/citations/20110004039/downloads/20110004039.pdf)
 - [UnderPressure 4.0 manual](https://www.deepsea.com/wp-content/uploads/2021/06/UnderPressure_Manual.pdf)
 - [DTMB Report 1324](https://dome.mit.edu/handle/1721.3/48982)

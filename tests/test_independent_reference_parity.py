@@ -8,8 +8,6 @@ import pytest
 import yaml
 
 from pv_calc.pressure_vessel import (
-    FLAT_CIRCULAR_PLATE_DEFLECTION_MINIMUM_RATIO,
-    FLAT_CIRCULAR_PLATE_POISSON_EVIDENCE_BAND,
     RING_SHELL_MODEL_ID,
     RING_SHELL_MODEL_VERSION,
     RingShellResult,
@@ -20,9 +18,9 @@ from pv_calc.pressure_vessel import (
     smooth_cylinder_external_pressure_buckling,
 )
 from reference.non_ring_reference import (
+    PUBLISHED_TOLERANCES,
     REFERENCE_ABSOLUTE_TOLERANCE,
     REFERENCE_RELATIVE_TOLERANCE,
-    build_evidence as build_non_ring_evidence,
     closed_end_tube_reference,
     flat_circular_plate_reference,
     hemispherical_head_reference,
@@ -31,14 +29,10 @@ from reference.non_ring_reference import (
     smooth_cylinder_reference,
 )
 from reference.hemisphere_displacement_reference import (
-    cylinder_to_sphere_ratio_reference,
     hemispherical_head_displacement_reference,
-    spherical_membrane_reference,
 )
 from reference.tube_displacement_reference import (
-    branch_agreement_reference,
     closed_end_tube_displacement_reference,
-    thin_shell_displacement_reference,
 )
 from reference.ring_shell_reference import (
     CONVERGENCE_TRAP_CASES,
@@ -220,9 +214,6 @@ def _assert_tube_parity(
         internal_radius=internal_radius_mm,
         wall_thickness=wall_thickness_mm,
         yield_strength=yield_strength_mpa,
-        # The reference is preserved with its historical membrane switch;
-        # its existing Lamé path is the oracle at every current wall thickness.
-        force_thick=True,
     )
     released = closed_end_tube_stress(
         external_pressure_mpa=pressure_mpa,
@@ -232,7 +223,6 @@ def _assert_tube_parity(
         material_failure_category="ductile_metal",
         force_thick=force_thick,
     )
-    assert released.branch == independent["branch"]
     for actual, key in (
         (released.external_radius_mm, "external_radius"),
         (released.mean_radius_mm, "mean_radius"),
@@ -320,7 +310,6 @@ def test_tube_displacement_matches_the_independent_source_transcription(
         elastic_modulus=modulus,
         poisson_ratio=poisson,
         axial_length=gauge_length,
-        force_thick=True,
     )
     released = closed_end_tube_stress(
         external_pressure_mpa=pressure,
@@ -335,7 +324,6 @@ def test_tube_displacement_matches_the_independent_source_transcription(
     )
 
     assert released.displacement_status == "released"
-    assert released.branch == independent["branch"]
     _assert_reference_close(released.axial_strain, independent["axial_strain"])
     _assert_reference_close(
         released.axial_length_change_mm, independent["axial_length_change"]
@@ -349,58 +337,6 @@ def test_tube_displacement_matches_the_independent_source_transcription(
         _assert_reference_close(
             state.radial_displacement_mm, surface["radial_displacement"]
         )
-
-
-def test_exact_tube_displacement_converges_to_the_preserved_membrane_reference() -> None:
-    """Keep the historical thin-wall comparison without making it a default.
-
-    The pinned reference states exact-to-membrane ratios in closed form:
-    1.1025 for axial strain and 1.047375 for bore displacement at r_m/t = 10.
-    Production now uses the exact side throughout; the membrane oracle remains
-    useful for quantifying approximation error and checking the thin limit.
-    """
-    inputs = {
-        "external_pressure_mpa": 1.0,
-        "wall_thickness_mm": 1.0,
-        "strength_mpa": 276.0,
-        "material_failure_category": "ductile_metal",
-        "elastic_modulus_mpa": 68_900.0,
-        "poisson_ratio": 0.33,
-    }
-    previous_gap = None
-    for radius_ratio in (10.0, 20.0, 50.0, 100.0):
-        internal_radius = radius_ratio - 0.5
-        expected = branch_agreement_reference(
-            internal_radius=internal_radius,
-            wall_thickness=1.0,
-        )
-        exact = closed_end_tube_stress(**inputs, internal_radius_mm=internal_radius)
-        membrane = thin_shell_displacement_reference(
-            external_pressure=inputs["external_pressure_mpa"],
-            median_radius=radius_ratio,
-            wall_thickness=inputs["wall_thickness_mm"],
-            elastic_modulus=inputs["elastic_modulus_mpa"],
-            poisson_ratio=inputs["poisson_ratio"],
-        )
-        assert exact.branch == "thick"
-
-        strain_ratio = exact.axial_strain / membrane["axial_strain"]
-        displacement_ratio = (
-            exact.stress_states[0].radial_displacement_mm / membrane["radial_displacement"]
-        )
-        _assert_reference_close(
-            strain_ratio, expected["axial_strain_thick_over_thin"]
-        )
-        _assert_reference_close(
-            displacement_ratio,
-            expected["internal_surface_displacement_thick_over_thin"],
-        )
-        gap = abs(strain_ratio - 1.0)
-        if previous_gap is not None:
-            assert gap < previous_gap
-        previous_gap = gap
-
-    assert previous_gap < 0.011
 
 
 @pytest.mark.parametrize(
@@ -417,7 +353,7 @@ def test_exact_tube_displacement_converges_to_the_preserved_membrane_reference()
         (2.0, 200.0, 4.0, 0.45, False),
     ],
 )
-def test_exact_hemisphere_displacement_and_preserved_membrane_reference(
+def test_hemisphere_displacement_matches_the_independent_closed_form(
     pressure: float,
     radius: float,
     thickness: float,
@@ -425,13 +361,12 @@ def test_exact_hemisphere_displacement_and_preserved_membrane_reference(
     force_thick: bool,
 ) -> None:
     modulus = 68_900.0
-    historical = hemispherical_head_displacement_reference(
+    independent = hemispherical_head_displacement_reference(
         external_pressure=pressure,
         internal_radius=radius,
         wall_thickness=thickness,
         elastic_modulus=modulus,
         poisson_ratio=poisson,
-        force_thick=force_thick,
     )
     released = hemispherical_head_external_pressure(
         external_pressure_mpa=pressure,
@@ -444,106 +379,14 @@ def test_exact_hemisphere_displacement_and_preserved_membrane_reference(
         force_thick=force_thick,
     )
 
-    assert released.branch == "thick"
     assert released.displacement_status == "released"
-    assert [state.radius_convention for state in released.stress_states] == ["internal", "external"]
-    outer_radius = radius + thickness
-    for state, surface_radius in zip(
-        released.stress_states, (radius, outer_radius), strict=True
+    for state, surface in zip(
+        released.stress_states, independent["surfaces"], strict=True
     ):
-        _assert_reference_close(state.radius_mm, surface_radius)
-        # Independent spherical closed form u = C1*r + C2/r^2, with constants
-        # from the bore and outer traction boundary conditions. Production
-        # instead obtains displacement from its reported Lamé stresses.
-        expected_displacement = (
-            -pressure * outer_radius**3 / (modulus * (outer_radius**3 - radius**3))
-            * ((1.0 - 2.0 * poisson) * surface_radius
-               + (1.0 + poisson) * radius**3 / (2.0 * surface_radius**2))
-        )
-        _assert_reference_close(state.radial_displacement_mm, expected_displacement)
-
-    # The old branch behavior is evidence history, preserved in the reference.
-    # Its membrane formula still satisfies the source's biaxial constitutive
-    # relation. Its thick branch still withholds because that historical
-    # transcription did not derive a spherical displacement.
-    if historical["branch"] == "thin":
-        membrane = spherical_membrane_reference(
-            external_pressure=pressure,
-            mean_radius=historical["mean_radius"],
-            wall_thickness=thickness,
-            elastic_modulus=modulus,
-            poisson_ratio=poisson,
-        )
+        assert state.radius_convention == surface["radius_convention"]
+        _assert_reference_close(state.radius_mm, surface["radius"])
         _assert_reference_close(
-            historical["surfaces"][0]["radial_displacement"], membrane["radial_displacement"]
-        )
-        _assert_reference_close(
-            membrane["circumferential_strain"],
-            membrane["hookean_circumferential_strain"],
-        )
-    else:
-        assert historical["source"] is None
-        assert all(surface["radial_displacement"] is None for surface in historical["surfaces"])
-
-
-@pytest.mark.parametrize("radius_ratio", [40.0, 400.0, 4000.0])
-def test_exact_bore_displacement_ratio_approaches_the_published_membrane_ratio(
-    radius_ratio: float,
-) -> None:
-    """NASA TM-4579 Eq. (6) links the two preserved membrane references.
-
-    The tube's thin displacement comes from DTMB 1497 Eq. [5] and the
-    hemisphere's from NASA TM-4579 Eq. (5). Ko publishes their ratio himself as
-    ``(2 - nu)/(1 - nu)``, free of pressure, radius, thickness, and modulus, so
-    at one shared geometry the two transcriptions have to reproduce it.
-    Exact bore displacements differ by an analytically known geometry factor
-    which tends to one as the wall thins; equation tolerances remain unchanged.
-    """
-    shared = {
-        "external_pressure_mpa": 40.0 / radius_ratio,
-        "internal_radius_mm": 100.0,
-        "wall_thickness_mm": 100.0 / (radius_ratio - 0.5),
-        "strength_mpa": 276.0,
-        "material_failure_category": "ductile_metal",
-    }
-    for poisson in (0.05, 0.28, 0.45):
-        tube = closed_end_tube_stress(
-            **shared, elastic_modulus_mpa=68_900.0, poisson_ratio=poisson
-        )
-        hemisphere = hemispherical_head_external_pressure(
-            **shared, elastic_modulus_mpa=68_900.0, poisson_ratio=poisson
-        )
-        assert (tube.branch, hemisphere.branch) == ("thick", "thick")
-        _assert_reference_close(
-            tube.stress_states[0].radius_mm, hemisphere.stress_states[0].radius_mm
-        )
-        membrane_tube = thin_shell_displacement_reference(
-            external_pressure=shared["external_pressure_mpa"],
-            median_radius=tube.mean_radius_mm,
-            wall_thickness=shared["wall_thickness_mm"],
-            elastic_modulus=68_900.0,
-            poisson_ratio=poisson,
-        )
-        membrane_sphere = spherical_membrane_reference(
-            external_pressure=shared["external_pressure_mpa"],
-            mean_radius=hemisphere.mean_radius_mm,
-            wall_thickness=shared["wall_thickness_mm"],
-            elastic_modulus=68_900.0,
-            poisson_ratio=poisson,
-        )
-        published_ratio = cylinder_to_sphere_ratio_reference(poisson_ratio=poisson)
-        _assert_reference_close(
-            membrane_tube["radial_displacement"] / membrane_sphere["radial_displacement"],
-            published_ratio,
-        )
-        a = shared["internal_radius_mm"]
-        b = a + shared["wall_thickness_mm"]
-        geometry_factor = 2.0 * (a**2 + a*b + b**2) / (3.0 * b * (a + b))
-        assert abs(geometry_factor - 1.0) < 1.0 / radius_ratio
-        _assert_reference_close(
-            tube.stress_states[0].radial_displacement_mm
-            / hemisphere.stress_states[0].radial_displacement_mm,
-            published_ratio * geometry_factor,
+            state.radial_displacement_mm, surface["radial_displacement"]
         )
 
 
@@ -566,7 +409,6 @@ def _assert_hemisphere_parity(
         poisson_ratio=poisson_ratio,
         yield_strength=yield_strength_mpa,
         proportional_limit=proportional_limit_mpa,
-        force_thick=True,
     )
     released = hemispherical_head_external_pressure(
         external_pressure_mpa=pressure_mpa,
@@ -579,7 +421,6 @@ def _assert_hemisphere_parity(
         material_failure_category="ductile_metal",
         force_thick=force_thick,
     )
-    assert released.branch == independent["branch"]
     assert released.buckling_capacity_status == independent[
         "buckling_capacity_status"
     ]
@@ -763,68 +604,27 @@ def _assert_plate_parity(
     assert [item.replace("_mm", "") for item in released.validity_violations] == (
         independent["validity_violations"]
     )
-    # The pinned oracle keeps the historical Kirchhoff release floors. Build
-    # the current corrected-deflection release policy from its independent raw
-    # values without changing that hash-pinned artifact.
-    deflection_floor = FLAT_CIRCULAR_PLATE_DEFLECTION_MINIMUM_RATIO[
-        boundary_condition
-    ]
-    expected_deflection_violations: list[str] = []
-    if independent["free_diameter_over_thickness"] < deflection_floor:
-        expected_deflection_violations.append(
-            f"free_diameter / plate_thickness is below {deflection_floor}, "
-            f"the {boundary_condition} center-deflection evidence floor"
-        )
-    poisson_low, poisson_high = FLAT_CIRCULAR_PLATE_POISSON_EVIDENCE_BAND
-    if not poisson_low <= poisson_ratio <= poisson_high:
-        expected_deflection_violations.append(
-            "poisson_ratio is outside the swept evidence band "
-            f"{poisson_low} <= poisson_ratio <= {poisson_high}"
-        )
-    if (
-        independent["shear_corrected_deflection_estimate"]
-        > independent["plate_thickness"] / 2.0
-    ):
-        expected_deflection_violations.append(
-            "shear_corrected_deflection_estimate exceeds plate_thickness / 2, "
-            "the small-deflection limit"
-        )
-    expected_status = (
-        "withheld_applicability" if expected_deflection_violations else "released"
-    )
-    if independent["governing_bending_stress"] > yield_strength_mpa:
-        expected_deflection_violations.append(
-            "governing bending stress exceeds the supplied material strength; "
-            "the deflection is an elastic formula estimate beyond the material limit"
-        )
-        if expected_status == "released":
-            expected_status = "elastic_estimate_material_limit"
     assert [
         item.replace("_mm", "") for item in released.deflection_validity_violations
-    ] == expected_deflection_violations
-    assert released.deflection_status == expected_status
-    if expected_status == "released":
-        _assert_reference_close(
-            released.released_maximum_deflection_mm,
-            independent["shear_corrected_deflection_estimate"],
-        )
-    else:
-        assert released.released_maximum_deflection_mm is None
-    # The reference computes the Kirchhoff margin unconditionally; production
-    # withholds it, as the verdict, wherever the bending validity is violated.
-    if released.validity_violations:
-        assert released.bending_status == "withheld_applicability"
-        assert released.margin is None
-    else:
-        assert released.bending_status == "released"
-        _assert_reference_close(released.margin, independent["margin"])
-    assert (
-        released.bending_minimum_free_diameter_over_thickness
-        == independent["bending_minimum_free_diameter_over_thickness"]
-    )
-    assert (
-        released.deflection_minimum_free_diameter_over_thickness
-        == FLAT_CIRCULAR_PLATE_DEFLECTION_MINIMUM_RATIO[boundary_condition]
+    ] == independent["deflection_validity_violations"]
+    for value, key in (
+        (released.bending_status, "bending_status"),
+        (released.deflection_status, "deflection_status"),
+        (
+            released.bending_minimum_free_diameter_over_thickness,
+            "bending_minimum_free_diameter_over_thickness",
+        ),
+        (
+            released.deflection_minimum_free_diameter_over_thickness,
+            "deflection_minimum_free_diameter_over_thickness",
+        ),
+        (released.poisson_ratio_evidence_band, "poisson_ratio_evidence_band"),
+    ):
+        assert value == independent[key]
+    _assert_optional_reference_close(released.margin, independent["margin"])
+    _assert_optional_reference_close(
+        released.released_maximum_deflection_mm,
+        independent["released_maximum_deflection"],
     )
     for actual, key in (
         (released.free_diameter_mm, "free_diameter"),
@@ -881,9 +681,8 @@ def _assert_plate_parity(
         # the estimate crosses t/2 between the two pressures.
         (0.3348190750059909, 50.0, 2.5, 70_000.0, 0.35, 300.0, "simply_supported"),
         (0.33, 50.0, 2.5, 70_000.0, 0.35, 300.0, "simply_supported"),
-        # Binary-exact fixed-edge stress is 0.75*1*(50/5)^2 = 75 MPa.
-        # The historical oracle releases deflection in all three cases;
-        # current policy withholds it only when the supplied strength is lower.
+        # Binary-exact fixed-edge stress is 0.75*1*(50/5)^2 = 75 MPa, so the
+        # deflection is released only at a supplied strength of at least 75 MPa.
         (1.0, 50.0, 5.0, 70_000.0, 0.30, math.nextafter(75.0, 0.0), "fixed"),
         (1.0, 50.0, 5.0, 70_000.0, 0.30, 75.0, "fixed"),
         (1.0, 50.0, 5.0, 70_000.0, 0.30, math.nextafter(75.0, math.inf), "fixed"),
@@ -946,18 +745,7 @@ def _assert_smooth_parity(inputs: dict[str, object]) -> None:
             independent[key],
             rel=1.0e-8 if "beta" in key or "wave_count" in key else REFERENCE_RELATIVE_TOLERANCE,
         )
-    # The pinned reference keeps its historical elastic-estimate ratio even
-    # when capacity needs an inelastic correction. Preserve that numerical
-    # evidence while requiring current production to withhold a usable margin.
-    if independent["capacity_status"] == "released":
-        _assert_optional_reference_close(released.margin, independent["margin"])
-    else:
-        assert released.margin is None
-        if independent["margin"] is not None:
-            _assert_reference_close(
-                released.correlated_critical_pressure_mpa / inputs["external_pressure_mpa"] - 1.0,
-                independent["margin"],
-            )
+    _assert_optional_reference_close(released.margin, independent["margin"])
     assert released.circumferential_wave_count_n == independent[
         "circumferential_wave_count_n"
     ]
@@ -1159,78 +947,97 @@ def test_smooth_proportional_limit_gates_match_independent_reference() -> None:
 
 
 def test_manual_and_roark_software_goldens_match_independent_transcriptions() -> None:
-    evidence = build_non_ring_evidence()
-    tolerances = evidence["tolerances"]["published_half_displayed_digit"]
-    published = evidence["published_values"]
-    goldens = published["repo_four_decimal_manual_traceable_goldens_ksi"]
-    tube = evidence["calculated_values"]["tube"]
-    plate = evidence["calculated_values"]["plate"]
-
-    assert tube["underpressure_example_1_in_ksi_and_in"][
-        "theoretical_failure_pressure"
-    ] == pytest.approx(
-        goldens["tube_example_1_failure"],
-        abs=tolerances["repo_four_decimal_golden_ksi"],
+    # UnderPressure 4.0 manual examples in the manual's ksi, psi, and inches.
+    tolerances = PUBLISHED_TOLERANCES
+    tube_example_1 = closed_end_tube_reference(
+        external_pressure=1.0,
+        internal_radius=3.0,
+        wall_thickness=0.470,
+        yield_strength=62.0,
     )
-    example_2 = plate["underpressure_example_2_in_ksi_and_in"]
-    assert example_2["theoretical_failure_pressure"] == pytest.approx(
-        goldens["plate_example_2_failure"],
-        abs=tolerances["repo_four_decimal_golden_ksi"],
+    assert tube_example_1["theoretical_failure_pressure"] == pytest.approx(
+        9.0401, abs=tolerances["repo_four_decimal_golden_ksi"]
     )
-    assert example_2["theoretical_failure_pressure"] == pytest.approx(
-        published["underpressure_4_0_example_2_manual_display_failure_ksi"],
-        abs=tolerances["manual_display_example_2_failure_ksi"],
+    plate_example_2 = flat_circular_plate_reference(
+        external_pressure=4.5,
+        free_radius=3.0,
+        plate_thickness=1.280,
+        elastic_modulus=10_300.0,
+        poisson_ratio=0.33,
+        yield_strength=62.0,
+        boundary_condition="simply_supported",
     )
-    displays = published["underpressure_appendix_e_plate_stresses_psi"]
-    simply = plate["appendix_e_simply_supported_in_psi_and_in"]
-    fixed = plate["appendix_e_fixed_in_psi_and_in"]
-    for actual, display in (
-        (simply["maximum_radial_bending_stress"], displays["simply_supported_radial"]),
-        (
-            simply["maximum_tangential_bending_stress"],
-            displays["simply_supported_tangential"],
-        ),
-        (fixed["maximum_radial_bending_stress"], displays["fixed_radial"]),
-        (fixed["maximum_tangential_bending_stress"], displays["fixed_tangential"]),
+    assert plate_example_2["theoretical_failure_pressure"] == pytest.approx(
+        9.0384, abs=tolerances["repo_four_decimal_golden_ksi"]
+    )
+    assert plate_example_2["theoretical_failure_pressure"] == pytest.approx(
+        9.038, abs=tolerances["manual_display_example_2_failure_ksi"]
+    )
+    for boundary, radial_display, tangential_display in (
+        ("simply_supported", 19_800.0, 19_800.0),
+        ("fixed", 12_000.0, 7_800.0),
     ):
-        assert actual == pytest.approx(
-            display, abs=tolerances["manual_display_whole_psi"]
+        appendix_e = flat_circular_plate_reference(
+            external_pressure=1_000.0,
+            free_radius=2.5,
+            plate_thickness=0.625,
+            elastic_modulus=10_000_000.0,
+            poisson_ratio=0.30,
+            yield_strength=62_000.0,
+            boundary_condition=boundary,  # type: ignore[arg-type]
+        )
+        assert appendix_e["maximum_radial_bending_stress"] == pytest.approx(
+            radial_display, abs=tolerances["manual_display_whole_psi"]
+        )
+        assert appendix_e["maximum_tangential_bending_stress"] == pytest.approx(
+            tangential_display, abs=tolerances["manual_display_whole_psi"]
         )
 
-    hemisphere = evidence["calculated_values"]["hemisphere"][
-        "underpressure_manual_in_psi_and_in"
-    ]
-    hemisphere_displays = published[
-        "underpressure_4_0_hemisphere_manual_display_psi"
-    ]
+    hemisphere = hemispherical_head_reference(
+        external_pressure=1_000.0,
+        internal_radius=1.75,
+        wall_thickness=0.25,
+        elastic_modulus=9_900_000.0,
+        poisson_ratio=0.33,
+        yield_strength=35_000.0,
+    )
     assert hemisphere["governing_von_mises_stress"] == pytest.approx(
-        hemisphere_displays["stress_at_1000_psi"],
-        abs=tolerances["manual_display_one_decimal_psi"],
+        4_544.4, abs=tolerances["manual_display_one_decimal_psi"]
     )
     assert hemisphere["theoretical_yield_failure_pressure"] == pytest.approx(
-        hemisphere_displays["shell_failure"],
-        abs=tolerances["manual_display_one_decimal_psi"],
+        7_701.8, abs=tolerances["manual_display_one_decimal_psi"]
     )
+    # The manual displays thin-wall buckling for this r_m/t = 7.5 head too.
     assert hemisphere["underpressure_probable_minimum_pressure"] == pytest.approx(
-        hemisphere_displays["invalid_thin_wall_buckling"],
-        abs=tolerances["manual_display_whole_psi"],
+        64_240.0, abs=tolerances["manual_display_whole_psi"]
     )
     assert hemisphere["mean_radius_over_thickness"] == 7.5
     assert hemisphere["buckling_capacity_status"] == "withheld_applicability"
 
-    smooth = evidence["calculated_values"]["smooth_cylinder"]
-    invalid = smooth["underpressure_example_1_roark_even_though_invalid"]
-    assert invalid["probable_minimum_pressure_psi"] == pytest.approx(
-        published["underpressure_4_0_example_1_invalid_thin_buckling_psi"],
-        abs=tolerances["manual_display_whole_psi"],
+    # Example 1 is outside the thin-wall range, but the manual still displays
+    # its Roark case 20 buckling pressure.
+    example_1 = roark_case20_reference(
+        elastic_modulus_psi=10.3e6,
+        poisson_ratio=0.33,
+        mean_radius_in=3.0 + 0.470 / 2.0,
+        wall_thickness_in=0.470,
+        unsupported_length_in=24.0,
     )
-    assert invalid["governing_circumferential_nodes"] == 2
-    valid = smooth["underpressure_example_4_roark"]
-    assert valid["probable_minimum_pressure_psi"] == pytest.approx(
-        published["underpressure_4_0_example_4_valid_thin_buckling_psi"],
-        abs=tolerances["manual_display_two_decimal_psi"],
+    assert example_1["probable_minimum_pressure_psi"] == pytest.approx(
+        10_632.0, abs=tolerances["manual_display_whole_psi"]
     )
-    assert valid["governing_circumferential_nodes"] == 3
+    assert example_1["governing_circumferential_nodes"] == 2
+    example_4 = roark_case20_reference(
+        elastic_modulus_psi=0.41e6,
+        poisson_ratio=0.4,
+        mean_radius_in=2.5 + 0.240 / 2.0,
+        wall_thickness_in=0.240,
+        unsupported_length_in=10.0,
+    )
+    assert example_4["probable_minimum_pressure_psi"] == pytest.approx(
+        266.60, abs=tolerances["manual_display_two_decimal_psi"]
+    )
+    assert example_4["governing_circumferential_nodes"] == 3
 
     fixture = yaml.safe_load(
         Path("tests/fixtures/software_parity/roark_table35_case20_overlap.yaml").read_text(
@@ -1255,14 +1062,7 @@ def test_manual_and_roark_software_goldens_match_independent_transcriptions() ->
         ]
 
 
-def test_tube_sizing_target_matches_exact_bore_yield_and_preserves_the_historical_oracle() -> None:
-    evidence = build_non_ring_evidence()
-    historical_mm = evidence["calculated_values"]["tube"][
-        "cli_sizing_zero_margin_thickness_mm"
-    ]
-    # This unchanged reference value records the former thin-wall zero-margin
-    # solution. It is retained as history, not used to size the current model.
-    assert historical_mm == pytest.approx(7.83358455, abs=2.0e-8)
+def test_tube_sizing_target_matches_exact_bore_yield() -> None:
     pressure = 7.0 * KSI_TO_MPA
     strength = 62.0 * KSI_TO_MPA
     internal_radius = 3.0 * INCH_TO_MM
@@ -1287,14 +1087,6 @@ def test_tube_sizing_target_matches_exact_bore_yield_and_preserves_the_historica
     )
     _assert_reference_close(at_exact.governing_stress_mpa, strength)
     _assert_reference_close(at_exact.margin, 0.0)
-    at_historical = closed_end_tube_stress(
-        external_pressure_mpa=pressure,
-        internal_radius_mm=internal_radius,
-        wall_thickness_mm=historical_mm,
-        material_failure_category="ductile_metal",
-        strength_mpa=strength,
-    )
-    assert at_historical.margin < 0.0
 
 
 def test_software_parity_fixture_nasa_values_match_independent_reference() -> None:
@@ -1442,36 +1234,13 @@ def test_independent_exhaustive_scan_reproduces_committed_convergence_traps(
     _assert_mode_parity(case)
 
 
-def test_reference_output_separates_inputs_published_calculated_and_comparisons() -> None:
-    from reference.ring_shell_reference import build_evidence
-
-    evidence = build_evidence()
-    assert {
-        "source_inputs",
-        "published_values",
-        "calculated_values",
-        "tolerances",
-        "comparisons",
-    } <= evidence.keys()
-    assert evidence["classification"]["not"] == [
-        "calibration",
-        "allowable_pressure",
-        "design_approval",
-    ]
-    calculated_by_frame_spaces = {
-        item["frame_spaces"]: item
-        for item in evidence["calculated_values"]["dtmb_all_table_2_geometries"]
-    }
+def test_dtmb_cases_match_the_published_length_over_diameter() -> None:
     for frame_spaces, published_length_over_diameter, *_ in DTMB_TABLE_2_PUBLISHED:
         case = dtmb_case(frame_spaces)
-        calculated_length_over_diameter = case.unsupported_length / (
-            2.0 * case.shell_mid_surface_radius
-        )
-        assert calculated_by_frame_spaces[frame_spaces]["length_over_diameter"] == (
-            calculated_length_over_diameter
-        )
         # DTMB reports two decimals and labels 1.152 in as a typical spacing.
-        assert calculated_length_over_diameter == pytest.approx(
+        assert case.unsupported_length / (
+            2.0 * case.shell_mid_surface_radius
+        ) == pytest.approx(
             published_length_over_diameter,
             abs=DTMB_LENGTH_DIAMETER_ABSOLUTE_TOLERANCE,
         )
