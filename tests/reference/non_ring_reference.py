@@ -2,23 +2,14 @@
 
 This module intentionally imports no production calculation, adapter,
 fixture, expected output, or section helper.  It transcribes the cited source
-equations directly and keeps source inputs, published values, independent
-calculations, and comparisons in separate records.
-
-Run from the ``pv-calc`` directory with::
-
-    uv run python tests/reference/non_ring_reference.py
+equations and release rules directly.
 """
 
 from __future__ import annotations
 
-import json
 import math
 from typing import Any, Literal
 
-
-PSI_TO_MPA = 0.006894757293168361
-INCH_TO_MM = 25.4
 
 # Set for the independent-vs-production comparisons before those comparisons
 # were run.  Published values use separate half-last-recorded-digit limits.
@@ -27,7 +18,7 @@ REFERENCE_ABSOLUTE_TOLERANCE = 1.0e-10
 # Half of the last digit of each accepted display or committed golden.  The
 # manual displays Example 2 failure as 9,038 psi; 9.0401/9.0384 ksi are the
 # repository's committed four-decimal manual-traceable goldens, not manual
-# displays.  These limits are enforced by tests/test_phase5_validation.py.
+# displays.
 PUBLISHED_TOLERANCES = {
     "manual_display_example_2_failure_ksi": 0.0005,
     "repo_four_decimal_golden_ksi": 0.00005,
@@ -75,66 +66,49 @@ def closed_end_tube_reference(
     internal_radius: float,
     wall_thickness: float,
     yield_strength: float,
-    force_thick: bool = False,
 ) -> dict[str, Any]:
     """Roark/Lame closed-end tube response in any consistent units.
 
     Pressure and stress units must be the same.  Radius and thickness units
     must be the same.  Compression is negative.  The external surface is the
-    pressure-loaded surface and the internal surface is traction-free.
+    pressure-loaded surface and the internal surface is traction-free.  The
+    Lamé stresses apply at every wall thickness.
     """
     external_radius = internal_radius + wall_thickness
     mean_radius = internal_radius + wall_thickness / 2.0
     radius_ratio = mean_radius / wall_thickness
-    branch = "thick" if force_thick or radius_ratio <= 10.0 else "thin"
-
-    if branch == "thin":
-        hoop = -external_pressure * mean_radius / wall_thickness
-        axial = hoop / 2.0
-        states = [
+    denominator = external_radius**2 - internal_radius**2
+    lame_a = -external_pressure * external_radius**2 / denominator
+    lame_b = (
+        -external_pressure
+        * internal_radius**2
+        * external_radius**2
+        / denominator
+    )
+    states = []
+    for radius, convention in (
+        (internal_radius, "internal"),
+        (external_radius, "external"),
+    ):
+        radial = lame_a - lame_b / radius**2
+        hoop = lame_a + lame_b / radius**2
+        axial = lame_a
+        states.append(
             {
-                "radius": mean_radius,
-                "radius_convention": "mean",
-                "radial_stress": 0.0,
+                "radius": radius,
+                "radius_convention": convention,
+                "radial_stress": radial,
                 "hoop_stress": hoop,
                 "axial_stress": axial,
-                "von_mises_stress": _von_mises(0.0, hoop, axial),
+                "von_mises_stress": _von_mises(radial, hoop, axial),
             }
-        ]
-    else:
-        denominator = external_radius**2 - internal_radius**2
-        lame_a = -external_pressure * external_radius**2 / denominator
-        lame_b = (
-            -external_pressure
-            * internal_radius**2
-            * external_radius**2
-            / denominator
         )
-        states = []
-        for radius, convention in (
-            (internal_radius, "internal"),
-            (external_radius, "external"),
-        ):
-            radial = lame_a - lame_b / radius**2
-            hoop = lame_a + lame_b / radius**2
-            axial = lame_a
-            states.append(
-                {
-                    "radius": radius,
-                    "radius_convention": convention,
-                    "radial_stress": radial,
-                    "hoop_stress": hoop,
-                    "axial_stress": axial,
-                    "von_mises_stress": _von_mises(radial, hoop, axial),
-                }
-            )
 
     governing = max(states, key=lambda state: state["von_mises_stress"])
     failure_pressure = (
         external_pressure * yield_strength / governing["von_mises_stress"]
     )
     return {
-        "branch": branch,
         "internal_radius": internal_radius,
         "external_radius": external_radius,
         "mean_radius": mean_radius,
@@ -148,8 +122,7 @@ def closed_end_tube_reference(
         "theoretical_failure_pressure": failure_pressure,
         "margin": failure_pressure / external_pressure - 1.0,
         "source": (
-            "Roark 6th ed. Table 28 case 1c for mean-radius thin membrane "
-            "stress; Table 32 cases 1a-1d for Lamé thick-cylinder stress; "
+            "Roark 6th ed. Table 32 cases 1a-1d for Lamé thick-cylinder stress; "
             "UnderPressure 4.0 Appendix C criterion B for ductile-metal von Mises failure"
         ),
     }
@@ -164,56 +137,37 @@ def hemispherical_head_reference(
     poisson_ratio: float,
     yield_strength: float,
     proportional_limit: float | None = None,
-    force_thick: bool = False,
 ) -> dict[str, Any]:
     """Roark sphere stress plus SP-8032 hemisphere buckling reference.
 
     Pressure and stress units must be the same, as must radius and thickness
-    units. Compression is negative. The hemisphere has a clamped equator and
-    a 180-degree included angle for the NASA spherical-cap correlation.
+    units. Compression is negative. The Lamé stresses apply at every wall
+    thickness. The hemisphere has a clamped equator and a 180-degree included
+    angle for the NASA spherical-cap correlation.
     """
     external_radius = internal_radius + wall_thickness
     mean_radius = internal_radius + wall_thickness / 2.0
     radius_ratio = mean_radius / wall_thickness
-    branch = "thick" if force_thick or radius_ratio <= 10.0 else "thin"
-
-    if branch == "thin":
-        tangential = -external_pressure * mean_radius / (2.0 * wall_thickness)
-        states = [
+    denominator = external_radius**3 - internal_radius**3
+    lame_a = -external_pressure * external_radius**3 / denominator
+    lame_b = lame_a * internal_radius**3
+    states = []
+    for radius, convention in (
+        (internal_radius, "internal"),
+        (external_radius, "external"),
+    ):
+        radial = lame_a - lame_b / radius**3
+        tangential = lame_a + lame_b / (2.0 * radius**3)
+        states.append(
             {
-                "radius": mean_radius,
-                "radius_convention": "mean",
-                "radial_stress": 0.0,
+                "radius": radius,
+                "radius_convention": convention,
+                "radial_stress": radial,
                 "meridional_stress": tangential,
                 "hoop_stress": tangential,
-                "von_mises_stress": _von_mises(0.0, tangential, tangential),
+                "von_mises_stress": _von_mises(radial, tangential, tangential),
             }
-        ]
-    else:
-        denominator = external_radius**3 - internal_radius**3
-        lame_a = -external_pressure * external_radius**3 / denominator
-        lame_b = lame_a * internal_radius**3
-        states = []
-        for radius, convention in (
-            (internal_radius, "internal"),
-            (external_radius, "external"),
-        ):
-            radial = lame_a - lame_b / radius**3
-            tangential = lame_a + lame_b / (2.0 * radius**3)
-            states.append(
-                {
-                    "radius": radius,
-                    "radius_convention": convention,
-                    "radial_stress": radial,
-                    "meridional_stress": tangential,
-                    "hoop_stress": tangential,
-                    "von_mises_stress": _von_mises(
-                        radial,
-                        tangential,
-                        tangential,
-                    ),
-                }
-            )
+        )
 
     governing = max(states, key=lambda state: state["von_mises_stress"])
     yield_failure_pressure = (
@@ -258,7 +212,6 @@ def hemispherical_head_reference(
     released_pressure = nasa_candidate_pressure if capacity_released else None
 
     return {
-        "branch": branch,
         "internal_radius": internal_radius,
         "external_radius": external_radius,
         "mean_radius": mean_radius,
@@ -294,41 +247,10 @@ def hemispherical_head_reference(
         ),
         "buckling_validity_violations": violations,
         "source": (
-            "Roark 6th ed. Tables 28/32 sphere stress and Table 35 case 22 "
+            "Roark 6th ed. Table 32 sphere stress and Table 35 case 22 "
             "probable minimum; NASA SP-8032 sec. 4.2.1.1 Eqs. 1-4"
         ),
     }
-
-
-def tube_sizing_zero_margin_thickness(
-    *,
-    external_pressure: float,
-    internal_radius: float,
-    yield_strength: float,
-    lower_thickness: float,
-    upper_thickness: float,
-) -> float:
-    """Bisect the tube von Mises margin to zero for the CLI sizing golden."""
-
-    def margin(thickness: float) -> float:
-        return closed_end_tube_reference(
-            external_pressure=external_pressure,
-            internal_radius=internal_radius,
-            wall_thickness=thickness,
-            yield_strength=yield_strength,
-        )["margin"]
-
-    low = lower_thickness
-    high = upper_thickness
-    if not margin(low) < 0.0 <= margin(high):
-        raise RuntimeError("sizing bracket does not straddle zero margin")
-    for _ in range(200):
-        mid = (low + high) / 2.0
-        if margin(mid) < 0.0:
-            low = mid
-        else:
-            high = mid
-    return high
 
 
 def flat_circular_plate_reference(
@@ -794,317 +716,3 @@ def length_for_z(
     return math.sqrt(
         z * radius * thickness / math.sqrt(1.0 - poisson_ratio**2)
     )
-
-
-def _smooth_case(**changes: Any) -> dict[str, Any]:
-    inputs: dict[str, Any] = {
-        "external_pressure_mpa": 0.01,
-        "shell_mid_surface_radius_mm": 500.0,
-        "wall_thickness_mm": 5.0,
-        "unsupported_length_mm": 1800.0,
-        "elastic_modulus_mpa": 70_000.0,
-        "poisson_ratio": 0.3,
-        "yield_strength_mpa": 250.0,
-        "load_case": "hydrostatic_closed_end",
-        "proportional_limit_mpa": 200.0,
-    }
-    inputs.update(changes)
-    return {"inputs": inputs, "result": smooth_cylinder_reference(**inputs)}
-
-
-def build_evidence() -> dict[str, Any]:
-    """Build the checked P5-02 independent evidence."""
-    tube_example_1_inputs = {
-        "external_pressure": 1.0,
-        "internal_radius": 3.0,
-        "wall_thickness": 0.470,
-        "yield_strength": 62.0,
-    }
-    tube_example_1 = closed_end_tube_reference(**tube_example_1_inputs)
-    tube_worked_inputs = {
-        "external_pressure": 22.6243125,
-        "internal_radius": 55.0,
-        "wall_thickness": 22.0,
-        "yield_strength": 276.0,
-    }
-    tube_worked = closed_end_tube_reference(**tube_worked_inputs)
-    # The CLI sizing golden is the thin-branch zero-margin crossing.  The
-    # margin is discontinuous at the thin/thick branch switch (thickness =
-    # internal_radius / 9.5, where mean_radius/thickness = 10), so the
-    # bracket stays just below that boundary.
-    tube_sizing_inputs = {
-        "external_pressure": 7.0,
-        "internal_radius": 3.0,
-        "yield_strength": 62.0,
-        "lower_thickness": 0.1,
-        "upper_thickness": 3.0 / 9.5 * (1.0 - 1.0e-12),
-    }
-    tube_sizing_thickness_in = tube_sizing_zero_margin_thickness(
-        **tube_sizing_inputs
-    )
-
-    hemisphere_manual_inputs = {
-        "external_pressure": 1_000.0,
-        "internal_radius": 1.75,
-        "wall_thickness": 0.25,
-        "elastic_modulus": 9_900_000.0,
-        "poisson_ratio": 0.33,
-        "yield_strength": 35_000.0,
-        "proportional_limit": None,
-    }
-    hemisphere_manual = hemispherical_head_reference(**hemisphere_manual_inputs)
-    hemisphere_cli_inputs = {
-        "external_pressure": 6.0,
-        "internal_radius": 100.0,
-        "wall_thickness": 100.0 / 39.5,
-        "elastic_modulus": 68_900.0,
-        "poisson_ratio": 0.33,
-        "yield_strength": 276.0,
-        "proportional_limit": 200.0,
-    }
-    hemisphere_cli = hemispherical_head_reference(**hemisphere_cli_inputs)
-
-    plate_example_2_inputs = {
-        "external_pressure": 4.5,
-        "free_radius": 3.0,
-        "plate_thickness": 1.280,
-        "elastic_modulus": 10_300.0,
-        "poisson_ratio": 0.33,
-        "yield_strength": 62.0,
-        "boundary_condition": "simply_supported",
-    }
-    plate_example_2 = flat_circular_plate_reference(**plate_example_2_inputs)
-    appendix_common = {
-        "external_pressure": 1_000.0,
-        "free_radius": 2.5,
-        "plate_thickness": 0.625,
-        "elastic_modulus": 10_000_000.0,
-        "poisson_ratio": 0.30,
-        "yield_strength": 62_000.0,
-    }
-    appendix_simply = flat_circular_plate_reference(
-        **appendix_common, boundary_condition="simply_supported"
-    )
-    appendix_fixed = flat_circular_plate_reference(
-        **appendix_common, boundary_condition="fixed"
-    )
-
-    short_lateral = _smooth_case(
-        external_pressure_mpa=1.0,
-        unsupported_length_mm=300.0,
-        load_case="lateral_only",
-    )
-    short_hydrostatic = _smooth_case(
-        external_pressure_mpa=1.0,
-        unsupported_length_mm=300.0,
-    )
-    moderate = _smooth_case()
-    moderate_nu_0316 = _smooth_case(poisson_ratio=0.316)
-    long = _smooth_case(wall_thickness_mm=25.0, unsupported_length_mm=11_000.0)
-    migrated_long = _smooth_case(
-        shell_mid_surface_radius_mm=1010.0,
-        wall_thickness_mm=20.0,
-        unsupported_length_mm=100_000.0,
-        elastic_modulus_mpa=68_900.0,
-        poisson_ratio=0.33,
-        yield_strength_mpa=276.0,
-    )
-
-    underpressure_example_1_buckling = roark_case20_reference(
-        elastic_modulus_psi=10.3e6,
-        poisson_ratio=0.33,
-        mean_radius_in=3.0 + 0.470 / 2.0,
-        wall_thickness_in=0.470,
-        unsupported_length_in=24.0,
-    )
-    underpressure_example_4_buckling = roark_case20_reference(
-        elastic_modulus_psi=0.41e6,
-        poisson_ratio=0.4,
-        mean_radius_in=2.5 + 0.240 / 2.0,
-        wall_thickness_in=0.240,
-        unsupported_length_in=10.0,
-    )
-    roark_matrix = {
-        str(length): roark_case20_reference(
-            elastic_modulus_psi=10.0e6,
-            poisson_ratio=0.3,
-            mean_radius_in=5.0,
-            wall_thickness_in=0.25,
-            unsupported_length_in=length,
-        )
-        for length in (5.0, 20.0, 100.0, 110.0)
-    }
-
-    published_values = {
-        "underpressure_4_0_example_2_manual_display_failure_ksi": 9.038,
-        "repo_four_decimal_manual_traceable_goldens_ksi": {
-            "tube_example_1_failure": 9.0401,
-            "plate_example_2_failure": 9.0384,
-        },
-        "underpressure_appendix_e_plate_stresses_psi": {
-            "simply_supported_radial": 19_800.0,
-            "simply_supported_tangential": 19_800.0,
-            "fixed_radial": 12_000.0,
-            "fixed_tangential": 7_800.0,
-        },
-        "underpressure_4_0_example_1_invalid_thin_buckling_psi": 10_632.0,
-        "underpressure_4_0_example_4_valid_thin_buckling_psi": 266.60,
-        "underpressure_4_0_hemisphere_manual_display_psi": {
-            "stress_at_1000_psi": 4_544.4,
-            "shell_failure": 7_701.8,
-            "invalid_thin_wall_buckling": 64_240.0,
-        },
-        "underpressure_4_60_capture": {
-            "status": "open_human_operated_item",
-            "accepted_as_4_60_evidence": False,
-        },
-    }
-    calculated_values = {
-        "tube": {
-            "underpressure_example_1_in_ksi_and_in": tube_example_1,
-            "worked_example_in_mpa_and_mm": tube_worked,
-            "cli_sizing_zero_margin_thickness_in": tube_sizing_thickness_in,
-            "cli_sizing_zero_margin_thickness_mm": (
-                tube_sizing_thickness_in * INCH_TO_MM
-            ),
-        },
-        "hemisphere": {
-            "underpressure_manual_in_psi_and_in": hemisphere_manual,
-            "released_cli_in_mpa_and_mm": hemisphere_cli,
-        },
-        "plate": {
-            "underpressure_example_2_in_ksi_and_in": plate_example_2,
-            "appendix_e_simply_supported_in_psi_and_in": appendix_simply,
-            "appendix_e_fixed_in_psi_and_in": appendix_fixed,
-        },
-        "smooth_cylinder": {
-            "short_lateral": short_lateral,
-            "short_hydrostatic": short_hydrostatic,
-            "moderate": moderate,
-            "moderate_nu_0_316": moderate_nu_0316,
-            "long": long,
-            "adapter_mid_surface_migrated_long": migrated_long,
-            "underpressure_example_1_roark_even_though_invalid": (
-                underpressure_example_1_buckling
-            ),
-            "underpressure_example_4_roark": underpressure_example_4_buckling,
-            "roark_case20_length_matrix": roark_matrix,
-        },
-    }
-    goldens = published_values["repo_four_decimal_manual_traceable_goldens_ksi"]
-    appendix_displays = published_values["underpressure_appendix_e_plate_stresses_psi"]
-    comparisons = {
-        "tube_example_1_failure_minus_repo_golden_ksi": (
-            tube_example_1["theoretical_failure_pressure"]
-            - goldens["tube_example_1_failure"]
-        ),
-        "plate_example_2_failure_minus_repo_golden_ksi": (
-            plate_example_2["theoretical_failure_pressure"]
-            - goldens["plate_example_2_failure"]
-        ),
-        "plate_example_2_failure_minus_manual_display_ksi": (
-            plate_example_2["theoretical_failure_pressure"]
-            - published_values[
-                "underpressure_4_0_example_2_manual_display_failure_ksi"
-            ]
-        ),
-        "appendix_e_minus_display_psi": {
-            "simply_supported_radial": (
-                appendix_simply["maximum_radial_bending_stress"]
-                - appendix_displays["simply_supported_radial"]
-            ),
-            "simply_supported_tangential": (
-                appendix_simply["maximum_tangential_bending_stress"]
-                - appendix_displays["simply_supported_tangential"]
-            ),
-            "fixed_radial": (
-                appendix_fixed["maximum_radial_bending_stress"]
-                - appendix_displays["fixed_radial"]
-            ),
-            "fixed_tangential": (
-                appendix_fixed["maximum_tangential_bending_stress"]
-                - appendix_displays["fixed_tangential"]
-            ),
-        },
-        "invalid_example_1_roark_difference_psi": (
-            underpressure_example_1_buckling["probable_minimum_pressure_psi"]
-            - published_values[
-                "underpressure_4_0_example_1_invalid_thin_buckling_psi"
-            ]
-        ),
-        "valid_example_4_roark_difference_psi": (
-            underpressure_example_4_buckling["probable_minimum_pressure_psi"]
-            - published_values[
-                "underpressure_4_0_example_4_valid_thin_buckling_psi"
-            ]
-        ),
-        "hemisphere_manual_minus_display_psi": {
-            "stress_at_1000_psi": (
-                hemisphere_manual["governing_von_mises_stress"]
-                - published_values["underpressure_4_0_hemisphere_manual_display_psi"][
-                    "stress_at_1000_psi"
-                ]
-            ),
-            "shell_failure": (
-                hemisphere_manual["theoretical_yield_failure_pressure"]
-                - published_values["underpressure_4_0_hemisphere_manual_display_psi"][
-                    "shell_failure"
-                ]
-            ),
-            "invalid_thin_wall_buckling": (
-                hemisphere_manual["underpressure_probable_minimum_pressure"]
-                - published_values["underpressure_4_0_hemisphere_manual_display_psi"][
-                    "invalid_thin_wall_buckling"
-                ]
-            ),
-        },
-    }
-    return {
-        "classification": {
-            "evidence_role": "independent_equation_and_manual_software_parity_audit",
-            "not": [
-                "physical_validation",
-                "calibration",
-                "allowable_pressure",
-                "design_approval",
-                "underpressure_4_60_capture",
-            ],
-        },
-        "sources": {
-            "underpressure_manual": UNDERPRESSURE_MANUAL,
-            "nasa_sp_8007_rev2": NASA_SP_8007_REV2,
-            "nasa_sp_8032": NASA_SP_8032,
-            "roark": {
-                "edition": "6th",
-                "tube": "Tables 28 and 32",
-                "hemisphere": "Tables 28 and 32 for stress; Table 35 case 22 for buckling",
-                "plate": "Table 24 cases 10a-10b, p. 429",
-                "smooth_overlap": "Table 35 case 20",
-            },
-        },
-        "source_inputs": {
-            "tube_example_1": tube_example_1_inputs,
-            "tube_worked": tube_worked_inputs,
-            "tube_cli_sizing": tube_sizing_inputs,
-            "hemisphere_manual": hemisphere_manual_inputs,
-            "hemisphere_cli": hemisphere_cli_inputs,
-            "plate_example_2": plate_example_2_inputs,
-            "appendix_e": appendix_common,
-        },
-        "published_values": published_values,
-        "calculated_values": calculated_values,
-        "tolerances": {
-            "independent_vs_production_relative": REFERENCE_RELATIVE_TOLERANCE,
-            "independent_vs_production_absolute": REFERENCE_ABSOLUTE_TOLERANCE,
-            "published_half_displayed_digit": PUBLISHED_TOLERANCES,
-        },
-        "comparisons": comparisons,
-    }
-
-
-def main() -> None:
-    print(json.dumps(build_evidence(), indent=2, sort_keys=True))
-
-
-if __name__ == "__main__":
-    main()

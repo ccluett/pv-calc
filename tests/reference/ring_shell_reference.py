@@ -1,23 +1,19 @@
 """Independent NASA Eq. 64/65 and 82-91 ring-shell reference calculation.
 
-Run from the ``pv-calc`` directory with::
-
-    uv run python tests/reference/ring_shell_reference.py
-
 This module intentionally uses only the Python standard library.  It does not
-import PV-Gen calculations, section helpers, adapters, or regression
+import pv_calc calculations, section helpers, adapters, or regression
 outputs.  The fixed exhaustive mode bounds are deliberately simple and cover
-the modest DTMB and convergence-evidence domain represented here.
+the modest DTMB and convergence-trap domain represented here.
 
-The results are equation and benchmark evidence.  They are not calibration,
-allowable pressures, certification, or approval for service.
+Sources: NASA/SP-8007-2020/REV 2, printed pp. 35, 37, and 40-42, Eqs. 54-59,
+64-65, and 82-91; NASA/TP-2011-216882, Appendix A, printed p. 100, Eq. A16;
+DTMB Report 1324 (1959), Figure 2 and Table 2.
 """
 
 from __future__ import annotations
 
-import json
 import math
-from dataclasses import asdict, dataclass
+from dataclasses import dataclass
 from typing import Literal
 
 
@@ -49,7 +45,6 @@ class RectangleProperties:
     centroid_from_shell_surface: float
     centroidal_inertia: float
     saint_venant_torsional_constant: float
-    torsion_series_terms: int
 
 
 @dataclass(frozen=True)
@@ -75,8 +70,6 @@ class ModeResult:
     adjusted_critical_pressure: float
     axial_half_waves_m: int
     circumferential_lobes_n: int
-    scanned_axial_half_waves: int
-    scanned_circumferential_lobes: int
 
 
 @dataclass(frozen=True)
@@ -101,7 +94,7 @@ def rectangular_section_properties(
 
     NASA/TP-2011-216882 Appendix A Eq. A16, printed p. 100, reduces
     for an isotropic rectangle to the odd-integer Saint-Venant series used
-    below.  The series is evaluated directly rather than using PV-Gen's
+    below.  The series is evaluated directly rather than using production's
     optimized zeta/correction implementation.
     """
 
@@ -110,13 +103,11 @@ def rectangular_section_properties(
     longer = max(axial_width, radial_height)
     shorter = min(axial_width, radial_height)
     odd_series = 0.0
-    used_terms = 0
     for odd_integer in range(1, 2 * maximum_series_terms, 2):
         term = math.tanh(
             odd_integer * math.pi * longer / (2.0 * shorter)
         ) / odd_integer**5
         odd_series += term
-        used_terms += 1
         if term < series_tolerance:
             break
     else:
@@ -139,7 +130,6 @@ def rectangular_section_properties(
         centroid_from_shell_surface=0.5 * radial_height,
         centroidal_inertia=axial_width * radial_height**3 / 12.0,
         saint_venant_torsional_constant=torsion_constant,
-        torsion_series_terms=used_terms,
     )
 
 
@@ -321,8 +311,6 @@ def _exhaustive_mode_scan(
         adjusted_critical_pressure=pressure * NASA_EQ64_ADJUSTMENT_FACTOR,
         axial_half_waves_m=axial_half_waves,
         circumferential_lobes_n=lobes,
-        scanned_axial_half_waves=max_axial_half_waves,
-        scanned_circumferential_lobes=max_circumferential_lobes,
     )
 
 
@@ -365,6 +353,8 @@ def solve_case(case: RingCase) -> CaseResult:
     )
 
 
+# DTMB Report 1324 Table 2: frame spaces, L/D, Kendrick Part III pressure (psi)
+# and lobes, experimental pressure (psi) and lobes.
 DTMB_TABLE_2_PUBLISHED = (
     (17, 2.40, 428, 3, 473, 3),
     (21, 2.96, 404, 3, 422, 3),
@@ -426,210 +416,3 @@ CONVERGENCE_TRAP_CASES = (
         poisson_ratio=0.33,
     ),
 )
-
-
-def _quantity(value: float, unit: str) -> dict[str, float | str]:
-    return {"value": value, "unit": unit}
-
-
-def _mode_record(result: ModeResult, pressure_unit: str) -> dict[str, object]:
-    return {
-        "ideal_critical_pressure": _quantity(
-            result.ideal_critical_pressure,
-            pressure_unit,
-        ),
-        "nasa_0p75_adjusted_pressure": _quantity(
-            result.adjusted_critical_pressure,
-            pressure_unit,
-        ),
-        "governing_mode": {
-            "axial_half_waves_m": result.axial_half_waves_m,
-            "circumferential_lobes_n": result.circumferential_lobes_n,
-        },
-        "exhaustive_scan_bounds": {
-            "axial_half_waves_m": result.scanned_axial_half_waves,
-            "circumferential_lobes_n": result.scanned_circumferential_lobes,
-        },
-    }
-
-
-def build_evidence() -> dict[str, object]:
-    dtmb_results = {
-        frame_spaces: solve_case(dtmb_case(frame_spaces))
-        for frame_spaces, *_ in DTMB_TABLE_2_PUBLISHED
-    }
-    trap_results = [solve_case(case) for case in CONVERGENCE_TRAP_CASES]
-    primary = dtmb_results[17]
-
-    calculated_dtmb = []
-    benchmark_comparisons = []
-    for (
-        frame_spaces,
-        published_length_over_diameter,
-        kendrick_pressure_psi,
-        kendrick_lobes_n,
-        experiment_pressure_psi,
-        experiment_lobes_n,
-    ) in DTMB_TABLE_2_PUBLISHED:
-        case_result = dtmb_results[frame_spaces]
-        result = case_result.with_ring_torsion
-        calculated_dtmb.append(
-            {
-                "frame_spaces": frame_spaces,
-                "length_over_diameter": (
-                    case_result.case.unsupported_length
-                    / (2.0 * case_result.case.shell_mid_surface_radius)
-                ),
-                **_mode_record(result, "psi"),
-            }
-        )
-        benchmark_comparisons.append(
-            {
-                "frame_spaces": frame_spaces,
-                "comparison_kind": "published_benchmark_evidence",
-                "not_calibration_or_allowable": True,
-                "calculated_adjusted_minus_kendrick_percent": (
-                    100.0
-                    * (result.adjusted_critical_pressure - kendrick_pressure_psi)
-                    / kendrick_pressure_psi
-                ),
-                "calculated_adjusted_minus_experiment_percent": (
-                    100.0
-                    * (result.adjusted_critical_pressure - experiment_pressure_psi)
-                    / experiment_pressure_psi
-                ),
-                "calculated_lobes_n": result.circumferential_lobes_n,
-                "kendrick_lobes_n": kendrick_lobes_n,
-                "experiment_lobes_n": experiment_lobes_n,
-            }
-        )
-
-    return {
-        "classification": {
-            "evidence": ["independent_equation", "published_benchmark"],
-            "not": ["calibration", "allowable_pressure", "design_approval"],
-        },
-        "sources": {
-            "governing_equations": (
-                "NASA/SP-8007-2020/REV 2, printed pp. 35, 37, and 40-42, "
-                "Eqs. 54-59, 64-65, and 82-91"
-            ),
-            "rectangle_torsion": (
-                "NASA/TP-2011-216882, Appendix A, printed p. 100, Eq. A16"
-            ),
-            "published_benchmark": (
-                "DTMB Report 1324 (1959), Figure 2 and Table 2"
-            ),
-        },
-        "tolerances": {
-            "published_length_over_diameter": {
-                "absolute": DTMB_LENGTH_DIAMETER_ABSOLUTE_TOLERANCE,
-                "basis": "two-decimal DTMB column with 1.152 in labeled typical spacing",
-            },
-            "reference_vs_production_pressure": {
-                "relative": 1.0e-11,
-                "absolute": 1.0e-10,
-                "unit": "case pressure unit",
-            },
-            "reference_vs_production_section_property_relative": 1.0e-12,
-            "published_pressure": (
-                "comparison only; no acceptance tolerance and no calibration"
-            ),
-            "published_mode": "exact integer comparison",
-        },
-        "source_inputs": {
-            "dtmb_figure_2_geometry": {
-                "inside_diameter": _quantity(8.118, "in"),
-                "wall_thickness": _quantity(0.035, "in"),
-                "ring_spacing": _quantity(1.152, "in"),
-                "ring_axial_width": _quantity(0.086, "in"),
-                "ring_radial_height": _quantity(0.169, "in"),
-                "elastic_modulus": _quantity(30_000_000.0, "psi"),
-                "poisson_ratio": 0.3,
-                "ring_location": "external",
-            },
-            "convergence_traps": [asdict(case) for case in CONVERGENCE_TRAP_CASES],
-        },
-        "published_values": {
-            "dtmb_table_2": [
-                {
-                    "frame_spaces": row[0],
-                    "length_over_diameter": row[1],
-                    "kendrick_part_iii_pressure": _quantity(row[2], "psi"),
-                    "kendrick_part_iii_lobes_n": row[3],
-                    "experiment_pressure": _quantity(row[4], "psi"),
-                    "experiment_lobes_n": row[5],
-                }
-                for row in DTMB_TABLE_2_PUBLISHED
-            ]
-        },
-        "calculated_values": {
-            "dtmb_rectangle": {
-                "area": _quantity(primary.rectangle.area, "in^2"),
-                "centroid_from_shell_surface": _quantity(
-                    primary.rectangle.centroid_from_shell_surface,
-                    "in",
-                ),
-                "centroidal_inertia": _quantity(
-                    primary.rectangle.centroidal_inertia,
-                    "in^4",
-                ),
-                "saint_venant_torsional_constant": _quantity(
-                    primary.rectangle.saint_venant_torsional_constant,
-                    "in^4",
-                ),
-                "direct_series_terms": primary.rectangle.torsion_series_terms,
-            },
-            "dtmb_case_17_without_torsion": _mode_record(
-                primary.without_ring_torsion,
-                "psi",
-            ),
-            "dtmb_case_17_eq91_torsion_isolation": {
-                "ideal_pressure_increment": _quantity(
-                    primary.torsion_ideal_pressure_increment,
-                    "psi",
-                ),
-                "adjusted_pressure_increment": _quantity(
-                    primary.torsion_adjusted_pressure_increment,
-                    "psi",
-                ),
-                "governing_mode_changed": primary.torsion_changes_governing_mode,
-            },
-            "dtmb_all_table_2_geometries": calculated_dtmb,
-            "convergence_traps": [
-                {
-                    "case_id": result.case.case_id,
-                    "pressure_unit": result.case.pressure_unit,
-                    **_mode_record(
-                        result.with_ring_torsion,
-                        result.case.pressure_unit,
-                    ),
-                }
-                for result in trap_results
-            ],
-        },
-        "comparisons": {
-            "equation_evidence": {
-                "reference_vs_production": (
-                    "asserted by tests/test_phase5_validation.py from identical inputs; "
-                    "the reference module does not import production code or outputs"
-                ),
-                "cases": [
-                    "rectangle A/I/J",
-                    "DTMB case 17 without torsion",
-                    "isolated Eq. 91 torsion increment",
-                    "all ten DTMB geometries and governing modes",
-                    "axial and circumferential convergence traps",
-                ],
-            },
-            "published_benchmark_evidence": benchmark_comparisons,
-        },
-    }
-
-
-def main() -> None:
-    print(json.dumps(build_evidence(), indent=2, sort_keys=True))
-
-
-if __name__ == "__main__":
-    main()
