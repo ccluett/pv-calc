@@ -8,8 +8,6 @@ import pytest
 import yaml
 
 from pv_calc.pressure_vessel import (
-    FLAT_CIRCULAR_PLATE_DEFLECTION_MINIMUM_RATIO,
-    FLAT_CIRCULAR_PLATE_POISSON_EVIDENCE_BAND,
     RING_SHELL_MODEL_ID,
     RING_SHELL_MODEL_VERSION,
     RingShellResult,
@@ -763,68 +761,27 @@ def _assert_plate_parity(
     assert [item.replace("_mm", "") for item in released.validity_violations] == (
         independent["validity_violations"]
     )
-    # The pinned oracle keeps the historical Kirchhoff release floors. Build
-    # the current corrected-deflection release policy from its independent raw
-    # values without changing that hash-pinned artifact.
-    deflection_floor = FLAT_CIRCULAR_PLATE_DEFLECTION_MINIMUM_RATIO[
-        boundary_condition
-    ]
-    expected_deflection_violations: list[str] = []
-    if independent["free_diameter_over_thickness"] < deflection_floor:
-        expected_deflection_violations.append(
-            f"free_diameter / plate_thickness is below {deflection_floor}, "
-            f"the {boundary_condition} center-deflection evidence floor"
-        )
-    poisson_low, poisson_high = FLAT_CIRCULAR_PLATE_POISSON_EVIDENCE_BAND
-    if not poisson_low <= poisson_ratio <= poisson_high:
-        expected_deflection_violations.append(
-            "poisson_ratio is outside the swept evidence band "
-            f"{poisson_low} <= poisson_ratio <= {poisson_high}"
-        )
-    if (
-        independent["shear_corrected_deflection_estimate"]
-        > independent["plate_thickness"] / 2.0
-    ):
-        expected_deflection_violations.append(
-            "shear_corrected_deflection_estimate exceeds plate_thickness / 2, "
-            "the small-deflection limit"
-        )
-    expected_status = (
-        "withheld_applicability" if expected_deflection_violations else "released"
-    )
-    if independent["governing_bending_stress"] > yield_strength_mpa:
-        expected_deflection_violations.append(
-            "governing bending stress exceeds the supplied material strength; "
-            "the deflection is an elastic formula estimate beyond the material limit"
-        )
-        if expected_status == "released":
-            expected_status = "elastic_estimate_material_limit"
     assert [
         item.replace("_mm", "") for item in released.deflection_validity_violations
-    ] == expected_deflection_violations
-    assert released.deflection_status == expected_status
-    if expected_status == "released":
-        _assert_reference_close(
-            released.released_maximum_deflection_mm,
-            independent["shear_corrected_deflection_estimate"],
-        )
-    else:
-        assert released.released_maximum_deflection_mm is None
-    # The reference computes the Kirchhoff margin unconditionally; production
-    # withholds it, as the verdict, wherever the bending validity is violated.
-    if released.validity_violations:
-        assert released.bending_status == "withheld_applicability"
-        assert released.margin is None
-    else:
-        assert released.bending_status == "released"
-        _assert_reference_close(released.margin, independent["margin"])
-    assert (
-        released.bending_minimum_free_diameter_over_thickness
-        == independent["bending_minimum_free_diameter_over_thickness"]
-    )
-    assert (
-        released.deflection_minimum_free_diameter_over_thickness
-        == FLAT_CIRCULAR_PLATE_DEFLECTION_MINIMUM_RATIO[boundary_condition]
+    ] == independent["deflection_validity_violations"]
+    for value, key in (
+        (released.bending_status, "bending_status"),
+        (released.deflection_status, "deflection_status"),
+        (
+            released.bending_minimum_free_diameter_over_thickness,
+            "bending_minimum_free_diameter_over_thickness",
+        ),
+        (
+            released.deflection_minimum_free_diameter_over_thickness,
+            "deflection_minimum_free_diameter_over_thickness",
+        ),
+        (released.poisson_ratio_evidence_band, "poisson_ratio_evidence_band"),
+    ):
+        assert value == independent[key]
+    _assert_optional_reference_close(released.margin, independent["margin"])
+    _assert_optional_reference_close(
+        released.released_maximum_deflection_mm,
+        independent["released_maximum_deflection"],
     )
     for actual, key in (
         (released.free_diameter_mm, "free_diameter"),
@@ -881,9 +838,8 @@ def _assert_plate_parity(
         # the estimate crosses t/2 between the two pressures.
         (0.3348190750059909, 50.0, 2.5, 70_000.0, 0.35, 300.0, "simply_supported"),
         (0.33, 50.0, 2.5, 70_000.0, 0.35, 300.0, "simply_supported"),
-        # Binary-exact fixed-edge stress is 0.75*1*(50/5)^2 = 75 MPa.
-        # The historical oracle releases deflection in all three cases;
-        # current policy withholds it only when the supplied strength is lower.
+        # Binary-exact fixed-edge stress is 0.75*1*(50/5)^2 = 75 MPa, so the
+        # deflection is released only at a supplied strength of at least 75 MPa.
         (1.0, 50.0, 5.0, 70_000.0, 0.30, math.nextafter(75.0, 0.0), "fixed"),
         (1.0, 50.0, 5.0, 70_000.0, 0.30, 75.0, "fixed"),
         (1.0, 50.0, 5.0, 70_000.0, 0.30, math.nextafter(75.0, math.inf), "fixed"),
@@ -946,18 +902,7 @@ def _assert_smooth_parity(inputs: dict[str, object]) -> None:
             independent[key],
             rel=1.0e-8 if "beta" in key or "wave_count" in key else REFERENCE_RELATIVE_TOLERANCE,
         )
-    # The pinned reference keeps its historical elastic-estimate ratio even
-    # when capacity needs an inelastic correction. Preserve that numerical
-    # evidence while requiring current production to withhold a usable margin.
-    if independent["capacity_status"] == "released":
-        _assert_optional_reference_close(released.margin, independent["margin"])
-    else:
-        assert released.margin is None
-        if independent["margin"] is not None:
-            _assert_reference_close(
-                released.correlated_critical_pressure_mpa / inputs["external_pressure_mpa"] - 1.0,
-                independent["margin"],
-            )
+    _assert_optional_reference_close(released.margin, independent["margin"])
     assert released.circumferential_wave_count_n == independent[
         "circumferential_wave_count_n"
     ]

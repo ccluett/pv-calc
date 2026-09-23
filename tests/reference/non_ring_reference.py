@@ -368,9 +368,10 @@ def flat_circular_plate_reference(
     fixed_deflection = external_pressure * free_radius**4 / (64.0 * rigidity)
     deflection = fixed_deflection * deflection_multiplier
     shear = external_pressure * 2.0 * free_radius / (4.0 * plate_thickness)
-    # First-order shear-deformation center increment q*a^2/(4*kappa*G*t),
-    # kappa = 5/6.  The small-deflection limit is checked against this
-    # estimate rather than against the measurably low Kirchhoff deflection.
+    # Reissner's first-order shear-deformation center increment
+    # q*a^2/(4*kappa*G*t), kappa = 5/6.  The released deflection and the
+    # small-deflection limit use this estimate rather than the measurably low
+    # Kirchhoff deflection.
     shear_modulus = elastic_modulus / (2.0 * (1.0 + poisson_ratio))
     shear_corrected_deflection = deflection + external_pressure * free_radius**2 / (
         4.0 * (5.0 / 6.0) * shear_modulus * plate_thickness
@@ -380,11 +381,17 @@ def flat_circular_plate_reference(
     governing_stress = max(radial_stress, tangential_stress)
     diameter_thickness = 2.0 * free_radius / plate_thickness
     # Transcribed from the CAX8R plate sweep, pv-calc v0.3.0
-    # validation/fea/results/plate_sweep_fea_summary.json.
+    # validation/fea/results/plate_sweep_fea_summary.json: each floor is the
+    # smallest solved D_free/t at and above which every solved case, at each
+    # solved Poisson ratio (0.05, 0.30, 0.35), is within 5% of FEA, for the
+    # Kirchhoff bending stress and the shear-corrected deflection.  A
+    # deflection is not released where the bending margin is withheld, so its
+    # floor is at least the bending floor.
     bending_minimum_ratio = {"fixed": 10.0, "simply_supported": 4.0}[boundary_condition]
-    deflection_minimum_ratio = {"fixed": 20.0, "simply_supported": 10.0}[
-        boundary_condition
-    ]
+    deflection_minimum_ratio = max(
+        {"fixed": 4.0, "simply_supported": 6.0}[boundary_condition],
+        bending_minimum_ratio,
+    )
     poisson_band = (0.05, 0.35)
     poisson_in_band = poisson_band[0] <= poisson_ratio <= poisson_band[1]
     poisson_band_violation = (
@@ -415,6 +422,16 @@ def flat_circular_plate_reference(
         deflection_violations.append(poisson_band_violation)
     if shear_corrected_deflection > plate_thickness / 2.0:
         deflection_violations.append(small_deflection_violation)
+    deflection_status = (
+        "withheld_applicability" if deflection_violations else "released"
+    )
+    if governing_stress > yield_strength:
+        deflection_violations.append(
+            "governing bending stress exceeds the supplied material strength; "
+            "the deflection is an elastic formula estimate beyond the material limit"
+        )
+        if deflection_status == "released":
+            deflection_status = "elastic_estimate_material_limit"
     return {
         "boundary_condition": boundary_condition,
         "source_equation_case": source_case,
@@ -441,20 +458,19 @@ def flat_circular_plate_reference(
         "shear_corrected_deflection_estimate_over_thickness": (
             shear_corrected_deflection / plate_thickness
         ),
-        "deflection_status": (
-            "withheld_applicability" if deflection_violations else "released"
-        ),
+        "deflection_status": deflection_status,
         "released_maximum_deflection": (
-            None if deflection_violations else deflection
+            shear_corrected_deflection if deflection_status == "released" else None
         ),
         "deflection_validity_violations": deflection_violations,
         "bending_minimum_free_diameter_over_thickness": bending_minimum_ratio,
         "deflection_minimum_free_diameter_over_thickness": deflection_minimum_ratio,
-        "poisson_ratio_evidence_band": list(poisson_band),
+        "poisson_ratio_evidence_band": poisson_band,
         "theoretical_radial_failure_pressure": radial_failure,
         "theoretical_tangential_failure_pressure": tangential_failure,
         "theoretical_failure_pressure": min(radial_failure, tangential_failure),
-        "margin": yield_strength / governing_stress - 1.0,
+        "bending_status": "withheld_applicability" if violations else "released",
+        "margin": None if violations else yield_strength / governing_stress - 1.0,
         "validity_violations": violations,
         "source": (
             "Roark 6th ed. Table 24 cases 10a-10b, p. 429; shear follows "
@@ -709,9 +725,10 @@ def smooth_cylinder_reference(
             selected["ideal_critical_pressure_mpa"] if selected else None
         ),
         "correlated_critical_pressure_mpa": released_pressure,
+        # An elastic pressure pending plasticity is an upper bound, not a margin.
         "margin": (
             released_pressure / external_pressure_mpa - 1.0
-            if released_pressure is not None
+            if capacity_status == "released" and released_pressure is not None
             else None
         ),
         "validity_violations": validity_violations,
