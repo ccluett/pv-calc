@@ -9,34 +9,41 @@ model; both predate this changelog.
 
 ## [Unreleased]
 
-- Ring-shell model 5.1.0: with a yield strength, report shell yield between
-  rings (Pc5) and ring yield as `shell_yield_between_rings_pressure_mpa` and
-  `ring_yield_pressure_mpa`, from the classical axisymmetric solution for a
-  periodic bay, with its intermediates in `axisymmetric_stress`. These are the
-  pressures at which the mean hoop stress in the shell at mid-bay, and in the
-  ring at its centroid, reaches yield; they do not enter the lowest buckling
-  pressure. Text and summary output show them.
-- Ring-shell model 5.0.0: without a proportional limit or compressive curve,
-  the inter-ring bay enters the lowest buckling pressure at its elastic value
-  instead of being left out, so the lowest pressure can be below what 4.x
-  reported. A mode pressure is `advisory` only when its nominal stress is
-  within a supplied proportional limit or a compressive curve corrects it; with
-  only a yield strength it is an elastic upper bound above yield and
-  `advisory_plasticity_undetermined` below it. Text and summary output show the
-  lowest buckling pressure and its mode, with the heading still giving the
-  assessment status. The result states that the global calculation is elastic,
-  which failure modes it does not check, and that the ends warp freely. Routine
-  notes are shorter.
-  Acceptance rules are unchanged.
+## [0.4.0] - 2026-09-23
+
+- Ring-shell model 4.0.0 -> 5.1.0:
+  - Without a proportional limit or compressive curve, the inter-ring bay
+    enters the lowest buckling pressure at its elastic value instead of being
+    left out, so the lowest pressure can be below what 0.3.0 reported.
+  - A mode pressure is `advisory` only when its nominal stress is within a
+    supplied proportional limit or a compressive curve corrects it. With only
+    a yield strength it is an elastic upper bound above yield and
+    `advisory_plasticity_undetermined` ("proportional limit not supplied")
+    below it.
+  - With a yield strength, report Pc5 and ring yield as
+    `shell_yield_between_rings_pressure_mpa` and `ring_yield_pressure_mpa`:
+    the pressures at which the mean hoop stress in the shell at mid-bay, and
+    in the ring at its centroid, reaches yield, from the classical
+    axisymmetric solution for a periodic bay. `axisymmetric_stress` carries
+    the intermediates. They are not collapse pressures and do not enter the
+    lowest buckling pressure.
+  - Text and summary output show the lowest buckling pressure and its mode,
+    and the two yield pressures.
+  - The result reports the `m>=1,n>=2` mode domain and its boundary
+    assumptions, including freely warping ends, adds `not_implemented`
+    (axisymmetric `n=0` buckling) and `external_blocker` (physical end
+    restraint) mode dispositions, and states which failure modes it does not
+    check. Routine notes are shorter. Acceptance rules are unchanged, and
+    `check` stays indeterminate.
 - Research records (`validation/`) leave the repository; they remain in its
   history at [446ac81](https://github.com/ccluett/pv-calc/tree/446ac81/validation).
-  The independent reference implementations move to `tests/reference/`, and the
-  plate result's `envelope_source_reference` links the FEA sweep at the v0.3.0
-  tag.
-- Ring-shell model 4.1.0: report the `m>=1,n>=2` mode domain and the boundary
-  assumptions, and add `not_implemented` (axisymmetric `n=0` buckling) and
-  `external_blocker` (physical end restraint) mode dispositions. Calculated
-  pressures, factors, and mode limits are unchanged.
+  The independent reference implementations move to `tests/reference/` and
+  check the released rules directly. The plate result's
+  `envelope_source_reference` links the FEA sweep at the v0.3.0 tag.
+- Model versions: tube 3.1.0, hemisphere 5.0.0, plate 5.0.0, smooth buckling
+  5.0.0, ring shell 5.1.0; cylinder composition 1.0.0. Sizing operation
+  versions: tube 3.1.0, smooth buckling 4.0.0, plate 3.0.0. Sweep 1.2.0 and
+  material comparison 1.1.0. Request schema remains 5.0.0.
 
 ## [0.3.0] - 2026-09-20
 

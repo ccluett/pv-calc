@@ -8,7 +8,7 @@
               "function": "pv_calc.hydrostatics.submerged_mass_and_buoyancy",
               "model_id": "archimedes_submerged_mass_and_buoyancy",
               "model_version": "1.0.0",
-              "package_version": "0.3.0"
+              "package_version": "0.4.0"
             },
             "material": {
               "properties_used": {
@@ -85,7 +85,7 @@
               "function": "pv_calc.pressure_vessel.closed_end_tube_stress",
               "model_id": "closed_end_tube_stress",
               "model_version": "3.1.0",
-              "package_version": "0.3.0"
+              "package_version": "0.4.0"
             },
             "material": {
               "properties_used": {
@@ -274,7 +274,7 @@
               "function": "pv_calc.hydrostatics.submerged_mass_and_buoyancy",
               "model_id": "archimedes_submerged_mass_and_buoyancy",
               "model_version": "1.0.0",
-              "package_version": "0.3.0"
+              "package_version": "0.4.0"
             },
             "material": {
               "properties_used": {
@@ -351,7 +351,7 @@
               "function": "pv_calc.pressure_vessel.closed_end_tube_stress",
               "model_id": "closed_end_tube_stress",
               "model_version": "3.1.0",
-              "package_version": "0.3.0"
+              "package_version": "0.4.0"
             },
             "material": {
               "properties_used": {
@@ -610,7 +610,7 @@
       "function": "pv_calc.cylinder.evaluate_cylinder",
       "model_id": "cylinder_assessment",
       "model_version": "1.0.0",
-      "package_version": "0.3.0"
+      "package_version": "0.4.0"
     },
     "components": {
       "closures": [],
@@ -619,7 +619,7 @@
           "function": "pv_calc.pressure_vessel.smooth_cylinder_external_pressure_buckling",
           "model_id": "nasa_smooth_cylinder_external_pressure_buckling",
           "model_version": "5.0.0",
-          "package_version": "0.3.0"
+          "package_version": "0.4.0"
         },
         "material": {
           "data_qualification": {
@@ -915,7 +915,7 @@
           "function": "pv_calc.pressure_vessel.closed_end_tube_stress",
           "model_id": "closed_end_tube_stress",
           "model_version": "3.1.0",
-          "package_version": "0.3.0"
+          "package_version": "0.4.0"
         },
         "material": {
           "properties_used": {
@@ -1361,7 +1361,7 @@
       "function": "pv_calc.cylinder.evaluate_cylinder",
       "model_id": "cylinder_assessment",
       "model_version": "1.0.0",
-      "package_version": "0.3.0"
+      "package_version": "0.4.0"
     },
     "components": {
       "closures": [
@@ -1370,7 +1370,7 @@
             "function": "pv_calc.pressure_vessel.flat_circular_plate",
             "model_id": "uniformly_loaded_flat_circular_plate",
             "model_version": "5.0.0",
-            "package_version": "0.3.0"
+            "package_version": "0.4.0"
           },
           "id": "closure_1",
           "material": {
@@ -1534,7 +1534,7 @@
             "function": "pv_calc.pressure_vessel.hemispherical_head_external_pressure",
             "model_id": "roark_nasa_hemispherical_head_external_pressure",
             "model_version": "5.0.0",
-            "package_version": "0.3.0"
+            "package_version": "0.4.0"
           },
           "id": "closure_2",
           "material": {
@@ -1778,7 +1778,7 @@
           "function": "pv_calc.pressure_vessel.smooth_cylinder_external_pressure_buckling",
           "model_id": "nasa_smooth_cylinder_external_pressure_buckling",
           "model_version": "5.0.0",
-          "package_version": "0.3.0"
+          "package_version": "0.4.0"
         },
         "material": {
           "data_qualification": {
@@ -2074,7 +2074,7 @@
           "function": "pv_calc.pressure_vessel.closed_end_tube_stress",
           "model_id": "closed_end_tube_stress",
           "model_version": "3.1.0",
-          "package_version": "0.3.0"
+          "package_version": "0.4.0"
         },
         "material": {
           "properties_used": {
@@ -2396,7 +2396,7 @@
       "function": "pv_calc.pressure_vessel.hemispherical_head_external_pressure",
       "model_id": "roark_nasa_hemispherical_head_external_pressure",
       "model_version": "5.0.0",
-      "package_version": "0.3.0"
+      "package_version": "0.4.0"
     },
     "material": {
       "data_qualification": {
@@ -2638,7 +2638,7 @@
       "function": "pv_calc.hydrostatics.submerged_mass_and_buoyancy",
       "model_id": "archimedes_submerged_mass_and_buoyancy",
       "model_version": "1.0.0",
-      "package_version": "0.3.0"
+      "package_version": "0.4.0"
     },
     "material": {
       "properties_used": {
@@ -2713,7 +2713,7 @@
       "function": "pv_calc.pressure_vessel.flat_circular_plate",
       "model_id": "uniformly_loaded_flat_circular_plate",
       "model_version": "5.0.0",
-      "package_version": "0.3.0"
+      "package_version": "0.4.0"
     },
     "material": {
       "properties_used": {
@@ -2878,7 +2878,7 @@
       "function": "pv_calc.pressure_vessel.flat_circular_plate",
       "model_id": "uniformly_loaded_flat_circular_plate",
       "model_version": "5.0.0",
-      "package_version": "0.3.0"
+      "package_version": "0.4.0"
     },
     "material": {
       "properties_used": {
@@ -3046,7 +3046,7 @@
       "function": "pv_calc.pressure_vessel.flat_circular_plate",
       "model_id": "uniformly_loaded_flat_circular_plate",
       "model_version": "5.0.0",
-      "package_version": "0.3.0"
+      "package_version": "0.4.0"
     },
     "material": {
       "properties_used": {
@@ -3311,7 +3311,7 @@
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
       "model_version": "5.1.0",
-      "package_version": "0.3.0"
+      "package_version": "0.4.0"
     },
     "material": {
       "data_qualification": {
@@ -4072,7 +4072,7 @@
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
       "model_version": "5.1.0",
-      "package_version": "0.3.0"
+      "package_version": "0.4.0"
     },
     "material": {
       "data_qualification": {
@@ -4833,7 +4833,7 @@
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
       "model_version": "5.1.0",
-      "package_version": "0.3.0"
+      "package_version": "0.4.0"
     },
     "material": {
       "data_qualification": {
@@ -5594,7 +5594,7 @@
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
       "model_version": "5.1.0",
-      "package_version": "0.3.0"
+      "package_version": "0.4.0"
     },
     "material": {
       "data_qualification": {
@@ -6355,7 +6355,7 @@
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
       "model_version": "5.1.0",
-      "package_version": "0.3.0"
+      "package_version": "0.4.0"
     },
     "material": {
       "data_qualification": {
@@ -7116,7 +7116,7 @@
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
       "model_version": "5.1.0",
-      "package_version": "0.3.0"
+      "package_version": "0.4.0"
     },
     "material": {
       "data_qualification": {
@@ -7877,7 +7877,7 @@
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
       "model_version": "5.1.0",
-      "package_version": "0.3.0"
+      "package_version": "0.4.0"
     },
     "material": {
       "data_qualification": {
@@ -8638,7 +8638,7 @@
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
       "model_version": "5.1.0",
-      "package_version": "0.3.0"
+      "package_version": "0.4.0"
     },
     "material": {
       "data_qualification": {
@@ -9399,7 +9399,7 @@
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
       "model_version": "5.1.0",
-      "package_version": "0.3.0"
+      "package_version": "0.4.0"
     },
     "material": {
       "data_qualification": {
@@ -10160,7 +10160,7 @@
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
       "model_version": "5.1.0",
-      "package_version": "0.3.0"
+      "package_version": "0.4.0"
     },
     "material": {
       "data_qualification": {
@@ -10921,7 +10921,7 @@
       "function": "pv_calc.pressure_vessel.smooth_cylinder_external_pressure_buckling",
       "model_id": "nasa_smooth_cylinder_external_pressure_buckling",
       "model_version": "5.0.0",
-      "package_version": "0.3.0"
+      "package_version": "0.4.0"
     },
     "material": {
       "data_qualification": {
@@ -11221,7 +11221,7 @@
       "function": "pv_calc.pressure_vessel.smooth_cylinder_external_pressure_buckling",
       "model_id": "nasa_smooth_cylinder_external_pressure_buckling",
       "model_version": "5.0.0",
-      "package_version": "0.3.0"
+      "package_version": "0.4.0"
     },
     "material": {
       "data_qualification": {
@@ -11517,7 +11517,7 @@
       "function": "pv_calc.pressure_vessel.smooth_cylinder_external_pressure_buckling",
       "model_id": "nasa_smooth_cylinder_external_pressure_buckling",
       "model_version": "5.0.0",
-      "package_version": "0.3.0"
+      "package_version": "0.4.0"
     },
     "material": {
       "data_qualification": {
@@ -11813,7 +11813,7 @@
       "function": "pv_calc.pressure_vessel.smooth_cylinder_external_pressure_buckling",
       "model_id": "nasa_smooth_cylinder_external_pressure_buckling",
       "model_version": "5.0.0",
-      "package_version": "0.3.0"
+      "package_version": "0.4.0"
     },
     "material": {
       "data_qualification": {
@@ -12114,7 +12114,7 @@
           "function": "pv_calc.pressure_vessel.smooth_cylinder_external_pressure_buckling",
           "model_id": "nasa_smooth_cylinder_external_pressure_buckling",
           "model_version": "5.0.0",
-          "package_version": "0.3.0"
+          "package_version": "0.4.0"
         },
         "material": {
           "data_qualification": {
@@ -12410,7 +12410,7 @@
           "function": "pv_calc.pressure_vessel.closed_end_tube_stress",
           "model_id": "closed_end_tube_stress",
           "model_version": "3.1.0",
-          "package_version": "0.3.0"
+          "package_version": "0.4.0"
         },
         "material": {
           "properties_used": {
@@ -12716,7 +12716,7 @@
           "function": "pv_calc.hydrostatics.external_pressure_from_depth",
           "model_id": "hydrostatic_external_pressure_from_depth",
           "model_version": "1.0.0",
-          "package_version": "0.3.0"
+          "package_version": "0.4.0"
         },
         "design_factor": 1.25,
         "fluid_density": {
@@ -12747,7 +12747,7 @@
               "function": "pv_calc.pressure_vessel.closed_end_tube_stress",
               "model_id": "closed_end_tube_stress",
               "model_version": "3.1.0",
-              "package_version": "0.3.0"
+              "package_version": "0.4.0"
             },
             "material": {
               "properties_used": {
@@ -12951,7 +12951,7 @@
               "function": "pv_calc.pressure_vessel.closed_end_tube_stress",
               "model_id": "closed_end_tube_stress",
               "model_version": "3.1.0",
-              "package_version": "0.3.0"
+              "package_version": "0.4.0"
             },
             "material": {
               "properties_used": {
@@ -13155,7 +13155,7 @@
               "function": "pv_calc.pressure_vessel.closed_end_tube_stress",
               "model_id": "closed_end_tube_stress",
               "model_version": "3.1.0",
-              "package_version": "0.3.0"
+              "package_version": "0.4.0"
             },
             "material": {
               "properties_used": {
@@ -13378,7 +13378,7 @@
               "function": "pv_calc.pressure_vessel.closed_end_tube_stress",
               "model_id": "closed_end_tube_stress",
               "model_version": "3.1.0",
-              "package_version": "0.3.0"
+              "package_version": "0.4.0"
             },
             "material": {
               "properties_used": {
@@ -13574,7 +13574,7 @@
               "function": "pv_calc.pressure_vessel.closed_end_tube_stress",
               "model_id": "closed_end_tube_stress",
               "model_version": "3.1.0",
-              "package_version": "0.3.0"
+              "package_version": "0.4.0"
             },
             "material": {
               "properties_used": {
@@ -13770,7 +13770,7 @@
               "function": "pv_calc.pressure_vessel.closed_end_tube_stress",
               "model_id": "closed_end_tube_stress",
               "model_version": "3.1.0",
-              "package_version": "0.3.0"
+              "package_version": "0.4.0"
             },
             "material": {
               "properties_used": {
@@ -13965,7 +13965,7 @@
       "function": "pv_calc.pressure_vessel.closed_end_tube_stress",
       "model_id": "closed_end_tube_stress",
       "model_version": "3.1.0",
-      "package_version": "0.3.0"
+      "package_version": "0.4.0"
     },
     "material": {
       "properties_used": {
@@ -14155,7 +14155,7 @@
       "function": "pv_calc.pressure_vessel.closed_end_tube_stress",
       "model_id": "closed_end_tube_stress",
       "model_version": "3.1.0",
-      "package_version": "0.3.0"
+      "package_version": "0.4.0"
     },
     "failure_depths": {
       "basis": "h = p / (rho * g) in the request's fluid, the inverse of pv_calc.hydrostatics.external_pressure_from_depth; each depth follows its published formula pressure, not a released margin, and a withheld pressure has no depth. The request's density is constant, so the depth carries no rise in seawater density with depth; against a depth-dependent density the same pressure sits shallower, by a margin that grows with depth.",
@@ -14171,7 +14171,7 @@
         "function": "pv_calc.hydrostatics.submerged_mass_and_buoyancy",
         "model_id": "archimedes_submerged_mass_and_buoyancy",
         "model_version": "1.0.0",
-        "package_version": "0.3.0"
+        "package_version": "0.4.0"
       },
       "material": {
         "properties_used": {
@@ -14431,7 +14431,7 @@
       "function": "pv_calc.pressure_vessel.closed_end_tube_stress",
       "model_id": "closed_end_tube_stress",
       "model_version": "3.1.0",
-      "package_version": "0.3.0"
+      "package_version": "0.4.0"
     },
     "material": {
       "properties_used": {
