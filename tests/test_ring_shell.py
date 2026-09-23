@@ -300,7 +300,7 @@ def test_completeness_dispositions_are_machine_readable():
     assert any("warp freely" in item or "free to warp" in item for item in result.boundary_assumptions)
     assert any("0.75 factor recommended by NASA" in note for note in result.notes)
     scope = next(note for note in result.notes if note.startswith("Global buckling is elastic"))
-    for gap in ("Shell yield between rings", "ring yield", "ring spacing"):
+    for gap in ("Interframe collapse", "ring tripping", "ring spacing"):
         assert gap in scope
 
 

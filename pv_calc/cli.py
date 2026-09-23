@@ -1409,7 +1409,7 @@ def ring_shell(
     ] = None,
     yield_strength: Annotated[
         str | None,
-        typer.Option(help="Optional explicit ductile_metal yield strength with unit; bounds the proportional limit."),
+        typer.Option(help="Optional explicit ductile_metal yield strength with unit; bounds the proportional limit and sets the shell and ring yield pressures."),
     ] = None,
     proportional_limit: Annotated[
         str | None,

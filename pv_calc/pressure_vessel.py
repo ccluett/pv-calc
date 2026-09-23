@@ -649,7 +649,7 @@ class SmoothCylinderBucklingResult:
 
 
 RING_SHELL_MODEL_ID = "nasa_ring_stiffened_shell_external_pressure"
-RING_SHELL_MODEL_VERSION = "5.0.0"
+RING_SHELL_MODEL_VERSION = "5.1.0"
 RING_SHELL_EQ64_ADJUSTMENT_FACTOR = 0.75
 RING_SHELL_MIN_RADIUS_THICKNESS_RATIO = 10.0
 RING_SHELL_DEFAULT_MAX_MODE_EVALUATIONS = 2_000_000
@@ -672,8 +672,20 @@ RING_SHELL_BOUNDARY_ASSUMPTIONS = (
 )
 RING_SHELL_PARTIAL_SCOPE_REASON = (
     "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. "
-    "Shell yield between rings, ring yield and tripping, ring spacing, axisymmetric "
-    "buckling (n=0), and the long-cylinder Eq. 66 transition are not checked."
+    "Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and "
+    "the long-cylinder Eq. 66 transition are not checked."
+)
+RING_SHELL_YIELD_SOURCE = (
+    "von Sanden and Guenther periodic-bay solution (DTMB Report 1497, Pulos and Salerno, "
+    "1961) without the beam-column term, in the Wilson and PD 5500 Pc5 form printed by "
+    "Morandi (1994, University of Glasgow PhD thesis), Eqs. 48-53; effective ring area "
+    "from DTMB Report 1639 (Pulos, 1963), Eq. (9); ring stress from DTMB 1497 Eq. [58] "
+    "and DTMB 1639 Eq. (175), at the ring centroid radius"
+)
+RING_SHELL_YIELD_NOTE = (
+    "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at "
+    "mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect "
+    "periodic bay. They are not collapse pressures."
 )
 RING_SHELL_ADJUSTED_VALUE_NOTE = (
     "The global buckling pressure includes the 0.75 factor recommended by NASA "
@@ -823,6 +835,21 @@ class RingModeDisposition:
 
 
 @dataclass(frozen=True)
+class RingAxisymmetricStressResult:
+    """Periodic-bay axisymmetric solution; hoop stresses are compressive magnitudes."""
+
+    source_reference: str
+    clear_bay_mm: float
+    clear_bay_parameter: float
+    n_function: float
+    g_function: float
+    effective_ring_area_mm2: float
+    frame_parameter_gamma: float
+    midbay_shell_hoop_stress_per_unit_pressure: float
+    ring_hoop_stress_per_unit_pressure: float
+
+
+@dataclass(frozen=True)
 class RingShellResult:
     model_id: str
     model_version: str
@@ -872,6 +899,9 @@ class RingShellResult:
     ]
     global_elastic_applicability: Literal["within", "exceeded", "undetermined"]
     inter_ring_shell_buckling: SmoothCylinderBucklingResult
+    axisymmetric_stress: RingAxisymmetricStressResult | None
+    shell_yield_between_rings_pressure_mpa: float | None
+    ring_yield_pressure_mpa: float | None
     advisory_candidate_modes: tuple[str, ...]
     advisory_governing_mode: str | None
     advisory_governing_status: (
@@ -2854,6 +2884,78 @@ def smooth_cylinder_external_pressure_buckling(
     )
 
 
+def _ring_axisymmetric_stress(
+    *,
+    shell_mid_surface_radius_mm: float,
+    wall_thickness_mm: float,
+    ring_spacing_mm: float,
+    ring_axial_width_mm: float,
+    ring_radial_height_mm: float,
+    ring_location: str,
+    poisson_ratio: float,
+) -> RingAxisymmetricStressResult:
+    """Mid-bay shell and ring mean hoop stresses per unit pressure.
+
+    The shell between two identical rings is a beam on an elastic foundation
+    with zero slope at each ring face. Each ring, with the shell strip under
+    it, deflects radially as a whole, so its hoop strain at radius r is
+    w_ring / r. The caller passes valid geometry: a positive clear bay and a
+    positive ring centroid radius.
+    """
+    r_mm = shell_mid_surface_radius_mm
+    t_mm = wall_thickness_mm
+    v = poisson_ratio
+    clear_bay_mm = ring_spacing_mm - ring_axial_width_mm
+    ring_sign = 1.0 if ring_location == "external" else -1.0
+    centroid_radius_mm = r_mm + ring_sign * 0.5 * (t_mm + ring_radial_height_mm)
+
+    beta_per_mm = (3.0 * (1.0 - v * v)) ** 0.25 / math.sqrt(r_mm * t_mm)
+    x = beta_per_mm * clear_bay_mm
+    # N = (cosh x - cos x) / (sinh x + sin x) and
+    # G = 2 [sinh(x/2) cos(x/2) + cosh(x/2) sin(x/2)] / (sinh x + sin x),
+    # each numerator and the shared denominator multiplied by exp(-x) so that
+    # long bays cannot overflow; expm1 keeps short bays accurate.
+    decay = math.exp(-x)
+    denominator = -0.5 * math.expm1(-2.0 * x) + decay * math.sin(x)
+    n_function = (
+        0.5 * math.expm1(-x) ** 2 + 2.0 * decay * math.sin(0.5 * x) ** 2
+    ) / denominator
+    g_function = (
+        math.exp(-0.5 * x)
+        * (-math.expm1(-x) * math.cos(0.5 * x) + (1.0 + decay) * math.sin(0.5 * x))
+        / denominator
+    )
+
+    # DTMB 1639 Eq. (9) assigns A_r (R/R_c)^2 to an external ring and
+    # A_r (R/R_c) to an internal one: in each case the smaller of the two
+    # DTMB 1497 frame rigidities.
+    exponent = 2 if ring_location == "external" else 1
+    effective_area_mm2 = (
+        ring_axial_width_mm * ring_radial_height_mm * (r_mm / centroid_radius_mm) ** exponent
+    )
+    # Shell acting with the ring: the strip under it plus N/beta on each side.
+    shell_length_mm = ring_axial_width_mm + 2.0 * n_function / beta_per_mm
+    gamma = effective_area_mm2 * (1.0 - 0.5 * v) / (
+        effective_area_mm2 + shell_length_mm * t_mm
+    )
+    # The ring deflects (1 - gamma / (1 - nu/2)) times the free-shell deflection
+    # p R^2 (1 - nu/2) / (E t), and its hoop stress at radius r is E w_ring / r;
+    # the centroid radius gives the section's mean stress.
+    return RingAxisymmetricStressResult(
+        source_reference=RING_SHELL_YIELD_SOURCE,
+        clear_bay_mm=clear_bay_mm,
+        clear_bay_parameter=x,
+        n_function=n_function,
+        g_function=g_function,
+        effective_ring_area_mm2=effective_area_mm2,
+        frame_parameter_gamma=gamma,
+        midbay_shell_hoop_stress_per_unit_pressure=r_mm / t_mm * (1.0 - gamma * g_function),
+        ring_hoop_stress_per_unit_pressure=(
+            r_mm / t_mm * (r_mm / centroid_radius_mm) * (1.0 - 0.5 * v - gamma)
+        ),
+    )
+
+
 def ring_stiffened_shell_external_pressure(
     *,
     external_pressure_mpa: float,
@@ -2877,9 +2979,11 @@ def ring_stiffened_shell_external_pressure(
 
     ``yield_strength_mpa`` is optional. It bounds the proportional limit as for
     the smooth cylinder, and it stands in as the elastic-applicability limit the
-    global mode is screened against when no proportional limit is supplied. A
-    complete compressive curve corrects only the smooth inter-ring bay model;
-    the orthotropic global model remains elastic.
+    global mode is screened against when no proportional limit is supplied. It
+    also sets the shell and ring mean hoop yield pressures, which are reported
+    beside the buckling pressures and do not enter their minimum. A complete
+    compressive curve corrects only the smooth inter-ring bay model; the
+    orthotropic global model remains elastic.
     """
 
     p_mpa = _non_negative_pressure(external_pressure_mpa)
@@ -2987,6 +3091,24 @@ def ring_stiffened_shell_external_pressure(
         buckling_data_qualification=data_qualification,
         load_case="hydrostatic_closed_end",
     )
+    axisymmetric: RingAxisymmetricStressResult | None = None
+    shell_yield_pressure: float | None = None
+    ring_yield_pressure: float | None = None
+    if not validity_violations:
+        axisymmetric = _ring_axisymmetric_stress(
+            shell_mid_surface_radius_mm=r_mm,
+            wall_thickness_mm=t_mm,
+            ring_spacing_mm=spacing_mm,
+            ring_axial_width_mm=width_mm,
+            ring_radial_height_mm=height_mm,
+            ring_location=ring_location,
+            poisson_ratio=v,
+        )
+        if yield_mpa is not None:
+            shell_yield_pressure = (
+                yield_mpa / axisymmetric.midbay_shell_hoop_stress_per_unit_pressure
+            )
+            ring_yield_pressure = yield_mpa / axisymmetric.ring_hoop_stress_per_unit_pressure
 
     capacity_status: Literal[
         "advisory",
@@ -3193,8 +3315,9 @@ def ring_stiffened_shell_external_pressure(
             disposition="external_blocker",
             source_reference="NASA/SP-8007-2020/REV 2, orthotropic-cylinder scope, p. 34",
             basis=(
-                "NASA requires stiffener buckling/crippling investigation; a source-verified local "
-                "stress model and attachment restraint are not available for the current geometry."
+                "Ring mean hoop yield is reported as ring_yield_pressure_mpa. NASA also requires "
+                "stiffener crippling to be investigated; a source-verified criterion and "
+                "attachment restraint are not available for the current geometry."
             ),
         ),
         RingModeDisposition(
@@ -3226,6 +3349,7 @@ def ring_stiffened_shell_external_pressure(
         "exceeds yield and undetermined otherwise.",
         RING_SHELL_PARTIAL_SCOPE_REASON,
         GENERAL_INSTABILITY_SMEARED_NOTE,
+        *((RING_SHELL_YIELD_NOTE,) if shell_yield_pressure is not None else ()),
         *((BUCKLING_REFERENCE_ONLY_REASON,) if data_qualification == "reference_only" else ()),
         *((global_plasticity_pending,) if global_plasticity_pending is not None else ()),
     )
@@ -3272,6 +3396,9 @@ def ring_stiffened_shell_external_pressure(
         elastic_applicability_limit_basis=applicability_basis,
         global_elastic_applicability=global_applicability,
         inter_ring_shell_buckling=inter_ring,
+        axisymmetric_stress=axisymmetric,
+        shell_yield_between_rings_pressure_mpa=shell_yield_pressure,
+        ring_yield_pressure_mpa=ring_yield_pressure,
         advisory_candidate_modes=tuple(mode for mode, _, _ in advisory_candidates),
         advisory_governing_mode=advisory_mode,
         advisory_governing_status=advisory_status,

@@ -143,7 +143,13 @@ RING_SHELL_RESULT_UNITS = {
     "torsion_adjusted_pressure_effect_mpa": "MPa",
     "global_critical_circumferential_membrane_stress_mpa": "MPa",
     "elastic_applicability_limit_mpa": "MPa",
+    "shell_yield_between_rings_pressure_mpa": "MPa",
+    "ring_yield_pressure_mpa": "MPa",
     "advisory_governing_pressure_mpa": "MPa",
+}
+RING_AXISYMMETRIC_STRESS_UNITS = {
+    "clear_bay_mm": "mm",
+    "effective_ring_area_mm2": "mm^2",
 }
 RING_GLOBAL_RESULT_UNITS = {
     "ideal_critical_pressure_mpa": "MPa",
@@ -268,6 +274,10 @@ def _serialize_result(
                 candidate[name] = _quantity(candidate[name], unit)
             candidates.append(candidate)
         inter_ring["candidates"] = candidates
+        axisymmetric = payload["axisymmetric_stress"]
+        if axisymmetric is not None:
+            for name, unit in RING_AXISYMMETRIC_STRESS_UNITS.items():
+                axisymmetric[name] = _quantity(axisymmetric[name], unit)
     return payload
 
 

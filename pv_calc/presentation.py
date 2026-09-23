@@ -116,6 +116,9 @@ def summarize_response(
             summary["ring_buckling"].update({key: global_mode[key] for key in (
                 "critical_axial_half_waves_m", "critical_circumferential_lobes_n",
             ) if key in global_mode})
+        summary["ring_yield"] = deepcopy({key: result[key] for key in (
+            "shell_yield_between_rings_pressure_mpa", "ring_yield_pressure_mpa",
+        ) if key in result})
     if "sizing" in payload:
         summary["sizing"] = {key: value for key, value in payload["sizing"].items() if key in {
             "selected_wall_thickness", "selected_plate_thickness", "selected_shell_mid_surface_radius",
@@ -229,6 +232,14 @@ def _render_summary(summary: dict[str, Any]) -> list[str]:
         if buckling.get("advisory_governing_status") in _RING_STATUS_LABELS:
             detail.append(_RING_STATUS_LABELS[buckling["advisory_governing_status"]])
         lines.append(f"Lowest buckling pressure: {_format(buckling['advisory_governing_pressure_mpa'])} ({'; '.join(detail)})")
+    if "ring_yield" in summary:
+        shell_yield = summary["ring_yield"].get("shell_yield_between_rings_pressure_mpa")
+        ring_yield = summary["ring_yield"].get("ring_yield_pressure_mpa")
+        if _number(shell_yield) is None or _number(ring_yield) is None:
+            lines.append("Mean hoop yield: not evaluated without a yield strength")
+        else:
+            lines.append(f"Shell mean hoop yield at mid-bay (Pc5): {_format(shell_yield)}")
+            lines.append(f"Ring mean hoop yield: {_format(ring_yield)}")
     check_reasons: set[str] = set()
     for check in assessment["checks"]:
         margin = "undefined" if check.get("margin") is None else _format(check["margin"])

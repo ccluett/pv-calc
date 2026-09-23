@@ -9,6 +9,13 @@ model; both predate this changelog.
 
 ## [Unreleased]
 
+- Ring-shell model 5.1.0: with a yield strength, report shell yield between
+  rings (Pc5) and ring yield as `shell_yield_between_rings_pressure_mpa` and
+  `ring_yield_pressure_mpa`, from the classical axisymmetric solution for a
+  periodic bay, with its intermediates in `axisymmetric_stress`. These are the
+  pressures at which the mean hoop stress in the shell at mid-bay, and in the
+  ring at its centroid, reaches yield; they do not enter the lowest buckling
+  pressure. Text and summary output show them.
 - Ring-shell model 5.0.0: without a proportional limit or compressive curve,
   the inter-ring bay enters the lowest buckling pressure at its elastic value
   instead of being left out, so the lowest pressure can be below what 4.x
@@ -18,8 +25,8 @@ model; both predate this changelog.
   `advisory_plasticity_undetermined` below it. Text and summary output show the
   lowest buckling pressure and its mode, with the heading still giving the
   assessment status. The result states that the global calculation is elastic,
-  that shell yield between rings, ring yield and tripping, and ring spacing are
-  not checked, and that the ends warp freely. Routine notes are shorter.
+  which failure modes it does not check, and that the ends warp freely. Routine
+  notes are shorter.
   Acceptance rules are unchanged.
 - Research records (`validation/`) leave the repository; they remain in its
   history at [446ac81](https://github.com/ccluett/pv-calc/tree/446ac81/validation).
