@@ -110,7 +110,7 @@ def test_internal_and_external_rings_use_their_own_area_rule():
     assert external.g_function == internal.g_function
 
 
-def test_yield_pressures_are_linear_elastic_first_yield():
+def test_yield_pressures_are_linear_elastic_mean_hoop_yield():
     base = _case()
     stress = base.axisymmetric_stress
 
