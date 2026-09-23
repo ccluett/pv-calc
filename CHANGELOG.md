@@ -9,17 +9,27 @@ model; both predate this changelog.
 
 ## [Unreleased]
 
+- Ring-shell model 5.0.0: without a proportional limit or compressive curve,
+  the inter-ring bay enters the lowest buckling pressure at its elastic value
+  instead of being left out, so the lowest pressure can be below what 4.x
+  reported. A mode pressure is `advisory` only when its nominal stress is
+  within a supplied proportional limit or a compressive curve corrects it; with
+  only a yield strength it is an elastic upper bound above yield and
+  `advisory_plasticity_undetermined` below it. Text and summary output show the
+  lowest buckling pressure and its mode, with the heading still giving the
+  assessment status. The result states that the global calculation is elastic,
+  that shell yield between rings, ring yield and tripping, and ring spacing are
+  not checked, and that the ends warp freely. Routine notes are shorter.
+  Acceptance rules are unchanged.
+- Research records (`validation/`) leave the repository; they remain in its
+  history at [446ac81](https://github.com/ccluett/pv-calc/tree/446ac81/validation).
+  The independent reference implementations move to `tests/reference/`, and the
+  plate result's `envelope_source_reference` links the FEA sweep at the v0.3.0
+  tag.
 - Ring-shell model 4.1.0: report the `m>=1,n>=2` mode domain and the boundary
   assumptions, and add `not_implemented` (axisymmetric `n=0` buckling) and
   `external_blocker` (physical end restraint) mode dispositions. Calculated
   pressures, factors, and mode limits are unchanged.
-- Describe the DTMB Report 1324 evidence as the report gives it: Southwell
-  estimates for cylinder 4-A at ten internal-bulkhead spacings. Drop the
-  attribution of NASA's 10-40% low-lobe warning, which concerns axial
-  compression, to this pressure calculation.
-- Add the ring-shell investigation: a DAPS4 cross-check, a DTMB Table 1
-  end-closure comparison at reconstructed spans, the long-cylinder limit, and
-  an `n=0` diagnostic.
 
 ## [0.3.0] - 2026-09-20
 
@@ -219,7 +229,7 @@ Initial release.
   records over the three failure categories, with every value cited to its own
   source and documented as a calculation input.
 - Validation evidence under
-  [validation/](https://github.com/ccluett/pv-calc/tree/main/validation):
+  [validation/](https://github.com/ccluett/pv-calc/tree/v0.1.0/validation):
   independent reference implementations, the DTMB report 1324 case 17
   benchmark, and FEA comparisons, with a golden response-contract snapshot
   test. The committed FEA summaries are named for their content:

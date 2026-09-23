@@ -49,6 +49,79 @@ def _qualified_aluminium() -> dict:
     }
 
 
+def test_ring_summary_reports_lowest_buckling_pressure_without_changing_acceptance() -> None:
+    response = _example("ring-shell", "ring_shell_dtmb_17_spaces.json")
+    before = deepcopy(response)
+    summary = summarize_response(response)
+    buckling = summary["ring_buckling"]
+    governing = buckling["advisory_governing_pressure_mpa"]
+    assert governing["unit"] == "MPa"
+    assert governing == response["result"]["advisory_governing_pressure_mpa"]
+    assert buckling["advisory_governing_mode"] == "global_eq64_with_eq91_ring_torsion"
+    assert buckling["critical_circumferential_lobes_n"] == 3
+    assert summary["assessment"]["status"] == "indeterminate"
+    assert not any(check["eligible"] for check in summary["assessment"]["checks"])
+    text = render_text(response)
+    assert text.splitlines()[0] == "ring-shell: INDETERMINATE"
+    assert "Lowest buckling pressure: " in text
+    assert "Global buckling is elastic" in text
+    assert response == before
+
+
+@pytest.mark.parametrize("yield_mpa", [10.0, None])
+def test_ring_pressure_display_retains_applicable_material_limits(yield_mpa) -> None:
+    request = json.loads((EXAMPLES / "ring_shell_dtmb_17_spaces.json").read_text())
+    properties = request["material"]["properties"]
+    if yield_mpa is None:
+        properties.pop("yield_strength")
+    else:
+        properties["yield_strength"] = _q(yield_mpa)
+    response = calculate(request)
+    summary = summarize_response(response)
+    expected = "advisory_plasticity_undetermined" if yield_mpa is None else "advisory_pending_plasticity"
+    assert summary["ring_buckling"]["advisory_governing_status"] == expected
+    text = render_text(response)
+    assert "Lowest buckling pressure: " in text
+    assert ("proportional limit not supplied" if yield_mpa is None else "elastic upper bound") in text
+    assert summary["assessment"]["status"] == "indeterminate"
+
+
+def test_ring_display_with_a_plasticity_corrected_bay_governing_is_not_called_elastic() -> None:
+    material = _qualified_aluminium()
+    material["properties"].update(ramberg_osgood_n=20, compressive_proof_stress=_q(241.0))
+    response = calculate({
+        "schema_version": CALC_SCHEMA_VERSION, "model": "ring-shell",
+        "inputs": {
+            "external_pressure": _q(1.0),
+            "shell_mid_surface_radius": _q(100, "mm"),
+            "wall_thickness": _q(3, "mm"),
+            "unsupported_length": _q(600, "mm"),
+            "ring_spacing": _q(60, "mm"),
+            "ring_axial_width": _q(8, "mm"),
+            "ring_radial_height": _q(10, "mm"),
+            "ring_location": "external",
+        },
+        "material": material,
+    })
+    result = response["result"]
+    bay = result["inter_ring_shell_buckling"]
+    assert result["advisory_governing_mode"] == "inter_ring_smooth_shell"
+    assert bay["capacity_status"] == "released"
+    assert 0.0 < bay["plasticity_factor"] < 1.0
+    governing = bay["correlated_critical_pressure_mpa"]
+    assert governing["value"] == pytest.approx(7.336569262268846)
+    assert governing["value"] < result["global_with_ring_torsion"]["adjusted_critical_pressure_mpa"]["value"]
+
+    summary = summarize_response(response)
+    assert summary["ring_buckling"]["advisory_governing_pressure_mpa"] == governing
+    assert "critical_circumferential_lobes_n" not in summary["ring_buckling"]
+    text = render_text(response)
+    assert "Lowest buckling pressure: 7.33657 MPa (inter-ring bay)" in text
+    assert "Global buckling is elastic" in text
+    assert "Elastic buckling only" not in text
+    assert summary["assessment"]["status"] == "indeterminate"
+
+
 def test_summary_is_concise_retains_quantities_and_does_not_mutate() -> None:
     response = _example("tube", "tube_9_0401_ksi.json")
     original = deepcopy(response)
@@ -124,6 +197,7 @@ def test_ring_bay_estimate_cannot_be_promoted_to_a_released_check(
 
     summary = summarize_response(response, ["inter_ring_shell_buckling"])
     assert summary["assessment"] == selected
+    assert ("ring_buckling" in summary) == (parent_status == "advisory")
     selected_payload = {
         "schema_version": response["schema_version"],
         "model": response["model"],

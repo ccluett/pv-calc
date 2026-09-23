@@ -15,16 +15,9 @@ directly:
   closed cylinder, and Eq. (11.15), printed p. 394, for its axial strain, both
   at sections far removed from the end-cap junction.
 
-The decision record behind both is
-``validation/sources/tube_scalar_displacement.md``.
-
-It is a separate module from ``non_ring_reference.py`` because that file's
-SHA-256 is recorded as ``manifest.reference_sha256`` in the committed P5-03
-FEA summaries, which no rerun is available to restore.
-
 Run from the ``pv-calc`` directory with::
 
-    uv run python validation/tube_displacement_reference.py
+    uv run python tests/reference/tube_displacement_reference.py
 """
 
 from __future__ import annotations
@@ -285,7 +278,6 @@ def build_evidence() -> dict[str, Any]:
         "sources": {
             "thin_branch": DTMB_1497,
             "thick_branch": BORESI_SCHMIDT,
-            "decision_record": "validation/sources/tube_scalar_displacement.md",
         },
         "conventions": {
             "radial_displacement": "positive outward; external pressure gives a negative value",

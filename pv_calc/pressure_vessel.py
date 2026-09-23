@@ -227,9 +227,10 @@ FLAT_CIRCULAR_PLATE_MODEL_ID = "uniformly_loaded_flat_circular_plate"
 FLAT_CIRCULAR_PLATE_MODEL_VERSION = "5.0.0"
 
 FLAT_CIRCULAR_PLATE_ENVELOPE_SOURCE = (
-    "validation/fea/results/plate_sweep_fea_summary.json: "
-    "mesh-converged CAX8R sweep over D_free/t and Poisson ratio; corrected deflection "
-    "is qualified by abs(prediction - FEA) / abs(FEA) <= 5%"
+    "Mesh-converged CalculiX CAX8R sweep over D_free/t and Poisson ratio; corrected "
+    "deflection is qualified by abs(prediction - FEA) / abs(FEA) <= 5%. Results: "
+    "https://github.com/ccluett/pv-calc/blob/v0.3.0/validation/fea/results/"
+    "plate_sweep_fea_summary.json"
 )
 
 # Each floor is the coarsest solved free-diameter/thickness ratio from which
@@ -648,7 +649,7 @@ class SmoothCylinderBucklingResult:
 
 
 RING_SHELL_MODEL_ID = "nasa_ring_stiffened_shell_external_pressure"
-RING_SHELL_MODEL_VERSION = "4.1.0"
+RING_SHELL_MODEL_VERSION = "5.0.0"
 RING_SHELL_EQ64_ADJUSTMENT_FACTOR = 0.75
 RING_SHELL_MIN_RADIUS_THICKNESS_RATIO = 10.0
 RING_SHELL_DEFAULT_MAX_MODE_EVALUATIONS = 2_000_000
@@ -664,21 +665,23 @@ RING_SHELL_BENCHMARK_SOURCE = (
 RING_SHELL_BOUNDARY_ASSUMPTIONS = (
     "Global ends are restrained against radial displacement and free to rotate; "
     "closed-end pressure supplies the axial compression in NASA Eq. 65.",
+    "Global ends are free to warp axially (the incremental axial resultant N_x vanishes "
+    "at the supports); the prebuckling closed-end load is still applied.",
     "Closure stiffness, contact, and shell continuing beyond a support are not modeled.",
     "Inter-ring bays assume ideal circular supports at ring center lines.",
 )
 RING_SHELL_PARTIAL_SCOPE_REASON = (
-    "Global ring-shell buckling is advisory: the mode search covers m >= 1, n >= 2 only, "
-    "and axisymmetric (n=0) buckling, actual end restraint, the long-cylinder transition, "
-    "and local failure modes are not covered."
+    "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. "
+    "Shell yield between rings, ring yield and tripping, ring spacing, axisymmetric "
+    "buckling (n=0), and the long-cylinder Eq. 66 transition are not checked."
 )
-GENERAL_INSTABILITY_SCOPE_NOTE = (
-    "Ring material stress, frame tripping/crippling, attachment and weld effects, fabrication "
-    "imperfections, residual stress, and local/global interaction are not evaluated."
+RING_SHELL_ADJUSTED_VALUE_NOTE = (
+    "The global buckling pressure includes the 0.75 factor recommended by NASA "
+    "SP-8007, printed p. 38, and enters the governing-pressure comparison."
 )
 GENERAL_INSTABILITY_SMEARED_NOTE = (
-    "The smeared-ring model assumes uniformly spaced rings; widely spaced rings and local/global "
-    "interaction need a discrete-shell or code-rule check."
+    "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing "
+    "screen is applied; widely spaced rings need a discrete-ring or code-rule check."
 )
 RING_SHELL_GLOBAL_PLASTICITY_PENDING_REASON = (
     "the global Eq. 64/65 capacity implies a shell circumferential membrane stress "
@@ -692,11 +695,6 @@ RingShellAdvisoryStatus = Literal[
     "advisory_pending_plasticity",
     "advisory_plasticity_undetermined",
 ]
-RING_SHELL_ADVISORY_STATUS_BY_APPLICABILITY: dict[str, RingShellAdvisoryStatus] = {
-    "within": "advisory",
-    "exceeded": "advisory_pending_plasticity",
-    "undetermined": "advisory_plasticity_undetermined",
-}
 RING_SHELL_ADVISORY_STATUS_BY_INTER_RING_STATUS: dict[str, RingShellAdvisoryStatus] = {
     "released": "advisory",
     "released_unqualified_material": "advisory_unqualified_material",
@@ -705,9 +703,8 @@ RING_SHELL_ADVISORY_STATUS_BY_INTER_RING_STATUS: dict[str, RingShellAdvisoryStat
 
 
 def capacity_status_not_withheld(capacity_status: str) -> bool:
-    """The advisory admission rule: every status outside the ``withheld_*``
-    family produced a pressure, so it may enter a comparison; a withheld one
-    has no number to compare."""
+    """Every status outside the ``withheld_*`` family produced a pressure; a
+    withheld one has no number to report."""
     return not capacity_status.startswith("withheld")
 
 
@@ -722,12 +719,13 @@ def _elastic_applicability_screen(
 ]:
     """Resolve the elastic-applicability limit and compare a stress with it.
 
-    The limit is the proportional limit, falling back to the yield strength;
-    yield is a valid fallback because ``proportional_limit_mpa <= yield_mpa``,
-    so yield bounds every admissible proportional limit from above. Returns
-    ``(limit_mpa, basis, verdict)`` with basis one of ``proportional_limit`` /
-    ``yield_strength`` / ``unavailable`` and verdict one of ``within`` /
-    ``exceeded`` / ``undetermined``.
+    The limit is the proportional limit, falling back to the yield strength.
+    Because ``proportional_limit_mpa <= yield_mpa``, a stress above yield is
+    above every admissible proportional limit; a stress at or below yield
+    shows nothing about the proportional limit. Returns ``(limit_mpa, basis,
+    verdict)`` with basis one of ``proportional_limit`` / ``yield_strength`` /
+    ``unavailable`` and verdict one of ``within`` / ``exceeded`` /
+    ``undetermined``.
     """
     limit: float | None
     basis: Literal["proportional_limit", "yield_strength", "unavailable"]
@@ -745,6 +743,23 @@ def _elastic_applicability_screen(
     else:
         verdict = "within"
     return limit, basis, verdict
+
+
+def _ring_advisory_status(
+    verdict: Literal["within", "exceeded", "undetermined"],
+    basis: Literal["proportional_limit", "yield_strength", "unavailable"],
+) -> RingShellAdvisoryStatus:
+    """Label a ring mode pressure from its elastic-applicability screen.
+
+    Only a supplied proportional limit shows a pressure is elastic. With the
+    yield strength alone, a stress above yield marks an elastic upper bound and
+    a stress below it stays undetermined.
+    """
+    if verdict == "exceeded":
+        return "advisory_pending_plasticity"
+    if verdict == "within" and basis == "proportional_limit":
+        return "advisory"
+    return "advisory_plasticity_undetermined"
 
 
 @dataclass(frozen=True)
@@ -3042,34 +3057,50 @@ def ring_stiffened_shell_external_pressure(
                 "corrections are not implemented for the smeared orthotropic mode"
             )
 
-    # Every candidate pressure is an elastic upper bound on its own mode, so the
-    # minimum over the available modes is the tightest value the model can state;
-    # dropping a labelled bound could only raise it. Modes outside the search
-    # are not represented.
+    # Compare every available mode pressure and retain the selected mode's
+    # material status. Modes outside the calculation are not represented.
     advisory_candidates: list[tuple[str, float, RingShellAdvisoryStatus]] = []
     if capacity_status == "advisory" and global_pressure is not None:
         advisory_candidates.append(
             (
                 "global_eq64_with_eq91_ring_torsion",
                 global_pressure,
-                RING_SHELL_ADVISORY_STATUS_BY_APPLICABILITY[global_applicability],
+                _ring_advisory_status(global_applicability, applicability_basis),
             )
         )
+    inter_ring_pressure = inter_ring.correlated_critical_pressure_mpa
+    inter_ring_status: RingShellAdvisoryStatus | None = None
+    if inter_ring_pressure is not None:
+        # A KeyError here is a new non-withheld status the advisory taxonomy
+        # has not classified yet; fail loudly over mislabeling.
+        inter_ring_status = RING_SHELL_ADVISORY_STATUS_BY_INTER_RING_STATUS[
+            inter_ring.capacity_status
+        ]
+    elif proportional_mpa is None and ramberg_osgood_n is None:
+        # The bay's own release gate withholds it without a proportional limit
+        # or curve. It enters at its elastic pressure instead, screened like
+        # the global mode, so the minimum never drops a buckling mode for want
+        # of material data.
+        inter_ring_pressure = next(
+            (
+                item.correlated_critical_pressure_mpa
+                for item in inter_ring.candidates
+                if item.regime == inter_ring.regime
+            ),
+            None,
+        )
+        if inter_ring_pressure is not None:
+            _, bay_basis, bay_applicability = _elastic_applicability_screen(
+                inter_ring_pressure * r_mm / t_mm, proportional_mpa, yield_mpa
+            )
+            inter_ring_status = _ring_advisory_status(bay_applicability, bay_basis)
     if (
         capacity_status == "advisory"
-        and capacity_status_not_withheld(inter_ring.capacity_status)
-        and inter_ring.correlated_critical_pressure_mpa is not None
+        and inter_ring_pressure is not None
+        and inter_ring_status is not None
     ):
         advisory_candidates.append(
-            (
-                "inter_ring_smooth_shell",
-                inter_ring.correlated_critical_pressure_mpa,
-                # A KeyError here is a new non-withheld status the advisory
-                # taxonomy has not classified yet; fail loudly over mislabeling.
-                RING_SHELL_ADVISORY_STATUS_BY_INTER_RING_STATUS[
-                    inter_ring.capacity_status
-                ],
-            )
+            ("inter_ring_smooth_shell", inter_ring_pressure, inter_ring_status)
         )
     if advisory_candidates:
         advisory_mode, advisory_pressure, advisory_status = min(
@@ -3088,10 +3119,7 @@ def ring_stiffened_shell_external_pressure(
             disposition="implemented_advisory",
             source_reference=RING_SHELL_SOURCE,
             basis=(
-                "Equation and rectangular-section mapping are verified and DTMB-compared, but "
-                "the predicted lobe transition disagrees with the DTMB data and NASA gives no "
-                "numeric Eq. 64/Eq. 66 finite-to-long transition; in-service pressure-hull use "
-                "is not justified."
+                "NASA Eq. 64/65 with Eqs. 82-91 ring stiffnesses and Eq. 91 ring torsion."
             ),
         ),
         RingModeDisposition(
@@ -3107,10 +3135,14 @@ def ring_stiffened_shell_external_pressure(
         RingModeDisposition(
             mode="physical_end_restraint",
             disposition="external_blocker",
-            source_reference="DTMB Report 1324, Fig. 3 and Tables 1-2, pp. 5-10",
+            source_reference=(
+                "DTMB Report 1324, Figs. 3 and 6 and Tables 1-2, pp. 5-10; NASA/SP-8007-2020/"
+                "REV 2, pp. 28 and 36"
+            ),
             basis=(
-                "Only ideal simple supports are modeled; closure stiffness, contact, and "
-                "shell continuing beyond a support are not represented."
+                "The equation uses ideal simple supports with freely warping ends. "
+                "Actual closure stiffness, contact, and shell continuing beyond a support "
+                "are not inputs to this calculation; no additional restraint is credited."
             ),
         ),
         RingModeDisposition(
@@ -3188,18 +3220,12 @@ def ring_stiffened_shell_external_pressure(
         ),
     )
     notes = (
-        "The 0.75 multiplier follows NASA's recommendation immediately after Eq. 68.",
-        "The shell radius is explicitly the shell mid-surface radius, consistent with the Eq. 82-91 reference surface.",
-        "I_r is centroidal; Eq. 90 adds the separate z_r^2 A_r parallel-axis term.",
-        "J_r is the exact Saint-Venant constant for the same solid rectangle used by geometry and mass.",
-        "The inter-ring ideal supports are ring center lines; no end-restraint capacity increase is credited.",
-        "advisory_candidate_modes lists the available pressures, including elastic upper "
-        "bounds; advisory_governing_mode selects their minimum. Withheld modes are excluded.",
-        "advisory_governing_status describes the selected mode. "
-        "global_elastic_applicability separately reports the global mode's material limit.",
+        RING_SHELL_ADJUSTED_VALUE_NOTE,
+        "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional "
+        "limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t "
+        "exceeds yield and undetermined otherwise.",
         RING_SHELL_PARTIAL_SCOPE_REASON,
         GENERAL_INSTABILITY_SMEARED_NOTE,
-        GENERAL_INSTABILITY_SCOPE_NOTE,
         *((BUCKLING_REFERENCE_ONLY_REASON,) if data_qualification == "reference_only" else ()),
         *((global_plasticity_pending,) if global_plasticity_pending is not None else ()),
     )

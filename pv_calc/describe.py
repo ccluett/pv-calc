@@ -205,15 +205,15 @@ _RESULT_FIELD_DESCRIPTIONS: dict[str, str] = {
     "elastic_applicability_limit_mpa": (
         "The stress limit the elastic-applicability screen compared against: the "
         "proportional limit when one was supplied, otherwise the yield strength, "
-        "otherwise null. elastic_applicability_limit_basis names which. Yield is a "
-        "valid fallback because this model already requires proportional_limit_mpa <= "
-        "yield_strength_mpa, so yield bounds every admissible proportional limit."
+        "otherwise null. elastic_applicability_limit_basis names which. Because the model "
+        "requires proportional_limit_mpa <= yield_strength_mpa, a stress above yield is "
+        "above any admissible proportional limit; a stress below yield does not show the "
+        "response is elastic."
     ),
     "global_critical_circumferential_membrane_stress_mpa": (
-        "The shell circumferential membrane stress p*r/t the global Eq. 64/65 advisory "
-        "capacity implies, as a positive compression magnitude. It is the demand the "
-        "global mode would have to reach, and exists to make the "
-        "global_elastic_applicability comparison readable."
+        "Nominal shell circumferential stress p*r/t at the 0.75-adjusted global "
+        "pressure, as a positive compression magnitude. This is the stress used by "
+        "global_elastic_applicability."
     ),
     "global_elastic_applicability": (
         "Compares global critical membrane stress with elastic_applicability_limit_mpa. "
@@ -223,14 +223,15 @@ _RESULT_FIELD_DESCRIPTIONS: dict[str, str] = {
         "For withheld results, an exceedance is recorded in validity_violations."
     ),
     "advisory_governing_status": (
-        "Whether the selected advisory_governing_pressure_mpa is an elastic upper "
-        "bound: 'advisory_pending_plasticity' when the winning mode's critical "
-        "membrane stress exceeds elastic_applicability_limit_mpa, "
-        "'advisory_unqualified_material' when the winning inter-ring estimate uses "
-        "reference-only material data, "
-        "'advisory_plasticity_undetermined' when no limit was available to screen it, "
-        "and 'advisory' otherwise. Null when every mode was withheld. This describes "
-        "the selected mode; global_elastic_applicability separately reports the global mode."
+        "Whether the selected advisory_governing_pressure_mpa is shown to be elastic: "
+        "'advisory' when its nominal stress is within a supplied proportional limit or a "
+        "compressive curve corrects it; 'advisory_pending_plasticity' when the stress "
+        "exceeds the proportional limit, or the yield strength without one, so the "
+        "pressure is an elastic upper bound; 'advisory_unqualified_material' when the "
+        "winning inter-ring estimate uses reference-only material data; and "
+        "'advisory_plasticity_undetermined' otherwise, such as a stress below yield with no "
+        "proportional limit. Null when every mode was withheld. This describes the selected "
+        "mode; global_elastic_applicability separately reports the global mode."
     ),
     "working_circumferential_membrane_stress_mpa": (
         "Applied thin-shell circumferential membrane stress p*r/t at the mid-surface "
@@ -240,8 +241,10 @@ _RESULT_FIELD_DESCRIPTIONS: dict[str, str] = {
     ),
     "advisory_candidate_modes": (
         "Modes with available pressures, including elastic upper bounds, that entered "
-        "the governing-pressure minimum. Withheld and unimplemented modes are absent; "
-        "capacity_status and mode_dispositions record them."
+        "the governing-pressure minimum. Without a proportional limit or compressive "
+        "curve, the inter-ring bay enters at its elastic pressure, screened like the "
+        "global mode. Withheld and unimplemented modes are absent; capacity_status and "
+        "mode_dispositions record them."
     ),
     "advisory_margin": (
         "The advisory governing pressure divided by the applied pressure, minus one; null "
@@ -597,29 +600,35 @@ def _describe_model(
             SMOOTH_CYLINDER_BUCKLING_SOURCE,
         ]
         assumptions = [
-            "Hydrostatic closed-end pressure; global ends remain circular and rotate freely.",
+            "Hydrostatic closed-end pressure; global ends remain circular, rotate freely, and warp freely"
+            " (incremental N_x = 0 at the supports).",
             "Shell radius is the shell mid-surface radius.",
             "Shell and ring use one isotropic material record.",
             "The physical ring is one non-overlapping solid rectangle.",
             "The global result uses NASA Eqs. 64-65 and 82-91, including exact rectangular-ring torsion.",
-            "The 0.75 global pressure multiplier is source-recommended and not user-adjustable.",
-            "The inter-ring calculation is an advisory isolated smooth bay over ring center"
+            "NASA recommends a 0.75 pressure multiplier (printed p. 38). Both the ideal"
+            " and adjusted pressures are reported; the adjusted pressure enters the mode comparison.",
+            "The inter-ring calculation treats an isolated smooth bay over ring center"
             " spacing; a supplied compressive curve corrects this bay only.",
         ]
         checks = [
             "solid rectangular A_r, centroidal I_r, eccentricity, and exact Saint-Venant J_r",
             "NASA Eq. 64/65 global pressure before and after the separate Eq. 91 torsion term",
             "expanding integer mode search over m >= 1, n >= 2 with stability, frontier, bounds, and termination evidence",
-            "source-gated advisory isolated-bay smooth-shell buckling",
+            "isolated-bay smooth-shell buckling with its own applicability checks",
             "optional NASA Eq. 30-32 inelastic correction of the inter-ring bay only",
-            "the global capacity's implied membrane stress against the proportional limit or yield strength",
-            "advisory minimum over every mode that produced a pressure, tagged when it is an elastic upper bound",
-            "machine-readable advisory, not-implemented, not-applicable, and external-blocker dispositions",
+            "nominal stress at the adjusted global pressure against the proportional limit or yield strength",
+            "minimum over the available mode pressures, with the selected mode's material status",
+            "structured method coverage and source references",
         ]
         omissions = [
+            "shell yield between rings and its interaction with inter-ring buckling (interframe collapse)",
+            "a ring-spacing screen for the smeared global model",
             "axisymmetric hydrostatic instability (n=0); the mode search starts at n=2",
-            "actual closure stiffness, contact, and shell continuing beyond a support",
-            "capacity for in-service use because NASA gives no numeric Eq. 64/Eq. 66 long-cylinder transition",
+            "discrete-ring global deformation and alternative classical shell formulations;"
+            " this calculation implements NASA's smeared Eq. 64/65",
+            "actual closure stiffness, contact, axial warping restraint, and shell continuing beyond a support",
+            "automatic Eq. 64/Eq. 66 selection for long cylinders; NASA gives no numeric transition",
             "inelastic correction of an over-limit global capacity: NASA states plasticity factors for unstiffened cylinders only",
             "validated finite-width inter-ring local skin buckling and local/global interaction",
             "ring material strength, stiffener crippling, and frame tripping or rolling",

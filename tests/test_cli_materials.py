@@ -1049,12 +1049,11 @@ def test_shipped_materials_file_runs_every_record_through_its_models() -> None:
 
 
 def test_published_example_failure_pressures_reproduce_at_the_displayed_precision() -> None:
-    """Two worked examples of the software this calculator is compared against.
+    """Two worked examples from the UnderPressure 4.0 User Manual (DeepSea Power & Light).
 
     Both run on explicit properties rather than a database record, because the
     displayed values are only reproducible against the property set that tool
-    evaluated. validation/published/ records which tool it is and where the
-    values print.
+    evaluated.
     """
     # Example 1: 6061-T6 at 35 ksi yield, 3 in bore, 1.03 in wall, thick branch.
     example_1 = runner.invoke(

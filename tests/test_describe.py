@@ -202,7 +202,7 @@ def test_describe_reports_complete_discoverable_contracts() -> None:
     plate = json.loads(runner.invoke(app, ["describe", "plate", "--json"]).stdout)
     assert plate["available_operations"] == ["forward", "size"]
     assert any(
-        "plate_sweep_fea_summary.json" in source
+        "CAX8R sweep" in source
         for source in plate["source_references"]
     )
     plate_fields = plate["output_contract"]["result_json_schema"]["properties"]

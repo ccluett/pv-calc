@@ -56,9 +56,16 @@ Status fields distinguish usable capacities from estimates:
   value although the governing stress exceeds the supplied strength.
 
 The first two buckling statuses give `indeterminate` in `check`, or `fail` when
-the elastic upper bound is below demand including the required margin. Ring-shell
-checks remain indeterminate because the model omits the long-cylinder transition
-and local failure checks, and assumes circular supports for the inter-ring bay.
+the elastic upper bound is below demand including the required margin.
+
+`ring-shell` implements NASA SP-8007 Eqs. 64/65 and 82-91, verified against
+an independent calculation. It reports the lowest buckling pressure and its
+mode: global buckling including NASA's recommended 0.75 factor, or buckling of
+the shell between rings. This is a buckling estimate, not a collapse pressure.
+The global calculation is elastic; the inter-ring bay includes NASA's
+plasticity correction when a complete compressive curve is supplied. Shell
+yield between rings, ring yield and tripping, and ring spacing are not checked,
+so `check` stays indeterminate.
 
 Thickness sizing selects the smallest solution among model-eligible intervals
 within the requested bounds and reports excluded intervals below the selection.
@@ -67,9 +74,7 @@ are zero, capacities retain their applicability gates, and capacity/demand
 margins are null. Sizing requires positive pressure.
 
 Smooth-cylinder and hemispherical buckling require shell mid-surface radius /
-thickness `> 10`. Thicker shells need a separate collapse model. The
-[6000 m housing study](validation/external_pressure_coverage.md) reaches
-`R_mid/t = 9.3`, outside this domain even with the NASA plasticity correction.
+thickness `> 10`. Thicker shells need a separate collapse model.
 
 For a direct depth load, density, gravity, and the design factor are all
 required; there is no default factor. The resulting design differential
@@ -154,7 +159,7 @@ typed request objects and an optional `materials_file` override.
 | `hemisphere` | Hemispherical head stress, NASA SP-8032 buckling, displacement, and seat stress |
 | `smooth-buckling` | NASA SP-8007 smooth-cylinder external-pressure buckling |
 | `smooth-buckling size` | The wall thickness meeting a margin across shell stress and buckling |
-| `ring-shell` | NASA SP-8007 ring-stiffened shell general instability (advisory) |
+| `ring-shell` | NASA SP-8007 ring-stiffened shell elastic buckling pressure and mode (advisory) |
 | `mass-properties` | Submerged mass and buoyancy from resolved volumes, fluid density, and gravity |
 | `sweep` | One forward request over pressure, depth, or a supported geometric dimension |
 | `compare-materials` | One forward or sizing request against an ordered list of named materials |
@@ -272,21 +277,17 @@ empty; `message` always says what went wrong. The codes:
 
 - [docs/engineering.md](https://github.com/ccluett/pv-calc/blob/main/docs/engineering.md):
   models, sources, sizing and batch operation contracts, failure coverage,
-  and validation approach.
-- [validation/](https://github.com/ccluett/pv-calc/tree/main/validation):
-  independent reference implementations, published benchmarks (DTMB Report
-  1324, cylinder 4-A at ten bulkhead spacings), and FEA comparisons. The
-  reference implementations
-  derive the published equations independently of the production code. This
-  separation catches calculation regressions, although it cannot rule out a
-  shared interpretation error in the source material.
+  and testing.
+- [tests/reference/](https://github.com/ccluett/pv-calc/tree/main/tests/reference):
+  independent reference implementations of the source equations, which the
+  tests compare against production results.
 - [examples/](https://github.com/ccluett/pv-calc/tree/main/examples):
   committed example requests for every command; a golden-response test pins
   their output.
 
 Links are absolute because this file is also the PyPI page, and the packaged
-distribution ships the reference material database but not the docs,
-validation artifacts, or examples.
+distribution ships the reference material database but not the docs, tests,
+or examples.
 
 Released under the
 [MIT License](https://github.com/ccluett/pv-calc/blob/main/LICENSE). Changes

@@ -13,18 +13,11 @@ Shells*, 1959, pp. 481-485.
 
 This module preserves the former membrane calculation and thick-branch
 withholding. Current production uses exact Lamé displacement at every wall
-thickness; its sources and scope are recorded in
-``validation/sources/hemisphere_scalar_displacement.md``.
-
-It is a separate module from ``non_ring_reference.py`` for the reason recorded
-there: that file's SHA-256 is ``manifest.reference_sha256`` in the committed
-P5-03 FEA summaries.  It is separate from
-``tube_displacement_reference.py`` because that module transcribes the two
-cylinder sources and states so in its name and docstring.
+thickness.
 
 Run from the ``pv-calc`` directory with::
 
-    uv run python validation/hemisphere_displacement_reference.py
+    uv run python tests/reference/hemisphere_displacement_reference.py
 """
 
 from __future__ import annotations
@@ -202,7 +195,6 @@ def build_evidence() -> dict[str, Any]:
         "sources": {
             "thin_branch": NASA_TM_4579,
             "thick_branch": None,
-            "decision_record": "validation/sources/hemisphere_scalar_displacement.md",
         },
         "conventions": {
             "radial_displacement": "positive outward; external pressure gives a negative value",

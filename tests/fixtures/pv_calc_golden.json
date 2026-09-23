@@ -1410,7 +1410,7 @@
               "unit": "MPa",
               "value": 70000.0
             },
-            "envelope_source_reference": "validation/fea/results/plate_sweep_fea_summary.json: mesh-converged CAX8R sweep over D_free/t and Poisson ratio; corrected deflection is qualified by abs(prediction - FEA) / abs(FEA) <= 5%",
+            "envelope_source_reference": "Mesh-converged CalculiX CAX8R sweep over D_free/t and Poisson ratio; corrected deflection is qualified by abs(prediction - FEA) / abs(FEA) <= 5%. Results: https://github.com/ccluett/pv-calc/blob/v0.3.0/validation/fea/results/plate_sweep_fea_summary.json",
             "external_pressure_mpa": {
               "unit": "MPa",
               "value": 0.1
@@ -2754,7 +2754,7 @@
         "unit": "MPa",
         "value": 71016.0001196
       },
-      "envelope_source_reference": "validation/fea/results/plate_sweep_fea_summary.json: mesh-converged CAX8R sweep over D_free/t and Poisson ratio; corrected deflection is qualified by abs(prediction - FEA) / abs(FEA) <= 5%",
+      "envelope_source_reference": "Mesh-converged CalculiX CAX8R sweep over D_free/t and Poisson ratio; corrected deflection is qualified by abs(prediction - FEA) / abs(FEA) <= 5%. Results: https://github.com/ccluett/pv-calc/blob/v0.3.0/validation/fea/results/plate_sweep_fea_summary.json",
       "external_pressure_mpa": {
         "unit": "MPa",
         "value": 31.0264078193
@@ -2921,7 +2921,7 @@
         "unit": "MPa",
         "value": 72700.0
       },
-      "envelope_source_reference": "validation/fea/results/plate_sweep_fea_summary.json: mesh-converged CAX8R sweep over D_free/t and Poisson ratio; corrected deflection is qualified by abs(prediction - FEA) / abs(FEA) <= 5%",
+      "envelope_source_reference": "Mesh-converged CalculiX CAX8R sweep over D_free/t and Poisson ratio; corrected deflection is qualified by abs(prediction - FEA) / abs(FEA) <= 5%. Results: https://github.com/ccluett/pv-calc/blob/v0.3.0/validation/fea/results/plate_sweep_fea_summary.json",
       "external_pressure_mpa": {
         "unit": "MPa",
         "value": 2.06842718795
@@ -3086,7 +3086,7 @@
         "unit": "MPa",
         "value": 70000.0
       },
-      "envelope_source_reference": "validation/fea/results/plate_sweep_fea_summary.json: mesh-converged CAX8R sweep over D_free/t and Poisson ratio; corrected deflection is qualified by abs(prediction - FEA) / abs(FEA) <= 5%",
+      "envelope_source_reference": "Mesh-converged CalculiX CAX8R sweep over D_free/t and Poisson ratio; corrected deflection is qualified by abs(prediction - FEA) / abs(FEA) <= 5%. Results: https://github.com/ccluett/pv-calc/blob/v0.3.0/validation/fea/results/plate_sweep_fea_summary.json",
       "external_pressure_mpa": {
         "unit": "MPa",
         "value": 2.0
@@ -3310,7 +3310,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "4.1.0",
+      "model_version": "5.0.0",
       "package_version": "0.3.0"
     },
     "material": {
@@ -3351,18 +3351,20 @@
     "model": "ring-shell",
     "result": {
       "advisory_candidate_modes": [
-        "global_eq64_with_eq91_ring_torsion"
+        "global_eq64_with_eq91_ring_torsion",
+        "inter_ring_smooth_shell"
       ],
       "advisory_governing_mode": "global_eq64_with_eq91_ring_torsion",
       "advisory_governing_pressure_mpa": {
         "unit": "MPa",
         "value": 2.78229243356
       },
-      "advisory_governing_status": "advisory",
+      "advisory_governing_status": "advisory_plasticity_undetermined",
       "advisory_margin": -0.146855390554,
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
       "boundary_assumptions": [
         "Global ends are restrained against radial displacement and free to rotate; closed-end pressure supplies the axial compression in NASA Eq. 65.",
+        "Global ends are free to warp axially (the incremental axial resultant N_x vanishes at the supports); the prebuckling closed-end load is still applied.",
         "Closure stiffness, contact, and shell continuing beyond a support are not modeled.",
         "Inter-ring bays assume ideal circular supports at ring center lines."
       ],
@@ -3887,7 +3889,7 @@
       "load_case": "hydrostatic_closed_end",
       "mode_dispositions": [
         {
-          "basis": "Equation and rectangular-section mapping are verified and DTMB-compared, but the predicted lobe transition disagrees with the DTMB data and NASA gives no numeric Eq. 64/Eq. 66 finite-to-long transition; in-service pressure-hull use is not justified.",
+          "basis": "NASA Eq. 64/65 with Eqs. 82-91 ring stiffnesses and Eq. 91 ring torsion.",
           "disposition": "implemented_advisory",
           "mode": "global_ring_stiffened_shell_eq64_eq91",
           "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 64-65 and 82-91, pp. 37 and 40-42"
@@ -3899,10 +3901,10 @@
           "source_reference": "NASA TN D-3647, pp. 6-7; NASA/SP-8007-2020/REV 2 Eqs. 64-65"
         },
         {
-          "basis": "Only ideal simple supports are modeled; closure stiffness, contact, and shell continuing beyond a support are not represented.",
+          "basis": "The equation uses ideal simple supports with freely warping ends. Actual closure stiffness, contact, and shell continuing beyond a support are not inputs to this calculation; no additional restraint is credited.",
           "disposition": "external_blocker",
           "mode": "physical_end_restraint",
-          "source_reference": "DTMB Report 1324, Fig. 3 and Tables 1-2, pp. 5-10"
+          "source_reference": "DTMB Report 1324, Figs. 3 and 6 and Tables 1-2, pp. 5-10; NASA/SP-8007-2020/REV 2, pp. 28 and 36"
         },
         {
           "basis": "The source-gated smooth-shell method is evaluated over ring center-to-center spacing with ideal simply supported circular lines; its own capacity_status is withheld_applicability.",
@@ -3960,18 +3962,12 @@
         }
       ],
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "4.1.0",
+      "model_version": "5.0.0",
       "notes": [
-        "The 0.75 multiplier follows NASA's recommendation immediately after Eq. 68.",
-        "The shell radius is explicitly the shell mid-surface radius, consistent with the Eq. 82-91 reference surface.",
-        "I_r is centroidal; Eq. 90 adds the separate z_r^2 A_r parallel-axis term.",
-        "J_r is the exact Saint-Venant constant for the same solid rectangle used by geometry and mass.",
-        "The inter-ring ideal supports are ring center lines; no end-restraint capacity increase is credited.",
-        "advisory_candidate_modes lists the available pressures, including elastic upper bounds; advisory_governing_mode selects their minimum. Withheld modes are excluded.",
-        "advisory_governing_status describes the selected mode. global_elastic_applicability separately reports the global mode's material limit.",
-        "Global ring-shell buckling is advisory: the mode search covers m >= 1, n >= 2 only, and axisymmetric (n=0) buckling, actual end restraint, the long-cylinder transition, and local failure modes are not covered.",
-        "The smeared-ring model assumes uniformly spaced rings; widely spaced rings and local/global interaction need a discrete-shell or code-rule check.",
-        "Ring material stress, frame tripping/crippling, attachment and weld effects, fabrication imperfections, residual stress, and local/global interaction are not evaluated."
+        "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
+        "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
+        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Shell yield between rings, ring yield and tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
+        "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing screen is applied; widely spaced rings need a discrete-ring or code-rule check."
       ],
       "poisson_ratio": 0.3,
       "proportional_limit_mpa": {
@@ -4049,7 +4045,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "4.1.0",
+      "model_version": "5.0.0",
       "package_version": "0.3.0"
     },
     "material": {
@@ -4090,18 +4086,20 @@
     "model": "ring-shell",
     "result": {
       "advisory_candidate_modes": [
-        "global_eq64_with_eq91_ring_torsion"
+        "global_eq64_with_eq91_ring_torsion",
+        "inter_ring_smooth_shell"
       ],
       "advisory_governing_mode": "global_eq64_with_eq91_ring_torsion",
       "advisory_governing_pressure_mpa": {
         "unit": "MPa",
         "value": 2.32817660128
       },
-      "advisory_governing_status": "advisory",
+      "advisory_governing_status": "advisory_plasticity_undetermined",
       "advisory_margin": -0.199825906905,
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
       "boundary_assumptions": [
         "Global ends are restrained against radial displacement and free to rotate; closed-end pressure supplies the axial compression in NASA Eq. 65.",
+        "Global ends are free to warp axially (the incremental axial resultant N_x vanishes at the supports); the prebuckling closed-end load is still applied.",
         "Closure stiffness, contact, and shell continuing beyond a support are not modeled.",
         "Inter-ring bays assume ideal circular supports at ring center lines."
       ],
@@ -4626,7 +4624,7 @@
       "load_case": "hydrostatic_closed_end",
       "mode_dispositions": [
         {
-          "basis": "Equation and rectangular-section mapping are verified and DTMB-compared, but the predicted lobe transition disagrees with the DTMB data and NASA gives no numeric Eq. 64/Eq. 66 finite-to-long transition; in-service pressure-hull use is not justified.",
+          "basis": "NASA Eq. 64/65 with Eqs. 82-91 ring stiffnesses and Eq. 91 ring torsion.",
           "disposition": "implemented_advisory",
           "mode": "global_ring_stiffened_shell_eq64_eq91",
           "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 64-65 and 82-91, pp. 37 and 40-42"
@@ -4638,10 +4636,10 @@
           "source_reference": "NASA TN D-3647, pp. 6-7; NASA/SP-8007-2020/REV 2 Eqs. 64-65"
         },
         {
-          "basis": "Only ideal simple supports are modeled; closure stiffness, contact, and shell continuing beyond a support are not represented.",
+          "basis": "The equation uses ideal simple supports with freely warping ends. Actual closure stiffness, contact, and shell continuing beyond a support are not inputs to this calculation; no additional restraint is credited.",
           "disposition": "external_blocker",
           "mode": "physical_end_restraint",
-          "source_reference": "DTMB Report 1324, Fig. 3 and Tables 1-2, pp. 5-10"
+          "source_reference": "DTMB Report 1324, Figs. 3 and 6 and Tables 1-2, pp. 5-10; NASA/SP-8007-2020/REV 2, pp. 28 and 36"
         },
         {
           "basis": "The source-gated smooth-shell method is evaluated over ring center-to-center spacing with ideal simply supported circular lines; its own capacity_status is withheld_applicability.",
@@ -4699,18 +4697,12 @@
         }
       ],
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "4.1.0",
+      "model_version": "5.0.0",
       "notes": [
-        "The 0.75 multiplier follows NASA's recommendation immediately after Eq. 68.",
-        "The shell radius is explicitly the shell mid-surface radius, consistent with the Eq. 82-91 reference surface.",
-        "I_r is centroidal; Eq. 90 adds the separate z_r^2 A_r parallel-axis term.",
-        "J_r is the exact Saint-Venant constant for the same solid rectangle used by geometry and mass.",
-        "The inter-ring ideal supports are ring center lines; no end-restraint capacity increase is credited.",
-        "advisory_candidate_modes lists the available pressures, including elastic upper bounds; advisory_governing_mode selects their minimum. Withheld modes are excluded.",
-        "advisory_governing_status describes the selected mode. global_elastic_applicability separately reports the global mode's material limit.",
-        "Global ring-shell buckling is advisory: the mode search covers m >= 1, n >= 2 only, and axisymmetric (n=0) buckling, actual end restraint, the long-cylinder transition, and local failure modes are not covered.",
-        "The smeared-ring model assumes uniformly spaced rings; widely spaced rings and local/global interaction need a discrete-shell or code-rule check.",
-        "Ring material stress, frame tripping/crippling, attachment and weld effects, fabrication imperfections, residual stress, and local/global interaction are not evaluated."
+        "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
+        "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
+        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Shell yield between rings, ring yield and tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
+        "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing screen is applied; widely spaced rings need a discrete-ring or code-rule check."
       ],
       "poisson_ratio": 0.3,
       "proportional_limit_mpa": {
@@ -4788,7 +4780,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "4.1.0",
+      "model_version": "5.0.0",
       "package_version": "0.3.0"
     },
     "material": {
@@ -4829,18 +4821,20 @@
     "model": "ring-shell",
     "result": {
       "advisory_candidate_modes": [
-        "global_eq64_with_eq91_ring_torsion"
+        "global_eq64_with_eq91_ring_torsion",
+        "inter_ring_smooth_shell"
       ],
       "advisory_governing_mode": "global_eq64_with_eq91_ring_torsion",
       "advisory_governing_pressure_mpa": {
         "unit": "MPa",
         "value": 1.96118181438
       },
-      "advisory_governing_status": "advisory",
+      "advisory_governing_status": "advisory_plasticity_undetermined",
       "advisory_margin": -0.309598607681,
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
       "boundary_assumptions": [
         "Global ends are restrained against radial displacement and free to rotate; closed-end pressure supplies the axial compression in NASA Eq. 65.",
+        "Global ends are free to warp axially (the incremental axial resultant N_x vanishes at the supports); the prebuckling closed-end load is still applied.",
         "Closure stiffness, contact, and shell continuing beyond a support are not modeled.",
         "Inter-ring bays assume ideal circular supports at ring center lines."
       ],
@@ -5365,7 +5359,7 @@
       "load_case": "hydrostatic_closed_end",
       "mode_dispositions": [
         {
-          "basis": "Equation and rectangular-section mapping are verified and DTMB-compared, but the predicted lobe transition disagrees with the DTMB data and NASA gives no numeric Eq. 64/Eq. 66 finite-to-long transition; in-service pressure-hull use is not justified.",
+          "basis": "NASA Eq. 64/65 with Eqs. 82-91 ring stiffnesses and Eq. 91 ring torsion.",
           "disposition": "implemented_advisory",
           "mode": "global_ring_stiffened_shell_eq64_eq91",
           "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 64-65 and 82-91, pp. 37 and 40-42"
@@ -5377,10 +5371,10 @@
           "source_reference": "NASA TN D-3647, pp. 6-7; NASA/SP-8007-2020/REV 2 Eqs. 64-65"
         },
         {
-          "basis": "Only ideal simple supports are modeled; closure stiffness, contact, and shell continuing beyond a support are not represented.",
+          "basis": "The equation uses ideal simple supports with freely warping ends. Actual closure stiffness, contact, and shell continuing beyond a support are not inputs to this calculation; no additional restraint is credited.",
           "disposition": "external_blocker",
           "mode": "physical_end_restraint",
-          "source_reference": "DTMB Report 1324, Fig. 3 and Tables 1-2, pp. 5-10"
+          "source_reference": "DTMB Report 1324, Figs. 3 and 6 and Tables 1-2, pp. 5-10; NASA/SP-8007-2020/REV 2, pp. 28 and 36"
         },
         {
           "basis": "The source-gated smooth-shell method is evaluated over ring center-to-center spacing with ideal simply supported circular lines; its own capacity_status is withheld_applicability.",
@@ -5438,18 +5432,12 @@
         }
       ],
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "4.1.0",
+      "model_version": "5.0.0",
       "notes": [
-        "The 0.75 multiplier follows NASA's recommendation immediately after Eq. 68.",
-        "The shell radius is explicitly the shell mid-surface radius, consistent with the Eq. 82-91 reference surface.",
-        "I_r is centroidal; Eq. 90 adds the separate z_r^2 A_r parallel-axis term.",
-        "J_r is the exact Saint-Venant constant for the same solid rectangle used by geometry and mass.",
-        "The inter-ring ideal supports are ring center lines; no end-restraint capacity increase is credited.",
-        "advisory_candidate_modes lists the available pressures, including elastic upper bounds; advisory_governing_mode selects their minimum. Withheld modes are excluded.",
-        "advisory_governing_status describes the selected mode. global_elastic_applicability separately reports the global mode's material limit.",
-        "Global ring-shell buckling is advisory: the mode search covers m >= 1, n >= 2 only, and axisymmetric (n=0) buckling, actual end restraint, the long-cylinder transition, and local failure modes are not covered.",
-        "The smeared-ring model assumes uniformly spaced rings; widely spaced rings and local/global interaction need a discrete-shell or code-rule check.",
-        "Ring material stress, frame tripping/crippling, attachment and weld effects, fabrication imperfections, residual stress, and local/global interaction are not evaluated."
+        "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
+        "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
+        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Shell yield between rings, ring yield and tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
+        "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing screen is applied; widely spaced rings need a discrete-ring or code-rule check."
       ],
       "poisson_ratio": 0.3,
       "proportional_limit_mpa": {
@@ -5527,7 +5515,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "4.1.0",
+      "model_version": "5.0.0",
       "package_version": "0.3.0"
     },
     "material": {
@@ -5568,18 +5556,20 @@
     "model": "ring-shell",
     "result": {
       "advisory_candidate_modes": [
-        "global_eq64_with_eq91_ring_torsion"
+        "global_eq64_with_eq91_ring_torsion",
+        "inter_ring_smooth_shell"
       ],
       "advisory_governing_mode": "global_eq64_with_eq91_ring_torsion",
       "advisory_governing_pressure_mpa": {
         "unit": "MPa",
         "value": 1.72166439192
       },
-      "advisory_governing_status": "advisory",
+      "advisory_governing_status": "advisory_plasticity_undetermined",
       "advisory_margin": -0.377291001161,
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
       "boundary_assumptions": [
         "Global ends are restrained against radial displacement and free to rotate; closed-end pressure supplies the axial compression in NASA Eq. 65.",
+        "Global ends are free to warp axially (the incremental axial resultant N_x vanishes at the supports); the prebuckling closed-end load is still applied.",
         "Closure stiffness, contact, and shell continuing beyond a support are not modeled.",
         "Inter-ring bays assume ideal circular supports at ring center lines."
       ],
@@ -6104,7 +6094,7 @@
       "load_case": "hydrostatic_closed_end",
       "mode_dispositions": [
         {
-          "basis": "Equation and rectangular-section mapping are verified and DTMB-compared, but the predicted lobe transition disagrees with the DTMB data and NASA gives no numeric Eq. 64/Eq. 66 finite-to-long transition; in-service pressure-hull use is not justified.",
+          "basis": "NASA Eq. 64/65 with Eqs. 82-91 ring stiffnesses and Eq. 91 ring torsion.",
           "disposition": "implemented_advisory",
           "mode": "global_ring_stiffened_shell_eq64_eq91",
           "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 64-65 and 82-91, pp. 37 and 40-42"
@@ -6116,10 +6106,10 @@
           "source_reference": "NASA TN D-3647, pp. 6-7; NASA/SP-8007-2020/REV 2 Eqs. 64-65"
         },
         {
-          "basis": "Only ideal simple supports are modeled; closure stiffness, contact, and shell continuing beyond a support are not represented.",
+          "basis": "The equation uses ideal simple supports with freely warping ends. Actual closure stiffness, contact, and shell continuing beyond a support are not inputs to this calculation; no additional restraint is credited.",
           "disposition": "external_blocker",
           "mode": "physical_end_restraint",
-          "source_reference": "DTMB Report 1324, Fig. 3 and Tables 1-2, pp. 5-10"
+          "source_reference": "DTMB Report 1324, Figs. 3 and 6 and Tables 1-2, pp. 5-10; NASA/SP-8007-2020/REV 2, pp. 28 and 36"
         },
         {
           "basis": "The source-gated smooth-shell method is evaluated over ring center-to-center spacing with ideal simply supported circular lines; its own capacity_status is withheld_applicability.",
@@ -6177,18 +6167,12 @@
         }
       ],
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "4.1.0",
+      "model_version": "5.0.0",
       "notes": [
-        "The 0.75 multiplier follows NASA's recommendation immediately after Eq. 68.",
-        "The shell radius is explicitly the shell mid-surface radius, consistent with the Eq. 82-91 reference surface.",
-        "I_r is centroidal; Eq. 90 adds the separate z_r^2 A_r parallel-axis term.",
-        "J_r is the exact Saint-Venant constant for the same solid rectangle used by geometry and mass.",
-        "The inter-ring ideal supports are ring center lines; no end-restraint capacity increase is credited.",
-        "advisory_candidate_modes lists the available pressures, including elastic upper bounds; advisory_governing_mode selects their minimum. Withheld modes are excluded.",
-        "advisory_governing_status describes the selected mode. global_elastic_applicability separately reports the global mode's material limit.",
-        "Global ring-shell buckling is advisory: the mode search covers m >= 1, n >= 2 only, and axisymmetric (n=0) buckling, actual end restraint, the long-cylinder transition, and local failure modes are not covered.",
-        "The smeared-ring model assumes uniformly spaced rings; widely spaced rings and local/global interaction need a discrete-shell or code-rule check.",
-        "Ring material stress, frame tripping/crippling, attachment and weld effects, fabrication imperfections, residual stress, and local/global interaction are not evaluated."
+        "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
+        "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
+        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Shell yield between rings, ring yield and tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
+        "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing screen is applied; widely spaced rings need a discrete-ring or code-rule check."
       ],
       "poisson_ratio": 0.3,
       "proportional_limit_mpa": {
@@ -6266,7 +6250,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "4.1.0",
+      "model_version": "5.0.0",
       "package_version": "0.3.0"
     },
     "material": {
@@ -6307,18 +6291,20 @@
     "model": "ring-shell",
     "result": {
       "advisory_candidate_modes": [
-        "global_eq64_with_eq91_ring_torsion"
+        "global_eq64_with_eq91_ring_torsion",
+        "inter_ring_smooth_shell"
       ],
       "advisory_governing_mode": "global_eq64_with_eq91_ring_torsion",
       "advisory_governing_pressure_mpa": {
         "unit": "MPa",
         "value": 1.63384108308
       },
-      "advisory_governing_status": "advisory",
+      "advisory_governing_status": "advisory_plasticity_undetermined",
       "advisory_margin": -0.404601471105,
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
       "boundary_assumptions": [
         "Global ends are restrained against radial displacement and free to rotate; closed-end pressure supplies the axial compression in NASA Eq. 65.",
+        "Global ends are free to warp axially (the incremental axial resultant N_x vanishes at the supports); the prebuckling closed-end load is still applied.",
         "Closure stiffness, contact, and shell continuing beyond a support are not modeled.",
         "Inter-ring bays assume ideal circular supports at ring center lines."
       ],
@@ -6843,7 +6829,7 @@
       "load_case": "hydrostatic_closed_end",
       "mode_dispositions": [
         {
-          "basis": "Equation and rectangular-section mapping are verified and DTMB-compared, but the predicted lobe transition disagrees with the DTMB data and NASA gives no numeric Eq. 64/Eq. 66 finite-to-long transition; in-service pressure-hull use is not justified.",
+          "basis": "NASA Eq. 64/65 with Eqs. 82-91 ring stiffnesses and Eq. 91 ring torsion.",
           "disposition": "implemented_advisory",
           "mode": "global_ring_stiffened_shell_eq64_eq91",
           "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 64-65 and 82-91, pp. 37 and 40-42"
@@ -6855,10 +6841,10 @@
           "source_reference": "NASA TN D-3647, pp. 6-7; NASA/SP-8007-2020/REV 2 Eqs. 64-65"
         },
         {
-          "basis": "Only ideal simple supports are modeled; closure stiffness, contact, and shell continuing beyond a support are not represented.",
+          "basis": "The equation uses ideal simple supports with freely warping ends. Actual closure stiffness, contact, and shell continuing beyond a support are not inputs to this calculation; no additional restraint is credited.",
           "disposition": "external_blocker",
           "mode": "physical_end_restraint",
-          "source_reference": "DTMB Report 1324, Fig. 3 and Tables 1-2, pp. 5-10"
+          "source_reference": "DTMB Report 1324, Figs. 3 and 6 and Tables 1-2, pp. 5-10; NASA/SP-8007-2020/REV 2, pp. 28 and 36"
         },
         {
           "basis": "The source-gated smooth-shell method is evaluated over ring center-to-center spacing with ideal simply supported circular lines; its own capacity_status is withheld_applicability.",
@@ -6916,18 +6902,12 @@
         }
       ],
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "4.1.0",
+      "model_version": "5.0.0",
       "notes": [
-        "The 0.75 multiplier follows NASA's recommendation immediately after Eq. 68.",
-        "The shell radius is explicitly the shell mid-surface radius, consistent with the Eq. 82-91 reference surface.",
-        "I_r is centroidal; Eq. 90 adds the separate z_r^2 A_r parallel-axis term.",
-        "J_r is the exact Saint-Venant constant for the same solid rectangle used by geometry and mass.",
-        "The inter-ring ideal supports are ring center lines; no end-restraint capacity increase is credited.",
-        "advisory_candidate_modes lists the available pressures, including elastic upper bounds; advisory_governing_mode selects their minimum. Withheld modes are excluded.",
-        "advisory_governing_status describes the selected mode. global_elastic_applicability separately reports the global mode's material limit.",
-        "Global ring-shell buckling is advisory: the mode search covers m >= 1, n >= 2 only, and axisymmetric (n=0) buckling, actual end restraint, the long-cylinder transition, and local failure modes are not covered.",
-        "The smeared-ring model assumes uniformly spaced rings; widely spaced rings and local/global interaction need a discrete-shell or code-rule check.",
-        "Ring material stress, frame tripping/crippling, attachment and weld effects, fabrication imperfections, residual stress, and local/global interaction are not evaluated."
+        "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
+        "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
+        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Shell yield between rings, ring yield and tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
+        "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing screen is applied; widely spaced rings need a discrete-ring or code-rule check."
       ],
       "poisson_ratio": 0.3,
       "proportional_limit_mpa": {
@@ -7005,7 +6985,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "4.1.0",
+      "model_version": "5.0.0",
       "package_version": "0.3.0"
     },
     "material": {
@@ -7046,18 +7026,20 @@
     "model": "ring-shell",
     "result": {
       "advisory_candidate_modes": [
-        "global_eq64_with_eq91_ring_torsion"
+        "global_eq64_with_eq91_ring_torsion",
+        "inter_ring_smooth_shell"
       ],
       "advisory_governing_mode": "global_eq64_with_eq91_ring_torsion",
       "advisory_governing_pressure_mpa": {
         "unit": "MPa",
         "value": 1.56166436444
       },
-      "advisory_governing_status": "advisory",
+      "advisory_governing_status": "advisory_plasticity_undetermined",
       "advisory_margin": -0.425126227127,
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
       "boundary_assumptions": [
         "Global ends are restrained against radial displacement and free to rotate; closed-end pressure supplies the axial compression in NASA Eq. 65.",
+        "Global ends are free to warp axially (the incremental axial resultant N_x vanishes at the supports); the prebuckling closed-end load is still applied.",
         "Closure stiffness, contact, and shell continuing beyond a support are not modeled.",
         "Inter-ring bays assume ideal circular supports at ring center lines."
       ],
@@ -7582,7 +7564,7 @@
       "load_case": "hydrostatic_closed_end",
       "mode_dispositions": [
         {
-          "basis": "Equation and rectangular-section mapping are verified and DTMB-compared, but the predicted lobe transition disagrees with the DTMB data and NASA gives no numeric Eq. 64/Eq. 66 finite-to-long transition; in-service pressure-hull use is not justified.",
+          "basis": "NASA Eq. 64/65 with Eqs. 82-91 ring stiffnesses and Eq. 91 ring torsion.",
           "disposition": "implemented_advisory",
           "mode": "global_ring_stiffened_shell_eq64_eq91",
           "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 64-65 and 82-91, pp. 37 and 40-42"
@@ -7594,10 +7576,10 @@
           "source_reference": "NASA TN D-3647, pp. 6-7; NASA/SP-8007-2020/REV 2 Eqs. 64-65"
         },
         {
-          "basis": "Only ideal simple supports are modeled; closure stiffness, contact, and shell continuing beyond a support are not represented.",
+          "basis": "The equation uses ideal simple supports with freely warping ends. Actual closure stiffness, contact, and shell continuing beyond a support are not inputs to this calculation; no additional restraint is credited.",
           "disposition": "external_blocker",
           "mode": "physical_end_restraint",
-          "source_reference": "DTMB Report 1324, Fig. 3 and Tables 1-2, pp. 5-10"
+          "source_reference": "DTMB Report 1324, Figs. 3 and 6 and Tables 1-2, pp. 5-10; NASA/SP-8007-2020/REV 2, pp. 28 and 36"
         },
         {
           "basis": "The source-gated smooth-shell method is evaluated over ring center-to-center spacing with ideal simply supported circular lines; its own capacity_status is withheld_applicability.",
@@ -7655,18 +7637,12 @@
         }
       ],
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "4.1.0",
+      "model_version": "5.0.0",
       "notes": [
-        "The 0.75 multiplier follows NASA's recommendation immediately after Eq. 68.",
-        "The shell radius is explicitly the shell mid-surface radius, consistent with the Eq. 82-91 reference surface.",
-        "I_r is centroidal; Eq. 90 adds the separate z_r^2 A_r parallel-axis term.",
-        "J_r is the exact Saint-Venant constant for the same solid rectangle used by geometry and mass.",
-        "The inter-ring ideal supports are ring center lines; no end-restraint capacity increase is credited.",
-        "advisory_candidate_modes lists the available pressures, including elastic upper bounds; advisory_governing_mode selects their minimum. Withheld modes are excluded.",
-        "advisory_governing_status describes the selected mode. global_elastic_applicability separately reports the global mode's material limit.",
-        "Global ring-shell buckling is advisory: the mode search covers m >= 1, n >= 2 only, and axisymmetric (n=0) buckling, actual end restraint, the long-cylinder transition, and local failure modes are not covered.",
-        "The smeared-ring model assumes uniformly spaced rings; widely spaced rings and local/global interaction need a discrete-shell or code-rule check.",
-        "Ring material stress, frame tripping/crippling, attachment and weld effects, fabrication imperfections, residual stress, and local/global interaction are not evaluated."
+        "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
+        "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
+        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Shell yield between rings, ring yield and tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
+        "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing screen is applied; widely spaced rings need a discrete-ring or code-rule check."
       ],
       "poisson_ratio": 0.3,
       "proportional_limit_mpa": {
@@ -7744,7 +7720,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "4.1.0",
+      "model_version": "5.0.0",
       "package_version": "0.3.0"
     },
     "material": {
@@ -7785,18 +7761,20 @@
     "model": "ring-shell",
     "result": {
       "advisory_candidate_modes": [
-        "global_eq64_with_eq91_ring_torsion"
+        "global_eq64_with_eq91_ring_torsion",
+        "inter_ring_smooth_shell"
       ],
       "advisory_governing_mode": "global_eq64_with_eq91_ring_torsion",
       "advisory_governing_pressure_mpa": {
         "unit": "MPa",
         "value": 1.50206425312
       },
-      "advisory_governing_status": "advisory",
+      "advisory_governing_status": "advisory_plasticity_undetermined",
       "advisory_margin": -0.442823526348,
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
       "boundary_assumptions": [
         "Global ends are restrained against radial displacement and free to rotate; closed-end pressure supplies the axial compression in NASA Eq. 65.",
+        "Global ends are free to warp axially (the incremental axial resultant N_x vanishes at the supports); the prebuckling closed-end load is still applied.",
         "Closure stiffness, contact, and shell continuing beyond a support are not modeled.",
         "Inter-ring bays assume ideal circular supports at ring center lines."
       ],
@@ -8321,7 +8299,7 @@
       "load_case": "hydrostatic_closed_end",
       "mode_dispositions": [
         {
-          "basis": "Equation and rectangular-section mapping are verified and DTMB-compared, but the predicted lobe transition disagrees with the DTMB data and NASA gives no numeric Eq. 64/Eq. 66 finite-to-long transition; in-service pressure-hull use is not justified.",
+          "basis": "NASA Eq. 64/65 with Eqs. 82-91 ring stiffnesses and Eq. 91 ring torsion.",
           "disposition": "implemented_advisory",
           "mode": "global_ring_stiffened_shell_eq64_eq91",
           "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 64-65 and 82-91, pp. 37 and 40-42"
@@ -8333,10 +8311,10 @@
           "source_reference": "NASA TN D-3647, pp. 6-7; NASA/SP-8007-2020/REV 2 Eqs. 64-65"
         },
         {
-          "basis": "Only ideal simple supports are modeled; closure stiffness, contact, and shell continuing beyond a support are not represented.",
+          "basis": "The equation uses ideal simple supports with freely warping ends. Actual closure stiffness, contact, and shell continuing beyond a support are not inputs to this calculation; no additional restraint is credited.",
           "disposition": "external_blocker",
           "mode": "physical_end_restraint",
-          "source_reference": "DTMB Report 1324, Fig. 3 and Tables 1-2, pp. 5-10"
+          "source_reference": "DTMB Report 1324, Figs. 3 and 6 and Tables 1-2, pp. 5-10; NASA/SP-8007-2020/REV 2, pp. 28 and 36"
         },
         {
           "basis": "The source-gated smooth-shell method is evaluated over ring center-to-center spacing with ideal simply supported circular lines; its own capacity_status is withheld_applicability.",
@@ -8394,18 +8372,12 @@
         }
       ],
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "4.1.0",
+      "model_version": "5.0.0",
       "notes": [
-        "The 0.75 multiplier follows NASA's recommendation immediately after Eq. 68.",
-        "The shell radius is explicitly the shell mid-surface radius, consistent with the Eq. 82-91 reference surface.",
-        "I_r is centroidal; Eq. 90 adds the separate z_r^2 A_r parallel-axis term.",
-        "J_r is the exact Saint-Venant constant for the same solid rectangle used by geometry and mass.",
-        "The inter-ring ideal supports are ring center lines; no end-restraint capacity increase is credited.",
-        "advisory_candidate_modes lists the available pressures, including elastic upper bounds; advisory_governing_mode selects their minimum. Withheld modes are excluded.",
-        "advisory_governing_status describes the selected mode. global_elastic_applicability separately reports the global mode's material limit.",
-        "Global ring-shell buckling is advisory: the mode search covers m >= 1, n >= 2 only, and axisymmetric (n=0) buckling, actual end restraint, the long-cylinder transition, and local failure modes are not covered.",
-        "The smeared-ring model assumes uniformly spaced rings; widely spaced rings and local/global interaction need a discrete-shell or code-rule check.",
-        "Ring material stress, frame tripping/crippling, attachment and weld effects, fabrication imperfections, residual stress, and local/global interaction are not evaluated."
+        "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
+        "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
+        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Shell yield between rings, ring yield and tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
+        "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing screen is applied; widely spaced rings need a discrete-ring or code-rule check."
       ],
       "poisson_ratio": 0.3,
       "proportional_limit_mpa": {
@@ -8483,7 +8455,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "4.1.0",
+      "model_version": "5.0.0",
       "package_version": "0.3.0"
     },
     "material": {
@@ -8524,18 +8496,20 @@
     "model": "ring-shell",
     "result": {
       "advisory_candidate_modes": [
-        "global_eq64_with_eq91_ring_torsion"
+        "global_eq64_with_eq91_ring_torsion",
+        "inter_ring_smooth_shell"
       ],
       "advisory_governing_mode": "global_eq64_with_eq91_ring_torsion",
       "advisory_governing_pressure_mpa": {
         "unit": "MPa",
         "value": 1.45263351224
       },
-      "advisory_governing_status": "advisory",
+      "advisory_governing_status": "advisory_plasticity_undetermined",
       "advisory_margin": -0.449904234032,
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
       "boundary_assumptions": [
         "Global ends are restrained against radial displacement and free to rotate; closed-end pressure supplies the axial compression in NASA Eq. 65.",
+        "Global ends are free to warp axially (the incremental axial resultant N_x vanishes at the supports); the prebuckling closed-end load is still applied.",
         "Closure stiffness, contact, and shell continuing beyond a support are not modeled.",
         "Inter-ring bays assume ideal circular supports at ring center lines."
       ],
@@ -9060,7 +9034,7 @@
       "load_case": "hydrostatic_closed_end",
       "mode_dispositions": [
         {
-          "basis": "Equation and rectangular-section mapping are verified and DTMB-compared, but the predicted lobe transition disagrees with the DTMB data and NASA gives no numeric Eq. 64/Eq. 66 finite-to-long transition; in-service pressure-hull use is not justified.",
+          "basis": "NASA Eq. 64/65 with Eqs. 82-91 ring stiffnesses and Eq. 91 ring torsion.",
           "disposition": "implemented_advisory",
           "mode": "global_ring_stiffened_shell_eq64_eq91",
           "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 64-65 and 82-91, pp. 37 and 40-42"
@@ -9072,10 +9046,10 @@
           "source_reference": "NASA TN D-3647, pp. 6-7; NASA/SP-8007-2020/REV 2 Eqs. 64-65"
         },
         {
-          "basis": "Only ideal simple supports are modeled; closure stiffness, contact, and shell continuing beyond a support are not represented.",
+          "basis": "The equation uses ideal simple supports with freely warping ends. Actual closure stiffness, contact, and shell continuing beyond a support are not inputs to this calculation; no additional restraint is credited.",
           "disposition": "external_blocker",
           "mode": "physical_end_restraint",
-          "source_reference": "DTMB Report 1324, Fig. 3 and Tables 1-2, pp. 5-10"
+          "source_reference": "DTMB Report 1324, Figs. 3 and 6 and Tables 1-2, pp. 5-10; NASA/SP-8007-2020/REV 2, pp. 28 and 36"
         },
         {
           "basis": "The source-gated smooth-shell method is evaluated over ring center-to-center spacing with ideal simply supported circular lines; its own capacity_status is withheld_applicability.",
@@ -9133,18 +9107,12 @@
         }
       ],
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "4.1.0",
+      "model_version": "5.0.0",
       "notes": [
-        "The 0.75 multiplier follows NASA's recommendation immediately after Eq. 68.",
-        "The shell radius is explicitly the shell mid-surface radius, consistent with the Eq. 82-91 reference surface.",
-        "I_r is centroidal; Eq. 90 adds the separate z_r^2 A_r parallel-axis term.",
-        "J_r is the exact Saint-Venant constant for the same solid rectangle used by geometry and mass.",
-        "The inter-ring ideal supports are ring center lines; no end-restraint capacity increase is credited.",
-        "advisory_candidate_modes lists the available pressures, including elastic upper bounds; advisory_governing_mode selects their minimum. Withheld modes are excluded.",
-        "advisory_governing_status describes the selected mode. global_elastic_applicability separately reports the global mode's material limit.",
-        "Global ring-shell buckling is advisory: the mode search covers m >= 1, n >= 2 only, and axisymmetric (n=0) buckling, actual end restraint, the long-cylinder transition, and local failure modes are not covered.",
-        "The smeared-ring model assumes uniformly spaced rings; widely spaced rings and local/global interaction need a discrete-shell or code-rule check.",
-        "Ring material stress, frame tripping/crippling, attachment and weld effects, fabrication imperfections, residual stress, and local/global interaction are not evaluated."
+        "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
+        "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
+        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Shell yield between rings, ring yield and tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
+        "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing screen is applied; widely spaced rings need a discrete-ring or code-rule check."
       ],
       "poisson_ratio": 0.3,
       "proportional_limit_mpa": {
@@ -9222,7 +9190,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "4.1.0",
+      "model_version": "5.0.0",
       "package_version": "0.3.0"
     },
     "material": {
@@ -9263,18 +9231,20 @@
     "model": "ring-shell",
     "result": {
       "advisory_candidate_modes": [
-        "global_eq64_with_eq91_ring_torsion"
+        "global_eq64_with_eq91_ring_torsion",
+        "inter_ring_smooth_shell"
       ],
       "advisory_governing_mode": "global_eq64_with_eq91_ring_torsion",
       "advisory_governing_pressure_mpa": {
         "unit": "MPa",
         "value": 1.37706966804
       },
-      "advisory_governing_status": "advisory",
+      "advisory_governing_status": "advisory_plasticity_undetermined",
       "advisory_margin": -0.392926840884,
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
       "boundary_assumptions": [
         "Global ends are restrained against radial displacement and free to rotate; closed-end pressure supplies the axial compression in NASA Eq. 65.",
+        "Global ends are free to warp axially (the incremental axial resultant N_x vanishes at the supports); the prebuckling closed-end load is still applied.",
         "Closure stiffness, contact, and shell continuing beyond a support are not modeled.",
         "Inter-ring bays assume ideal circular supports at ring center lines."
       ],
@@ -9799,7 +9769,7 @@
       "load_case": "hydrostatic_closed_end",
       "mode_dispositions": [
         {
-          "basis": "Equation and rectangular-section mapping are verified and DTMB-compared, but the predicted lobe transition disagrees with the DTMB data and NASA gives no numeric Eq. 64/Eq. 66 finite-to-long transition; in-service pressure-hull use is not justified.",
+          "basis": "NASA Eq. 64/65 with Eqs. 82-91 ring stiffnesses and Eq. 91 ring torsion.",
           "disposition": "implemented_advisory",
           "mode": "global_ring_stiffened_shell_eq64_eq91",
           "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 64-65 and 82-91, pp. 37 and 40-42"
@@ -9811,10 +9781,10 @@
           "source_reference": "NASA TN D-3647, pp. 6-7; NASA/SP-8007-2020/REV 2 Eqs. 64-65"
         },
         {
-          "basis": "Only ideal simple supports are modeled; closure stiffness, contact, and shell continuing beyond a support are not represented.",
+          "basis": "The equation uses ideal simple supports with freely warping ends. Actual closure stiffness, contact, and shell continuing beyond a support are not inputs to this calculation; no additional restraint is credited.",
           "disposition": "external_blocker",
           "mode": "physical_end_restraint",
-          "source_reference": "DTMB Report 1324, Fig. 3 and Tables 1-2, pp. 5-10"
+          "source_reference": "DTMB Report 1324, Figs. 3 and 6 and Tables 1-2, pp. 5-10; NASA/SP-8007-2020/REV 2, pp. 28 and 36"
         },
         {
           "basis": "The source-gated smooth-shell method is evaluated over ring center-to-center spacing with ideal simply supported circular lines; its own capacity_status is withheld_applicability.",
@@ -9872,18 +9842,12 @@
         }
       ],
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "4.1.0",
+      "model_version": "5.0.0",
       "notes": [
-        "The 0.75 multiplier follows NASA's recommendation immediately after Eq. 68.",
-        "The shell radius is explicitly the shell mid-surface radius, consistent with the Eq. 82-91 reference surface.",
-        "I_r is centroidal; Eq. 90 adds the separate z_r^2 A_r parallel-axis term.",
-        "J_r is the exact Saint-Venant constant for the same solid rectangle used by geometry and mass.",
-        "The inter-ring ideal supports are ring center lines; no end-restraint capacity increase is credited.",
-        "advisory_candidate_modes lists the available pressures, including elastic upper bounds; advisory_governing_mode selects their minimum. Withheld modes are excluded.",
-        "advisory_governing_status describes the selected mode. global_elastic_applicability separately reports the global mode's material limit.",
-        "Global ring-shell buckling is advisory: the mode search covers m >= 1, n >= 2 only, and axisymmetric (n=0) buckling, actual end restraint, the long-cylinder transition, and local failure modes are not covered.",
-        "The smeared-ring model assumes uniformly spaced rings; widely spaced rings and local/global interaction need a discrete-shell or code-rule check.",
-        "Ring material stress, frame tripping/crippling, attachment and weld effects, fabrication imperfections, residual stress, and local/global interaction are not evaluated."
+        "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
+        "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
+        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Shell yield between rings, ring yield and tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
+        "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing screen is applied; widely spaced rings need a discrete-ring or code-rule check."
       ],
       "poisson_ratio": 0.3,
       "proportional_limit_mpa": {
@@ -9961,7 +9925,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "4.1.0",
+      "model_version": "5.0.0",
       "package_version": "0.3.0"
     },
     "material": {
@@ -10002,18 +9966,20 @@
     "model": "ring-shell",
     "result": {
       "advisory_candidate_modes": [
-        "global_eq64_with_eq91_ring_torsion"
+        "global_eq64_with_eq91_ring_torsion",
+        "inter_ring_smooth_shell"
       ],
       "advisory_governing_mode": "global_eq64_with_eq91_ring_torsion",
       "advisory_governing_pressure_mpa": {
         "unit": "MPa",
         "value": 1.32395394005
       },
-      "advisory_governing_status": "advisory",
+      "advisory_governing_status": "advisory_plasticity_undetermined",
       "advisory_margin": -0.316643116285,
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
       "boundary_assumptions": [
         "Global ends are restrained against radial displacement and free to rotate; closed-end pressure supplies the axial compression in NASA Eq. 65.",
+        "Global ends are free to warp axially (the incremental axial resultant N_x vanishes at the supports); the prebuckling closed-end load is still applied.",
         "Closure stiffness, contact, and shell continuing beyond a support are not modeled.",
         "Inter-ring bays assume ideal circular supports at ring center lines."
       ],
@@ -10538,7 +10504,7 @@
       "load_case": "hydrostatic_closed_end",
       "mode_dispositions": [
         {
-          "basis": "Equation and rectangular-section mapping are verified and DTMB-compared, but the predicted lobe transition disagrees with the DTMB data and NASA gives no numeric Eq. 64/Eq. 66 finite-to-long transition; in-service pressure-hull use is not justified.",
+          "basis": "NASA Eq. 64/65 with Eqs. 82-91 ring stiffnesses and Eq. 91 ring torsion.",
           "disposition": "implemented_advisory",
           "mode": "global_ring_stiffened_shell_eq64_eq91",
           "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 64-65 and 82-91, pp. 37 and 40-42"
@@ -10550,10 +10516,10 @@
           "source_reference": "NASA TN D-3647, pp. 6-7; NASA/SP-8007-2020/REV 2 Eqs. 64-65"
         },
         {
-          "basis": "Only ideal simple supports are modeled; closure stiffness, contact, and shell continuing beyond a support are not represented.",
+          "basis": "The equation uses ideal simple supports with freely warping ends. Actual closure stiffness, contact, and shell continuing beyond a support are not inputs to this calculation; no additional restraint is credited.",
           "disposition": "external_blocker",
           "mode": "physical_end_restraint",
-          "source_reference": "DTMB Report 1324, Fig. 3 and Tables 1-2, pp. 5-10"
+          "source_reference": "DTMB Report 1324, Figs. 3 and 6 and Tables 1-2, pp. 5-10; NASA/SP-8007-2020/REV 2, pp. 28 and 36"
         },
         {
           "basis": "The source-gated smooth-shell method is evaluated over ring center-to-center spacing with ideal simply supported circular lines; its own capacity_status is withheld_applicability.",
@@ -10611,18 +10577,12 @@
         }
       ],
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "4.1.0",
+      "model_version": "5.0.0",
       "notes": [
-        "The 0.75 multiplier follows NASA's recommendation immediately after Eq. 68.",
-        "The shell radius is explicitly the shell mid-surface radius, consistent with the Eq. 82-91 reference surface.",
-        "I_r is centroidal; Eq. 90 adds the separate z_r^2 A_r parallel-axis term.",
-        "J_r is the exact Saint-Venant constant for the same solid rectangle used by geometry and mass.",
-        "The inter-ring ideal supports are ring center lines; no end-restraint capacity increase is credited.",
-        "advisory_candidate_modes lists the available pressures, including elastic upper bounds; advisory_governing_mode selects their minimum. Withheld modes are excluded.",
-        "advisory_governing_status describes the selected mode. global_elastic_applicability separately reports the global mode's material limit.",
-        "Global ring-shell buckling is advisory: the mode search covers m >= 1, n >= 2 only, and axisymmetric (n=0) buckling, actual end restraint, the long-cylinder transition, and local failure modes are not covered.",
-        "The smeared-ring model assumes uniformly spaced rings; widely spaced rings and local/global interaction need a discrete-shell or code-rule check.",
-        "Ring material stress, frame tripping/crippling, attachment and weld effects, fabrication imperfections, residual stress, and local/global interaction are not evaluated."
+        "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
+        "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
+        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Shell yield between rings, ring yield and tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
+        "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing screen is applied; widely spaced rings need a discrete-ring or code-rule check."
       ],
       "poisson_ratio": 0.3,
       "proportional_limit_mpa": {

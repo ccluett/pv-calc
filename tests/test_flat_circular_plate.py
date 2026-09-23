@@ -413,8 +413,8 @@ def test_plate_boundary_condition_has_no_default_and_rejects_unknown_values() ->
 def test_brittle_plate_bends_against_tensile_and_seats_against_compressive_strength() -> None:
     """A brittle window: 5.00 in free diameter, 0.625 in thick, at 1,000 psi.
 
-    The comparison software's Appendix E gives 19,800 psi surface stress for
-    that plate at nu = 0.30; validation/published/ records which tool that is.
+    Appendix E of the UnderPressure 4.0 User Manual gives 19,800 psi surface
+    stress for that plate at nu = 0.30.
     The 5 ksi tensile and 210 ksi compressive ultimate strengths are an
     illustrative brittle pair, chosen only so the two criteria are told apart.
     """

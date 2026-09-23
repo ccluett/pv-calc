@@ -3,13 +3,11 @@
 This module intentionally imports no production calculation, adapter,
 fixture, expected output, or section helper.  It transcribes the cited source
 equations directly and keeps source inputs, published values, independent
-calculations, and comparisons in separate records.  The inventory mapping
-evidence cases to repository artifacts lives in ``coverage_inventory.py`` so
-that moving a test or example cannot change this file's pinned hash.
+calculations, and comparisons in separate records.
 
 Run from the ``pv-calc`` directory with::
 
-    uv run python validation/non_ring_reference.py
+    uv run python tests/reference/non_ring_reference.py
 """
 
 from __future__ import annotations
@@ -381,8 +379,8 @@ def flat_circular_plate_reference(
     tangential_failure = external_pressure * yield_strength / tangential_stress
     governing_stress = max(radial_stress, tangential_stress)
     diameter_thickness = 2.0 * free_radius / plate_thickness
-    # Independently transcribed from the swept CAX8R evidence in
-    # validation/fea/results/p5_03_plate_sweep_summary.json.
+    # Transcribed from the CAX8R plate sweep, pv-calc v0.3.0
+    # validation/fea/results/plate_sweep_fea_summary.json.
     bending_minimum_ratio = {"fixed": 10.0, "simply_supported": 4.0}[boundary_condition]
     deflection_minimum_ratio = {"fixed": 20.0, "simply_supported": 10.0}[
         boundary_condition

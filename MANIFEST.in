@@ -1,4 +1,4 @@
-# The tests need fixtures, examples, and validation evidence that the sdist
+# The tests need fixtures, examples, and reference implementations that the sdist
 # does not carry; shipping them alone would be an unusable half-suite. They
 # run from the repository checkout.
 prune tests

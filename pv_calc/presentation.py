@@ -107,6 +107,15 @@ def summarize_response(
     if material:
         summary["material"] = {key: value for key, value in material.get("source", material).items() if key in {"name", "type", "database"}}
     summary["assessment"] = assess_response(payload, checks, minimum_margin)
+    if payload.get("model") == "ring-shell" and _number(result.get("advisory_governing_pressure_mpa")) is not None:
+        summary["ring_buckling"] = deepcopy({key: result[key] for key in (
+            "advisory_governing_pressure_mpa", "advisory_governing_mode", "advisory_governing_status",
+        ) if key in result})
+        if result.get("advisory_governing_mode") == "global_eq64_with_eq91_ring_torsion":
+            global_mode = result.get("global_with_ring_torsion", {})
+            summary["ring_buckling"].update({key: global_mode[key] for key in (
+                "critical_axial_half_waves_m", "critical_circumferential_lobes_n",
+            ) if key in global_mode})
     if "sizing" in payload:
         summary["sizing"] = {key: value for key, value in payload["sizing"].items() if key in {
             "selected_wall_thickness", "selected_plate_thickness", "selected_shell_mid_surface_radius",
@@ -159,6 +168,17 @@ def summarize_response(
     return summary
 
 
+_RING_MODE_LABELS = {
+    "global_eq64_with_eq91_ring_torsion": "global, NASA SP-8007 Eq. 64 x 0.75",
+    "inter_ring_smooth_shell": "inter-ring bay",
+}
+_RING_STATUS_LABELS = {
+    "advisory_pending_plasticity": "elastic upper bound: stress exceeds the material limit",
+    "advisory_plasticity_undetermined": "proportional limit not supplied",
+    "advisory_unqualified_material": "reference-only material data",
+}
+
+
 def _format(value: Any) -> str:
     if isinstance(value, dict) and "unit" in value:
         number = _number(value)
@@ -201,6 +221,14 @@ def _render_summary(summary: dict[str, Any]) -> list[str]:
             ("depth", "depth"), ("design_factor", "factor"),
             ("service_external_pressure", "service pressure"), ("design_external_pressure", "design pressure"),
         ) if key in loading))
+    if "ring_buckling" in summary:
+        buckling = summary["ring_buckling"]
+        detail = [_RING_MODE_LABELS.get(buckling.get("advisory_governing_mode"), str(buckling.get("advisory_governing_mode")))]
+        if "critical_circumferential_lobes_n" in buckling:
+            detail.append(f"m={buckling.get('critical_axial_half_waves_m')}, n={buckling['critical_circumferential_lobes_n']}")
+        if buckling.get("advisory_governing_status") in _RING_STATUS_LABELS:
+            detail.append(_RING_STATUS_LABELS[buckling["advisory_governing_status"]])
+        lines.append(f"Lowest buckling pressure: {_format(buckling['advisory_governing_pressure_mpa'])} ({'; '.join(detail)})")
     check_reasons: set[str] = set()
     for check in assessment["checks"]:
         margin = "undefined" if check.get("margin") is None else _format(check["margin"])
