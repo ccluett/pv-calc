@@ -51,6 +51,11 @@ model; both predate this changelog.
     label and the reported critical stresses use the bay stress, so a bay
     whose own stress is within the limit is no longer called an elastic
     upper bound.
+  - The ring result's yield note, the model assumptions, and the engineering
+    record state that the pressure acts at the shell mid-surface radius, as in
+    the PD 5500 form. Exact equilibrium with the load on the outer surface
+    would raise the mean hoop stresses by `R_o/R = 1 + t/(2R)`. The numbers
+    are unchanged.
 - Smooth-buckling model 5.0.0 -> 5.1.0: results add
   `circumferential_stress_basis` and `circumferential_stress_per_unit_pressure`,
   naming the stress compared with material data. A smooth shell uses

@@ -676,7 +676,10 @@ def _describe_model(
         assumptions = [
             "Hydrostatic closed-end pressure; global ends remain circular, rotate freely, and warp freely"
             " (incremental N_x = 0 at the supports).",
-            "Shell radius is the shell mid-surface radius.",
+            "Shell radius is the shell mid-surface radius, and the pressure acts there in both"
+            " the buckling equations and the periodic-bay stresses, as in their sources."
+            " Exact equilibrium of pressure on the outer surface gives mean hoop stresses"
+            " R_o/R = 1 + t/(2R) larger.",
             "Shell and ring use one isotropic material record.",
             "The physical ring is one non-overlapping solid rectangle.",
             "The global result uses NASA Eqs. 64-65 and 82-91, including exact rectangular-ring torsion.",

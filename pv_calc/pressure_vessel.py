@@ -708,7 +708,9 @@ RING_SHELL_YIELD_NOTE = (
     "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at "
     "mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect "
     "periodic bay; ring first yield is where the ring's largest hoop stress, at its "
-    "smallest radius, does. They are not collapse pressures."
+    "smallest radius, does. They are not collapse pressures. As in the PD 5500 form, the "
+    "pressure acts at the shell mid-surface radius; on the outer surface, exact "
+    "equilibrium would raise the mean hoop stresses by R_o/R = 1 + t/(2R)."
 )
 RING_SHELL_ADJUSTED_VALUE_NOTE = (
     "The global buckling pressure includes the 0.75 factor recommended by NASA "
