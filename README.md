@@ -58,17 +58,17 @@ Status fields distinguish usable capacities from estimates:
 The first two buckling statuses give `indeterminate` in `check`, or `fail` when
 the elastic upper bound is below demand including the required margin.
 
-`ring-shell` implements NASA SP-8007 Eqs. 64/65 and 82-91, verified against
-an independent calculation. It reports the lowest buckling pressure and its
-mode: global buckling including NASA's recommended 0.75 factor, or buckling of
-the shell between rings. The global calculation is elastic; the inter-ring bay
+`ring-shell` implements NASA SP-8007 Eqs. 64/65 and 82-91, verified against an
+independent calculation. It reports the lowest buckling pressure and its mode:
+global buckling including NASA's recommended 0.75 factor, or buckling of the
+shell between rings. The global calculation is elastic; the inter-ring bay
 includes NASA's plasticity correction, read at the bay's mid-bay hoop stress,
-when a complete compressive curve is supplied. With a yield strength it also reports Pc5 and ring yield: the
-pressures at which the mean hoop stress in the shell at mid-bay, and in the
-rings, reaches yield in a perfect periodic bay, and ring first yield, where
-the ring's largest hoop stress, at its smallest radius, does. None of these
-is a collapse pressure. Interframe collapse, ring tripping, and ring spacing are not checked,
-so `check` stays indeterminate.
+when a complete compressive curve is supplied. With a yield strength it also
+reports Pc5 and ring yield: the pressures at which the mean hoop stress in the
+shell at mid-bay, and in the rings, reaches yield in a perfect periodic bay,
+and ring first yield, where the ring's largest hoop stress, at its smallest
+radius, does. None of these is a collapse pressure. Interframe collapse, ring
+tripping, and ring spacing are not checked, so `check` stays indeterminate.
 
 Thickness sizing selects the smallest solution among model-eligible intervals
 within the requested bounds and reports excluded intervals below the selection.

@@ -35,9 +35,9 @@ model; both predate this changelog.
     shell, because each ring section translates radially and its hoop strain
     is `w_ring / r`. It is below the centroid (mean) ring yield by the ratio
     of the two radii: 2.0% for the DTMB 1324 examples, 7-9% for deeper rings
-    on thicker shells. `axisymmetric_stress`
-    adds the location, radius, and stress per unit pressure; text and summary
-    output show it beside the mean ring yield, which is unchanged.
+    on thicker shells. `axisymmetric_stress` adds the location, radius, and
+    stress per unit pressure; text and summary output show it beside the mean
+    ring yield, which is unchanged.
   - The inter-ring bay's material comparisons read the periodic bay's
     mid-bay hoop membrane stress instead of the unstiffened `p*r/t`. NASA
     evaluates its Eqs. 30-32 plasticity factor at the circumferential stress
@@ -60,6 +60,13 @@ model; both predate this changelog.
   `circumferential_stress_basis` and `circumferential_stress_per_unit_pressure`,
   naming the stress compared with material data. A smooth shell uses
   `p*r/t` as before; its numbers are unchanged.
+- The tests pass the bundled `pv_calc/data/materials.yaml` by path instead of
+  the root compatibility symlink, so they run in a checkout without symlink
+  support, and the zip-import test no longer assumes `/` separators.
+- Model versions: tube 3.1.0, hemisphere 5.0.0, plate 5.0.0, smooth buckling
+  5.1.0, ring shell 6.0.0; cylinder composition 1.0.0. Sizing operation
+  versions: tube 3.1.0, smooth buckling 4.0.0, plate 3.0.0. Sweep 1.2.0 and
+  material comparison 1.1.0. Request schema remains 5.0.0.
 
 ## [0.4.0] - 2026-09-23
 
