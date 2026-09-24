@@ -227,7 +227,7 @@ _RESULT_FIELD_DESCRIPTIONS: dict[str, str] = {
     ),
     "advisory_governing_status": (
         "Whether the selected advisory_governing_pressure_mpa is shown to be elastic: "
-        "'advisory' when its nominal stress is within a supplied proportional limit or a "
+        "'advisory' when its stress is within a supplied proportional limit or a "
         "compressive curve corrects it; 'advisory_pending_plasticity' when the stress "
         "exceeds the proportional limit, or the yield strength without one, so the "
         "pressure is an elastic upper bound; 'advisory_unqualified_material' when the "
@@ -280,8 +280,9 @@ _RESULT_FIELD_DESCRIPTIONS: dict[str, str] = {
     "ring_first_yield_pressure_mpa": (
         "The pressure at which the ring's largest hoop stress, at its smallest radius, "
         "reaches the yield strength: the free edge of an internal ring or the base of an "
-        "external ring at the shell. It is at or below ring_yield_pressure_mpa by the ratio "
-        "of that radius to the centroid radius. Null without a yield strength or valid geometry."
+        "external ring at the shell. Hoop stress only, in a perfect shell. It is below "
+        "ring_yield_pressure_mpa by the ratio of that radius to the centroid radius, "
+        "1 - (h/2)/R_c. Null without a yield strength or valid geometry."
     ),
     "ring_maximum_hoop_stress_location": (
         "Where the ring's hoop stress is largest: the smallest radius of its section, "
@@ -316,16 +317,21 @@ _RESULT_FIELD_DESCRIPTIONS: dict[str, str] = {
         "not searched."
     ),
     "maximum_axial_half_waves_m": (
-        "Largest axial half-wave count searched: the most half-waves that each span "
-        "minimum_ring_spacings_per_axial_half_wave ring spacings, and at least 1. Shorter "
-        "half-waves fall between rings, where the smeared stiffness does not apply and the "
-        "inter-ring check does."
+        "Largest axial half-wave count searched: the most half-waves that are each longer "
+        "than one ring spacing, and at least 1. This is pv-calc's smeared-mode screen; NASA "
+        "gives no number. A sine longer than one spacing moves the rings with the smeared "
+        "strain energy; at one spacing the rings can sit at the nodes, and shorter waves fall "
+        "between rings, where the smeared stiffness does not apply and the inter-ring check "
+        "does."
     ),
-    "minimum_ring_spacings_per_axial_half_wave": (
-        "pv-calc's smeared-mode screen, 2: a global axial half-wave spans at least two ring "
-        "spacings, so every half-wave averages over an interior ring. NASA gives no number; "
-        "it says only that the smeared theory's adequacy should be investigated for "
-        "sufficiently large stiffener spacing."
+    "axial_half_wave_limit_binding": (
+        "True when the governing mode sits at maximum_axial_half_waves_m and the next shorter "
+        "wave, outside the domain, would be lower, so the reported pressure depends on the "
+        "screen; a note then says so. Null without a converged mode."
+    ),
+    "critical_half_wave_over_ring_spacing": (
+        "The governing mode's axial half-wave, L/m, in ring spacings. Near one, the smeared "
+        "ring stiffness is a coarse average of discrete rings. Null without a converged mode."
     ),
 }
 
@@ -678,8 +684,8 @@ def _describe_model(
             " (incremental N_x = 0 at the supports).",
             "Shell radius is the shell mid-surface radius, and the pressure acts there in both"
             " the buckling equations and the periodic-bay stresses, as in their sources."
-            " Exact equilibrium of pressure on the outer surface gives mean hoop stresses"
-            " R_o/R = 1 + t/(2R) larger.",
+            " Exact equilibrium of pressure on the outer surface gives an unstiffened mean hoop"
+            " stress R_o/R = 1 + t/(2R) larger, and the bay's slightly less.",
             "Shell and ring use one isotropic material record.",
             "The physical ring is one non-overlapping solid rectangle.",
             "The global result uses NASA Eqs. 64-65 and 82-91, including exact rectangular-ring torsion.",
@@ -695,21 +701,22 @@ def _describe_model(
         checks = [
             "solid rectangular A_r, centroidal I_r, eccentricity, and exact Saint-Venant J_r",
             "NASA Eq. 64/65 global pressure before and after the separate Eq. 91 torsion term",
-            "integer mode search over every axial half-wave count spanning at least two ring"
-            " spacings (always m = 1) and expanding n >= 2, with stability, frontier, bounds,"
-            " and termination evidence",
+            "integer mode search over every axial half-wave longer than one ring spacing"
+            " (always m = 1) and expanding n >= 2, with stability, frontier, bounds, whether"
+            " the half-wave limit binds, and termination evidence",
             "isolated-bay smooth-shell buckling with its own applicability checks",
             "optional NASA Eq. 30-32 inelastic correction of the inter-ring bay only",
             "nominal stress at the adjusted global pressure against the proportional limit or yield strength",
             "minimum over the available mode pressures, with the selected mode's material status",
-            "mid-bay shell and ring mean hoop stresses of the periodic bay, and the pressures at"
-            " which each reaches the yield strength",
+            "mid-bay shell and ring mean hoop stresses of the periodic bay, the ring's hoop"
+            " stress at its smallest radius, and the pressures at which each reaches the yield"
+            " strength",
             "structured method coverage and source references",
         ]
         omissions = [
             "interframe collapse: the interaction of shell yield, inter-ring buckling, and imperfections",
-            "a discrete-ring check of widely spaced rings; the smeared global search only"
-            " excludes axial half-waves shorter than two ring spacings",
+            "a discrete-ring check of widely spaced or deep eccentric rings; the smeared global"
+            " search only excludes axial half-waves of one ring spacing or less",
             "axisymmetric hydrostatic instability (n=0); the mode search starts at n=2",
             "discrete-ring global deformation and alternative classical shell formulations;"
             " this calculation implements NASA's smeared Eq. 64/65",

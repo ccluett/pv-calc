@@ -18,43 +18,58 @@ model; both predate this changelog.
     empty, the governing fields are null, and a note says why. The global and
     yield pressures are still reported, and text and summary output say the
     lowest pressure is not established.
-  - The smeared global search no longer accepts axial half-waves shorter than
-    two ring spacings; `m = 1` is always searched. A shorter wave falls
-    between rings, where the smeared ring stiffness does not apply and the
-    inter-ring check does. One committed test case had governed at
-    `(m, n) = (42, 2)`, an 11.9 mm half-wave against a 20 mm spacing; it now
-    governs at `(1, 2)`, with the ideal pressure 19.45 -> 37.62 MPa. Every
+  - The smeared global search admits only axial half-waves longer than one
+    ring spacing, and always `m = 1`. Sampled at the rings, a longer sine
+    moves them with the smeared strain energy; at one spacing the rings can
+    sit at the nodes, and shorter waves fall between rings, where the smeared
+    ring stiffness does not apply and the inter-ring check does. One
+    committed test case had governed at `(m, n) = (42, 2)`, an 11.9 mm
+    half-wave against a 20 mm spacing; the smeared branch now stops at
+    `(24, 2)`, ideal 19.45 -> 30.63 MPa, and the inter-ring bay still governs.
+    A half-wave between one and two spacings is kept: in a case governing at
+    1.54 spacings, an independent discrete-ring model agrees with the smeared
+    value to 0.1%, and a two-spacing screen would have reported it 10% high.
+    When the minimum sits on the limit and a shorter wave would be lower,
+    `axial_half_wave_limit_binding` is true and a note says so. Every
     admissible `m` is evaluated from the first pass, so only `n` expands.
-    `mode_domain` becomes `1<=m<=maximum_axial_half_waves_m,n>=2`, and
-    `maximum_axial_half_waves_m` and `minimum_ring_spacings_per_axial_half_wave`
-    are added. The DTMB examples keep their `m = 1` modes and pressures; their
+    `mode_domain` becomes `1<=m<=maximum_axial_half_waves_m,n>=2`, with
+    `maximum_axial_half_waves_m`, `axial_half_wave_limit_binding`, and
+    `critical_half_wave_over_ring_spacing` added. The smeared-ring note cites
+    NASA's own caveats: its orthotropic equations lose accuracy for `n <= 4`
+    (printed p. 35), and a discrete-ring theory gives somewhat lower pressures
+    (p. 38). The DTMB examples keep their `m = 1` modes and pressures; their
     search evidence (bounds, mode counts, frontier) changes.
   - Report `ring_first_yield_pressure_mpa`: the pressure at which the ring's
     largest hoop stress, at its smallest radius, reaches yield. That is the
     free edge of an internal ring and the base of an external ring at the
     shell, because each ring section translates radially and its hoop strain
-    is `w_ring / r`. It is below the centroid (mean) ring yield by the ratio
-    of the two radii: 2.0% for the DTMB 1324 examples, 7-9% for deeper rings
-    on thicker shells. `axisymmetric_stress` adds the location, radius, and
-    stress per unit pressure; text and summary output show it beside the mean
-    ring yield, which is unchanged.
+    is `w_ring / r`. It is below the centroid (mean) ring yield by the
+    ring's half-depth over its centroid radius, `(h/2)/R_c`: 2.0% for the
+    DTMB 1324 examples. It is hoop stress only, in a perfect shell.
+    `axisymmetric_stress` adds the location, radius, and stress per unit
+    pressure; text and summary output show it beside the mean ring yield,
+    which is unchanged.
   - The inter-ring bay's material comparisons read the periodic bay's
     mid-bay hoop membrane stress instead of the unstiffened `p*r/t`. NASA
-    evaluates its Eqs. 30-32 plasticity factor at the circumferential stress
-    of the buckling shell, and the rings carry part of the hoop load. With a
-    compressive curve the corrected bay pressure now solves
-    `p = p_elastic * eta(k * p)` with the bay's own `k`; in the invented
-    titanium cases tested it rises 3-27%, and it falls about 1.5% where a
-    long bay's mid-bay stress overshoots `p*r/t`. The committed ring display
-    test's corrected aluminium bay moves from 7.33657 to 7.76432 MPa.
-    Without a curve the pressure is unchanged, but the proportional-limit
-    label and the reported critical stresses use the bay stress, so a bay
-    whose own stress is within the limit is no longer called an elastic
-    upper bound.
+    defines its Eqs. 30-32 plasticity factor at the circumferential stress
+    `p*r/t` of an unstiffened shell; between rings, which carry part of the
+    hoop load, this extends that definition to the bay's own mid-bay stress.
+    With a compressive curve the corrected bay pressure now solves
+    `p = p_elastic * eta(k * p)` with the bay's own `k`. In invented titanium
+    bays it rises 3-27%, and up to about 2x for heavily ringed short bays;
+    where a long bay's mid-bay deflection overshoots the free shell's, the
+    stress is up to about 7% above `p*r/t` and the pressure falls slightly.
+    The committed ring display test's corrected aluminium bay moves from
+    7.33657 to 7.76432 MPa. Without a curve the pressure is unchanged, but
+    the proportional-limit label and the reported critical stresses use the
+    bay stress, so a bay whose own stress is within the limit is no longer
+    called an elastic upper bound. When a corrected bay pressure exceeds Pc5,
+    a note says interframe collapse can govern.
   - The ring result's yield note, the model assumptions, and the engineering
     record state that the pressure acts at the shell mid-surface radius, as in
-    the PD 5500 form. Exact equilibrium with the load on the outer surface
-    would raise the mean hoop stresses by `R_o/R = 1 + t/(2R)`. The numbers
+    the PD 5500 form and as DAPS4 takes the hoop load. Exact equilibrium with
+    the load on the outer surface would raise the unstiffened mean hoop
+    stress by `R_o/R = 1 + t/(2R)` and the bay's slightly less. The numbers
     are unchanged.
 - Smooth-buckling model 5.0.0 -> 5.1.0: results add
   `circumferential_stress_basis` and `circumferential_stress_per_unit_pressure`,

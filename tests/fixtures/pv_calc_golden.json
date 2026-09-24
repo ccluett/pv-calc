@@ -848,11 +848,11 @@
             "Longitudinal end restraint can increase theoretical capacity, and rotational restraint can affect short cylinders; those boundary-condition sensitivities are not credited.",
             "NASA Eq. 28 states sqrt(gamma)=0.75 for Eqs. 23-25; because the source adds the gamma^2 term to Eqs. 20/22 and introduces Eq. 23 as their gamma*Z > 100 reduction, this model applies the same factor inside Eqs. 20/22 at every gamma*Z. gamma=0.90 belongs to Eqs. 26-27; the moderate/long overlap created by the two factors has no selection rule and stays withheld from capacity.",
             "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
-            "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA Rev. 2 permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, states no factor for 5 < gamma*Z < 100, and says linear interpolation in Z between Eqs. 30 and 31 may give satisfactory results there. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
+            "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(k*p) by bisection, where k is circumferential_stress_per_unit_pressure, r/t for a smooth shell. NASA Rev. 2 permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, states no factor for 5 < gamma*Z < 100, and says linear interpolation in Z between Eqs. 30 and 31 may give satisfactory results there. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
             "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. The correction imposes no strength limit; material strength is a separate check.",
             "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
             "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
-            "elastic_applicability compares applied membrane stress p*r/t with the proportional limit, falling back to yield strength. It sets neither capacity nor margin."
+            "elastic_applicability compares the applied circumferential membrane stress, p*r/t for a smooth shell, with the proportional limit, falling back to yield strength. It sets neither capacity nor margin."
           ],
           "plasticity_factor": null,
           "poisson_ratio": 0.33,
@@ -2009,11 +2009,11 @@
             "Longitudinal end restraint can increase theoretical capacity, and rotational restraint can affect short cylinders; those boundary-condition sensitivities are not credited.",
             "NASA Eq. 28 states sqrt(gamma)=0.75 for Eqs. 23-25; because the source adds the gamma^2 term to Eqs. 20/22 and introduces Eq. 23 as their gamma*Z > 100 reduction, this model applies the same factor inside Eqs. 20/22 at every gamma*Z. gamma=0.90 belongs to Eqs. 26-27; the moderate/long overlap created by the two factors has no selection rule and stays withheld from capacity.",
             "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
-            "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA Rev. 2 permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, states no factor for 5 < gamma*Z < 100, and says linear interpolation in Z between Eqs. 30 and 31 may give satisfactory results there. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
+            "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(k*p) by bisection, where k is circumferential_stress_per_unit_pressure, r/t for a smooth shell. NASA Rev. 2 permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, states no factor for 5 < gamma*Z < 100, and says linear interpolation in Z between Eqs. 30 and 31 may give satisfactory results there. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
             "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. The correction imposes no strength limit; material strength is a separate check.",
             "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
             "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
-            "elastic_applicability compares applied membrane stress p*r/t with the proportional limit, falling back to yield strength. It sets neither capacity nor margin."
+            "elastic_applicability compares the applied circumferential membrane stress, p*r/t for a smooth shell, with the proportional limit, falling back to yield strength. It sets neither capacity nor margin."
           ],
           "plasticity_factor": null,
           "poisson_ratio": 0.33,
@@ -3422,27 +3422,29 @@
           "value": 2.78229243356
         },
         "adjustment_factor": 0.75,
+        "axial_half_wave_limit_binding": false,
         "converged": true,
         "critical_axial_half_waves_m": 1,
         "critical_circumferential_lobes_n": 3,
-        "evaluated_axial_half_waves": 8,
+        "critical_half_wave_over_ring_spacing": 17.0,
+        "evaluated_axial_half_waves": 16,
         "evaluated_circumferential_lobes": 88,
-        "evaluated_mode_count": 696,
+        "evaluated_mode_count": 1392,
         "ideal_critical_pressure_mpa": {
           "unit": "MPa",
           "value": 3.70972324475
         },
         "iterations": [
           {
-            "axial_half_wave_bound": 8,
+            "axial_half_wave_bound": 16,
             "circumferential_lobe_bound": 22,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 3,
-            "cumulative_evaluated_modes": 168,
+            "cumulative_evaluated_modes": 336,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 111.642392877
+              "value": 102.447286478
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": false,
@@ -3450,39 +3452,19 @@
               "unit": "MPa",
               "value": 3.70972324475
             },
-            "newly_evaluated_modes": 168,
+            "newly_evaluated_modes": 336,
             "relative_pressure_change": null
           },
           {
-            "axial_half_wave_bound": 8,
+            "axial_half_wave_bound": 16,
             "circumferential_lobe_bound": 44,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 3,
-            "cumulative_evaluated_modes": 344,
+            "cumulative_evaluated_modes": 688,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 462.818284196
-            },
-            "governing_mode_below_frontier": true,
-            "governing_mode_stable": true,
-            "ideal_critical_pressure_mpa": {
-              "unit": "MPa",
-              "value": 3.70972324475
-            },
-            "newly_evaluated_modes": 176,
-            "relative_pressure_change": 0.0
-          },
-          {
-            "axial_half_wave_bound": 8,
-            "circumferential_lobe_bound": 88,
-            "critical_axial_half_waves_m": 1,
-            "critical_circumferential_lobes_n": 3,
-            "cumulative_evaluated_modes": 696,
-            "frontier_above_governing": true,
-            "frontier_minimum_pressure_mpa": {
-              "unit": "MPa",
-              "value": 1814.18186953
+              "value": 447.507917297
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -3492,10 +3474,29 @@
             },
             "newly_evaluated_modes": 352,
             "relative_pressure_change": 0.0
+          },
+          {
+            "axial_half_wave_bound": 16,
+            "circumferential_lobe_bound": 88,
+            "critical_axial_half_waves_m": 1,
+            "critical_circumferential_lobes_n": 3,
+            "cumulative_evaluated_modes": 1392,
+            "frontier_above_governing": true,
+            "frontier_minimum_pressure_mpa": {
+              "unit": "MPa",
+              "value": 1796.99716947
+            },
+            "governing_mode_below_frontier": true,
+            "governing_mode_stable": true,
+            "ideal_critical_pressure_mpa": {
+              "unit": "MPa",
+              "value": 3.70972324475
+            },
+            "newly_evaluated_modes": 704,
+            "relative_pressure_change": 0.0
           }
         ],
-        "maximum_axial_half_waves_m": 8,
-        "minimum_ring_spacings_per_axial_half_wave": 2.0,
+        "maximum_axial_half_waves_m": 16,
         "mode_domain": "1<=m<=maximum_axial_half_waves_m,n>=2",
         "orthotropic_bending_x_n_mm": {
           "unit": "N*mm",
@@ -3546,27 +3547,29 @@
           "value": 2.77450405818
         },
         "adjustment_factor": 0.75,
+        "axial_half_wave_limit_binding": false,
         "converged": true,
         "critical_axial_half_waves_m": 1,
         "critical_circumferential_lobes_n": 3,
-        "evaluated_axial_half_waves": 8,
+        "critical_half_wave_over_ring_spacing": 17.0,
+        "evaluated_axial_half_waves": 16,
         "evaluated_circumferential_lobes": 88,
-        "evaluated_mode_count": 696,
+        "evaluated_mode_count": 1392,
         "ideal_critical_pressure_mpa": {
           "unit": "MPa",
           "value": 3.69933874424
         },
         "iterations": [
           {
-            "axial_half_wave_bound": 8,
+            "axial_half_wave_bound": 16,
             "circumferential_lobe_bound": 22,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 3,
-            "cumulative_evaluated_modes": 168,
+            "cumulative_evaluated_modes": 336,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 110.992756056
+              "value": 100.159086001
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": false,
@@ -3574,39 +3577,19 @@
               "unit": "MPa",
               "value": 3.69933874424
             },
-            "newly_evaluated_modes": 168,
+            "newly_evaluated_modes": 336,
             "relative_pressure_change": null
           },
           {
-            "axial_half_wave_bound": 8,
+            "axial_half_wave_bound": 16,
             "circumferential_lobe_bound": 44,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 3,
-            "cumulative_evaluated_modes": 344,
+            "cumulative_evaluated_modes": 688,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 462.145846839
-            },
-            "governing_mode_below_frontier": true,
-            "governing_mode_stable": true,
-            "ideal_critical_pressure_mpa": {
-              "unit": "MPa",
-              "value": 3.69933874424
-            },
-            "newly_evaluated_modes": 176,
-            "relative_pressure_change": 0.0
-          },
-          {
-            "axial_half_wave_bound": 8,
-            "circumferential_lobe_bound": 88,
-            "critical_axial_half_waves_m": 1,
-            "critical_circumferential_lobes_n": 3,
-            "cumulative_evaluated_modes": 696,
-            "frontier_above_governing": true,
-            "frontier_minimum_pressure_mpa": {
-              "unit": "MPa",
-              "value": 1813.50353995
+              "value": 444.909370012
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -3616,10 +3599,29 @@
             },
             "newly_evaluated_modes": 352,
             "relative_pressure_change": 0.0
+          },
+          {
+            "axial_half_wave_bound": 16,
+            "circumferential_lobe_bound": 88,
+            "critical_axial_half_waves_m": 1,
+            "critical_circumferential_lobes_n": 3,
+            "cumulative_evaluated_modes": 1392,
+            "frontier_above_governing": true,
+            "frontier_minimum_pressure_mpa": {
+              "unit": "MPa",
+              "value": 1794.30836605
+            },
+            "governing_mode_below_frontier": true,
+            "governing_mode_stable": true,
+            "ideal_critical_pressure_mpa": {
+              "unit": "MPa",
+              "value": 3.69933874424
+            },
+            "newly_evaluated_modes": 704,
+            "relative_pressure_change": 0.0
           }
         ],
-        "maximum_axial_half_waves_m": 8,
-        "minimum_ring_spacings_per_axial_half_wave": 2.0,
+        "maximum_axial_half_waves_m": 16,
         "mode_domain": "1<=m<=maximum_axial_half_waves_m,n>=2",
         "orthotropic_bending_x_n_mm": {
           "unit": "N*mm",
@@ -3855,12 +3857,12 @@
           "Longitudinal end restraint can increase theoretical capacity, and rotational restraint can affect short cylinders; those boundary-condition sensitivities are not credited.",
           "NASA Eq. 28 states sqrt(gamma)=0.75 for Eqs. 23-25; because the source adds the gamma^2 term to Eqs. 20/22 and introduces Eq. 23 as their gamma*Z > 100 reduction, this model applies the same factor inside Eqs. 20/22 at every gamma*Z. gamma=0.90 belongs to Eqs. 26-27; the moderate/long overlap created by the two factors has no selection rule and stays withheld from capacity.",
           "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
-          "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA Rev. 2 permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, states no factor for 5 < gamma*Z < 100, and says linear interpolation in Z between Eqs. 30 and 31 may give satisfactory results there. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
+          "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(k*p) by bisection, where k is circumferential_stress_per_unit_pressure, r/t for a smooth shell. NASA Rev. 2 permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, states no factor for 5 < gamma*Z < 100, and says linear interpolation in Z between Eqs. 30 and 31 may give satisfactory results there. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
           "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. The correction imposes no strength limit; material strength is a separate check.",
           "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
           "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
-          "elastic_applicability compares applied membrane stress p*r/t with the proportional limit, falling back to yield strength. It sets neither capacity nor margin.",
-          "Circumferential membrane stresses, including the plasticity correction and the proportional-limit and elastic-applicability screens, use the ring-stiffened bay's mid-bay hoop membrane stress, 107.506 times the pressure, in place of p*r/t = 116.471 times the pressure: NASA evaluates its plasticity factors at the circumferential stress of the buckling shell, and the rings carry part of the hoop load."
+          "elastic_applicability compares the applied circumferential membrane stress, p*r/t for a smooth shell, with the proportional limit, falling back to yield strength. It sets neither capacity nor margin.",
+          "Circumferential membrane stresses, including the plasticity correction and the proportional-limit and elastic-applicability screens, use the ring-stiffened bay's mid-bay hoop membrane stress, 107.506 times the pressure, in place of p*r/t = 116.471 times the pressure. NASA defines its factors at the circumferential stress p*r/t of an unstiffened shell (Eq. 17); between rings, which carry part of the hoop load, this extends that definition to the bay's own mid-bay hoop stress."
         ],
         "plasticity_factor": null,
         "poisson_ratio": 0.3,
@@ -3941,7 +3943,7 @@
           "source_reference": "DTMB Report 1324, Figs. 3 and 6 and Tables 1-2, pp. 5-10; NASA/SP-8007-2020/REV 2, pp. 28 and 36"
         },
         {
-          "basis": "The source-gated smooth-shell method is evaluated over ring center-to-center spacing with ideal simply supported circular lines, and its material stress is the periodic bay's mid-bay hoop membrane stress; its own capacity_status is withheld_applicability.",
+          "basis": "The source-gated smooth-shell method is evaluated over ring center-to-center spacing with ideal simply supported circular lines, and on a valid record its material stress is the periodic bay's mid-bay hoop membrane stress; its own capacity_status is withheld_applicability.",
           "disposition": "implemented_advisory",
           "mode": "inter_ring_shell_buckling",
           "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 3-5, 17-29 and 30-32, pp. 22 and 26-29"
@@ -3999,10 +4001,10 @@
       "model_version": "6.0.0",
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
-        "Each buckling pressure is labelled by comparing its shell circumferential membrane stress with the proportional limit: the periodic bay's mid-bay hoop stress for the inter-ring bay, nominal p*r/t for the global mode. With only a yield strength, a pressure is an elastic upper bound when that stress exceeds yield and undetermined otherwise.",
-        "Global buckling is elastic: lobar modes (n >= 2, axial half-waves of at least two ring spacings, and always m = 1) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
-        "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves of at least two ring spacings, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. Widely spaced rings still need a discrete-ring or code-rule check.",
-        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does. They are not collapse pressures. As in the PD 5500 form, the pressure acts at the shell mid-surface radius; on the outer surface, exact equilibrium would raise the mean hoop stresses by R_o/R = 1 + t/(2R)."
+        "Each buckling pressure is labelled by comparing its shell circumferential membrane stress with the proportional limit: on a valid record, the periodic bay's mid-bay hoop stress for the inter-ring bay, and nominal p*r/t for the global mode. With only a yield strength, a pressure is an elastic upper bound when that stress exceeds yield and undetermined otherwise.",
+        "Global buckling is elastic: lobar modes (n >= 2, axial half-waves longer than one ring spacing, and always m = 1) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
+        "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves longer than one ring spacing, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. NASA notes that its orthotropic equations lose accuracy against Love or Sanders theory for n <= 4 (printed p. 35) and that a more accurate discrete-ring theory gives somewhat lower pressures (p. 38), so widely spaced or deep eccentric rings still need a discrete-ring or code-rule check.",
+        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does (hoop stress only, perfect shell). They are not collapse pressures. As in the PD 5500 form, and as DAPS4 takes the hoop load, the pressure acts at the shell mid-surface radius; on the outer surface, exact equilibrium would raise the unstiffened mean hoop stress by R_o/R = 1 + t/(2R) and the bay's slightly less."
       ],
       "poisson_ratio": 0.3,
       "proportional_limit_mpa": {
@@ -4200,27 +4202,29 @@
           "value": 2.32817660128
         },
         "adjustment_factor": 0.75,
+        "axial_half_wave_limit_binding": false,
         "converged": true,
         "critical_axial_half_waves_m": 1,
         "critical_circumferential_lobes_n": 2,
-        "evaluated_axial_half_waves": 10,
+        "critical_half_wave_over_ring_spacing": 21.0,
+        "evaluated_axial_half_waves": 20,
         "evaluated_circumferential_lobes": 88,
-        "evaluated_mode_count": 870,
+        "evaluated_mode_count": 1740,
         "ideal_critical_pressure_mpa": {
           "unit": "MPa",
           "value": 3.10423546837
         },
         "iterations": [
           {
-            "axial_half_wave_bound": 10,
+            "axial_half_wave_bound": 20,
             "circumferential_lobe_bound": 22,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 210,
+            "cumulative_evaluated_modes": 420,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 111.532475363
+              "value": 102.252563865
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": false,
@@ -4228,39 +4232,19 @@
               "unit": "MPa",
               "value": 3.10423546837
             },
-            "newly_evaluated_modes": 210,
+            "newly_evaluated_modes": 420,
             "relative_pressure_change": null
           },
           {
-            "axial_half_wave_bound": 10,
+            "axial_half_wave_bound": 20,
             "circumferential_lobe_bound": 44,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 430,
+            "cumulative_evaluated_modes": 860,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 462.682488278
-            },
-            "governing_mode_below_frontier": true,
-            "governing_mode_stable": true,
-            "ideal_critical_pressure_mpa": {
-              "unit": "MPa",
-              "value": 3.10423546837
-            },
-            "newly_evaluated_modes": 220,
-            "relative_pressure_change": 0.0
-          },
-          {
-            "axial_half_wave_bound": 10,
-            "circumferential_lobe_bound": 88,
-            "critical_axial_half_waves_m": 1,
-            "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 870,
-            "frontier_above_governing": true,
-            "frontier_minimum_pressure_mpa": {
-              "unit": "MPa",
-              "value": 1814.0408075
+              "value": 447.069002182
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -4270,10 +4254,29 @@
             },
             "newly_evaluated_modes": 440,
             "relative_pressure_change": 0.0
+          },
+          {
+            "axial_half_wave_bound": 20,
+            "circumferential_lobe_bound": 88,
+            "critical_axial_half_waves_m": 1,
+            "critical_circumferential_lobes_n": 2,
+            "cumulative_evaluated_modes": 1740,
+            "frontier_above_governing": true,
+            "frontier_minimum_pressure_mpa": {
+              "unit": "MPa",
+              "value": 1796.46393714
+            },
+            "governing_mode_below_frontier": true,
+            "governing_mode_stable": true,
+            "ideal_critical_pressure_mpa": {
+              "unit": "MPa",
+              "value": 3.10423546837
+            },
+            "newly_evaluated_modes": 880,
+            "relative_pressure_change": 0.0
           }
         ],
-        "maximum_axial_half_waves_m": 10,
-        "minimum_ring_spacings_per_axial_half_wave": 2.0,
+        "maximum_axial_half_waves_m": 20,
         "mode_domain": "1<=m<=maximum_axial_half_waves_m,n>=2",
         "orthotropic_bending_x_n_mm": {
           "unit": "N*mm",
@@ -4324,27 +4327,29 @@
           "value": 2.32312824238
         },
         "adjustment_factor": 0.75,
+        "axial_half_wave_limit_binding": false,
         "converged": true,
         "critical_axial_half_waves_m": 1,
         "critical_circumferential_lobes_n": 2,
-        "evaluated_axial_half_waves": 10,
+        "critical_half_wave_over_ring_spacing": 21.0,
+        "evaluated_axial_half_waves": 20,
         "evaluated_circumferential_lobes": 88,
-        "evaluated_mode_count": 870,
+        "evaluated_mode_count": 1740,
         "ideal_critical_pressure_mpa": {
           "unit": "MPa",
           "value": 3.09750432318
         },
         "iterations": [
           {
-            "axial_half_wave_bound": 10,
+            "axial_half_wave_bound": 20,
             "circumferential_lobe_bound": 22,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 210,
+            "cumulative_evaluated_modes": 420,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 110.867998445
+              "value": 99.9184604612
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": false,
@@ -4352,39 +4357,19 @@
               "unit": "MPa",
               "value": 3.09750432318
             },
-            "newly_evaluated_modes": 210,
+            "newly_evaluated_modes": 420,
             "relative_pressure_change": null
           },
           {
-            "axial_half_wave_bound": 10,
+            "axial_half_wave_bound": 20,
             "circumferential_lobe_bound": 44,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 430,
+            "cumulative_evaluated_modes": 860,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 461.99413809
-            },
-            "governing_mode_below_frontier": true,
-            "governing_mode_stable": true,
-            "ideal_critical_pressure_mpa": {
-              "unit": "MPa",
-              "value": 3.09750432318
-            },
-            "newly_evaluated_modes": 220,
-            "relative_pressure_change": 0.0
-          },
-          {
-            "axial_half_wave_bound": 10,
-            "circumferential_lobe_bound": 88,
-            "critical_axial_half_waves_m": 1,
-            "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 870,
-            "frontier_above_governing": true,
-            "frontier_minimum_pressure_mpa": {
-              "unit": "MPa",
-              "value": 1813.34628163
+              "value": 444.41109451
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -4394,10 +4379,29 @@
             },
             "newly_evaluated_modes": 440,
             "relative_pressure_change": 0.0
+          },
+          {
+            "axial_half_wave_bound": 20,
+            "circumferential_lobe_bound": 88,
+            "critical_axial_half_waves_m": 1,
+            "critical_circumferential_lobes_n": 2,
+            "cumulative_evaluated_modes": 1740,
+            "frontier_above_governing": true,
+            "frontier_minimum_pressure_mpa": {
+              "unit": "MPa",
+              "value": 1793.71152769
+            },
+            "governing_mode_below_frontier": true,
+            "governing_mode_stable": true,
+            "ideal_critical_pressure_mpa": {
+              "unit": "MPa",
+              "value": 3.09750432318
+            },
+            "newly_evaluated_modes": 880,
+            "relative_pressure_change": 0.0
           }
         ],
-        "maximum_axial_half_waves_m": 10,
-        "minimum_ring_spacings_per_axial_half_wave": 2.0,
+        "maximum_axial_half_waves_m": 20,
         "mode_domain": "1<=m<=maximum_axial_half_waves_m,n>=2",
         "orthotropic_bending_x_n_mm": {
           "unit": "N*mm",
@@ -4633,12 +4637,12 @@
           "Longitudinal end restraint can increase theoretical capacity, and rotational restraint can affect short cylinders; those boundary-condition sensitivities are not credited.",
           "NASA Eq. 28 states sqrt(gamma)=0.75 for Eqs. 23-25; because the source adds the gamma^2 term to Eqs. 20/22 and introduces Eq. 23 as their gamma*Z > 100 reduction, this model applies the same factor inside Eqs. 20/22 at every gamma*Z. gamma=0.90 belongs to Eqs. 26-27; the moderate/long overlap created by the two factors has no selection rule and stays withheld from capacity.",
           "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
-          "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA Rev. 2 permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, states no factor for 5 < gamma*Z < 100, and says linear interpolation in Z between Eqs. 30 and 31 may give satisfactory results there. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
+          "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(k*p) by bisection, where k is circumferential_stress_per_unit_pressure, r/t for a smooth shell. NASA Rev. 2 permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, states no factor for 5 < gamma*Z < 100, and says linear interpolation in Z between Eqs. 30 and 31 may give satisfactory results there. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
           "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. The correction imposes no strength limit; material strength is a separate check.",
           "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
           "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
-          "elastic_applicability compares applied membrane stress p*r/t with the proportional limit, falling back to yield strength. It sets neither capacity nor margin.",
-          "Circumferential membrane stresses, including the plasticity correction and the proportional-limit and elastic-applicability screens, use the ring-stiffened bay's mid-bay hoop membrane stress, 107.506 times the pressure, in place of p*r/t = 116.471 times the pressure: NASA evaluates its plasticity factors at the circumferential stress of the buckling shell, and the rings carry part of the hoop load."
+          "elastic_applicability compares the applied circumferential membrane stress, p*r/t for a smooth shell, with the proportional limit, falling back to yield strength. It sets neither capacity nor margin.",
+          "Circumferential membrane stresses, including the plasticity correction and the proportional-limit and elastic-applicability screens, use the ring-stiffened bay's mid-bay hoop membrane stress, 107.506 times the pressure, in place of p*r/t = 116.471 times the pressure. NASA defines its factors at the circumferential stress p*r/t of an unstiffened shell (Eq. 17); between rings, which carry part of the hoop load, this extends that definition to the bay's own mid-bay hoop stress."
         ],
         "plasticity_factor": null,
         "poisson_ratio": 0.3,
@@ -4719,7 +4723,7 @@
           "source_reference": "DTMB Report 1324, Figs. 3 and 6 and Tables 1-2, pp. 5-10; NASA/SP-8007-2020/REV 2, pp. 28 and 36"
         },
         {
-          "basis": "The source-gated smooth-shell method is evaluated over ring center-to-center spacing with ideal simply supported circular lines, and its material stress is the periodic bay's mid-bay hoop membrane stress; its own capacity_status is withheld_applicability.",
+          "basis": "The source-gated smooth-shell method is evaluated over ring center-to-center spacing with ideal simply supported circular lines, and on a valid record its material stress is the periodic bay's mid-bay hoop membrane stress; its own capacity_status is withheld_applicability.",
           "disposition": "implemented_advisory",
           "mode": "inter_ring_shell_buckling",
           "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 3-5, 17-29 and 30-32, pp. 22 and 26-29"
@@ -4777,10 +4781,10 @@
       "model_version": "6.0.0",
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
-        "Each buckling pressure is labelled by comparing its shell circumferential membrane stress with the proportional limit: the periodic bay's mid-bay hoop stress for the inter-ring bay, nominal p*r/t for the global mode. With only a yield strength, a pressure is an elastic upper bound when that stress exceeds yield and undetermined otherwise.",
-        "Global buckling is elastic: lobar modes (n >= 2, axial half-waves of at least two ring spacings, and always m = 1) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
-        "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves of at least two ring spacings, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. Widely spaced rings still need a discrete-ring or code-rule check.",
-        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does. They are not collapse pressures. As in the PD 5500 form, the pressure acts at the shell mid-surface radius; on the outer surface, exact equilibrium would raise the mean hoop stresses by R_o/R = 1 + t/(2R)."
+        "Each buckling pressure is labelled by comparing its shell circumferential membrane stress with the proportional limit: on a valid record, the periodic bay's mid-bay hoop stress for the inter-ring bay, and nominal p*r/t for the global mode. With only a yield strength, a pressure is an elastic upper bound when that stress exceeds yield and undetermined otherwise.",
+        "Global buckling is elastic: lobar modes (n >= 2, axial half-waves longer than one ring spacing, and always m = 1) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
+        "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves longer than one ring spacing, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. NASA notes that its orthotropic equations lose accuracy against Love or Sanders theory for n <= 4 (printed p. 35) and that a more accurate discrete-ring theory gives somewhat lower pressures (p. 38), so widely spaced or deep eccentric rings still need a discrete-ring or code-rule check.",
+        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does (hoop stress only, perfect shell). They are not collapse pressures. As in the PD 5500 form, and as DAPS4 takes the hoop load, the pressure acts at the shell mid-surface radius; on the outer surface, exact equilibrium would raise the unstiffened mean hoop stress by R_o/R = 1 + t/(2R) and the bay's slightly less."
       ],
       "poisson_ratio": 0.3,
       "proportional_limit_mpa": {
@@ -4978,27 +4982,29 @@
           "value": 1.96118181438
         },
         "adjustment_factor": 0.75,
+        "axial_half_wave_limit_binding": false,
         "converged": true,
         "critical_axial_half_waves_m": 1,
         "critical_circumferential_lobes_n": 2,
-        "evaluated_axial_half_waves": 11,
+        "critical_half_wave_over_ring_spacing": 23.0,
+        "evaluated_axial_half_waves": 22,
         "evaluated_circumferential_lobes": 88,
-        "evaluated_mode_count": 957,
+        "evaluated_mode_count": 1914,
         "ideal_critical_pressure_mpa": {
           "unit": "MPa",
           "value": 2.61490908584
         },
         "iterations": [
           {
-            "axial_half_wave_bound": 11,
+            "axial_half_wave_bound": 22,
             "circumferential_lobe_bound": 22,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 231,
+            "cumulative_evaluated_modes": 462,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 111.491750169
+              "value": 102.181017878
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": false,
@@ -5006,39 +5012,19 @@
               "unit": "MPa",
               "value": 2.61490908584
             },
-            "newly_evaluated_modes": 231,
+            "newly_evaluated_modes": 462,
             "relative_pressure_change": null
           },
           {
-            "axial_half_wave_bound": 11,
+            "axial_half_wave_bound": 22,
             "circumferential_lobe_bound": 44,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 473,
+            "cumulative_evaluated_modes": 946,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 462.631958852
-            },
-            "governing_mode_below_frontier": true,
-            "governing_mode_stable": true,
-            "ideal_critical_pressure_mpa": {
-              "unit": "MPa",
-              "value": 2.61490908584
-            },
-            "newly_evaluated_modes": 242,
-            "relative_pressure_change": 0.0
-          },
-          {
-            "axial_half_wave_bound": 11,
-            "circumferential_lobe_bound": 88,
-            "critical_axial_half_waves_m": 1,
-            "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 957,
-            "frontier_above_governing": true,
-            "frontier_minimum_pressure_mpa": {
-              "unit": "MPa",
-              "value": 1813.98826982
+              "value": 446.906180039
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -5048,10 +5034,29 @@
             },
             "newly_evaluated_modes": 484,
             "relative_pressure_change": 0.0
+          },
+          {
+            "axial_half_wave_bound": 22,
+            "circumferential_lobe_bound": 88,
+            "critical_axial_half_waves_m": 1,
+            "critical_circumferential_lobes_n": 2,
+            "cumulative_evaluated_modes": 1914,
+            "frontier_above_governing": true,
+            "frontier_minimum_pressure_mpa": {
+              "unit": "MPa",
+              "value": 1796.26551423
+            },
+            "governing_mode_below_frontier": true,
+            "governing_mode_stable": true,
+            "ideal_critical_pressure_mpa": {
+              "unit": "MPa",
+              "value": 2.61490908584
+            },
+            "newly_evaluated_modes": 968,
+            "relative_pressure_change": 0.0
           }
         ],
-        "maximum_axial_half_waves_m": 11,
-        "minimum_ring_spacings_per_axial_half_wave": 2.0,
+        "maximum_axial_half_waves_m": 22,
         "mode_domain": "1<=m<=maximum_axial_half_waves_m,n>=2",
         "orthotropic_bending_x_n_mm": {
           "unit": "N*mm",
@@ -5102,27 +5107,29 @@
           "value": 1.9569494294
         },
         "adjustment_factor": 0.75,
+        "axial_half_wave_limit_binding": false,
         "converged": true,
         "critical_axial_half_waves_m": 1,
         "critical_circumferential_lobes_n": 2,
-        "evaluated_axial_half_waves": 11,
+        "critical_half_wave_over_ring_spacing": 23.0,
+        "evaluated_axial_half_waves": 22,
         "evaluated_circumferential_lobes": 88,
-        "evaluated_mode_count": 957,
+        "evaluated_mode_count": 1914,
         "ideal_critical_pressure_mpa": {
           "unit": "MPa",
           "value": 2.60926590587
         },
         "iterations": [
           {
-            "axial_half_wave_bound": 11,
+            "axial_half_wave_bound": 22,
             "circumferential_lobe_bound": 22,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 231,
+            "cumulative_evaluated_modes": 462,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 110.821752628
+              "value": 99.8299019334
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": false,
@@ -5130,39 +5137,19 @@
               "unit": "MPa",
               "value": 2.60926590587
             },
-            "newly_evaluated_modes": 231,
+            "newly_evaluated_modes": 462,
             "relative_pressure_change": null
           },
           {
-            "axial_half_wave_bound": 11,
+            "axial_half_wave_bound": 22,
             "circumferential_lobe_bound": 44,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 473,
+            "cumulative_evaluated_modes": 946,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 461.937682455
-            },
-            "governing_mode_below_frontier": true,
-            "governing_mode_stable": true,
-            "ideal_critical_pressure_mpa": {
-              "unit": "MPa",
-              "value": 2.60926590587
-            },
-            "newly_evaluated_modes": 242,
-            "relative_pressure_change": 0.0
-          },
-          {
-            "axial_half_wave_bound": 11,
-            "circumferential_lobe_bound": 88,
-            "critical_axial_half_waves_m": 1,
-            "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 957,
-            "frontier_above_governing": true,
-            "frontier_minimum_pressure_mpa": {
-              "unit": "MPa",
-              "value": 1813.28771046
+              "value": 444.226189872
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -5172,10 +5159,29 @@
             },
             "newly_evaluated_modes": 484,
             "relative_pressure_change": 0.0
+          },
+          {
+            "axial_half_wave_bound": 22,
+            "circumferential_lobe_bound": 88,
+            "critical_axial_half_waves_m": 1,
+            "critical_circumferential_lobes_n": 2,
+            "cumulative_evaluated_modes": 1914,
+            "frontier_above_governing": true,
+            "frontier_minimum_pressure_mpa": {
+              "unit": "MPa",
+              "value": 1793.48941709
+            },
+            "governing_mode_below_frontier": true,
+            "governing_mode_stable": true,
+            "ideal_critical_pressure_mpa": {
+              "unit": "MPa",
+              "value": 2.60926590587
+            },
+            "newly_evaluated_modes": 968,
+            "relative_pressure_change": 0.0
           }
         ],
-        "maximum_axial_half_waves_m": 11,
-        "minimum_ring_spacings_per_axial_half_wave": 2.0,
+        "maximum_axial_half_waves_m": 22,
         "mode_domain": "1<=m<=maximum_axial_half_waves_m,n>=2",
         "orthotropic_bending_x_n_mm": {
           "unit": "N*mm",
@@ -5411,12 +5417,12 @@
           "Longitudinal end restraint can increase theoretical capacity, and rotational restraint can affect short cylinders; those boundary-condition sensitivities are not credited.",
           "NASA Eq. 28 states sqrt(gamma)=0.75 for Eqs. 23-25; because the source adds the gamma^2 term to Eqs. 20/22 and introduces Eq. 23 as their gamma*Z > 100 reduction, this model applies the same factor inside Eqs. 20/22 at every gamma*Z. gamma=0.90 belongs to Eqs. 26-27; the moderate/long overlap created by the two factors has no selection rule and stays withheld from capacity.",
           "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
-          "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA Rev. 2 permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, states no factor for 5 < gamma*Z < 100, and says linear interpolation in Z between Eqs. 30 and 31 may give satisfactory results there. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
+          "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(k*p) by bisection, where k is circumferential_stress_per_unit_pressure, r/t for a smooth shell. NASA Rev. 2 permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, states no factor for 5 < gamma*Z < 100, and says linear interpolation in Z between Eqs. 30 and 31 may give satisfactory results there. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
           "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. The correction imposes no strength limit; material strength is a separate check.",
           "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
           "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
-          "elastic_applicability compares applied membrane stress p*r/t with the proportional limit, falling back to yield strength. It sets neither capacity nor margin.",
-          "Circumferential membrane stresses, including the plasticity correction and the proportional-limit and elastic-applicability screens, use the ring-stiffened bay's mid-bay hoop membrane stress, 107.506 times the pressure, in place of p*r/t = 116.471 times the pressure: NASA evaluates its plasticity factors at the circumferential stress of the buckling shell, and the rings carry part of the hoop load."
+          "elastic_applicability compares the applied circumferential membrane stress, p*r/t for a smooth shell, with the proportional limit, falling back to yield strength. It sets neither capacity nor margin.",
+          "Circumferential membrane stresses, including the plasticity correction and the proportional-limit and elastic-applicability screens, use the ring-stiffened bay's mid-bay hoop membrane stress, 107.506 times the pressure, in place of p*r/t = 116.471 times the pressure. NASA defines its factors at the circumferential stress p*r/t of an unstiffened shell (Eq. 17); between rings, which carry part of the hoop load, this extends that definition to the bay's own mid-bay hoop stress."
         ],
         "plasticity_factor": null,
         "poisson_ratio": 0.3,
@@ -5497,7 +5503,7 @@
           "source_reference": "DTMB Report 1324, Figs. 3 and 6 and Tables 1-2, pp. 5-10; NASA/SP-8007-2020/REV 2, pp. 28 and 36"
         },
         {
-          "basis": "The source-gated smooth-shell method is evaluated over ring center-to-center spacing with ideal simply supported circular lines, and its material stress is the periodic bay's mid-bay hoop membrane stress; its own capacity_status is withheld_applicability.",
+          "basis": "The source-gated smooth-shell method is evaluated over ring center-to-center spacing with ideal simply supported circular lines, and on a valid record its material stress is the periodic bay's mid-bay hoop membrane stress; its own capacity_status is withheld_applicability.",
           "disposition": "implemented_advisory",
           "mode": "inter_ring_shell_buckling",
           "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 3-5, 17-29 and 30-32, pp. 22 and 26-29"
@@ -5555,10 +5561,10 @@
       "model_version": "6.0.0",
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
-        "Each buckling pressure is labelled by comparing its shell circumferential membrane stress with the proportional limit: the periodic bay's mid-bay hoop stress for the inter-ring bay, nominal p*r/t for the global mode. With only a yield strength, a pressure is an elastic upper bound when that stress exceeds yield and undetermined otherwise.",
-        "Global buckling is elastic: lobar modes (n >= 2, axial half-waves of at least two ring spacings, and always m = 1) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
-        "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves of at least two ring spacings, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. Widely spaced rings still need a discrete-ring or code-rule check.",
-        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does. They are not collapse pressures. As in the PD 5500 form, the pressure acts at the shell mid-surface radius; on the outer surface, exact equilibrium would raise the mean hoop stresses by R_o/R = 1 + t/(2R)."
+        "Each buckling pressure is labelled by comparing its shell circumferential membrane stress with the proportional limit: on a valid record, the periodic bay's mid-bay hoop stress for the inter-ring bay, and nominal p*r/t for the global mode. With only a yield strength, a pressure is an elastic upper bound when that stress exceeds yield and undetermined otherwise.",
+        "Global buckling is elastic: lobar modes (n >= 2, axial half-waves longer than one ring spacing, and always m = 1) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
+        "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves longer than one ring spacing, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. NASA notes that its orthotropic equations lose accuracy against Love or Sanders theory for n <= 4 (printed p. 35) and that a more accurate discrete-ring theory gives somewhat lower pressures (p. 38), so widely spaced or deep eccentric rings still need a discrete-ring or code-rule check.",
+        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does (hoop stress only, perfect shell). They are not collapse pressures. As in the PD 5500 form, and as DAPS4 takes the hoop load, the pressure acts at the shell mid-surface radius; on the outer surface, exact equilibrium would raise the unstiffened mean hoop stress by R_o/R = 1 + t/(2R) and the bay's slightly less."
       ],
       "poisson_ratio": 0.3,
       "proportional_limit_mpa": {
@@ -5756,27 +5762,29 @@
           "value": 1.72166439192
         },
         "adjustment_factor": 0.75,
+        "axial_half_wave_limit_binding": false,
         "converged": true,
         "critical_axial_half_waves_m": 1,
         "critical_circumferential_lobes_n": 2,
-        "evaluated_axial_half_waves": 12,
+        "critical_half_wave_over_ring_spacing": 25.0,
+        "evaluated_axial_half_waves": 24,
         "evaluated_circumferential_lobes": 88,
-        "evaluated_mode_count": 1044,
+        "evaluated_mode_count": 2088,
         "ideal_critical_pressure_mpa": {
           "unit": "MPa",
           "value": 2.29555252256
         },
         "iterations": [
           {
-            "axial_half_wave_bound": 12,
+            "axial_half_wave_bound": 24,
             "circumferential_lobe_bound": 22,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 252,
+            "cumulative_evaluated_modes": 504,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 111.457499067
+              "value": 102.121093301
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": false,
@@ -5784,39 +5792,19 @@
               "unit": "MPa",
               "value": 2.29555252256
             },
-            "newly_evaluated_modes": 252,
+            "newly_evaluated_modes": 504,
             "relative_pressure_change": null
           },
           {
-            "axial_half_wave_bound": 12,
+            "axial_half_wave_bound": 24,
             "circumferential_lobe_bound": 44,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 516,
+            "cumulative_evaluated_modes": 1032,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 462.589371144
-            },
-            "governing_mode_below_frontier": true,
-            "governing_mode_stable": true,
-            "ideal_critical_pressure_mpa": {
-              "unit": "MPa",
-              "value": 2.29555252256
-            },
-            "newly_evaluated_modes": 264,
-            "relative_pressure_change": 0.0
-          },
-          {
-            "axial_half_wave_bound": 12,
-            "circumferential_lobe_bound": 88,
-            "critical_axial_half_waves_m": 1,
-            "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 1044,
-            "frontier_above_governing": true,
-            "frontier_minimum_pressure_mpa": {
-              "unit": "MPa",
-              "value": 1813.94396894
+              "value": 446.769157223
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -5826,10 +5814,29 @@
             },
             "newly_evaluated_modes": 528,
             "relative_pressure_change": 0.0
+          },
+          {
+            "axial_half_wave_bound": 24,
+            "circumferential_lobe_bound": 88,
+            "critical_axial_half_waves_m": 1,
+            "critical_circumferential_lobes_n": 2,
+            "cumulative_evaluated_modes": 2088,
+            "frontier_above_governing": true,
+            "frontier_minimum_pressure_mpa": {
+              "unit": "MPa",
+              "value": 1796.09827408
+            },
+            "governing_mode_below_frontier": true,
+            "governing_mode_stable": true,
+            "ideal_critical_pressure_mpa": {
+              "unit": "MPa",
+              "value": 2.29555252256
+            },
+            "newly_evaluated_modes": 1056,
+            "relative_pressure_change": 0.0
           }
         ],
-        "maximum_axial_half_waves_m": 12,
-        "minimum_ring_spacings_per_axial_half_wave": 2.0,
+        "maximum_axial_half_waves_m": 24,
         "mode_domain": "1<=m<=maximum_axial_half_waves_m,n>=2",
         "orthotropic_bending_x_n_mm": {
           "unit": "N*mm",
@@ -5880,27 +5887,29 @@
           "value": 1.71806642033
         },
         "adjustment_factor": 0.75,
+        "axial_half_wave_limit_binding": false,
         "converged": true,
         "critical_axial_half_waves_m": 1,
         "critical_circumferential_lobes_n": 2,
-        "evaluated_axial_half_waves": 12,
+        "critical_half_wave_over_ring_spacing": 25.0,
+        "evaluated_axial_half_waves": 24,
         "evaluated_circumferential_lobes": 88,
-        "evaluated_mode_count": 1044,
+        "evaluated_mode_count": 2088,
         "ideal_critical_pressure_mpa": {
           "unit": "MPa",
           "value": 2.29075522711
         },
         "iterations": [
           {
-            "axial_half_wave_bound": 12,
+            "axial_half_wave_bound": 24,
             "circumferential_lobe_bound": 22,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 252,
+            "cumulative_evaluated_modes": 504,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 110.782849148
+              "value": 99.7556671247
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": false,
@@ -5908,39 +5917,19 @@
               "unit": "MPa",
               "value": 2.29075522711
             },
-            "newly_evaluated_modes": 252,
+            "newly_evaluated_modes": 504,
             "relative_pressure_change": null
           },
           {
-            "axial_half_wave_bound": 12,
+            "axial_half_wave_bound": 24,
             "circumferential_lobe_bound": 44,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 516,
+            "cumulative_evaluated_modes": 1032,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 461.890097826
-            },
-            "governing_mode_below_frontier": true,
-            "governing_mode_stable": true,
-            "ideal_critical_pressure_mpa": {
-              "unit": "MPa",
-              "value": 2.29075522711
-            },
-            "newly_evaluated_modes": 264,
-            "relative_pressure_change": 0.0
-          },
-          {
-            "axial_half_wave_bound": 12,
-            "circumferential_lobe_bound": 88,
-            "critical_axial_half_waves_m": 1,
-            "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 1044,
-            "frontier_above_governing": true,
-            "frontier_minimum_pressure_mpa": {
-              "unit": "MPa",
-              "value": 1813.23832148
+              "value": 444.070557548
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -5950,10 +5939,29 @@
             },
             "newly_evaluated_modes": 528,
             "relative_pressure_change": 0.0
+          },
+          {
+            "axial_half_wave_bound": 24,
+            "circumferential_lobe_bound": 88,
+            "critical_axial_half_waves_m": 1,
+            "critical_circumferential_lobes_n": 2,
+            "cumulative_evaluated_modes": 2088,
+            "frontier_above_governing": true,
+            "frontier_minimum_pressure_mpa": {
+              "unit": "MPa",
+              "value": 1793.30220382
+            },
+            "governing_mode_below_frontier": true,
+            "governing_mode_stable": true,
+            "ideal_critical_pressure_mpa": {
+              "unit": "MPa",
+              "value": 2.29075522711
+            },
+            "newly_evaluated_modes": 1056,
+            "relative_pressure_change": 0.0
           }
         ],
-        "maximum_axial_half_waves_m": 12,
-        "minimum_ring_spacings_per_axial_half_wave": 2.0,
+        "maximum_axial_half_waves_m": 24,
         "mode_domain": "1<=m<=maximum_axial_half_waves_m,n>=2",
         "orthotropic_bending_x_n_mm": {
           "unit": "N*mm",
@@ -6189,12 +6197,12 @@
           "Longitudinal end restraint can increase theoretical capacity, and rotational restraint can affect short cylinders; those boundary-condition sensitivities are not credited.",
           "NASA Eq. 28 states sqrt(gamma)=0.75 for Eqs. 23-25; because the source adds the gamma^2 term to Eqs. 20/22 and introduces Eq. 23 as their gamma*Z > 100 reduction, this model applies the same factor inside Eqs. 20/22 at every gamma*Z. gamma=0.90 belongs to Eqs. 26-27; the moderate/long overlap created by the two factors has no selection rule and stays withheld from capacity.",
           "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
-          "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA Rev. 2 permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, states no factor for 5 < gamma*Z < 100, and says linear interpolation in Z between Eqs. 30 and 31 may give satisfactory results there. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
+          "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(k*p) by bisection, where k is circumferential_stress_per_unit_pressure, r/t for a smooth shell. NASA Rev. 2 permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, states no factor for 5 < gamma*Z < 100, and says linear interpolation in Z between Eqs. 30 and 31 may give satisfactory results there. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
           "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. The correction imposes no strength limit; material strength is a separate check.",
           "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
           "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
-          "elastic_applicability compares applied membrane stress p*r/t with the proportional limit, falling back to yield strength. It sets neither capacity nor margin.",
-          "Circumferential membrane stresses, including the plasticity correction and the proportional-limit and elastic-applicability screens, use the ring-stiffened bay's mid-bay hoop membrane stress, 107.506 times the pressure, in place of p*r/t = 116.471 times the pressure: NASA evaluates its plasticity factors at the circumferential stress of the buckling shell, and the rings carry part of the hoop load."
+          "elastic_applicability compares the applied circumferential membrane stress, p*r/t for a smooth shell, with the proportional limit, falling back to yield strength. It sets neither capacity nor margin.",
+          "Circumferential membrane stresses, including the plasticity correction and the proportional-limit and elastic-applicability screens, use the ring-stiffened bay's mid-bay hoop membrane stress, 107.506 times the pressure, in place of p*r/t = 116.471 times the pressure. NASA defines its factors at the circumferential stress p*r/t of an unstiffened shell (Eq. 17); between rings, which carry part of the hoop load, this extends that definition to the bay's own mid-bay hoop stress."
         ],
         "plasticity_factor": null,
         "poisson_ratio": 0.3,
@@ -6275,7 +6283,7 @@
           "source_reference": "DTMB Report 1324, Figs. 3 and 6 and Tables 1-2, pp. 5-10; NASA/SP-8007-2020/REV 2, pp. 28 and 36"
         },
         {
-          "basis": "The source-gated smooth-shell method is evaluated over ring center-to-center spacing with ideal simply supported circular lines, and its material stress is the periodic bay's mid-bay hoop membrane stress; its own capacity_status is withheld_applicability.",
+          "basis": "The source-gated smooth-shell method is evaluated over ring center-to-center spacing with ideal simply supported circular lines, and on a valid record its material stress is the periodic bay's mid-bay hoop membrane stress; its own capacity_status is withheld_applicability.",
           "disposition": "implemented_advisory",
           "mode": "inter_ring_shell_buckling",
           "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 3-5, 17-29 and 30-32, pp. 22 and 26-29"
@@ -6333,10 +6341,10 @@
       "model_version": "6.0.0",
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
-        "Each buckling pressure is labelled by comparing its shell circumferential membrane stress with the proportional limit: the periodic bay's mid-bay hoop stress for the inter-ring bay, nominal p*r/t for the global mode. With only a yield strength, a pressure is an elastic upper bound when that stress exceeds yield and undetermined otherwise.",
-        "Global buckling is elastic: lobar modes (n >= 2, axial half-waves of at least two ring spacings, and always m = 1) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
-        "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves of at least two ring spacings, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. Widely spaced rings still need a discrete-ring or code-rule check.",
-        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does. They are not collapse pressures. As in the PD 5500 form, the pressure acts at the shell mid-surface radius; on the outer surface, exact equilibrium would raise the mean hoop stresses by R_o/R = 1 + t/(2R)."
+        "Each buckling pressure is labelled by comparing its shell circumferential membrane stress with the proportional limit: on a valid record, the periodic bay's mid-bay hoop stress for the inter-ring bay, and nominal p*r/t for the global mode. With only a yield strength, a pressure is an elastic upper bound when that stress exceeds yield and undetermined otherwise.",
+        "Global buckling is elastic: lobar modes (n >= 2, axial half-waves longer than one ring spacing, and always m = 1) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
+        "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves longer than one ring spacing, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. NASA notes that its orthotropic equations lose accuracy against Love or Sanders theory for n <= 4 (printed p. 35) and that a more accurate discrete-ring theory gives somewhat lower pressures (p. 38), so widely spaced or deep eccentric rings still need a discrete-ring or code-rule check.",
+        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does (hoop stress only, perfect shell). They are not collapse pressures. As in the PD 5500 form, and as DAPS4 takes the hoop load, the pressure acts at the shell mid-surface radius; on the outer surface, exact equilibrium would raise the unstiffened mean hoop stress by R_o/R = 1 + t/(2R) and the bay's slightly less."
       ],
       "poisson_ratio": 0.3,
       "proportional_limit_mpa": {
@@ -6534,27 +6542,29 @@
           "value": 1.63384108308
         },
         "adjustment_factor": 0.75,
+        "axial_half_wave_limit_binding": false,
         "converged": true,
         "critical_axial_half_waves_m": 1,
         "critical_circumferential_lobes_n": 2,
-        "evaluated_axial_half_waves": 13,
+        "critical_half_wave_over_ring_spacing": 26.0,
+        "evaluated_axial_half_waves": 25,
         "evaluated_circumferential_lobes": 88,
-        "evaluated_mode_count": 1131,
+        "evaluated_mode_count": 2175,
         "ideal_critical_pressure_mpa": {
           "unit": "MPa",
           "value": 2.17845477744
         },
         "iterations": [
           {
-            "axial_half_wave_bound": 13,
+            "axial_half_wave_bound": 25,
             "circumferential_lobe_bound": 22,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 273,
+            "cumulative_evaluated_modes": 525,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 111.061060154
+              "value": 102.094638919
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": false,
@@ -6562,19 +6572,19 @@
               "unit": "MPa",
               "value": 2.17845477744
             },
-            "newly_evaluated_modes": 273,
+            "newly_evaluated_modes": 525,
             "relative_pressure_change": null
           },
           {
-            "axial_half_wave_bound": 13,
+            "axial_half_wave_bound": 25,
             "circumferential_lobe_bound": 44,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 559,
+            "cumulative_evaluated_modes": 1075,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 462.090308121
+              "value": 446.708478091
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -6582,19 +6592,19 @@
               "unit": "MPa",
               "value": 2.17845477744
             },
-            "newly_evaluated_modes": 286,
+            "newly_evaluated_modes": 550,
             "relative_pressure_change": 0.0
           },
           {
-            "axial_half_wave_bound": 13,
+            "axial_half_wave_bound": 25,
             "circumferential_lobe_bound": 88,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 1131,
+            "cumulative_evaluated_modes": 2175,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 1813.42342597
+              "value": 1796.02413821
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -6602,12 +6612,11 @@
               "unit": "MPa",
               "value": 2.17845477744
             },
-            "newly_evaluated_modes": 572,
+            "newly_evaluated_modes": 1100,
             "relative_pressure_change": 0.0
           }
         ],
-        "maximum_axial_half_waves_m": 13,
-        "minimum_ring_spacings_per_axial_half_wave": 2.0,
+        "maximum_axial_half_waves_m": 25,
         "mode_domain": "1<=m<=maximum_axial_half_waves_m,n>=2",
         "orthotropic_bending_x_n_mm": {
           "unit": "N*mm",
@@ -6658,27 +6667,29 @@
           "value": 1.63050849151
         },
         "adjustment_factor": 0.75,
+        "axial_half_wave_limit_binding": false,
         "converged": true,
         "critical_axial_half_waves_m": 1,
         "critical_circumferential_lobes_n": 2,
-        "evaluated_axial_half_waves": 13,
+        "critical_half_wave_over_ring_spacing": 26.0,
+        "evaluated_axial_half_waves": 25,
         "evaluated_circumferential_lobes": 88,
-        "evaluated_mode_count": 1131,
+        "evaluated_mode_count": 2175,
         "ideal_critical_pressure_mpa": {
           "unit": "MPa",
           "value": 2.17401132201
         },
         "iterations": [
           {
-            "axial_half_wave_bound": 13,
+            "axial_half_wave_bound": 25,
             "circumferential_lobe_bound": 22,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 273,
+            "cumulative_evaluated_modes": 525,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 110.331930322
+              "value": 99.7228775497
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": false,
@@ -6686,19 +6697,19 @@
               "unit": "MPa",
               "value": 2.17401132201
             },
-            "newly_evaluated_modes": 273,
+            "newly_evaluated_modes": 525,
             "relative_pressure_change": null
           },
           {
-            "axial_half_wave_bound": 13,
+            "axial_half_wave_bound": 25,
             "circumferential_lobe_bound": 44,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 559,
+            "cumulative_evaluated_modes": 1075,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 461.332332481
+              "value": 444.001629787
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -6706,19 +6717,19 @@
               "unit": "MPa",
               "value": 2.17401132201
             },
-            "newly_evaluated_modes": 286,
+            "newly_evaluated_modes": 550,
             "relative_pressure_change": 0.0
           },
           {
-            "axial_half_wave_bound": 13,
+            "axial_half_wave_bound": 25,
             "circumferential_lobe_bound": 88,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 1131,
+            "cumulative_evaluated_modes": 2175,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 1812.65795534
+              "value": 1793.21921171
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -6726,12 +6737,11 @@
               "unit": "MPa",
               "value": 2.17401132201
             },
-            "newly_evaluated_modes": 572,
+            "newly_evaluated_modes": 1100,
             "relative_pressure_change": 0.0
           }
         ],
-        "maximum_axial_half_waves_m": 13,
-        "minimum_ring_spacings_per_axial_half_wave": 2.0,
+        "maximum_axial_half_waves_m": 25,
         "mode_domain": "1<=m<=maximum_axial_half_waves_m,n>=2",
         "orthotropic_bending_x_n_mm": {
           "unit": "N*mm",
@@ -6967,12 +6977,12 @@
           "Longitudinal end restraint can increase theoretical capacity, and rotational restraint can affect short cylinders; those boundary-condition sensitivities are not credited.",
           "NASA Eq. 28 states sqrt(gamma)=0.75 for Eqs. 23-25; because the source adds the gamma^2 term to Eqs. 20/22 and introduces Eq. 23 as their gamma*Z > 100 reduction, this model applies the same factor inside Eqs. 20/22 at every gamma*Z. gamma=0.90 belongs to Eqs. 26-27; the moderate/long overlap created by the two factors has no selection rule and stays withheld from capacity.",
           "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
-          "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA Rev. 2 permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, states no factor for 5 < gamma*Z < 100, and says linear interpolation in Z between Eqs. 30 and 31 may give satisfactory results there. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
+          "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(k*p) by bisection, where k is circumferential_stress_per_unit_pressure, r/t for a smooth shell. NASA Rev. 2 permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, states no factor for 5 < gamma*Z < 100, and says linear interpolation in Z between Eqs. 30 and 31 may give satisfactory results there. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
           "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. The correction imposes no strength limit; material strength is a separate check.",
           "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
           "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
-          "elastic_applicability compares applied membrane stress p*r/t with the proportional limit, falling back to yield strength. It sets neither capacity nor margin.",
-          "Circumferential membrane stresses, including the plasticity correction and the proportional-limit and elastic-applicability screens, use the ring-stiffened bay's mid-bay hoop membrane stress, 107.506 times the pressure, in place of p*r/t = 116.471 times the pressure: NASA evaluates its plasticity factors at the circumferential stress of the buckling shell, and the rings carry part of the hoop load."
+          "elastic_applicability compares the applied circumferential membrane stress, p*r/t for a smooth shell, with the proportional limit, falling back to yield strength. It sets neither capacity nor margin.",
+          "Circumferential membrane stresses, including the plasticity correction and the proportional-limit and elastic-applicability screens, use the ring-stiffened bay's mid-bay hoop membrane stress, 107.506 times the pressure, in place of p*r/t = 116.471 times the pressure. NASA defines its factors at the circumferential stress p*r/t of an unstiffened shell (Eq. 17); between rings, which carry part of the hoop load, this extends that definition to the bay's own mid-bay hoop stress."
         ],
         "plasticity_factor": null,
         "poisson_ratio": 0.3,
@@ -7053,7 +7063,7 @@
           "source_reference": "DTMB Report 1324, Figs. 3 and 6 and Tables 1-2, pp. 5-10; NASA/SP-8007-2020/REV 2, pp. 28 and 36"
         },
         {
-          "basis": "The source-gated smooth-shell method is evaluated over ring center-to-center spacing with ideal simply supported circular lines, and its material stress is the periodic bay's mid-bay hoop membrane stress; its own capacity_status is withheld_applicability.",
+          "basis": "The source-gated smooth-shell method is evaluated over ring center-to-center spacing with ideal simply supported circular lines, and on a valid record its material stress is the periodic bay's mid-bay hoop membrane stress; its own capacity_status is withheld_applicability.",
           "disposition": "implemented_advisory",
           "mode": "inter_ring_shell_buckling",
           "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 3-5, 17-29 and 30-32, pp. 22 and 26-29"
@@ -7111,10 +7121,10 @@
       "model_version": "6.0.0",
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
-        "Each buckling pressure is labelled by comparing its shell circumferential membrane stress with the proportional limit: the periodic bay's mid-bay hoop stress for the inter-ring bay, nominal p*r/t for the global mode. With only a yield strength, a pressure is an elastic upper bound when that stress exceeds yield and undetermined otherwise.",
-        "Global buckling is elastic: lobar modes (n >= 2, axial half-waves of at least two ring spacings, and always m = 1) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
-        "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves of at least two ring spacings, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. Widely spaced rings still need a discrete-ring or code-rule check.",
-        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does. They are not collapse pressures. As in the PD 5500 form, the pressure acts at the shell mid-surface radius; on the outer surface, exact equilibrium would raise the mean hoop stresses by R_o/R = 1 + t/(2R)."
+        "Each buckling pressure is labelled by comparing its shell circumferential membrane stress with the proportional limit: on a valid record, the periodic bay's mid-bay hoop stress for the inter-ring bay, and nominal p*r/t for the global mode. With only a yield strength, a pressure is an elastic upper bound when that stress exceeds yield and undetermined otherwise.",
+        "Global buckling is elastic: lobar modes (n >= 2, axial half-waves longer than one ring spacing, and always m = 1) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
+        "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves longer than one ring spacing, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. NASA notes that its orthotropic equations lose accuracy against Love or Sanders theory for n <= 4 (printed p. 35) and that a more accurate discrete-ring theory gives somewhat lower pressures (p. 38), so widely spaced or deep eccentric rings still need a discrete-ring or code-rule check.",
+        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does (hoop stress only, perfect shell). They are not collapse pressures. As in the PD 5500 form, and as DAPS4 takes the hoop load, the pressure acts at the shell mid-surface radius; on the outer surface, exact equilibrium would raise the unstiffened mean hoop stress by R_o/R = 1 + t/(2R) and the bay's slightly less."
       ],
       "poisson_ratio": 0.3,
       "proportional_limit_mpa": {
@@ -7312,27 +7322,29 @@
           "value": 1.56166436444
         },
         "adjustment_factor": 0.75,
+        "axial_half_wave_limit_binding": false,
         "converged": true,
         "critical_axial_half_waves_m": 1,
         "critical_circumferential_lobes_n": 2,
-        "evaluated_axial_half_waves": 13,
+        "critical_half_wave_over_ring_spacing": 27.0,
+        "evaluated_axial_half_waves": 26,
         "evaluated_circumferential_lobes": 88,
-        "evaluated_mode_count": 1131,
+        "evaluated_mode_count": 2262,
         "ideal_critical_pressure_mpa": {
           "unit": "MPa",
           "value": 2.08221915259
         },
         "iterations": [
           {
-            "axial_half_wave_bound": 13,
+            "axial_half_wave_bound": 26,
             "circumferential_lobe_bound": 22,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 273,
+            "cumulative_evaluated_modes": 546,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 111.428292494
+              "value": 102.070171866
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": false,
@@ -7340,39 +7352,19 @@
               "unit": "MPa",
               "value": 2.08221915259
             },
-            "newly_evaluated_modes": 273,
+            "newly_evaluated_modes": 546,
             "relative_pressure_change": null
           },
           {
-            "axial_half_wave_bound": 13,
+            "axial_half_wave_bound": 26,
             "circumferential_lobe_bound": 44,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 559,
+            "cumulative_evaluated_modes": 1118,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 462.552989944
-            },
-            "governing_mode_below_frontier": true,
-            "governing_mode_stable": true,
-            "ideal_critical_pressure_mpa": {
-              "unit": "MPa",
-              "value": 2.08221915259
-            },
-            "newly_evaluated_modes": 286,
-            "relative_pressure_change": 0.0
-          },
-          {
-            "axial_half_wave_bound": 13,
-            "circumferential_lobe_bound": 88,
-            "critical_axial_half_waves_m": 1,
-            "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 1131,
-            "frontier_above_governing": true,
-            "frontier_minimum_pressure_mpa": {
-              "unit": "MPa",
-              "value": 1813.90610935
+              "value": 446.652254069
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -7382,10 +7374,29 @@
             },
             "newly_evaluated_modes": 572,
             "relative_pressure_change": 0.0
+          },
+          {
+            "axial_half_wave_bound": 26,
+            "circumferential_lobe_bound": 88,
+            "critical_axial_half_waves_m": 1,
+            "critical_circumferential_lobes_n": 2,
+            "cumulative_evaluated_modes": 2262,
+            "frontier_above_governing": true,
+            "frontier_minimum_pressure_mpa": {
+              "unit": "MPa",
+              "value": 1795.95540415
+            },
+            "governing_mode_below_frontier": true,
+            "governing_mode_stable": true,
+            "ideal_critical_pressure_mpa": {
+              "unit": "MPa",
+              "value": 2.08221915259
+            },
+            "newly_evaluated_modes": 1144,
+            "relative_pressure_change": 0.0
           }
         ],
-        "maximum_axial_half_waves_m": 13,
-        "minimum_ring_spacings_per_axial_half_wave": 2.0,
+        "maximum_axial_half_waves_m": 26,
         "mode_domain": "1<=m<=maximum_axial_half_waves_m,n>=2",
         "orthotropic_bending_x_n_mm": {
           "unit": "N*mm",
@@ -7436,27 +7447,29 @@
           "value": 1.55856903228
         },
         "adjustment_factor": 0.75,
+        "axial_half_wave_limit_binding": false,
         "converged": true,
         "critical_axial_half_waves_m": 1,
         "critical_circumferential_lobes_n": 2,
-        "evaluated_axial_half_waves": 13,
+        "critical_half_wave_over_ring_spacing": 27.0,
+        "evaluated_axial_half_waves": 26,
         "evaluated_circumferential_lobes": 88,
-        "evaluated_mode_count": 1131,
+        "evaluated_mode_count": 2262,
         "ideal_critical_pressure_mpa": {
           "unit": "MPa",
           "value": 2.07809204303
         },
         "iterations": [
           {
-            "axial_half_wave_bound": 13,
+            "axial_half_wave_bound": 26,
             "circumferential_lobe_bound": 22,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 273,
+            "cumulative_evaluated_modes": 546,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 110.749668623
+              "value": 99.6925415061
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": false,
@@ -7464,39 +7477,19 @@
               "unit": "MPa",
               "value": 2.07809204303
             },
-            "newly_evaluated_modes": 273,
+            "newly_evaluated_modes": 546,
             "relative_pressure_change": null
           },
           {
-            "axial_half_wave_bound": 13,
+            "axial_half_wave_bound": 26,
             "circumferential_lobe_bound": 44,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 559,
+            "cumulative_evaluated_modes": 1118,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 461.849446379
-            },
-            "governing_mode_below_frontier": true,
-            "governing_mode_stable": true,
-            "ideal_critical_pressure_mpa": {
-              "unit": "MPa",
-              "value": 2.07809204303
-            },
-            "newly_evaluated_modes": 286,
-            "relative_pressure_change": 0.0
-          },
-          {
-            "axial_half_wave_bound": 13,
-            "circumferential_lobe_bound": 88,
-            "critical_axial_half_waves_m": 1,
-            "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 1131,
-            "frontier_above_governing": true,
-            "frontier_minimum_pressure_mpa": {
-              "unit": "MPa",
-              "value": 1813.19611319
+              "value": 443.937758588
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -7506,10 +7499,29 @@
             },
             "newly_evaluated_modes": 572,
             "relative_pressure_change": 0.0
+          },
+          {
+            "axial_half_wave_bound": 26,
+            "circumferential_lobe_bound": 88,
+            "critical_axial_half_waves_m": 1,
+            "critical_circumferential_lobes_n": 2,
+            "cumulative_evaluated_modes": 2262,
+            "frontier_above_governing": true,
+            "frontier_minimum_pressure_mpa": {
+              "unit": "MPa",
+              "value": 1793.14226543
+            },
+            "governing_mode_below_frontier": true,
+            "governing_mode_stable": true,
+            "ideal_critical_pressure_mpa": {
+              "unit": "MPa",
+              "value": 2.07809204303
+            },
+            "newly_evaluated_modes": 1144,
+            "relative_pressure_change": 0.0
           }
         ],
-        "maximum_axial_half_waves_m": 13,
-        "minimum_ring_spacings_per_axial_half_wave": 2.0,
+        "maximum_axial_half_waves_m": 26,
         "mode_domain": "1<=m<=maximum_axial_half_waves_m,n>=2",
         "orthotropic_bending_x_n_mm": {
           "unit": "N*mm",
@@ -7745,12 +7757,12 @@
           "Longitudinal end restraint can increase theoretical capacity, and rotational restraint can affect short cylinders; those boundary-condition sensitivities are not credited.",
           "NASA Eq. 28 states sqrt(gamma)=0.75 for Eqs. 23-25; because the source adds the gamma^2 term to Eqs. 20/22 and introduces Eq. 23 as their gamma*Z > 100 reduction, this model applies the same factor inside Eqs. 20/22 at every gamma*Z. gamma=0.90 belongs to Eqs. 26-27; the moderate/long overlap created by the two factors has no selection rule and stays withheld from capacity.",
           "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
-          "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA Rev. 2 permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, states no factor for 5 < gamma*Z < 100, and says linear interpolation in Z between Eqs. 30 and 31 may give satisfactory results there. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
+          "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(k*p) by bisection, where k is circumferential_stress_per_unit_pressure, r/t for a smooth shell. NASA Rev. 2 permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, states no factor for 5 < gamma*Z < 100, and says linear interpolation in Z between Eqs. 30 and 31 may give satisfactory results there. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
           "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. The correction imposes no strength limit; material strength is a separate check.",
           "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
           "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
-          "elastic_applicability compares applied membrane stress p*r/t with the proportional limit, falling back to yield strength. It sets neither capacity nor margin.",
-          "Circumferential membrane stresses, including the plasticity correction and the proportional-limit and elastic-applicability screens, use the ring-stiffened bay's mid-bay hoop membrane stress, 107.506 times the pressure, in place of p*r/t = 116.471 times the pressure: NASA evaluates its plasticity factors at the circumferential stress of the buckling shell, and the rings carry part of the hoop load."
+          "elastic_applicability compares the applied circumferential membrane stress, p*r/t for a smooth shell, with the proportional limit, falling back to yield strength. It sets neither capacity nor margin.",
+          "Circumferential membrane stresses, including the plasticity correction and the proportional-limit and elastic-applicability screens, use the ring-stiffened bay's mid-bay hoop membrane stress, 107.506 times the pressure, in place of p*r/t = 116.471 times the pressure. NASA defines its factors at the circumferential stress p*r/t of an unstiffened shell (Eq. 17); between rings, which carry part of the hoop load, this extends that definition to the bay's own mid-bay hoop stress."
         ],
         "plasticity_factor": null,
         "poisson_ratio": 0.3,
@@ -7831,7 +7843,7 @@
           "source_reference": "DTMB Report 1324, Figs. 3 and 6 and Tables 1-2, pp. 5-10; NASA/SP-8007-2020/REV 2, pp. 28 and 36"
         },
         {
-          "basis": "The source-gated smooth-shell method is evaluated over ring center-to-center spacing with ideal simply supported circular lines, and its material stress is the periodic bay's mid-bay hoop membrane stress; its own capacity_status is withheld_applicability.",
+          "basis": "The source-gated smooth-shell method is evaluated over ring center-to-center spacing with ideal simply supported circular lines, and on a valid record its material stress is the periodic bay's mid-bay hoop membrane stress; its own capacity_status is withheld_applicability.",
           "disposition": "implemented_advisory",
           "mode": "inter_ring_shell_buckling",
           "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 3-5, 17-29 and 30-32, pp. 22 and 26-29"
@@ -7889,10 +7901,10 @@
       "model_version": "6.0.0",
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
-        "Each buckling pressure is labelled by comparing its shell circumferential membrane stress with the proportional limit: the periodic bay's mid-bay hoop stress for the inter-ring bay, nominal p*r/t for the global mode. With only a yield strength, a pressure is an elastic upper bound when that stress exceeds yield and undetermined otherwise.",
-        "Global buckling is elastic: lobar modes (n >= 2, axial half-waves of at least two ring spacings, and always m = 1) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
-        "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves of at least two ring spacings, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. Widely spaced rings still need a discrete-ring or code-rule check.",
-        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does. They are not collapse pressures. As in the PD 5500 form, the pressure acts at the shell mid-surface radius; on the outer surface, exact equilibrium would raise the mean hoop stresses by R_o/R = 1 + t/(2R)."
+        "Each buckling pressure is labelled by comparing its shell circumferential membrane stress with the proportional limit: on a valid record, the periodic bay's mid-bay hoop stress for the inter-ring bay, and nominal p*r/t for the global mode. With only a yield strength, a pressure is an elastic upper bound when that stress exceeds yield and undetermined otherwise.",
+        "Global buckling is elastic: lobar modes (n >= 2, axial half-waves longer than one ring spacing, and always m = 1) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
+        "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves longer than one ring spacing, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. NASA notes that its orthotropic equations lose accuracy against Love or Sanders theory for n <= 4 (printed p. 35) and that a more accurate discrete-ring theory gives somewhat lower pressures (p. 38), so widely spaced or deep eccentric rings still need a discrete-ring or code-rule check.",
+        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does (hoop stress only, perfect shell). They are not collapse pressures. As in the PD 5500 form, and as DAPS4 takes the hoop load, the pressure acts at the shell mid-surface radius; on the outer surface, exact equilibrium would raise the unstiffened mean hoop stress by R_o/R = 1 + t/(2R) and the bay's slightly less."
       ],
       "poisson_ratio": 0.3,
       "proportional_limit_mpa": {
@@ -8090,27 +8102,29 @@
           "value": 1.50206425312
         },
         "adjustment_factor": 0.75,
+        "axial_half_wave_limit_binding": false,
         "converged": true,
         "critical_axial_half_waves_m": 1,
         "critical_circumferential_lobes_n": 2,
-        "evaluated_axial_half_waves": 14,
+        "critical_half_wave_over_ring_spacing": 28.0,
+        "evaluated_axial_half_waves": 27,
         "evaluated_circumferential_lobes": 88,
-        "evaluated_mode_count": 1218,
+        "evaluated_mode_count": 2349,
         "ideal_critical_pressure_mpa": {
           "unit": "MPa",
           "value": 2.00275233749
         },
         "iterations": [
           {
-            "axial_half_wave_bound": 14,
+            "axial_half_wave_bound": 27,
             "circumferential_lobe_bound": 22,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 294,
+            "cumulative_evaluated_modes": 567,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 111.061060154
+              "value": 102.047476353
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": false,
@@ -8118,19 +8132,19 @@
               "unit": "MPa",
               "value": 2.00275233749
             },
-            "newly_evaluated_modes": 294,
+            "newly_evaluated_modes": 567,
             "relative_pressure_change": null
           },
           {
-            "axial_half_wave_bound": 14,
+            "axial_half_wave_bound": 27,
             "circumferential_lobe_bound": 44,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 602,
+            "cumulative_evaluated_modes": 1161,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 462.090308121
+              "value": 446.600012045
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -8138,19 +8152,19 @@
               "unit": "MPa",
               "value": 2.00275233749
             },
-            "newly_evaluated_modes": 308,
+            "newly_evaluated_modes": 594,
             "relative_pressure_change": 0.0
           },
           {
-            "axial_half_wave_bound": 14,
+            "axial_half_wave_bound": 27,
             "circumferential_lobe_bound": 88,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 1218,
+            "cumulative_evaluated_modes": 2349,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 1813.42342597
+              "value": 1795.89150247
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -8158,12 +8172,11 @@
               "unit": "MPa",
               "value": 2.00275233749
             },
-            "newly_evaluated_modes": 616,
+            "newly_evaluated_modes": 1188,
             "relative_pressure_change": 0.0
           }
         ],
-        "maximum_axial_half_waves_m": 14,
-        "minimum_ring_spacings_per_axial_half_wave": 2.0,
+        "maximum_axial_half_waves_m": 27,
         "mode_domain": "1<=m<=maximum_axial_half_waves_m,n>=2",
         "orthotropic_bending_x_n_mm": {
           "unit": "N*mm",
@@ -8214,27 +8227,29 @@
           "value": 1.49918187191
         },
         "adjustment_factor": 0.75,
+        "axial_half_wave_limit_binding": false,
         "converged": true,
         "critical_axial_half_waves_m": 1,
         "critical_circumferential_lobes_n": 2,
-        "evaluated_axial_half_waves": 14,
+        "critical_half_wave_over_ring_spacing": 28.0,
+        "evaluated_axial_half_waves": 27,
         "evaluated_circumferential_lobes": 88,
-        "evaluated_mode_count": 1218,
+        "evaluated_mode_count": 2349,
         "ideal_critical_pressure_mpa": {
           "unit": "MPa",
           "value": 1.99890916255
         },
         "iterations": [
           {
-            "axial_half_wave_bound": 14,
+            "axial_half_wave_bound": 27,
             "circumferential_lobe_bound": 22,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 294,
+            "cumulative_evaluated_modes": 567,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 110.331930322
+              "value": 99.6643935864
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": false,
@@ -8242,19 +8257,19 @@
               "unit": "MPa",
               "value": 1.99890916255
             },
-            "newly_evaluated_modes": 294,
+            "newly_evaluated_modes": 567,
             "relative_pressure_change": null
           },
           {
-            "axial_half_wave_bound": 14,
+            "axial_half_wave_bound": 27,
             "circumferential_lobe_bound": 44,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 602,
+            "cumulative_evaluated_modes": 1161,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 461.332332481
+              "value": 443.878407392
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -8262,19 +8277,19 @@
               "unit": "MPa",
               "value": 1.99890916255
             },
-            "newly_evaluated_modes": 308,
+            "newly_evaluated_modes": 594,
             "relative_pressure_change": 0.0
           },
           {
-            "axial_half_wave_bound": 14,
+            "axial_half_wave_bound": 27,
             "circumferential_lobe_bound": 88,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 1218,
+            "cumulative_evaluated_modes": 2349,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 1812.65795534
+              "value": 1793.07072778
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -8282,12 +8297,11 @@
               "unit": "MPa",
               "value": 1.99890916255
             },
-            "newly_evaluated_modes": 616,
+            "newly_evaluated_modes": 1188,
             "relative_pressure_change": 0.0
           }
         ],
-        "maximum_axial_half_waves_m": 14,
-        "minimum_ring_spacings_per_axial_half_wave": 2.0,
+        "maximum_axial_half_waves_m": 27,
         "mode_domain": "1<=m<=maximum_axial_half_waves_m,n>=2",
         "orthotropic_bending_x_n_mm": {
           "unit": "N*mm",
@@ -8523,12 +8537,12 @@
           "Longitudinal end restraint can increase theoretical capacity, and rotational restraint can affect short cylinders; those boundary-condition sensitivities are not credited.",
           "NASA Eq. 28 states sqrt(gamma)=0.75 for Eqs. 23-25; because the source adds the gamma^2 term to Eqs. 20/22 and introduces Eq. 23 as their gamma*Z > 100 reduction, this model applies the same factor inside Eqs. 20/22 at every gamma*Z. gamma=0.90 belongs to Eqs. 26-27; the moderate/long overlap created by the two factors has no selection rule and stays withheld from capacity.",
           "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
-          "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA Rev. 2 permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, states no factor for 5 < gamma*Z < 100, and says linear interpolation in Z between Eqs. 30 and 31 may give satisfactory results there. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
+          "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(k*p) by bisection, where k is circumferential_stress_per_unit_pressure, r/t for a smooth shell. NASA Rev. 2 permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, states no factor for 5 < gamma*Z < 100, and says linear interpolation in Z between Eqs. 30 and 31 may give satisfactory results there. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
           "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. The correction imposes no strength limit; material strength is a separate check.",
           "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
           "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
-          "elastic_applicability compares applied membrane stress p*r/t with the proportional limit, falling back to yield strength. It sets neither capacity nor margin.",
-          "Circumferential membrane stresses, including the plasticity correction and the proportional-limit and elastic-applicability screens, use the ring-stiffened bay's mid-bay hoop membrane stress, 107.506 times the pressure, in place of p*r/t = 116.471 times the pressure: NASA evaluates its plasticity factors at the circumferential stress of the buckling shell, and the rings carry part of the hoop load."
+          "elastic_applicability compares the applied circumferential membrane stress, p*r/t for a smooth shell, with the proportional limit, falling back to yield strength. It sets neither capacity nor margin.",
+          "Circumferential membrane stresses, including the plasticity correction and the proportional-limit and elastic-applicability screens, use the ring-stiffened bay's mid-bay hoop membrane stress, 107.506 times the pressure, in place of p*r/t = 116.471 times the pressure. NASA defines its factors at the circumferential stress p*r/t of an unstiffened shell (Eq. 17); between rings, which carry part of the hoop load, this extends that definition to the bay's own mid-bay hoop stress."
         ],
         "plasticity_factor": null,
         "poisson_ratio": 0.3,
@@ -8609,7 +8623,7 @@
           "source_reference": "DTMB Report 1324, Figs. 3 and 6 and Tables 1-2, pp. 5-10; NASA/SP-8007-2020/REV 2, pp. 28 and 36"
         },
         {
-          "basis": "The source-gated smooth-shell method is evaluated over ring center-to-center spacing with ideal simply supported circular lines, and its material stress is the periodic bay's mid-bay hoop membrane stress; its own capacity_status is withheld_applicability.",
+          "basis": "The source-gated smooth-shell method is evaluated over ring center-to-center spacing with ideal simply supported circular lines, and on a valid record its material stress is the periodic bay's mid-bay hoop membrane stress; its own capacity_status is withheld_applicability.",
           "disposition": "implemented_advisory",
           "mode": "inter_ring_shell_buckling",
           "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 3-5, 17-29 and 30-32, pp. 22 and 26-29"
@@ -8667,10 +8681,10 @@
       "model_version": "6.0.0",
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
-        "Each buckling pressure is labelled by comparing its shell circumferential membrane stress with the proportional limit: the periodic bay's mid-bay hoop stress for the inter-ring bay, nominal p*r/t for the global mode. With only a yield strength, a pressure is an elastic upper bound when that stress exceeds yield and undetermined otherwise.",
-        "Global buckling is elastic: lobar modes (n >= 2, axial half-waves of at least two ring spacings, and always m = 1) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
-        "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves of at least two ring spacings, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. Widely spaced rings still need a discrete-ring or code-rule check.",
-        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does. They are not collapse pressures. As in the PD 5500 form, the pressure acts at the shell mid-surface radius; on the outer surface, exact equilibrium would raise the mean hoop stresses by R_o/R = 1 + t/(2R)."
+        "Each buckling pressure is labelled by comparing its shell circumferential membrane stress with the proportional limit: on a valid record, the periodic bay's mid-bay hoop stress for the inter-ring bay, and nominal p*r/t for the global mode. With only a yield strength, a pressure is an elastic upper bound when that stress exceeds yield and undetermined otherwise.",
+        "Global buckling is elastic: lobar modes (n >= 2, axial half-waves longer than one ring spacing, and always m = 1) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
+        "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves longer than one ring spacing, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. NASA notes that its orthotropic equations lose accuracy against Love or Sanders theory for n <= 4 (printed p. 35) and that a more accurate discrete-ring theory gives somewhat lower pressures (p. 38), so widely spaced or deep eccentric rings still need a discrete-ring or code-rule check.",
+        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does (hoop stress only, perfect shell). They are not collapse pressures. As in the PD 5500 form, and as DAPS4 takes the hoop load, the pressure acts at the shell mid-surface radius; on the outer surface, exact equilibrium would raise the unstiffened mean hoop stress by R_o/R = 1 + t/(2R) and the bay's slightly less."
       ],
       "poisson_ratio": 0.3,
       "proportional_limit_mpa": {
@@ -8868,27 +8882,29 @@
           "value": 1.45263351224
         },
         "adjustment_factor": 0.75,
+        "axial_half_wave_limit_binding": false,
         "converged": true,
         "critical_axial_half_waves_m": 1,
         "critical_circumferential_lobes_n": 2,
-        "evaluated_axial_half_waves": 14,
+        "critical_half_wave_over_ring_spacing": 29.0,
+        "evaluated_axial_half_waves": 28,
         "evaluated_circumferential_lobes": 88,
-        "evaluated_mode_count": 1218,
+        "evaluated_mode_count": 2436,
         "ideal_critical_pressure_mpa": {
           "unit": "MPa",
           "value": 1.93684468298
         },
         "iterations": [
           {
-            "axial_half_wave_bound": 14,
+            "axial_half_wave_bound": 28,
             "circumferential_lobe_bound": 22,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 294,
+            "cumulative_evaluated_modes": 588,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 111.403092786
+              "value": 102.026366735
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": false,
@@ -8896,39 +8912,19 @@
               "unit": "MPa",
               "value": 1.93684468298
             },
-            "newly_evaluated_modes": 294,
+            "newly_evaluated_modes": 588,
             "relative_pressure_change": null
           },
           {
-            "axial_half_wave_bound": 14,
+            "axial_half_wave_bound": 28,
             "circumferential_lobe_bound": 44,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 602,
+            "cumulative_evaluated_modes": 1204,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 462.521551065
-            },
-            "governing_mode_below_frontier": true,
-            "governing_mode_stable": true,
-            "ideal_critical_pressure_mpa": {
-              "unit": "MPa",
-              "value": 1.93684468298
-            },
-            "newly_evaluated_modes": 308,
-            "relative_pressure_change": 0.0
-          },
-          {
-            "axial_half_wave_bound": 14,
-            "circumferential_lobe_bound": 88,
-            "critical_axial_half_waves_m": 1,
-            "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 1218,
-            "frontier_above_governing": true,
-            "frontier_minimum_pressure_mpa": {
-              "unit": "MPa",
-              "value": 1813.87338185
+              "value": 446.551343583
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -8938,10 +8934,29 @@
             },
             "newly_evaluated_modes": 616,
             "relative_pressure_change": 0.0
+          },
+          {
+            "axial_half_wave_bound": 28,
+            "circumferential_lobe_bound": 88,
+            "critical_axial_half_waves_m": 1,
+            "critical_circumferential_lobes_n": 2,
+            "cumulative_evaluated_modes": 2436,
+            "frontier_above_governing": true,
+            "frontier_minimum_pressure_mpa": {
+              "unit": "MPa",
+              "value": 1795.83194101
+            },
+            "governing_mode_below_frontier": true,
+            "governing_mode_stable": true,
+            "ideal_critical_pressure_mpa": {
+              "unit": "MPa",
+              "value": 1.93684468298
+            },
+            "newly_evaluated_modes": 1232,
+            "relative_pressure_change": 0.0
           }
         ],
-        "maximum_axial_half_waves_m": 14,
-        "minimum_ring_spacings_per_axial_half_wave": 2.0,
+        "maximum_axial_half_waves_m": 28,
         "mode_domain": "1<=m<=maximum_axial_half_waves_m,n>=2",
         "orthotropic_bending_x_n_mm": {
           "unit": "N*mm",
@@ -8992,27 +9007,29 @@
           "value": 1.44994296483
         },
         "adjustment_factor": 0.75,
+        "axial_half_wave_limit_binding": false,
         "converged": true,
         "critical_axial_half_waves_m": 1,
         "critical_circumferential_lobes_n": 2,
-        "evaluated_axial_half_waves": 14,
+        "critical_half_wave_over_ring_spacing": 29.0,
+        "evaluated_axial_half_waves": 28,
         "evaluated_circumferential_lobes": 88,
-        "evaluated_mode_count": 1218,
+        "evaluated_mode_count": 2436,
         "ideal_critical_pressure_mpa": {
           "unit": "MPa",
           "value": 1.93325728644
         },
         "iterations": [
           {
-            "axial_half_wave_bound": 14,
+            "axial_half_wave_bound": 28,
             "circumferential_lobe_bound": 22,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 294,
+            "cumulative_evaluated_modes": 588,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 110.721035124
+              "value": 99.6382053251
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": false,
@@ -9020,39 +9037,19 @@
               "unit": "MPa",
               "value": 1.93325728644
             },
-            "newly_evaluated_modes": 294,
+            "newly_evaluated_modes": 588,
             "relative_pressure_change": null
           },
           {
-            "axial_half_wave_bound": 14,
+            "axial_half_wave_bound": 28,
             "circumferential_lobe_bound": 44,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 602,
+            "cumulative_evaluated_modes": 1204,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 461.814316209
-            },
-            "governing_mode_below_frontier": true,
-            "governing_mode_stable": true,
-            "ideal_critical_pressure_mpa": {
-              "unit": "MPa",
-              "value": 1.93325728644
-            },
-            "newly_evaluated_modes": 308,
-            "relative_pressure_change": 0.0
-          },
-          {
-            "axial_half_wave_bound": 14,
-            "circumferential_lobe_bound": 88,
-            "critical_axial_half_waves_m": 1,
-            "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 1218,
-            "frontier_above_governing": true,
-            "frontier_minimum_pressure_mpa": {
-              "unit": "MPa",
-              "value": 1813.1596262
+              "value": 443.823112936
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -9062,10 +9059,29 @@
             },
             "newly_evaluated_modes": 616,
             "relative_pressure_change": 0.0
+          },
+          {
+            "axial_half_wave_bound": 28,
+            "circumferential_lobe_bound": 88,
+            "critical_axial_half_waves_m": 1,
+            "critical_circumferential_lobes_n": 2,
+            "cumulative_evaluated_modes": 2436,
+            "frontier_above_governing": true,
+            "frontier_minimum_pressure_mpa": {
+              "unit": "MPa",
+              "value": 1793.00404802
+            },
+            "governing_mode_below_frontier": true,
+            "governing_mode_stable": true,
+            "ideal_critical_pressure_mpa": {
+              "unit": "MPa",
+              "value": 1.93325728644
+            },
+            "newly_evaluated_modes": 1232,
+            "relative_pressure_change": 0.0
           }
         ],
-        "maximum_axial_half_waves_m": 14,
-        "minimum_ring_spacings_per_axial_half_wave": 2.0,
+        "maximum_axial_half_waves_m": 28,
         "mode_domain": "1<=m<=maximum_axial_half_waves_m,n>=2",
         "orthotropic_bending_x_n_mm": {
           "unit": "N*mm",
@@ -9301,12 +9317,12 @@
           "Longitudinal end restraint can increase theoretical capacity, and rotational restraint can affect short cylinders; those boundary-condition sensitivities are not credited.",
           "NASA Eq. 28 states sqrt(gamma)=0.75 for Eqs. 23-25; because the source adds the gamma^2 term to Eqs. 20/22 and introduces Eq. 23 as their gamma*Z > 100 reduction, this model applies the same factor inside Eqs. 20/22 at every gamma*Z. gamma=0.90 belongs to Eqs. 26-27; the moderate/long overlap created by the two factors has no selection rule and stays withheld from capacity.",
           "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
-          "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA Rev. 2 permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, states no factor for 5 < gamma*Z < 100, and says linear interpolation in Z between Eqs. 30 and 31 may give satisfactory results there. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
+          "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(k*p) by bisection, where k is circumferential_stress_per_unit_pressure, r/t for a smooth shell. NASA Rev. 2 permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, states no factor for 5 < gamma*Z < 100, and says linear interpolation in Z between Eqs. 30 and 31 may give satisfactory results there. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
           "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. The correction imposes no strength limit; material strength is a separate check.",
           "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
           "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
-          "elastic_applicability compares applied membrane stress p*r/t with the proportional limit, falling back to yield strength. It sets neither capacity nor margin.",
-          "Circumferential membrane stresses, including the plasticity correction and the proportional-limit and elastic-applicability screens, use the ring-stiffened bay's mid-bay hoop membrane stress, 107.506 times the pressure, in place of p*r/t = 116.471 times the pressure: NASA evaluates its plasticity factors at the circumferential stress of the buckling shell, and the rings carry part of the hoop load."
+          "elastic_applicability compares the applied circumferential membrane stress, p*r/t for a smooth shell, with the proportional limit, falling back to yield strength. It sets neither capacity nor margin.",
+          "Circumferential membrane stresses, including the plasticity correction and the proportional-limit and elastic-applicability screens, use the ring-stiffened bay's mid-bay hoop membrane stress, 107.506 times the pressure, in place of p*r/t = 116.471 times the pressure. NASA defines its factors at the circumferential stress p*r/t of an unstiffened shell (Eq. 17); between rings, which carry part of the hoop load, this extends that definition to the bay's own mid-bay hoop stress."
         ],
         "plasticity_factor": null,
         "poisson_ratio": 0.3,
@@ -9387,7 +9403,7 @@
           "source_reference": "DTMB Report 1324, Figs. 3 and 6 and Tables 1-2, pp. 5-10; NASA/SP-8007-2020/REV 2, pp. 28 and 36"
         },
         {
-          "basis": "The source-gated smooth-shell method is evaluated over ring center-to-center spacing with ideal simply supported circular lines, and its material stress is the periodic bay's mid-bay hoop membrane stress; its own capacity_status is withheld_applicability.",
+          "basis": "The source-gated smooth-shell method is evaluated over ring center-to-center spacing with ideal simply supported circular lines, and on a valid record its material stress is the periodic bay's mid-bay hoop membrane stress; its own capacity_status is withheld_applicability.",
           "disposition": "implemented_advisory",
           "mode": "inter_ring_shell_buckling",
           "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 3-5, 17-29 and 30-32, pp. 22 and 26-29"
@@ -9445,10 +9461,10 @@
       "model_version": "6.0.0",
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
-        "Each buckling pressure is labelled by comparing its shell circumferential membrane stress with the proportional limit: the periodic bay's mid-bay hoop stress for the inter-ring bay, nominal p*r/t for the global mode. With only a yield strength, a pressure is an elastic upper bound when that stress exceeds yield and undetermined otherwise.",
-        "Global buckling is elastic: lobar modes (n >= 2, axial half-waves of at least two ring spacings, and always m = 1) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
-        "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves of at least two ring spacings, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. Widely spaced rings still need a discrete-ring or code-rule check.",
-        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does. They are not collapse pressures. As in the PD 5500 form, the pressure acts at the shell mid-surface radius; on the outer surface, exact equilibrium would raise the mean hoop stresses by R_o/R = 1 + t/(2R)."
+        "Each buckling pressure is labelled by comparing its shell circumferential membrane stress with the proportional limit: on a valid record, the periodic bay's mid-bay hoop stress for the inter-ring bay, and nominal p*r/t for the global mode. With only a yield strength, a pressure is an elastic upper bound when that stress exceeds yield and undetermined otherwise.",
+        "Global buckling is elastic: lobar modes (n >= 2, axial half-waves longer than one ring spacing, and always m = 1) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
+        "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves longer than one ring spacing, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. NASA notes that its orthotropic equations lose accuracy against Love or Sanders theory for n <= 4 (printed p. 35) and that a more accurate discrete-ring theory gives somewhat lower pressures (p. 38), so widely spaced or deep eccentric rings still need a discrete-ring or code-rule check.",
+        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does (hoop stress only, perfect shell). They are not collapse pressures. As in the PD 5500 form, and as DAPS4 takes the hoop load, the pressure acts at the shell mid-surface radius; on the outer surface, exact equilibrium would raise the unstiffened mean hoop stress by R_o/R = 1 + t/(2R) and the bay's slightly less."
       ],
       "poisson_ratio": 0.3,
       "proportional_limit_mpa": {
@@ -9646,27 +9662,29 @@
           "value": 1.37706966804
         },
         "adjustment_factor": 0.75,
+        "axial_half_wave_limit_binding": false,
         "converged": true,
         "critical_axial_half_waves_m": 1,
         "critical_circumferential_lobes_n": 2,
-        "evaluated_axial_half_waves": 15,
+        "critical_half_wave_over_ring_spacing": 31.0,
+        "evaluated_axial_half_waves": 30,
         "evaluated_circumferential_lobes": 88,
-        "evaluated_mode_count": 1305,
+        "evaluated_mode_count": 2610,
         "ideal_critical_pressure_mpa": {
           "unit": "MPa",
           "value": 1.83609289072
         },
         "iterations": [
           {
-            "axial_half_wave_bound": 15,
+            "axial_half_wave_bound": 30,
             "circumferential_lobe_bound": 22,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 315,
+            "cumulative_evaluated_modes": 630,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 111.381128537
+              "value": 101.988283805
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": false,
@@ -9674,39 +9692,19 @@
               "unit": "MPa",
               "value": 1.83609289072
             },
-            "newly_evaluated_modes": 315,
+            "newly_evaluated_modes": 630,
             "relative_pressure_change": null
           },
           {
-            "axial_half_wave_bound": 15,
+            "axial_half_wave_bound": 30,
             "circumferential_lobe_bound": 44,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 645,
+            "cumulative_evaluated_modes": 1290,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 462.494111728
-            },
-            "governing_mode_below_frontier": true,
-            "governing_mode_stable": true,
-            "ideal_critical_pressure_mpa": {
-              "unit": "MPa",
-              "value": 1.83609289072
-            },
-            "newly_evaluated_modes": 330,
-            "relative_pressure_change": 0.0
-          },
-          {
-            "axial_half_wave_bound": 15,
-            "circumferential_lobe_bound": 88,
-            "critical_axial_half_waves_m": 1,
-            "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 1305,
-            "frontier_above_governing": true,
-            "frontier_minimum_pressure_mpa": {
-              "unit": "MPa",
-              "value": 1813.84480944
+              "value": 446.463354949
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -9716,10 +9714,29 @@
             },
             "newly_evaluated_modes": 660,
             "relative_pressure_change": 0.0
+          },
+          {
+            "axial_half_wave_bound": 30,
+            "circumferential_lobe_bound": 88,
+            "critical_axial_half_waves_m": 1,
+            "critical_circumferential_lobes_n": 2,
+            "cumulative_evaluated_modes": 2610,
+            "frontier_above_governing": true,
+            "frontier_minimum_pressure_mpa": {
+              "unit": "MPa",
+              "value": 1795.72418302
+            },
+            "governing_mode_below_frontier": true,
+            "governing_mode_stable": true,
+            "ideal_critical_pressure_mpa": {
+              "unit": "MPa",
+              "value": 1.83609289072
+            },
+            "newly_evaluated_modes": 1320,
+            "relative_pressure_change": 0.0
           }
         ],
-        "maximum_axial_half_waves_m": 15,
-        "minimum_ring_spacings_per_axial_half_wave": 2.0,
+        "maximum_axial_half_waves_m": 30,
         "mode_domain": "1<=m<=maximum_axial_half_waves_m,n>=2",
         "orthotropic_bending_x_n_mm": {
           "unit": "N*mm",
@@ -9770,27 +9787,29 @@
           "value": 1.37470977378
         },
         "adjustment_factor": 0.75,
+        "axial_half_wave_limit_binding": false,
         "converged": true,
         "critical_axial_half_waves_m": 1,
         "critical_circumferential_lobes_n": 2,
-        "evaluated_axial_half_waves": 15,
+        "critical_half_wave_over_ring_spacing": 31.0,
+        "evaluated_axial_half_waves": 30,
         "evaluated_circumferential_lobes": 88,
-        "evaluated_mode_count": 1305,
+        "evaluated_mode_count": 2610,
         "ideal_critical_pressure_mpa": {
           "unit": "MPa",
           "value": 1.83294636503
         },
         "iterations": [
           {
-            "axial_half_wave_bound": 15,
+            "axial_half_wave_bound": 30,
             "circumferential_lobe_bound": 22,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 315,
+            "cumulative_evaluated_modes": 630,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 110.696074151
+              "value": 99.5909425746
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": false,
@@ -9798,39 +9817,19 @@
               "unit": "MPa",
               "value": 1.83294636503
             },
-            "newly_evaluated_modes": 315,
+            "newly_evaluated_modes": 630,
             "relative_pressure_change": null
           },
           {
-            "axial_half_wave_bound": 15,
+            "axial_half_wave_bound": 30,
             "circumferential_lobe_bound": 44,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 645,
+            "cumulative_evaluated_modes": 1290,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 461.783654302
-            },
-            "governing_mode_below_frontier": true,
-            "governing_mode_stable": true,
-            "ideal_critical_pressure_mpa": {
-              "unit": "MPa",
-              "value": 1.83294636503
-            },
-            "newly_evaluated_modes": 330,
-            "relative_pressure_change": 0.0
-          },
-          {
-            "axial_half_wave_bound": 15,
-            "circumferential_lobe_bound": 88,
-            "critical_axial_half_waves_m": 1,
-            "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 1305,
-            "frontier_above_governing": true,
-            "frontier_minimum_pressure_mpa": {
-              "unit": "MPa",
-              "value": 1813.12777139
+              "value": 443.723137405
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -9840,10 +9839,29 @@
             },
             "newly_evaluated_modes": 660,
             "relative_pressure_change": 0.0
+          },
+          {
+            "axial_half_wave_bound": 30,
+            "circumferential_lobe_bound": 88,
+            "critical_axial_half_waves_m": 1,
+            "critical_circumferential_lobes_n": 2,
+            "cumulative_evaluated_modes": 2610,
+            "frontier_above_governing": true,
+            "frontier_minimum_pressure_mpa": {
+              "unit": "MPa",
+              "value": 1792.88340931
+            },
+            "governing_mode_below_frontier": true,
+            "governing_mode_stable": true,
+            "ideal_critical_pressure_mpa": {
+              "unit": "MPa",
+              "value": 1.83294636503
+            },
+            "newly_evaluated_modes": 1320,
+            "relative_pressure_change": 0.0
           }
         ],
-        "maximum_axial_half_waves_m": 15,
-        "minimum_ring_spacings_per_axial_half_wave": 2.0,
+        "maximum_axial_half_waves_m": 30,
         "mode_domain": "1<=m<=maximum_axial_half_waves_m,n>=2",
         "orthotropic_bending_x_n_mm": {
           "unit": "N*mm",
@@ -10079,12 +10097,12 @@
           "Longitudinal end restraint can increase theoretical capacity, and rotational restraint can affect short cylinders; those boundary-condition sensitivities are not credited.",
           "NASA Eq. 28 states sqrt(gamma)=0.75 for Eqs. 23-25; because the source adds the gamma^2 term to Eqs. 20/22 and introduces Eq. 23 as their gamma*Z > 100 reduction, this model applies the same factor inside Eqs. 20/22 at every gamma*Z. gamma=0.90 belongs to Eqs. 26-27; the moderate/long overlap created by the two factors has no selection rule and stays withheld from capacity.",
           "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
-          "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA Rev. 2 permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, states no factor for 5 < gamma*Z < 100, and says linear interpolation in Z between Eqs. 30 and 31 may give satisfactory results there. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
+          "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(k*p) by bisection, where k is circumferential_stress_per_unit_pressure, r/t for a smooth shell. NASA Rev. 2 permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, states no factor for 5 < gamma*Z < 100, and says linear interpolation in Z between Eqs. 30 and 31 may give satisfactory results there. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
           "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. The correction imposes no strength limit; material strength is a separate check.",
           "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
           "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
-          "elastic_applicability compares applied membrane stress p*r/t with the proportional limit, falling back to yield strength. It sets neither capacity nor margin.",
-          "Circumferential membrane stresses, including the plasticity correction and the proportional-limit and elastic-applicability screens, use the ring-stiffened bay's mid-bay hoop membrane stress, 107.506 times the pressure, in place of p*r/t = 116.471 times the pressure: NASA evaluates its plasticity factors at the circumferential stress of the buckling shell, and the rings carry part of the hoop load."
+          "elastic_applicability compares the applied circumferential membrane stress, p*r/t for a smooth shell, with the proportional limit, falling back to yield strength. It sets neither capacity nor margin.",
+          "Circumferential membrane stresses, including the plasticity correction and the proportional-limit and elastic-applicability screens, use the ring-stiffened bay's mid-bay hoop membrane stress, 107.506 times the pressure, in place of p*r/t = 116.471 times the pressure. NASA defines its factors at the circumferential stress p*r/t of an unstiffened shell (Eq. 17); between rings, which carry part of the hoop load, this extends that definition to the bay's own mid-bay hoop stress."
         ],
         "plasticity_factor": null,
         "poisson_ratio": 0.3,
@@ -10165,7 +10183,7 @@
           "source_reference": "DTMB Report 1324, Figs. 3 and 6 and Tables 1-2, pp. 5-10; NASA/SP-8007-2020/REV 2, pp. 28 and 36"
         },
         {
-          "basis": "The source-gated smooth-shell method is evaluated over ring center-to-center spacing with ideal simply supported circular lines, and its material stress is the periodic bay's mid-bay hoop membrane stress; its own capacity_status is withheld_applicability.",
+          "basis": "The source-gated smooth-shell method is evaluated over ring center-to-center spacing with ideal simply supported circular lines, and on a valid record its material stress is the periodic bay's mid-bay hoop membrane stress; its own capacity_status is withheld_applicability.",
           "disposition": "implemented_advisory",
           "mode": "inter_ring_shell_buckling",
           "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 3-5, 17-29 and 30-32, pp. 22 and 26-29"
@@ -10223,10 +10241,10 @@
       "model_version": "6.0.0",
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
-        "Each buckling pressure is labelled by comparing its shell circumferential membrane stress with the proportional limit: the periodic bay's mid-bay hoop stress for the inter-ring bay, nominal p*r/t for the global mode. With only a yield strength, a pressure is an elastic upper bound when that stress exceeds yield and undetermined otherwise.",
-        "Global buckling is elastic: lobar modes (n >= 2, axial half-waves of at least two ring spacings, and always m = 1) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
-        "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves of at least two ring spacings, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. Widely spaced rings still need a discrete-ring or code-rule check.",
-        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does. They are not collapse pressures. As in the PD 5500 form, the pressure acts at the shell mid-surface radius; on the outer surface, exact equilibrium would raise the mean hoop stresses by R_o/R = 1 + t/(2R)."
+        "Each buckling pressure is labelled by comparing its shell circumferential membrane stress with the proportional limit: on a valid record, the periodic bay's mid-bay hoop stress for the inter-ring bay, and nominal p*r/t for the global mode. With only a yield strength, a pressure is an elastic upper bound when that stress exceeds yield and undetermined otherwise.",
+        "Global buckling is elastic: lobar modes (n >= 2, axial half-waves longer than one ring spacing, and always m = 1) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
+        "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves longer than one ring spacing, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. NASA notes that its orthotropic equations lose accuracy against Love or Sanders theory for n <= 4 (printed p. 35) and that a more accurate discrete-ring theory gives somewhat lower pressures (p. 38), so widely spaced or deep eccentric rings still need a discrete-ring or code-rule check.",
+        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does (hoop stress only, perfect shell). They are not collapse pressures. As in the PD 5500 form, and as DAPS4 takes the hoop load, the pressure acts at the shell mid-surface radius; on the outer surface, exact equilibrium would raise the unstiffened mean hoop stress by R_o/R = 1 + t/(2R) and the bay's slightly less."
       ],
       "poisson_ratio": 0.3,
       "proportional_limit_mpa": {
@@ -10424,27 +10442,29 @@
           "value": 1.32395394005
         },
         "adjustment_factor": 0.75,
+        "axial_half_wave_limit_binding": false,
         "converged": true,
         "critical_axial_half_waves_m": 1,
         "critical_circumferential_lobes_n": 2,
-        "evaluated_axial_half_waves": 16,
+        "critical_half_wave_over_ring_spacing": 33.0,
+        "evaluated_axial_half_waves": 32,
         "evaluated_circumferential_lobes": 88,
-        "evaluated_mode_count": 1392,
+        "evaluated_mode_count": 2784,
         "ideal_critical_pressure_mpa": {
           "unit": "MPa",
           "value": 1.76527192007
         },
         "iterations": [
           {
-            "axial_half_wave_bound": 16,
+            "axial_half_wave_bound": 32,
             "circumferential_lobe_bound": 22,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 336,
+            "cumulative_evaluated_modes": 672,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 111.36181437
+              "value": 101.954870746
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": false,
@@ -10452,39 +10472,19 @@
               "unit": "MPa",
               "value": 1.76527192007
             },
-            "newly_evaluated_modes": 336,
+            "newly_evaluated_modes": 672,
             "relative_pressure_change": null
           },
           {
-            "axial_half_wave_bound": 16,
+            "axial_half_wave_bound": 32,
             "circumferential_lobe_bound": 44,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 688,
+            "cumulative_evaluated_modes": 1376,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 462.469954547
-            },
-            "governing_mode_below_frontier": true,
-            "governing_mode_stable": true,
-            "ideal_critical_pressure_mpa": {
-              "unit": "MPa",
-              "value": 1.76527192007
-            },
-            "newly_evaluated_modes": 352,
-            "relative_pressure_change": 0.0
-          },
-          {
-            "axial_half_wave_bound": 16,
-            "circumferential_lobe_bound": 88,
-            "critical_axial_half_waves_m": 1,
-            "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 1392,
-            "frontier_above_governing": true,
-            "frontier_minimum_pressure_mpa": {
-              "unit": "MPa",
-              "value": 1813.81964825
+              "value": 446.385956066
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -10494,10 +10494,29 @@
             },
             "newly_evaluated_modes": 704,
             "relative_pressure_change": 0.0
+          },
+          {
+            "axial_half_wave_bound": 32,
+            "circumferential_lobe_bound": 88,
+            "critical_axial_half_waves_m": 1,
+            "critical_circumferential_lobes_n": 2,
+            "cumulative_evaluated_modes": 2784,
+            "frontier_above_governing": true,
+            "frontier_minimum_pressure_mpa": {
+              "unit": "MPa",
+              "value": 1795.62931343
+            },
+            "governing_mode_below_frontier": true,
+            "governing_mode_stable": true,
+            "ideal_critical_pressure_mpa": {
+              "unit": "MPa",
+              "value": 1.76527192007
+            },
+            "newly_evaluated_modes": 1408,
+            "relative_pressure_change": 0.0
           }
         ],
-        "maximum_axial_half_waves_m": 16,
-        "minimum_ring_spacings_per_axial_half_wave": 2.0,
+        "maximum_axial_half_waves_m": 32,
         "mode_domain": "1<=m<=maximum_axial_half_waves_m,n>=2",
         "orthotropic_bending_x_n_mm": {
           "unit": "N*mm",
@@ -10548,27 +10567,29 @@
           "value": 1.32186754567
         },
         "adjustment_factor": 0.75,
+        "axial_half_wave_limit_binding": false,
         "converged": true,
         "critical_axial_half_waves_m": 1,
         "critical_circumferential_lobes_n": 2,
-        "evaluated_axial_half_waves": 16,
+        "critical_half_wave_over_ring_spacing": 33.0,
+        "evaluated_axial_half_waves": 32,
         "evaluated_circumferential_lobes": 88,
-        "evaluated_mode_count": 1392,
+        "evaluated_mode_count": 2784,
         "ideal_critical_pressure_mpa": {
           "unit": "MPa",
           "value": 1.76249006089
         },
         "iterations": [
           {
-            "axial_half_wave_bound": 16,
+            "axial_half_wave_bound": 32,
             "circumferential_lobe_bound": 22,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 336,
+            "cumulative_evaluated_modes": 672,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 110.674121891
+              "value": 99.5494566006
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": false,
@@ -10576,39 +10597,19 @@
               "unit": "MPa",
               "value": 1.76249006089
             },
-            "newly_evaluated_modes": 336,
+            "newly_evaluated_modes": 672,
             "relative_pressure_change": null
           },
           {
-            "axial_half_wave_bound": 16,
+            "axial_half_wave_bound": 32,
             "circumferential_lobe_bound": 44,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 688,
+            "cumulative_evaluated_modes": 1376,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 461.756659346
-            },
-            "governing_mode_below_frontier": true,
-            "governing_mode_stable": true,
-            "ideal_critical_pressure_mpa": {
-              "unit": "MPa",
-              "value": 1.76249006089
-            },
-            "newly_evaluated_modes": 352,
-            "relative_pressure_change": 0.0
-          },
-          {
-            "axial_half_wave_bound": 16,
-            "circumferential_lobe_bound": 88,
-            "critical_axial_half_waves_m": 1,
-            "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 1392,
-            "frontier_above_governing": true,
-            "frontier_minimum_pressure_mpa": {
-              "unit": "MPa",
-              "value": 1813.0997195
+              "value": 443.635186152
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -10618,10 +10619,29 @@
             },
             "newly_evaluated_modes": 704,
             "relative_pressure_change": 0.0
+          },
+          {
+            "axial_half_wave_bound": 32,
+            "circumferential_lobe_bound": 88,
+            "critical_axial_half_waves_m": 1,
+            "critical_circumferential_lobes_n": 2,
+            "cumulative_evaluated_modes": 2784,
+            "frontier_above_governing": true,
+            "frontier_minimum_pressure_mpa": {
+              "unit": "MPa",
+              "value": 1792.77719707
+            },
+            "governing_mode_below_frontier": true,
+            "governing_mode_stable": true,
+            "ideal_critical_pressure_mpa": {
+              "unit": "MPa",
+              "value": 1.76249006089
+            },
+            "newly_evaluated_modes": 1408,
+            "relative_pressure_change": 0.0
           }
         ],
-        "maximum_axial_half_waves_m": 16,
-        "minimum_ring_spacings_per_axial_half_wave": 2.0,
+        "maximum_axial_half_waves_m": 32,
         "mode_domain": "1<=m<=maximum_axial_half_waves_m,n>=2",
         "orthotropic_bending_x_n_mm": {
           "unit": "N*mm",
@@ -10857,12 +10877,12 @@
           "Longitudinal end restraint can increase theoretical capacity, and rotational restraint can affect short cylinders; those boundary-condition sensitivities are not credited.",
           "NASA Eq. 28 states sqrt(gamma)=0.75 for Eqs. 23-25; because the source adds the gamma^2 term to Eqs. 20/22 and introduces Eq. 23 as their gamma*Z > 100 reduction, this model applies the same factor inside Eqs. 20/22 at every gamma*Z. gamma=0.90 belongs to Eqs. 26-27; the moderate/long overlap created by the two factors has no selection rule and stays withheld from capacity.",
           "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
-          "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA Rev. 2 permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, states no factor for 5 < gamma*Z < 100, and says linear interpolation in Z between Eqs. 30 and 31 may give satisfactory results there. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
+          "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(k*p) by bisection, where k is circumferential_stress_per_unit_pressure, r/t for a smooth shell. NASA Rev. 2 permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, states no factor for 5 < gamma*Z < 100, and says linear interpolation in Z between Eqs. 30 and 31 may give satisfactory results there. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
           "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. The correction imposes no strength limit; material strength is a separate check.",
           "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
           "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
-          "elastic_applicability compares applied membrane stress p*r/t with the proportional limit, falling back to yield strength. It sets neither capacity nor margin.",
-          "Circumferential membrane stresses, including the plasticity correction and the proportional-limit and elastic-applicability screens, use the ring-stiffened bay's mid-bay hoop membrane stress, 107.506 times the pressure, in place of p*r/t = 116.471 times the pressure: NASA evaluates its plasticity factors at the circumferential stress of the buckling shell, and the rings carry part of the hoop load."
+          "elastic_applicability compares the applied circumferential membrane stress, p*r/t for a smooth shell, with the proportional limit, falling back to yield strength. It sets neither capacity nor margin.",
+          "Circumferential membrane stresses, including the plasticity correction and the proportional-limit and elastic-applicability screens, use the ring-stiffened bay's mid-bay hoop membrane stress, 107.506 times the pressure, in place of p*r/t = 116.471 times the pressure. NASA defines its factors at the circumferential stress p*r/t of an unstiffened shell (Eq. 17); between rings, which carry part of the hoop load, this extends that definition to the bay's own mid-bay hoop stress."
         ],
         "plasticity_factor": null,
         "poisson_ratio": 0.3,
@@ -10943,7 +10963,7 @@
           "source_reference": "DTMB Report 1324, Figs. 3 and 6 and Tables 1-2, pp. 5-10; NASA/SP-8007-2020/REV 2, pp. 28 and 36"
         },
         {
-          "basis": "The source-gated smooth-shell method is evaluated over ring center-to-center spacing with ideal simply supported circular lines, and its material stress is the periodic bay's mid-bay hoop membrane stress; its own capacity_status is withheld_applicability.",
+          "basis": "The source-gated smooth-shell method is evaluated over ring center-to-center spacing with ideal simply supported circular lines, and on a valid record its material stress is the periodic bay's mid-bay hoop membrane stress; its own capacity_status is withheld_applicability.",
           "disposition": "implemented_advisory",
           "mode": "inter_ring_shell_buckling",
           "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 3-5, 17-29 and 30-32, pp. 22 and 26-29"
@@ -11001,10 +11021,10 @@
       "model_version": "6.0.0",
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
-        "Each buckling pressure is labelled by comparing its shell circumferential membrane stress with the proportional limit: the periodic bay's mid-bay hoop stress for the inter-ring bay, nominal p*r/t for the global mode. With only a yield strength, a pressure is an elastic upper bound when that stress exceeds yield and undetermined otherwise.",
-        "Global buckling is elastic: lobar modes (n >= 2, axial half-waves of at least two ring spacings, and always m = 1) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
-        "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves of at least two ring spacings, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. Widely spaced rings still need a discrete-ring or code-rule check.",
-        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does. They are not collapse pressures. As in the PD 5500 form, the pressure acts at the shell mid-surface radius; on the outer surface, exact equilibrium would raise the mean hoop stresses by R_o/R = 1 + t/(2R)."
+        "Each buckling pressure is labelled by comparing its shell circumferential membrane stress with the proportional limit: on a valid record, the periodic bay's mid-bay hoop stress for the inter-ring bay, and nominal p*r/t for the global mode. With only a yield strength, a pressure is an elastic upper bound when that stress exceeds yield and undetermined otherwise.",
+        "Global buckling is elastic: lobar modes (n >= 2, axial half-waves longer than one ring spacing, and always m = 1) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
+        "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves longer than one ring spacing, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. NASA notes that its orthotropic equations lose accuracy against Love or Sanders theory for n <= 4 (printed p. 35) and that a more accurate discrete-ring theory gives somewhat lower pressures (p. 38), so widely spaced or deep eccentric rings still need a discrete-ring or code-rule check.",
+        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does (hoop stress only, perfect shell). They are not collapse pressures. As in the PD 5500 form, and as DAPS4 takes the hoop load, the pressure acts at the shell mid-surface radius; on the outer surface, exact equilibrium would raise the unstiffened mean hoop stress by R_o/R = 1 + t/(2R) and the bay's slightly less."
       ],
       "poisson_ratio": 0.3,
       "proportional_limit_mpa": {
@@ -11324,11 +11344,11 @@
         "Longitudinal end restraint can increase theoretical capacity, and rotational restraint can affect short cylinders; those boundary-condition sensitivities are not credited.",
         "NASA Eq. 28 states sqrt(gamma)=0.75 for Eqs. 23-25; because the source adds the gamma^2 term to Eqs. 20/22 and introduces Eq. 23 as their gamma*Z > 100 reduction, this model applies the same factor inside Eqs. 20/22 at every gamma*Z. gamma=0.90 belongs to Eqs. 26-27; the moderate/long overlap created by the two factors has no selection rule and stays withheld from capacity.",
         "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
-        "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA Rev. 2 permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, states no factor for 5 < gamma*Z < 100, and says linear interpolation in Z between Eqs. 30 and 31 may give satisfactory results there. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
+        "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(k*p) by bisection, where k is circumferential_stress_per_unit_pressure, r/t for a smooth shell. NASA Rev. 2 permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, states no factor for 5 < gamma*Z < 100, and says linear interpolation in Z between Eqs. 30 and 31 may give satisfactory results there. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
         "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. The correction imposes no strength limit; material strength is a separate check.",
         "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
         "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
-        "elastic_applicability compares applied membrane stress p*r/t with the proportional limit, falling back to yield strength. It sets neither capacity nor margin.",
+        "elastic_applicability compares the applied circumferential membrane stress, p*r/t for a smooth shell, with the proportional limit, falling back to yield strength. It sets neither capacity nor margin.",
         "Buckling data are reference-only; applicability of the material properties to this part is unverified."
       ],
       "plasticity_factor": 0.98478044267,
@@ -11626,11 +11646,11 @@
         "Longitudinal end restraint can increase theoretical capacity, and rotational restraint can affect short cylinders; those boundary-condition sensitivities are not credited.",
         "NASA Eq. 28 states sqrt(gamma)=0.75 for Eqs. 23-25; because the source adds the gamma^2 term to Eqs. 20/22 and introduces Eq. 23 as their gamma*Z > 100 reduction, this model applies the same factor inside Eqs. 20/22 at every gamma*Z. gamma=0.90 belongs to Eqs. 26-27; the moderate/long overlap created by the two factors has no selection rule and stays withheld from capacity.",
         "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
-        "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA Rev. 2 permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, states no factor for 5 < gamma*Z < 100, and says linear interpolation in Z between Eqs. 30 and 31 may give satisfactory results there. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
+        "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(k*p) by bisection, where k is circumferential_stress_per_unit_pressure, r/t for a smooth shell. NASA Rev. 2 permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, states no factor for 5 < gamma*Z < 100, and says linear interpolation in Z between Eqs. 30 and 31 may give satisfactory results there. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
         "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. The correction imposes no strength limit; material strength is a separate check.",
         "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
         "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
-        "elastic_applicability compares applied membrane stress p*r/t with the proportional limit, falling back to yield strength. It sets neither capacity nor margin."
+        "elastic_applicability compares the applied circumferential membrane stress, p*r/t for a smooth shell, with the proportional limit, falling back to yield strength. It sets neither capacity nor margin."
       ],
       "plasticity_factor": null,
       "poisson_ratio": 0.3,
@@ -11924,11 +11944,11 @@
         "Longitudinal end restraint can increase theoretical capacity, and rotational restraint can affect short cylinders; those boundary-condition sensitivities are not credited.",
         "NASA Eq. 28 states sqrt(gamma)=0.75 for Eqs. 23-25; because the source adds the gamma^2 term to Eqs. 20/22 and introduces Eq. 23 as their gamma*Z > 100 reduction, this model applies the same factor inside Eqs. 20/22 at every gamma*Z. gamma=0.90 belongs to Eqs. 26-27; the moderate/long overlap created by the two factors has no selection rule and stays withheld from capacity.",
         "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
-        "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA Rev. 2 permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, states no factor for 5 < gamma*Z < 100, and says linear interpolation in Z between Eqs. 30 and 31 may give satisfactory results there. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
+        "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(k*p) by bisection, where k is circumferential_stress_per_unit_pressure, r/t for a smooth shell. NASA Rev. 2 permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, states no factor for 5 < gamma*Z < 100, and says linear interpolation in Z between Eqs. 30 and 31 may give satisfactory results there. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
         "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. The correction imposes no strength limit; material strength is a separate check.",
         "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
         "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
-        "elastic_applicability compares applied membrane stress p*r/t with the proportional limit, falling back to yield strength. It sets neither capacity nor margin."
+        "elastic_applicability compares the applied circumferential membrane stress, p*r/t for a smooth shell, with the proportional limit, falling back to yield strength. It sets neither capacity nor margin."
       ],
       "plasticity_factor": null,
       "poisson_ratio": 0.3,
@@ -12222,11 +12242,11 @@
         "Longitudinal end restraint can increase theoretical capacity, and rotational restraint can affect short cylinders; those boundary-condition sensitivities are not credited.",
         "NASA Eq. 28 states sqrt(gamma)=0.75 for Eqs. 23-25; because the source adds the gamma^2 term to Eqs. 20/22 and introduces Eq. 23 as their gamma*Z > 100 reduction, this model applies the same factor inside Eqs. 20/22 at every gamma*Z. gamma=0.90 belongs to Eqs. 26-27; the moderate/long overlap created by the two factors has no selection rule and stays withheld from capacity.",
         "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
-        "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA Rev. 2 permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, states no factor for 5 < gamma*Z < 100, and says linear interpolation in Z between Eqs. 30 and 31 may give satisfactory results there. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
+        "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(k*p) by bisection, where k is circumferential_stress_per_unit_pressure, r/t for a smooth shell. NASA Rev. 2 permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, states no factor for 5 < gamma*Z < 100, and says linear interpolation in Z between Eqs. 30 and 31 may give satisfactory results there. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
         "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. The correction imposes no strength limit; material strength is a separate check.",
         "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
         "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
-        "elastic_applicability compares applied membrane stress p*r/t with the proportional limit, falling back to yield strength. It sets neither capacity nor margin."
+        "elastic_applicability compares the applied circumferential membrane stress, p*r/t for a smooth shell, with the proportional limit, falling back to yield strength. It sets neither capacity nor margin."
       ],
       "plasticity_factor": null,
       "poisson_ratio": 0.3,
@@ -12525,11 +12545,11 @@
             "Longitudinal end restraint can increase theoretical capacity, and rotational restraint can affect short cylinders; those boundary-condition sensitivities are not credited.",
             "NASA Eq. 28 states sqrt(gamma)=0.75 for Eqs. 23-25; because the source adds the gamma^2 term to Eqs. 20/22 and introduces Eq. 23 as their gamma*Z > 100 reduction, this model applies the same factor inside Eqs. 20/22 at every gamma*Z. gamma=0.90 belongs to Eqs. 26-27; the moderate/long overlap created by the two factors has no selection rule and stays withheld from capacity.",
             "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube domain Roark states; NASA does not state that numeric cutoff.",
-            "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(p*r/t) by bisection. NASA Rev. 2 permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, states no factor for 5 < gamma*Z < 100, and says linear interpolation in Z between Eqs. 30 and 31 may give satisfactory results there. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
+            "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving p = p_elastic*eta(k*p) by bisection, where k is circumferential_stress_per_unit_pressure, r/t for a smooth shell. NASA Rev. 2 permits these lateral-pressure factors for hydrostatic loading when biaxial factors are unavailable, states no factor for 5 < gamma*Z < 100, and says linear interpolation in Z between Eqs. 30 and 31 may give satisfactory results there. The corrected pressure, stress, and buckling coefficient include eta; ideal pressure and regime candidates remain elastic.",
             "Without a curve, a critical stress above the proportional limit retains an elastic estimate as released_pending_plasticity with a null margin. The correction imposes no strength limit; material strength is a separate check.",
             "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
             "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
-            "elastic_applicability compares applied membrane stress p*r/t with the proportional limit, falling back to yield strength. It sets neither capacity nor margin."
+            "elastic_applicability compares the applied circumferential membrane stress, p*r/t for a smooth shell, with the proportional limit, falling back to yield strength. It sets neither capacity nor margin."
           ],
           "plasticity_factor": null,
           "poisson_ratio": 0.3,

@@ -326,8 +326,9 @@ SMOOTH_CYLINDER_RING_BAY_STRESS_NOTE = (
     "Circumferential membrane stresses, including the plasticity correction and the "
     "proportional-limit and elastic-applicability screens, use the ring-stiffened bay's "
     "mid-bay hoop membrane stress, {ratio:.6g} times the pressure, in place of "
-    "p*r/t = {nominal:.6g} times the pressure: NASA evaluates its plasticity factors at the "
-    "circumferential stress of the buckling shell, and the rings carry part of the hoop load."
+    "p*r/t = {nominal:.6g} times the pressure. NASA defines its factors at the circumferential "
+    "stress p*r/t of an unstiffened shell (Eq. 17); between rings, which carry part of the "
+    "hoop load, this extends that definition to the bay's own mid-bay hoop stress."
 )
 SMOOTH_CYLINDER_SCOPE_NOTES = (
     "The NASA equations assume a thin, circular, isotropic, unstiffened shell with uniform "
@@ -347,7 +348,8 @@ SMOOTH_CYLINDER_SCOPE_NOTES = (
     "The release gate adopts mean-radius/thickness > 10 from the conventional thin-tube "
     "domain Roark states; NASA does not state that numeric cutoff.",
     "A complete compressive Ramberg-Osgood curve applies NASA Eqs. 30-32, solving "
-    "p = p_elastic*eta(p*r/t) by bisection. NASA Rev. 2 permits these lateral-pressure "
+    "p = p_elastic*eta(k*p) by bisection, where k is circumferential_stress_per_unit_pressure, "
+    "r/t for a smooth shell. NASA Rev. 2 permits these lateral-pressure "
     "factors for hydrostatic loading when biaxial factors are unavailable, states no factor "
     "for 5 < gamma*Z < 100, and says linear interpolation in Z between Eqs. 30 and 31 may "
     "give satisfactory results there. The corrected pressure, stress, and buckling "
@@ -361,8 +363,9 @@ SMOOTH_CYLINDER_SCOPE_NOTES = (
     "comparator at the mid-surface radius and set no released capacity or margin. It does not "
     "reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long "
     "length: it is Roark's own probable-minimum value, not a capacity.",
-    "elastic_applicability compares applied membrane stress p*r/t with the proportional "
-    "limit, falling back to yield strength. It sets neither capacity nor margin.",
+    "elastic_applicability compares the applied circumferential membrane stress, p*r/t for a "
+    "smooth shell, with the proportional limit, falling back to yield strength. It sets "
+    "neither capacity nor margin.",
 )
 
 
@@ -665,15 +668,22 @@ RING_SHELL_MODEL_VERSION = "6.0.0"
 RING_SHELL_EQ64_ADJUSTMENT_FACTOR = 0.75
 RING_SHELL_MIN_RADIUS_THICKNESS_RATIO = 10.0
 RING_SHELL_DEFAULT_MAX_MODE_EVALUATIONS = 2_000_000
-# Smeared ring stiffness stands for rings averaged over a buckle, so a global
-# axial half-wave must span ring spacings rather than fall between two rings.
-# At one spacing per half-wave the ring deflection depends on the wave's phase
-# against the rings, and the lowest-energy phase puts the rings at the nodes:
-# the inter-ring mode, which is checked separately. Two spacings keep an
-# interior ring in every half-wave. This is a pv-calc screen; NASA says only
-# that the smeared theory's adequacy should be investigated for sufficiently
-# large stiffener spacing (SP-8007 Rev. 2, printed p. 34).
-RING_SHELL_MIN_RING_SPACINGS_PER_AXIAL_HALF_WAVE = 2.0
+# Smeared ring stiffness stands for rings averaged over a buckle. Sampled at
+# the rings, a sine of any half-wave longer than one spacing gives the rings
+# the smeared strain energy on average, so such a wave moves the rings as the
+# smeared model assumes. At exactly one spacing the rings can sit at the
+# nodes, and a shorter wave falls between rings: both are the inter-ring bay's
+# deformation, checked separately, not a global mode. The search therefore
+# admits half-waves longer than one ring spacing, and always m = 1. This is a
+# pv-calc screen; NASA says only that the smeared theory's adequacy should be
+# investigated for sufficiently large stiffener spacing (SP-8007 Rev. 2,
+# printed p. 34).
+RING_SHELL_AXIAL_HALF_WAVE_BINDING_NOTE = (
+    "The smeared global minimum lies at the shortest admissible axial half-wave, just over "
+    "one ring spacing, and shorter waves would be lower. Those fall between the rings, "
+    "where the smeared stiffness does not apply and the inter-ring bay applies instead; "
+    "the global pressure reported is the lowest over half-waves longer than one spacing."
+)
 RING_SHELL_SOURCE = (
     "NASA/SP-8007-2020/REV 2, Eqs. 64-65 and 82-91, pp. 37 and 40-42"
 )
@@ -692,8 +702,8 @@ RING_SHELL_BOUNDARY_ASSUMPTIONS = (
     "Inter-ring bays assume ideal circular supports at ring center lines.",
 )
 RING_SHELL_PARTIAL_SCOPE_REASON = (
-    "Global buckling is elastic: lobar modes (n >= 2, axial half-waves of at least two ring "
-    "spacings, and always m = 1) with ideal simple supports. "
+    "Global buckling is elastic: lobar modes (n >= 2, axial half-waves longer than one ring "
+    "spacing, and always m = 1) with ideal simple supports. "
     "Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and "
     "the long-cylinder Eq. 66 transition are not checked."
 )
@@ -708,9 +718,10 @@ RING_SHELL_YIELD_NOTE = (
     "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at "
     "mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect "
     "periodic bay; ring first yield is where the ring's largest hoop stress, at its "
-    "smallest radius, does. They are not collapse pressures. As in the PD 5500 form, the "
-    "pressure acts at the shell mid-surface radius; on the outer surface, exact "
-    "equilibrium would raise the mean hoop stresses by R_o/R = 1 + t/(2R)."
+    "smallest radius, does (hoop stress only, perfect shell). They are not collapse "
+    "pressures. As in the PD 5500 form, and as DAPS4 takes the hoop load, the pressure acts "
+    "at the shell mid-surface radius; on the outer surface, exact equilibrium would raise "
+    "the unstiffened mean hoop stress by R_o/R = 1 + t/(2R) and the bay's slightly less."
 )
 RING_SHELL_ADJUSTED_VALUE_NOTE = (
     "The global buckling pressure includes the 0.75 factor recommended by NASA "
@@ -718,15 +729,22 @@ RING_SHELL_ADJUSTED_VALUE_NOTE = (
 )
 GENERAL_INSTABILITY_SMEARED_NOTE = (
     "The smeared-ring model assumes closely and uniformly spaced rings. The global search "
-    "admits axial half-waves of at least two ring spacings, and always m = 1; shorter waves "
-    "fall between rings, where the inter-ring check applies. Widely spaced rings still need "
-    "a discrete-ring or code-rule check."
+    "admits axial half-waves longer than one ring spacing, and always m = 1; shorter waves "
+    "fall between rings, where the inter-ring check applies. NASA notes that its orthotropic "
+    "equations lose accuracy against Love or Sanders theory for n <= 4 (printed p. 35) and "
+    "that a more accurate discrete-ring theory gives somewhat lower pressures (p. 38), so "
+    "widely spaced or deep eccentric rings still need a discrete-ring or code-rule check."
 )
 RING_SHELL_GOVERNING_NOT_ESTABLISHED_REASON = (
     "The inter-ring bay capacity is {status}, so the lowest buckling pressure is not "
     "established: a minimum without the bay would report the global mode however far "
     "below it the bay lies. inter_ring_shell_buckling gives the bay's reasons and "
     "candidates; global_with_ring_torsion keeps the global pressure."
+)
+RING_SHELL_BAY_ABOVE_PC5_NOTE = (
+    "The inter-ring bay's corrected buckling pressure, {bay:.6g} MPa, is above Pc5, "
+    "{pc5:.6g} MPa: its mid-bay hoop stress passes yield before it buckles, so interframe "
+    "collapse, which this model does not check, can govern."
 )
 RING_SHELL_GLOBAL_PLASTICITY_PENDING_REASON = (
     "the global Eq. 64/65 capacity implies a shell circumferential membrane stress "
@@ -828,7 +846,8 @@ class RingGlobalBucklingResult:
     ring_torsion_included: bool
     mode_domain: Literal["1<=m<=maximum_axial_half_waves_m,n>=2"]
     maximum_axial_half_waves_m: int
-    minimum_ring_spacings_per_axial_half_wave: float
+    axial_half_wave_limit_binding: bool | None
+    critical_half_wave_over_ring_spacing: float | None
     converged: bool
     termination_reason: Literal[
         "stable_interior_governing_mode",
@@ -2354,10 +2373,11 @@ def _ring_stiffened_orthotropic_external_pressure_pcr(
 ) -> RingGlobalBucklingResult:
     """Evaluate NASA Eq. 64/65 over every admissible m and an expanding, evidenced n >= 2.
 
-    ``m`` runs to the largest count whose axial half-wave spans
-    ``RING_SHELL_MIN_RING_SPACINGS_PER_AXIAL_HALF_WAVE`` ring spacings, and
-    always includes ``m = 1``. The circumferential bound doubles until the
-    governing mode is stable and lies below the newly added lobes.
+    ``m`` runs to the largest count whose axial half-wave is longer than one
+    ring spacing, and always includes ``m = 1``. The circumferential bound
+    doubles until the governing mode is stable and lies below the newly added
+    lobes. When the minimum sits on that limit and the next shorter wave is
+    lower, the result says the limit binds.
     """
     e_mpa = elastic_modulus_mpa
     v = poisson_ratio
@@ -2433,18 +2453,14 @@ def _ring_stiffened_orthotropic_external_pressure_pcr(
         pcr_mpa = (r_mm / mode_term) * numerator / denominator
         return pcr_mpa if math.isfinite(pcr_mpa) and pcr_mpa > 0.0 else None
 
-    # Every admissible m is evaluated from the first pass. The relative
-    # allowance keeps an exact multiple of the minimum span from rounding
-    # down. The circumferential bound starts from the shell slenderness, and
-    # stability is not considered until the winner is away from the newly
-    # added lobes.
+    # Every admissible m is evaluated from the first pass: m < L / spacing, so
+    # each half-wave is longer than one spacing. The relative allowance keeps a
+    # length that is an exact multiple of the spacing, rounded in its last
+    # digit, from admitting the one-spacing wave. The circumferential bound
+    # starts from the shell slenderness, and stability is not considered until
+    # the winner is away from the newly added lobes.
     axial_bound = max(
-        1,
-        math.floor(
-            length_mm
-            / (RING_SHELL_MIN_RING_SPACINGS_PER_AXIAL_HALF_WAVE * ring_spacing_mm)
-            * (1.0 + 1.0e-12)
-        ),
+        1, math.ceil(length_mm / ring_spacing_mm * (1.0 - 1.0e-12)) - 1
     )
     circumferential_bound = max(8, int(math.ceil(2.0 * math.sqrt(r_mm / t_mm))))
     evaluated: dict[tuple[int, int], float] = {}
@@ -2530,12 +2546,27 @@ def _ring_stiffened_orthotropic_external_pressure_pcr(
         circumferential_bound *= 2
 
     ideal_pressure = best[2] if converged and best is not None else None
+    limit_binding: bool | None = None
+    if converged and best is not None:
+        # Evidence only: the next shorter wave is outside the admitted domain,
+        # and it never enters the pressure reported.
+        shorter = [
+            mode_pressure(axial_bound + 1, lobes)
+            for lobes in range(2, iterations[-1].circumferential_lobe_bound + 1)
+        ]
+        shorter_minimum = min(
+            (value for value in shorter if value is not None), default=math.inf
+        )
+        limit_binding = best[0] == axial_bound and shorter_minimum < best[2]
     return RingGlobalBucklingResult(
         ring_torsion_included=include_ring_torsion,
         mode_domain="1<=m<=maximum_axial_half_waves_m,n>=2",
         maximum_axial_half_waves_m=axial_bound,
-        minimum_ring_spacings_per_axial_half_wave=(
-            RING_SHELL_MIN_RING_SPACINGS_PER_AXIAL_HALF_WAVE
+        axial_half_wave_limit_binding=limit_binding,
+        critical_half_wave_over_ring_spacing=(
+            length_mm / (best[0] * ring_spacing_mm)
+            if converged and best is not None
+            else None
         ),
         converged=converged,
         termination_reason=termination_reason,
@@ -3212,11 +3243,11 @@ def ring_stiffened_shell_external_pressure(
             ring_first_yield_pressure = (
                 yield_mpa / axisymmetric.ring_maximum_hoop_stress_per_unit_pressure
             )
-    # The bay's material comparisons, including the NASA plasticity factor,
-    # read the circumferential stress of the shell that buckles. Between rings
-    # that is the periodic bay's mid-bay hoop membrane stress, the stress Pc5
-    # compares with yield, not the unstiffened p*r/t; the rings carry part of
-    # the hoop load. An invalid record has no bay solution and keeps p*r/t.
+    # NASA defines its plasticity factors at the circumferential stress of an
+    # unstiffened shell, p*r/t. Between rings, which carry part of the hoop
+    # load, the bay's material comparisons extend that to the periodic bay's
+    # mid-bay hoop membrane stress, the stress Pc5 compares with yield. An
+    # invalid record has no bay solution and keeps p*r/t.
     inter_ring = smooth_cylinder_external_pressure_buckling(
         external_pressure_mpa=p_mpa,
         shell_mid_surface_radius_mm=r_mm,
@@ -3409,9 +3440,9 @@ def ring_stiffened_shell_external_pressure(
             source_reference=SMOOTH_CYLINDER_BUCKLING_SOURCE,
             basis=(
                 "The source-gated smooth-shell method is evaluated over ring center-to-center "
-                "spacing with ideal simply supported circular lines, and its material stress "
-                "is the periodic bay's mid-bay hoop membrane stress; its own capacity_status "
-                f"is {inter_ring.capacity_status}."
+                "spacing with ideal simply supported circular lines, and on a valid record its "
+                "material stress is the periodic bay's mid-bay hoop membrane stress; its own "
+                f"capacity_status is {inter_ring.capacity_status}."
             ),
         ),
         RingModeDisposition(
@@ -3482,8 +3513,9 @@ def ring_stiffened_shell_external_pressure(
     notes = (
         RING_SHELL_ADJUSTED_VALUE_NOTE,
         "Each buckling pressure is labelled by comparing its shell circumferential membrane "
-        "stress with the proportional limit: the periodic bay's mid-bay hoop stress for the "
-        "inter-ring bay, nominal p*r/t for the global mode. With only a yield strength, a "
+        "stress with the proportional limit: on a valid record, the periodic bay's mid-bay hoop "
+        "stress for the inter-ring bay, and nominal p*r/t for the global mode. With only a "
+        "yield strength, a "
         "pressure is an elastic upper bound when that stress exceeds yield and undetermined "
         "otherwise.",
         RING_SHELL_PARTIAL_SCOPE_REASON,
@@ -3491,6 +3523,23 @@ def ring_stiffened_shell_external_pressure(
         *((RING_SHELL_YIELD_NOTE,) if shell_yield_pressure is not None else ()),
         *((BUCKLING_REFERENCE_ONLY_REASON,) if data_qualification == "reference_only" else ()),
         *((global_plasticity_pending,) if global_plasticity_pending is not None else ()),
+        *(
+            (RING_SHELL_AXIAL_HALF_WAVE_BINDING_NOTE,)
+            if with_torsion.axial_half_wave_limit_binding
+            else ()
+        ),
+        *(
+            (
+                RING_SHELL_BAY_ABOVE_PC5_NOTE.format(
+                    bay=inter_ring.correlated_critical_pressure_mpa, pc5=shell_yield_pressure
+                ),
+            )
+            if inter_ring.plasticity_factor is not None
+            and inter_ring.correlated_critical_pressure_mpa is not None
+            and shell_yield_pressure is not None
+            and inter_ring.correlated_critical_pressure_mpa > shell_yield_pressure
+            else ()
+        ),
         *((governing_not_established,) if governing_not_established is not None else ()),
     )
     return RingShellResult(

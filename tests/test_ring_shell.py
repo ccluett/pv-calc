@@ -126,14 +126,14 @@ def test_dtmb_published_geometry_cases_span_length_and_lobe_count(
     assert result.critical_circumferential_lobes_n == lobes
 
 
-def test_global_search_excludes_axial_half_waves_shorter_than_two_ring_spacings():
+def test_global_search_stops_at_half_waves_of_one_ring_spacing():
     # Deep rings on a thin shell. Unscreened, the smeared search kept falling
     # with m to (42, 2): an 11.9 mm half-wave against a 20 mm ring spacing,
     # an axial-compression wave resting on ring hoop area smeared under it,
-    # which no discrete ring can supply there. At one spacing per half-wave
-    # (m = 25, 29.0 MPa ideal) that branch is still below the m = 1 mode, so
-    # the screen asks for two: m <= 500 / (2 * 20) = 12. The global mode is
-    # then the m = 1 lobar mode, and the inter-ring bay, which is what those
+    # which no discrete ring can supply there. A wave that short falls
+    # between the rings. The search now admits half-waves longer than one
+    # spacing, m <= 24, and the smeared branch still falls to that limit, so
+    # the result says the limit binds. The inter-ring bay, which is what those
     # short waves really are, governs far below it.
     result = ring_stiffened_shell_external_pressure(
         external_pressure_mpa=1.0,
@@ -153,30 +153,71 @@ def test_global_search_excludes_axial_half_waves_shorter_than_two_ring_spacings(
     assert search.converged is True
     assert search.termination_reason == "stable_interior_governing_mode"
     assert search.mode_domain == "1<=m<=maximum_axial_half_waves_m,n>=2"
-    assert search.minimum_ring_spacings_per_axial_half_wave == 2.0
-    assert search.maximum_axial_half_waves_m == 12
-    assert search.evaluated_axial_half_waves == 12
-    assert (search.critical_axial_half_waves_m, search.critical_circumferential_lobes_n) == (1, 2)
-    assert search.ideal_critical_pressure_mpa == pytest.approx(37.619761422245475, rel=1e-12)
+    assert search.maximum_axial_half_waves_m == 24
+    assert search.evaluated_axial_half_waves == 24
+    assert (search.critical_axial_half_waves_m, search.critical_circumferential_lobes_n) == (24, 2)
+    assert search.ideal_critical_pressure_mpa == pytest.approx(30.632709980180568, rel=1e-12)
+    assert search.critical_half_wave_over_ring_spacing == pytest.approx(500.0 / 24 / 20.0)
+    assert search.axial_half_wave_limit_binding is True
+    assert any("shortest admissible axial half-wave" in note for note in result.notes)
     assert search.iterations[-1].frontier_above_governing is True
     assert result.advisory_governing_mode == "inter_ring_smooth_shell"
     assert result.advisory_governing_pressure_mpa < 0.2 * search.adjusted_critical_pressure_mpa
 
 
+def test_global_search_keeps_a_half_wave_between_one_and_two_ring_spacings():
+    # A light internal ring on a very thin shell governs at (13, 6), a
+    # half-wave of 1.54 ring spacings. Sampled at the rings, such a wave moves
+    # them with the smeared strain energy, so it is a global mode: an
+    # independent discrete-ring Fourier-Ritz model of this geometry (rings as
+    # curved beams at their centroid radius) gives 1.018 MPa at n = 6, where
+    # the smeared ideal is 1.0176 MPa. A screen at two spacings would have
+    # reported (10, 6) at 1.123 MPa, 10% high, and the inter-ring bay (1.29 MPa
+    # ideal) does not cover this mode.
+    result = ring_stiffened_shell_external_pressure(
+        external_pressure_mpa=0.5,
+        shell_mid_surface_radius_mm=500.0,
+        wall_thickness_mm=1.0,
+        unsupported_length_mm=500.0,
+        ring_spacing_mm=25.0,
+        ring_axial_width_mm=1.0,
+        ring_radial_height_mm=20.0,
+        ring_location="internal",
+        elastic_modulus_mpa=200_000.0,
+        poisson_ratio=0.3,
+        yield_strength_mpa=700.0,
+        proportional_limit_mpa=500.0,
+    )
+    search = result.global_with_ring_torsion
+
+    assert search.maximum_axial_half_waves_m == 19
+    assert (search.critical_axial_half_waves_m, search.critical_circumferential_lobes_n) == (13, 6)
+    assert search.ideal_critical_pressure_mpa == pytest.approx(1.0176271590453416, rel=1e-12)
+    assert search.critical_half_wave_over_ring_spacing == pytest.approx(500.0 / 13 / 25.0)
+    assert search.axial_half_wave_limit_binding is False
+    assert not any("shortest admissible axial half-wave" in note for note in result.notes)
+    assert result.advisory_governing_mode == "global_eq64_with_eq91_ring_torsion"
+
+
 @pytest.mark.parametrize(
     ("frame_spaces", "maximum_m"),
-    [(17, 8), (26, 13), (28, 14), (29, 14), (33, 16)],
+    [(1, 1), (2, 1), (17, 16), (24, 23), (26, 25), (29, 28), (33, 32)],
 )
-def test_admissible_half_waves_count_whole_pairs_of_ring_spacings(frame_spaces, maximum_m):
-    # An exact multiple of two spacings (26 and 28 spaces) counts in full
-    # despite rounding in the lengths; an odd spacing left over does not.
+def test_admissible_half_waves_are_longer_than_one_ring_spacing(frame_spaces, maximum_m):
+    # A length of N spacings admits m <= N - 1, and m = 1 always. For 24 and
+    # 29 spaces L/s rounds to 23.999999999999996 and 28.999999999999996, and
+    # still counts as exact.
     search = _dtmb_case(frame_spaces).global_with_ring_torsion
 
     assert search.maximum_axial_half_waves_m == maximum_m
     assert search.evaluated_axial_half_waves == maximum_m
 
 
-def test_expanding_search_finds_circumferential_mode_beyond_initial_bound():
+def test_search_converges_on_a_high_lobe_count():
+    # The circumferential bound starts at max(8, 2 sqrt(R/t)), here 45, and
+    # doubles until the governing mode is stable below the newest lobes. No
+    # random geometry tried has needed a lobe count above the starting bound;
+    # the doubling stays as the safeguard that proves it.
     result = ring_stiffened_shell_external_pressure(
         external_pressure_mpa=0.001,
         shell_mid_surface_radius_mm=100.0,
@@ -312,7 +353,7 @@ def test_one_bay_spanning_the_whole_length_stays_released():
     assert not result.validity_violations
     assert result.capacity_status == "advisory"
     assert result.advisory_governing_pressure_mpa is not None
-    # Below two spacings the only global mode left is m = 1, which is kept.
+    # With one bay the only global mode is m = 1, which is always kept.
     assert result.global_with_ring_torsion.maximum_axial_half_waves_m == 1
     assert result.global_with_ring_torsion.critical_axial_half_waves_m == 1
 
@@ -698,6 +739,8 @@ def test_inter_ring_plasticity_is_evaluated_at_the_mid_bay_hoop_stress():
 
 
 def test_the_corrected_bay_pressure_rises_with_the_curve_proof_stress():
+    # A property the corrected pressure keeps on either stress basis; the
+    # fixed-point test above is the evidence for the mid-bay basis itself.
     pressures = [
         _titanium_rings(
             ramberg_osgood_n=21.0, compressive_proof_stress_mpa=proof_stress
@@ -775,3 +818,51 @@ def test_without_a_curve_the_bay_pressure_is_unchanged_but_its_label_reads_the_b
         < limit
         < unstiffened.correlated_critical_circumferential_stress_mpa
     )
+
+
+def test_without_limit_or_curve_the_bay_label_reads_the_bay_stress():
+    # Only a yield strength: the bay enters at its elastic pressure and is
+    # screened against yield at its own mid-bay hoop stress, 602 MPa, which
+    # is below the 700 MPa yield. At p*r/t, 797 MPa, it would have been
+    # labelled an elastic upper bound instead.
+    result = ring_stiffened_shell_external_pressure(
+        external_pressure_mpa=1.0,
+        shell_mid_surface_radius_mm=150.0,
+        wall_thickness_mm=3.0,
+        unsupported_length_mm=1200.0,
+        ring_spacing_mm=60.0,
+        ring_axial_width_mm=8.0,
+        ring_radial_height_mm=30.0,
+        ring_location="internal",
+        elastic_modulus_mpa=113_800.0,
+        poisson_ratio=0.34,
+        yield_strength_mpa=700.0,
+    )
+    bay = result.inter_ring_shell_buckling
+    elastic = next(item for item in bay.candidates if item.regime == bay.regime)
+
+    assert bay.capacity_status == "withheld_applicability"
+    assert elastic.correlated_critical_pressure_mpa is not None
+    assert elastic.correlated_critical_circumferential_stress_mpa == pytest.approx(
+        602.1, abs=0.1
+    )
+    assert elastic.correlated_critical_pressure_mpa * 150.0 / 3.0 > 700.0
+    assert result.advisory_governing_mode == "inter_ring_smooth_shell"
+    assert result.advisory_governing_status == "advisory_plasticity_undetermined"
+
+
+def test_a_corrected_bay_pressure_above_pc5_is_noted():
+    # Heavy internal rings on a stocky titanium bay: the curve-corrected bay
+    # pressure is above the pressure at which its mid-bay hoop stress reaches
+    # yield, so interframe collapse can govern and a note says so. Without a
+    # curve the bay pressure is an elastic value and carries no such note.
+    heavy_rings = dict(ring_spacing_mm=30.0, unsupported_length_mm=300.0, ring_radial_height_mm=40.0)
+    result = _titanium_rings(**heavy_rings, **TITANIUM_CURVE)
+    bay_pressure = result.inter_ring_shell_buckling.correlated_critical_pressure_mpa
+    pc5 = result.shell_yield_between_rings_pressure_mpa
+
+    assert bay_pressure is not None and pc5 is not None
+    assert bay_pressure == pytest.approx(83.19, abs=0.01)
+    assert pc5 == pytest.approx(74.90, abs=0.01)
+    assert any("is above Pc5" in note for note in result.notes)
+    assert not any("is above Pc5" in note for note in _titanium_rings(**heavy_rings).notes)
