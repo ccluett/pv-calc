@@ -12,7 +12,9 @@ from typer.testing import CliRunner
 
 PV_CALC_ROOT = Path(__file__).resolve().parents[1]
 EXAMPLES = PV_CALC_ROOT / "examples"
-MATERIALS_FILE = PV_CALC_ROOT / "materials.yaml"
+# The bundled file itself, not the root compatibility symlink, which a
+# checkout without symlink support holds as a one-line text file.
+MATERIALS_FILE = PV_CALC_ROOT / "pv_calc" / "data" / "materials.yaml"
 # TERM=dumb makes Rich render help as plain text. Rich otherwise detects CI as
 # a styled terminal and splits option names with escape sequences, which breaks
 # the substring assertions on --help output in test_cli_errors.py.

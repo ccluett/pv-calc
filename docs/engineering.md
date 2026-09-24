@@ -395,7 +395,9 @@ grows with depth.
 
 [pv_calc/data/materials.yaml](../pv_calc/data/materials.yaml) is the canonical
 material database, bundled in the package. The repository-root
-[materials.yaml](../materials.yaml) is a compatibility symlink to it.
+[materials.yaml](../materials.yaml) is a compatibility symlink to it; a
+checkout without symlink support holds it as a one-line text file, so pass
+`pv_calc/data/materials.yaml` there. The tests use the bundled path.
 Named-material lookup uses the bundle regardless of working directory unless
 `--materials-file` (or the Python `materials_file` argument) selects another
 file; a broken override never falls back. `materials list` and `materials show

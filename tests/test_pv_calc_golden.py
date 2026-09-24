@@ -20,10 +20,12 @@ from pv_calc.cli import app
 PV_CALC_ROOT = Path(__file__).resolve().parents[1]
 EXAMPLES = PV_CALC_ROOT / "examples"
 BASELINE = Path(__file__).resolve().parent / "fixtures" / "pv_calc_golden.json"
-# Exercise an explicit database override with a portable provenance path.
-# The root compatibility symlink points to the same bundled reference records.
-# The option is inert for examples carrying explicit property records.
-MATERIALS_FILE = PV_CALC_ROOT / "materials.yaml"
+# Exercise an explicit database override with a portable provenance path:
+# the bundled records passed by path, recorded under a fixed label. The root
+# compatibility symlink would be a one-line text file in a checkout without
+# symlink support. The option is inert for examples carrying explicit
+# property records.
+MATERIALS_FILE = PV_CALC_ROOT / "pv_calc" / "data" / "materials.yaml"
 MATERIALS_FILE_LABEL = "materials.yaml"
 
 

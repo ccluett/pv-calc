@@ -379,8 +379,8 @@ def test_bundled_materials_are_readable_from_an_installed_zip_package(tmp_path: 
         for path in [*package.glob("*.py"), package / "data" / "materials.yaml"]:
             target.write(path, path.relative_to(package.parent))
     script = (
-        "import pv_calc; from pv_calc.materials import load_calc_materials; "
-        "assert '.zip/' in pv_calc.__file__; "
+        "import os, pv_calc; from pv_calc.materials import load_calc_materials; "
+        "assert '.zip' + os.sep in pv_calc.__file__; "
         "assert load_calc_materials()['Al-6061-T6'].yield_strength_mpa == 241; "
         "from pv_calc.resolve import _load_named_material; "
         "assert _load_named_material('Al-6061-T6', None)[1].startswith('bundled:')"
