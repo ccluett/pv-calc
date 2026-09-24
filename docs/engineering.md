@@ -422,19 +422,26 @@ statistical A-basis or B-basis allowables and have no temperature derating,
 weld or heat-affected-zone knockdown, fatigue or notch correction, or
 environmental-cracking adjustment. The calculator applies no safety factor.
 
-The bundled Al-6061-T6 and Ti-6Al-4V records provide a `proportional_limit_mpa`
-and complete compressive Ramberg-Osgood pair. The curve representation is
-`strain = s/E + 0.002*(s/s0)^n`, with `s0` supplied as
-`compressive_proof_stress_mpa`, following MIL-HDBK-5J Section 9.8.4.1.2.
-The source fields record shape, anchor, product form, direction, and any
-substitution. The proportional
-limits use this project's `E_tan = 0.99 E` screen, which differs from the
-handbook convention of 0.0001 plastic strain (Section 1.4.4.2, p. 1-9).
-MIL-HDBK-5J is cancelled; its notice identifies MMPDS as a successor. The
-Al-6061-T6 curve describes LT extrusion compression; the Ti-6Al-4V curve describes
-longitudinal compression of annealed extrusion, with a tensile minimum substituted
-for compression proof stress. These assumptions are unverified for the generic
-alloy records, so both use `buckling_data_qualification: reference_only`.
+The bundled Al-6061-T6, Al-7075-T6, Ti-6Al-4V, and Ni-625 records provide a
+`proportional_limit_mpa` and complete compressive Ramberg-Osgood pair. The
+curve representation is `strain = s/E + 0.002*(s/s0)^n`, with `s0` supplied
+as `compressive_proof_stress_mpa`, following MIL-HDBK-5J Section 9.8.4.1.2.
+Pairing a typical exponent with a minimum yield anchor is the handbook's
+procedure for minimum curves (Section 9.8.4.4, p. 9-198). The source fields
+record shape, anchor, product form, direction, and any substitution. The
+proportional limits use this project's `E_tan = 0.99 E` screen, which differs
+from the handbook convention of 0.0001 plastic strain (Section 1.4.4.2,
+p. 1-9). MIL-HDBK-5J is cancelled; its notice identifies MMPDS as a successor.
+The Al-6061-T6 curve describes LT extrusion compression. The Al-7075-T6 curve
+describes L compression of T651 plate, anchored at the A-basis Fcy(L) of the
+thickest plate band, which lies below the stored yield. The Ti-6Al-4V curve
+describes longitudinal compression of annealed extrusion, with a tensile
+minimum substituted for compression proof stress. The Ni-625 curve describes
+transverse compression of annealed bar. These assumptions are unverified for
+the generic alloy records, so all four use
+`buckling_data_qualification: reference_only`. Ti-Grade-2, SS-316-316L, and
+SS-2507 carry no curve: MIL-HDBK-5J gives no compressive exponent for them,
+and no other public source found states one that fits these records.
 
 When the model gates pass, these records return `released_unqualified_material`
 estimates for calculation and sizing. `check` returns indeterminate unless the
@@ -527,8 +534,8 @@ Where a source gives no rule, capacity is withheld instead of guessed:
   and otherwise releases the elastic upper bound as
   `released_pending_plasticity`, with a null ordinary margin.
 - Bundled compression curves retain the product-form and direction limits
-  described in the material records above. The other five bundled metals carry
-  neither a curve nor a proportional limit.
+  described in the material records above. The other three bundled metals
+  carry neither a curve nor a proportional limit.
 - Ring global and inter-ring instability remain advisory calculator results
   (`capacity_status: advisory`), and `check` stays indeterminate. Interframe
   collapse, ring tripping, and ring spacing are not checked. A complete compressive curve
@@ -595,7 +602,7 @@ ideal supports.
 | Exact spherical radial displacement | Spherical strain compatibility and 3D Hooke's law; [Coreform verification manual, section 6](https://docs.coreform.com/cifa/verification-manual/problems/solid_mechanics/linear_elastic_stress/pressurized-sphere/pressurized-sphere.html) |
 | Hemisphere external-pressure buckling | NASA SP-8032, Section 4.2.1.1, Eqs. 1-4 |
 | Smooth-cylinder buckling | NASA SP-8007 Rev. 2, Eqs. 19-32 |
-| Compressive Ramberg-Osgood material curves | MIL-HDBK-5J (31 January 2003), Section 9.8.4.1.2 for the 0.002 power-law form, Section 1.4.4.2 for the proportional-limit convention, and Figures 3.6.2.2.6(i) and 5.4.1.1.6(b,c) for the explicitly supplied illustrative exponents |
+| Compressive Ramberg-Osgood material curves | MIL-HDBK-5J (31 January 2003), Section 9.8.4.1.2 for the 0.002 power-law form, Section 9.8.4.4 for minimum curves, Section 1.4.4.2 for the proportional-limit convention, and Figures 3.6.2.2.6(i), 3.7.6.1.6(h), 5.4.1.1.6(b,c), and 6.3.3.1.6(d) for the explicitly supplied illustrative exponents |
 | Smooth-cylinder rounded Eq. 25 comparator | NASA SP-8007 Rev. 2, Eq. 25, printed p. 27, which states it only for `nu = 0.316`; its rounded `0.926` stands 0.0873% above the Eq. 24 capacity at that ratio, so it is reported beside Eq. 24 and sets no capacity |
 | Ring-stiffened global instability | NASA SP-8007 Rev. 2, Eq. 64/65 and Eqs. 82-91 |
 | Ring-stiffened shell and ring mean hoop yield | von Sanden and Günther periodic-bay solution (DTMB Report 1497) without the beam-column term, in the Wilson and PD 5500 Pc5 form printed by Morandi (1994), Eqs. 48-53; effective ring area from DTMB Report 1639 Eq. (9); ring stress at the ring centroid radius |

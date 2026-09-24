@@ -70,7 +70,7 @@ def test_check_exit_codes_are_acceptance_results_and_input_errors_are_structured
     if case == "fail":
         request["inputs"]["external_pressure"] = _q(1, "MPa")
     elif case == "withheld":
-        request["material"] = {"type": "named", "name": "Al-7075-T6"}
+        request["material"] = {"type": "named", "name": "SS-316-316L"}
     elif case == "absent_check":
         options += ["--check", "closure_retention"]
     elif case == "invalid":

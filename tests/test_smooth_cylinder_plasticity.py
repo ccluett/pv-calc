@@ -20,6 +20,7 @@ from _cli_helpers import _error_payload
 
 from pv_calc.api import calculate
 from pv_calc.contracts import CALC_SCHEMA_VERSION
+from pv_calc.materials import load_calc_materials
 from pv_calc.presentation import assess_response
 from pv_calc.pressure_vessel import (
     SMOOTH_CYLINDER_MORE_THAN_TWO_WAVE_COEFFICIENT,
@@ -184,6 +185,23 @@ def test_the_historical_curve_limits_are_at_0p99_tangent_modulus(
         else:
             high = middle
     assert (low + high) / 2.0 == pytest.approx(expected, abs=5.0e-7)
+
+
+def test_every_bundled_curve_stores_its_own_0p99_tangent_modulus_limit() -> None:
+    """Each stored limit is its record's curve at E_tan = 0.99 E, to 0.1 MPa."""
+    curves = {
+        name: record for name, record in load_calc_materials().items()
+        if record.ramberg_osgood_n is not None
+    }
+    assert set(curves) == {"Al-6061-T6", "Al-7075-T6", "Ti-6Al-4V", "Ni-625"}
+    for name, record in curves.items():
+        e, n = record.elastic_modulus_mpa, record.ramberg_osgood_n
+        s0 = record.compressive_proof_stress_mpa
+        assert e is not None and s0 is not None
+        # E/E_tan = 1 + 0.002 n (E/s0) (s/s0)^(n-1) = 1/0.99, solved for s.
+        limit = s0 * ((0.01 / 0.99) * s0 / (0.002 * n * e)) ** (1.0 / (n - 1.0))
+        assert record.proportional_limit_mpa == round(limit, 1), name
+        assert record.buckling_data_qualification == "reference_only", name
 
 
 @pytest.mark.parametrize("gamma_z", [1.0, 5.0, 40.0, 100.0, 400.0, 4000.0])
