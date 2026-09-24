@@ -126,7 +126,11 @@ def summarize_response(
             ) if key in global_mode})
         summary["ring_yield"] = deepcopy({key: result[key] for key in (
             "shell_yield_between_rings_pressure_mpa", "ring_yield_pressure_mpa",
+            "ring_first_yield_pressure_mpa",
         ) if key in result})
+        location = (result.get("axisymmetric_stress") or {}).get("ring_maximum_hoop_stress_location")
+        if location is not None:
+            summary["ring_yield"]["ring_maximum_hoop_stress_location"] = location
     if "sizing" in payload:
         summary["sizing"] = {key: value for key, value in payload["sizing"].items() if key in {
             "selected_wall_thickness", "selected_plate_thickness", "selected_shell_mid_surface_radius",
@@ -182,6 +186,10 @@ def summarize_response(
 _RING_MODE_LABELS = {
     "global_eq64_with_eq91_ring_torsion": "global, NASA SP-8007 Eq. 64 x 0.75",
     "inter_ring_smooth_shell": "inter-ring bay",
+}
+_RING_FIRST_YIELD_LABELS = {
+    "internal_ring_free_edge": "inner free edge",
+    "external_ring_base_at_shell": "ring base at the shell",
 }
 _RING_STATUS_LABELS = {
     "advisory_pending_plasticity": "elastic upper bound: stress exceeds the material limit",
@@ -253,6 +261,12 @@ def _render_summary(summary: dict[str, Any]) -> list[str]:
         else:
             lines.append(f"Shell mean hoop yield at mid-bay (Pc5): {_format(shell_yield)}")
             lines.append(f"Ring mean hoop yield: {_format(ring_yield)}")
+            first_yield = summary["ring_yield"].get("ring_first_yield_pressure_mpa")
+            if _number(first_yield) is not None:
+                location = _RING_FIRST_YIELD_LABELS.get(
+                    summary["ring_yield"].get("ring_maximum_hoop_stress_location"), "smallest radius"
+                )
+                lines.append(f"Ring first yield ({location}): {_format(first_yield)}")
     check_reasons: set[str] = set()
     for check in assessment["checks"]:
         margin = "undefined" if check.get("margin") is None else _format(check["margin"])

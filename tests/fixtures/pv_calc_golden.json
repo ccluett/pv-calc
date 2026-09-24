@@ -3376,6 +3376,12 @@
         "midbay_shell_hoop_stress_per_unit_pressure": 107.506427763,
         "n_function": 1.07516730811,
         "ring_hoop_stress_per_unit_pressure": 62.2904320264,
+        "ring_maximum_hoop_stress_location": "external_ring_base_at_shell",
+        "ring_maximum_hoop_stress_per_unit_pressure": 63.576104109,
+        "ring_maximum_hoop_stress_radius_mm": {
+          "unit": "mm",
+          "value": 103.9876
+        },
         "source_reference": "von Sanden and Guenther periodic-bay solution (DTMB Report 1497, Pulos and Salerno, 1961) without the beam-column term, in the Wilson and PD 5500 Pc5 form printed by Morandi (1994, University of Glasgow PhD thesis), Eqs. 48-53; effective ring area from DTMB Report 1639 (Pulos, 1963), Eq. (9); ring stress from DTMB 1497 Eq. [58] and DTMB 1639 Eq. (175), at the ring centroid radius"
       },
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
@@ -3989,7 +3995,7 @@
         "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
         "Global buckling is elastic: lobar modes (n >= 2, axial half-waves of at least two ring spacings, and always m = 1) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
         "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves of at least two ring spacings, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. Widely spaced rings still need a discrete-ring or code-rule check.",
-        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay. They are not collapse pressures."
+        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does. They are not collapse pressures."
       ],
       "poisson_ratio": 0.3,
       "proportional_limit_mpa": {
@@ -4016,6 +4022,10 @@
       "ring_eccentricity_from_shell_mid_surface_mm": {
         "unit": "mm",
         "value": 2.5908
+      },
+      "ring_first_yield_pressure_mpa": {
+        "unit": "MPa",
+        "value": 9.21815481041
       },
       "ring_location": "external",
       "ring_radial_height_mm": {
@@ -4141,6 +4151,12 @@
         "midbay_shell_hoop_stress_per_unit_pressure": 107.506427763,
         "n_function": 1.07516730811,
         "ring_hoop_stress_per_unit_pressure": 62.2904320264,
+        "ring_maximum_hoop_stress_location": "external_ring_base_at_shell",
+        "ring_maximum_hoop_stress_per_unit_pressure": 63.576104109,
+        "ring_maximum_hoop_stress_radius_mm": {
+          "unit": "mm",
+          "value": 103.9876
+        },
         "source_reference": "von Sanden and Guenther periodic-bay solution (DTMB Report 1497, Pulos and Salerno, 1961) without the beam-column term, in the Wilson and PD 5500 Pc5 form printed by Morandi (1994, University of Glasgow PhD thesis), Eqs. 48-53; effective ring area from DTMB Report 1639 (Pulos, 1963), Eq. (9); ring stress from DTMB 1497 Eq. [58] and DTMB 1639 Eq. (175), at the ring centroid radius"
       },
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
@@ -4754,7 +4770,7 @@
         "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
         "Global buckling is elastic: lobar modes (n >= 2, axial half-waves of at least two ring spacings, and always m = 1) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
         "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves of at least two ring spacings, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. Widely spaced rings still need a discrete-ring or code-rule check.",
-        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay. They are not collapse pressures."
+        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does. They are not collapse pressures."
       ],
       "poisson_ratio": 0.3,
       "proportional_limit_mpa": {
@@ -4781,6 +4797,10 @@
       "ring_eccentricity_from_shell_mid_surface_mm": {
         "unit": "mm",
         "value": 2.5908
+      },
+      "ring_first_yield_pressure_mpa": {
+        "unit": "MPa",
+        "value": 9.21815481041
       },
       "ring_location": "external",
       "ring_radial_height_mm": {
@@ -4906,6 +4926,12 @@
         "midbay_shell_hoop_stress_per_unit_pressure": 107.506427763,
         "n_function": 1.07516730811,
         "ring_hoop_stress_per_unit_pressure": 62.2904320264,
+        "ring_maximum_hoop_stress_location": "external_ring_base_at_shell",
+        "ring_maximum_hoop_stress_per_unit_pressure": 63.576104109,
+        "ring_maximum_hoop_stress_radius_mm": {
+          "unit": "mm",
+          "value": 103.9876
+        },
         "source_reference": "von Sanden and Guenther periodic-bay solution (DTMB Report 1497, Pulos and Salerno, 1961) without the beam-column term, in the Wilson and PD 5500 Pc5 form printed by Morandi (1994, University of Glasgow PhD thesis), Eqs. 48-53; effective ring area from DTMB Report 1639 (Pulos, 1963), Eq. (9); ring stress from DTMB 1497 Eq. [58] and DTMB 1639 Eq. (175), at the ring centroid radius"
       },
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
@@ -5519,7 +5545,7 @@
         "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
         "Global buckling is elastic: lobar modes (n >= 2, axial half-waves of at least two ring spacings, and always m = 1) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
         "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves of at least two ring spacings, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. Widely spaced rings still need a discrete-ring or code-rule check.",
-        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay. They are not collapse pressures."
+        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does. They are not collapse pressures."
       ],
       "poisson_ratio": 0.3,
       "proportional_limit_mpa": {
@@ -5546,6 +5572,10 @@
       "ring_eccentricity_from_shell_mid_surface_mm": {
         "unit": "mm",
         "value": 2.5908
+      },
+      "ring_first_yield_pressure_mpa": {
+        "unit": "MPa",
+        "value": 9.21815481041
       },
       "ring_location": "external",
       "ring_radial_height_mm": {
@@ -5671,6 +5701,12 @@
         "midbay_shell_hoop_stress_per_unit_pressure": 107.506427763,
         "n_function": 1.07516730811,
         "ring_hoop_stress_per_unit_pressure": 62.2904320264,
+        "ring_maximum_hoop_stress_location": "external_ring_base_at_shell",
+        "ring_maximum_hoop_stress_per_unit_pressure": 63.576104109,
+        "ring_maximum_hoop_stress_radius_mm": {
+          "unit": "mm",
+          "value": 103.9876
+        },
         "source_reference": "von Sanden and Guenther periodic-bay solution (DTMB Report 1497, Pulos and Salerno, 1961) without the beam-column term, in the Wilson and PD 5500 Pc5 form printed by Morandi (1994, University of Glasgow PhD thesis), Eqs. 48-53; effective ring area from DTMB Report 1639 (Pulos, 1963), Eq. (9); ring stress from DTMB 1497 Eq. [58] and DTMB 1639 Eq. (175), at the ring centroid radius"
       },
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
@@ -6284,7 +6320,7 @@
         "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
         "Global buckling is elastic: lobar modes (n >= 2, axial half-waves of at least two ring spacings, and always m = 1) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
         "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves of at least two ring spacings, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. Widely spaced rings still need a discrete-ring or code-rule check.",
-        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay. They are not collapse pressures."
+        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does. They are not collapse pressures."
       ],
       "poisson_ratio": 0.3,
       "proportional_limit_mpa": {
@@ -6311,6 +6347,10 @@
       "ring_eccentricity_from_shell_mid_surface_mm": {
         "unit": "mm",
         "value": 2.5908
+      },
+      "ring_first_yield_pressure_mpa": {
+        "unit": "MPa",
+        "value": 9.21815481041
       },
       "ring_location": "external",
       "ring_radial_height_mm": {
@@ -6436,6 +6476,12 @@
         "midbay_shell_hoop_stress_per_unit_pressure": 107.506427763,
         "n_function": 1.07516730811,
         "ring_hoop_stress_per_unit_pressure": 62.2904320264,
+        "ring_maximum_hoop_stress_location": "external_ring_base_at_shell",
+        "ring_maximum_hoop_stress_per_unit_pressure": 63.576104109,
+        "ring_maximum_hoop_stress_radius_mm": {
+          "unit": "mm",
+          "value": 103.9876
+        },
         "source_reference": "von Sanden and Guenther periodic-bay solution (DTMB Report 1497, Pulos and Salerno, 1961) without the beam-column term, in the Wilson and PD 5500 Pc5 form printed by Morandi (1994, University of Glasgow PhD thesis), Eqs. 48-53; effective ring area from DTMB Report 1639 (Pulos, 1963), Eq. (9); ring stress from DTMB 1497 Eq. [58] and DTMB 1639 Eq. (175), at the ring centroid radius"
       },
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
@@ -7049,7 +7095,7 @@
         "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
         "Global buckling is elastic: lobar modes (n >= 2, axial half-waves of at least two ring spacings, and always m = 1) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
         "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves of at least two ring spacings, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. Widely spaced rings still need a discrete-ring or code-rule check.",
-        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay. They are not collapse pressures."
+        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does. They are not collapse pressures."
       ],
       "poisson_ratio": 0.3,
       "proportional_limit_mpa": {
@@ -7076,6 +7122,10 @@
       "ring_eccentricity_from_shell_mid_surface_mm": {
         "unit": "mm",
         "value": 2.5908
+      },
+      "ring_first_yield_pressure_mpa": {
+        "unit": "MPa",
+        "value": 9.21815481041
       },
       "ring_location": "external",
       "ring_radial_height_mm": {
@@ -7201,6 +7251,12 @@
         "midbay_shell_hoop_stress_per_unit_pressure": 107.506427763,
         "n_function": 1.07516730811,
         "ring_hoop_stress_per_unit_pressure": 62.2904320264,
+        "ring_maximum_hoop_stress_location": "external_ring_base_at_shell",
+        "ring_maximum_hoop_stress_per_unit_pressure": 63.576104109,
+        "ring_maximum_hoop_stress_radius_mm": {
+          "unit": "mm",
+          "value": 103.9876
+        },
         "source_reference": "von Sanden and Guenther periodic-bay solution (DTMB Report 1497, Pulos and Salerno, 1961) without the beam-column term, in the Wilson and PD 5500 Pc5 form printed by Morandi (1994, University of Glasgow PhD thesis), Eqs. 48-53; effective ring area from DTMB Report 1639 (Pulos, 1963), Eq. (9); ring stress from DTMB 1497 Eq. [58] and DTMB 1639 Eq. (175), at the ring centroid radius"
       },
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
@@ -7814,7 +7870,7 @@
         "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
         "Global buckling is elastic: lobar modes (n >= 2, axial half-waves of at least two ring spacings, and always m = 1) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
         "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves of at least two ring spacings, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. Widely spaced rings still need a discrete-ring or code-rule check.",
-        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay. They are not collapse pressures."
+        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does. They are not collapse pressures."
       ],
       "poisson_ratio": 0.3,
       "proportional_limit_mpa": {
@@ -7841,6 +7897,10 @@
       "ring_eccentricity_from_shell_mid_surface_mm": {
         "unit": "mm",
         "value": 2.5908
+      },
+      "ring_first_yield_pressure_mpa": {
+        "unit": "MPa",
+        "value": 9.21815481041
       },
       "ring_location": "external",
       "ring_radial_height_mm": {
@@ -7966,6 +8026,12 @@
         "midbay_shell_hoop_stress_per_unit_pressure": 107.506427763,
         "n_function": 1.07516730811,
         "ring_hoop_stress_per_unit_pressure": 62.2904320264,
+        "ring_maximum_hoop_stress_location": "external_ring_base_at_shell",
+        "ring_maximum_hoop_stress_per_unit_pressure": 63.576104109,
+        "ring_maximum_hoop_stress_radius_mm": {
+          "unit": "mm",
+          "value": 103.9876
+        },
         "source_reference": "von Sanden and Guenther periodic-bay solution (DTMB Report 1497, Pulos and Salerno, 1961) without the beam-column term, in the Wilson and PD 5500 Pc5 form printed by Morandi (1994, University of Glasgow PhD thesis), Eqs. 48-53; effective ring area from DTMB Report 1639 (Pulos, 1963), Eq. (9); ring stress from DTMB 1497 Eq. [58] and DTMB 1639 Eq. (175), at the ring centroid radius"
       },
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
@@ -8579,7 +8645,7 @@
         "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
         "Global buckling is elastic: lobar modes (n >= 2, axial half-waves of at least two ring spacings, and always m = 1) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
         "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves of at least two ring spacings, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. Widely spaced rings still need a discrete-ring or code-rule check.",
-        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay. They are not collapse pressures."
+        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does. They are not collapse pressures."
       ],
       "poisson_ratio": 0.3,
       "proportional_limit_mpa": {
@@ -8606,6 +8672,10 @@
       "ring_eccentricity_from_shell_mid_surface_mm": {
         "unit": "mm",
         "value": 2.5908
+      },
+      "ring_first_yield_pressure_mpa": {
+        "unit": "MPa",
+        "value": 9.21815481041
       },
       "ring_location": "external",
       "ring_radial_height_mm": {
@@ -8731,6 +8801,12 @@
         "midbay_shell_hoop_stress_per_unit_pressure": 107.506427763,
         "n_function": 1.07516730811,
         "ring_hoop_stress_per_unit_pressure": 62.2904320264,
+        "ring_maximum_hoop_stress_location": "external_ring_base_at_shell",
+        "ring_maximum_hoop_stress_per_unit_pressure": 63.576104109,
+        "ring_maximum_hoop_stress_radius_mm": {
+          "unit": "mm",
+          "value": 103.9876
+        },
         "source_reference": "von Sanden and Guenther periodic-bay solution (DTMB Report 1497, Pulos and Salerno, 1961) without the beam-column term, in the Wilson and PD 5500 Pc5 form printed by Morandi (1994, University of Glasgow PhD thesis), Eqs. 48-53; effective ring area from DTMB Report 1639 (Pulos, 1963), Eq. (9); ring stress from DTMB 1497 Eq. [58] and DTMB 1639 Eq. (175), at the ring centroid radius"
       },
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
@@ -9344,7 +9420,7 @@
         "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
         "Global buckling is elastic: lobar modes (n >= 2, axial half-waves of at least two ring spacings, and always m = 1) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
         "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves of at least two ring spacings, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. Widely spaced rings still need a discrete-ring or code-rule check.",
-        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay. They are not collapse pressures."
+        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does. They are not collapse pressures."
       ],
       "poisson_ratio": 0.3,
       "proportional_limit_mpa": {
@@ -9371,6 +9447,10 @@
       "ring_eccentricity_from_shell_mid_surface_mm": {
         "unit": "mm",
         "value": 2.5908
+      },
+      "ring_first_yield_pressure_mpa": {
+        "unit": "MPa",
+        "value": 9.21815481041
       },
       "ring_location": "external",
       "ring_radial_height_mm": {
@@ -9496,6 +9576,12 @@
         "midbay_shell_hoop_stress_per_unit_pressure": 107.506427763,
         "n_function": 1.07516730811,
         "ring_hoop_stress_per_unit_pressure": 62.2904320264,
+        "ring_maximum_hoop_stress_location": "external_ring_base_at_shell",
+        "ring_maximum_hoop_stress_per_unit_pressure": 63.576104109,
+        "ring_maximum_hoop_stress_radius_mm": {
+          "unit": "mm",
+          "value": 103.9876
+        },
         "source_reference": "von Sanden and Guenther periodic-bay solution (DTMB Report 1497, Pulos and Salerno, 1961) without the beam-column term, in the Wilson and PD 5500 Pc5 form printed by Morandi (1994, University of Glasgow PhD thesis), Eqs. 48-53; effective ring area from DTMB Report 1639 (Pulos, 1963), Eq. (9); ring stress from DTMB 1497 Eq. [58] and DTMB 1639 Eq. (175), at the ring centroid radius"
       },
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
@@ -10109,7 +10195,7 @@
         "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
         "Global buckling is elastic: lobar modes (n >= 2, axial half-waves of at least two ring spacings, and always m = 1) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
         "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves of at least two ring spacings, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. Widely spaced rings still need a discrete-ring or code-rule check.",
-        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay. They are not collapse pressures."
+        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does. They are not collapse pressures."
       ],
       "poisson_ratio": 0.3,
       "proportional_limit_mpa": {
@@ -10136,6 +10222,10 @@
       "ring_eccentricity_from_shell_mid_surface_mm": {
         "unit": "mm",
         "value": 2.5908
+      },
+      "ring_first_yield_pressure_mpa": {
+        "unit": "MPa",
+        "value": 9.21815481041
       },
       "ring_location": "external",
       "ring_radial_height_mm": {
@@ -10261,6 +10351,12 @@
         "midbay_shell_hoop_stress_per_unit_pressure": 107.506427763,
         "n_function": 1.07516730811,
         "ring_hoop_stress_per_unit_pressure": 62.2904320264,
+        "ring_maximum_hoop_stress_location": "external_ring_base_at_shell",
+        "ring_maximum_hoop_stress_per_unit_pressure": 63.576104109,
+        "ring_maximum_hoop_stress_radius_mm": {
+          "unit": "mm",
+          "value": 103.9876
+        },
         "source_reference": "von Sanden and Guenther periodic-bay solution (DTMB Report 1497, Pulos and Salerno, 1961) without the beam-column term, in the Wilson and PD 5500 Pc5 form printed by Morandi (1994, University of Glasgow PhD thesis), Eqs. 48-53; effective ring area from DTMB Report 1639 (Pulos, 1963), Eq. (9); ring stress from DTMB 1497 Eq. [58] and DTMB 1639 Eq. (175), at the ring centroid radius"
       },
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
@@ -10874,7 +10970,7 @@
         "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
         "Global buckling is elastic: lobar modes (n >= 2, axial half-waves of at least two ring spacings, and always m = 1) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
         "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves of at least two ring spacings, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. Widely spaced rings still need a discrete-ring or code-rule check.",
-        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay. They are not collapse pressures."
+        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does. They are not collapse pressures."
       ],
       "poisson_ratio": 0.3,
       "proportional_limit_mpa": {
@@ -10901,6 +10997,10 @@
       "ring_eccentricity_from_shell_mid_surface_mm": {
         "unit": "mm",
         "value": 2.5908
+      },
+      "ring_first_yield_pressure_mpa": {
+        "unit": "MPa",
+        "value": 9.21815481041
       },
       "ring_location": "external",
       "ring_radial_height_mm": {

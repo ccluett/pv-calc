@@ -145,11 +145,13 @@ RING_SHELL_RESULT_UNITS = {
     "elastic_applicability_limit_mpa": "MPa",
     "shell_yield_between_rings_pressure_mpa": "MPa",
     "ring_yield_pressure_mpa": "MPa",
+    "ring_first_yield_pressure_mpa": "MPa",
     "advisory_governing_pressure_mpa": "MPa",
 }
 RING_AXISYMMETRIC_STRESS_UNITS = {
     "clear_bay_mm": "mm",
     "effective_ring_area_mm2": "mm^2",
+    "ring_maximum_hoop_stress_radius_mm": "mm",
 }
 RING_GLOBAL_RESULT_UNITS = {
     "ideal_critical_pressure_mpa": "MPa",

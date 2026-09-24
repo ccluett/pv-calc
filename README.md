@@ -65,8 +65,9 @@ the shell between rings. The global calculation is elastic; the inter-ring bay
 includes NASA's plasticity correction when a complete compressive curve is
 supplied. With a yield strength it also reports Pc5 and ring yield: the
 pressures at which the mean hoop stress in the shell at mid-bay, and in the
-rings, reaches yield in a perfect periodic bay. None of these is a collapse
-pressure. Interframe collapse, ring tripping, and ring spacing are not checked,
+rings, reaches yield in a perfect periodic bay, and ring first yield, where
+the ring's largest hoop stress, at its smallest radius, does. None of these
+is a collapse pressure. Interframe collapse, ring tripping, and ring spacing are not checked,
 so `check` stays indeterminate.
 
 Thickness sizing selects the smallest solution among model-eligible intervals

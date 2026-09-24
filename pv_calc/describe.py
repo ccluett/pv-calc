@@ -275,6 +275,26 @@ _RESULT_FIELD_DESCRIPTIONS: dict[str, str] = {
     "ring_hoop_stress_per_unit_pressure": (
         "The ring's mean hoop stress at its centroid radius divided by the applied pressure."
     ),
+    "ring_first_yield_pressure_mpa": (
+        "The pressure at which the ring's largest hoop stress, at its smallest radius, "
+        "reaches the yield strength: the free edge of an internal ring or the base of an "
+        "external ring at the shell. It is at or below ring_yield_pressure_mpa by the ratio "
+        "of that radius to the centroid radius. Null without a yield strength or valid geometry."
+    ),
+    "ring_maximum_hoop_stress_location": (
+        "Where the ring's hoop stress is largest: the smallest radius of its section, "
+        "internal_ring_free_edge or external_ring_base_at_shell. Each section translates "
+        "radially as a whole, so its hoop strain w_ring / r peaks there."
+    ),
+    "ring_maximum_hoop_stress_radius_mm": (
+        "Radius of ring_maximum_hoop_stress_location: R - t/2 - h for an internal ring, "
+        "R + t/2 for an external one."
+    ),
+    "ring_maximum_hoop_stress_per_unit_pressure": (
+        "The ring's hoop stress at its smallest radius divided by the applied pressure; the "
+        "yield strength divided by it is ring_first_yield_pressure_mpa. Like the centroid "
+        "value it is uniaxial and leaves out the pressure on an external ring's faces."
+    ),
     "mode_domain": (
         "Integer modes searched: 1 <= m <= maximum_axial_half_waves_m axial half-waves and "
         "n >= 2 circumferential lobes. Convergence refers to this domain; n=0 and n=1 are "

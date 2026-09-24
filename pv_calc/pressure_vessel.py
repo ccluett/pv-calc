@@ -695,7 +695,8 @@ RING_SHELL_YIELD_SOURCE = (
 RING_SHELL_YIELD_NOTE = (
     "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at "
     "mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect "
-    "periodic bay. They are not collapse pressures."
+    "periodic bay; ring first yield is where the ring's largest hoop stress, at its "
+    "smallest radius, does. They are not collapse pressures."
 )
 RING_SHELL_ADJUSTED_VALUE_NOTE = (
     "The global buckling pressure includes the 0.75 factor recommended by NASA "
@@ -867,6 +868,12 @@ class RingAxisymmetricStressResult:
     frame_parameter_gamma: float
     midbay_shell_hoop_stress_per_unit_pressure: float
     ring_hoop_stress_per_unit_pressure: float
+    ring_maximum_hoop_stress_location: Literal[
+        "internal_ring_free_edge",
+        "external_ring_base_at_shell",
+    ]
+    ring_maximum_hoop_stress_radius_mm: float
+    ring_maximum_hoop_stress_per_unit_pressure: float
 
 
 @dataclass(frozen=True)
@@ -922,6 +929,7 @@ class RingShellResult:
     axisymmetric_stress: RingAxisymmetricStressResult | None
     shell_yield_between_rings_pressure_mpa: float | None
     ring_yield_pressure_mpa: float | None
+    ring_first_yield_pressure_mpa: float | None
     advisory_candidate_modes: tuple[str, ...]
     advisory_governing_mode: str | None
     advisory_governing_status: (
@@ -2943,6 +2951,13 @@ def _ring_axisymmetric_stress(
     clear_bay_mm = ring_spacing_mm - ring_axial_width_mm
     ring_sign = 1.0 if ring_location == "external" else -1.0
     centroid_radius_mm = r_mm + ring_sign * 0.5 * (t_mm + ring_radial_height_mm)
+    # The ring's smallest radius carries its largest hoop strain w_ring / r:
+    # the free edge of an internal ring, the base of an external one.
+    innermost_radius_mm = (
+        r_mm + 0.5 * t_mm
+        if ring_location == "external"
+        else r_mm - 0.5 * t_mm - ring_radial_height_mm
+    )
 
     beta_per_mm = (3.0 * (1.0 - v * v)) ** 0.25 / math.sqrt(r_mm * t_mm)
     x = beta_per_mm * clear_bay_mm
@@ -2975,7 +2990,9 @@ def _ring_axisymmetric_stress(
     )
     # The ring deflects (1 - gamma / (1 - nu/2)) times the free-shell deflection
     # p R^2 (1 - nu/2) / (E t), and its hoop stress at radius r is E w_ring / r;
-    # the centroid radius gives the section's mean stress.
+    # the centroid radius gives the section's mean stress and the smallest
+    # radius its largest.
+    ring_deflection_share = 1.0 - 0.5 * v - gamma
     return RingAxisymmetricStressResult(
         source_reference=RING_SHELL_YIELD_SOURCE,
         clear_bay_mm=clear_bay_mm,
@@ -2986,7 +3003,16 @@ def _ring_axisymmetric_stress(
         frame_parameter_gamma=gamma,
         midbay_shell_hoop_stress_per_unit_pressure=r_mm / t_mm * (1.0 - gamma * g_function),
         ring_hoop_stress_per_unit_pressure=(
-            r_mm / t_mm * (r_mm / centroid_radius_mm) * (1.0 - 0.5 * v - gamma)
+            r_mm / t_mm * (r_mm / centroid_radius_mm) * ring_deflection_share
+        ),
+        ring_maximum_hoop_stress_location=(
+            "external_ring_base_at_shell"
+            if ring_location == "external"
+            else "internal_ring_free_edge"
+        ),
+        ring_maximum_hoop_stress_radius_mm=innermost_radius_mm,
+        ring_maximum_hoop_stress_per_unit_pressure=(
+            r_mm / t_mm * (r_mm / innermost_radius_mm) * ring_deflection_share
         ),
     )
 
@@ -3129,6 +3155,7 @@ def ring_stiffened_shell_external_pressure(
     axisymmetric: RingAxisymmetricStressResult | None = None
     shell_yield_pressure: float | None = None
     ring_yield_pressure: float | None = None
+    ring_first_yield_pressure: float | None = None
     if not validity_violations:
         axisymmetric = _ring_axisymmetric_stress(
             shell_mid_surface_radius_mm=r_mm,
@@ -3144,6 +3171,9 @@ def ring_stiffened_shell_external_pressure(
                 yield_mpa / axisymmetric.midbay_shell_hoop_stress_per_unit_pressure
             )
             ring_yield_pressure = yield_mpa / axisymmetric.ring_hoop_stress_per_unit_pressure
+            ring_first_yield_pressure = (
+                yield_mpa / axisymmetric.ring_maximum_hoop_stress_per_unit_pressure
+            )
 
     capacity_status: Literal[
         "advisory",
@@ -3445,6 +3475,7 @@ def ring_stiffened_shell_external_pressure(
         axisymmetric_stress=axisymmetric,
         shell_yield_between_rings_pressure_mpa=shell_yield_pressure,
         ring_yield_pressure_mpa=ring_yield_pressure,
+        ring_first_yield_pressure_mpa=ring_first_yield_pressure,
         advisory_candidate_modes=tuple(mode for mode, _, _ in advisory_candidates),
         advisory_governing_mode=advisory_mode,
         advisory_governing_status=advisory_status,

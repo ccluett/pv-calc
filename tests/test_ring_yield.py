@@ -130,6 +130,43 @@ def test_yield_pressures_are_linear_elastic_mean_hoop_yield():
 
 
 @pytest.mark.parametrize(
+    ("ring_location", "location", "smallest_radius_mm"),
+    [
+        ("internal", "internal_ring_free_edge", 274.5 - 2.38 / 2.0 - 25.0),
+        ("external", "external_ring_base_at_shell", 274.5 + 2.38 / 2.0),
+    ],
+)
+def test_ring_first_yield_is_at_the_smallest_radius_of_the_translating_ring(
+    ring_location, location, smallest_radius_mm
+):
+    # Each ring section translates radially as a whole, so its hoop stress
+    # E w_ring / r is largest at its smallest radius: the free edge of an
+    # internal ring, but the base of an external one, whose free edge yields
+    # last. Ring first yield scales from the centroid value by that ratio.
+    result = _case(ring_location=ring_location)
+    stress = result.axisymmetric_stress
+    centroid_radius_mm = 274.5 + (1.0 if ring_location == "external" else -1.0) * 0.5 * (
+        2.38 + 25.0
+    )
+
+    assert stress is not None
+    assert stress.ring_maximum_hoop_stress_location == location
+    assert stress.ring_maximum_hoop_stress_radius_mm == pytest.approx(smallest_radius_mm)
+    assert stress.ring_maximum_hoop_stress_per_unit_pressure == pytest.approx(
+        stress.ring_hoop_stress_per_unit_pressure * centroid_radius_mm / smallest_radius_mm,
+        rel=1e-14,
+    )
+    assert result.ring_first_yield_pressure_mpa == pytest.approx(
+        result.ring_yield_pressure_mpa * smallest_radius_mm / centroid_radius_mm, rel=1e-14
+    )
+    assert result.ring_first_yield_pressure_mpa < result.ring_yield_pressure_mpa
+    assert result.ring_first_yield_pressure_mpa * (
+        stress.ring_maximum_hoop_stress_per_unit_pressure
+    ) == pytest.approx(288.3)
+    assert _case(ring_location=ring_location, yield_strength_mpa=None).ring_first_yield_pressure_mpa is None
+
+
+@pytest.mark.parametrize(
     "overrides",
     [{"wall_thickness_mm": 30.0}, {"ring_axial_width_mm": 120.0}],
     ids=["thick_wall", "overlapping_rings"],
@@ -141,6 +178,7 @@ def test_invalid_geometry_reports_no_yield_pressures(overrides):
     assert result.axisymmetric_stress is None
     assert result.shell_yield_between_rings_pressure_mpa is None
     assert result.ring_yield_pressure_mpa is None
+    assert result.ring_first_yield_pressure_mpa is None
 
 
 def test_json_summary_and_text_report_the_yield_pressures():
@@ -163,6 +201,14 @@ def test_json_summary_and_text_report_the_yield_pressures():
     assert "Lowest buckling pressure: 3.67912 MPa (inter-ring bay;" in text
     assert "Shell mean hoop yield at mid-bay (Pc5): 2.48663 MPa" in text
     assert "Ring mean hoop yield: 5.66939 MPa" in text
+    first_yield = 5.66939427151082 * (274.5 + 1.19) / (274.5 + 13.69)
+    assert summary["ring_yield"]["ring_first_yield_pressure_mpa"]["value"] == pytest.approx(
+        first_yield, rel=1e-12
+    )
+    assert summary["ring_yield"]["ring_maximum_hoop_stress_location"] == (
+        "external_ring_base_at_shell"
+    )
+    assert f"Ring first yield (ring base at the shell): {first_yield:.6g} MPa" in text
 
     without_yield = render_text(_response(None))
     assert "Mean hoop yield: not evaluated without a yield strength" in without_yield

@@ -29,6 +29,15 @@ model; both predate this changelog.
     `maximum_axial_half_waves_m` and `minimum_ring_spacings_per_axial_half_wave`
     are added. The DTMB examples keep their `m = 1` modes and pressures; their
     search evidence (bounds, mode counts, frontier) changes.
+  - Report `ring_first_yield_pressure_mpa`: the pressure at which the ring's
+    largest hoop stress, at its smallest radius, reaches yield. That is the
+    free edge of an internal ring and the base of an external ring at the
+    shell, because each ring section translates radially and its hoop strain
+    is `w_ring / r`. It is below the centroid (mean) ring yield by the ratio
+    of the two radii: 2.0% for the DTMB 1324 examples, 7-9% for deeper rings
+    on thicker shells. `axisymmetric_stress`
+    adds the location, radius, and stress per unit pressure; text and summary
+    output show it beside the mean ring yield, which is unchanged.
 
 ## [0.4.0] - 2026-09-23
 
