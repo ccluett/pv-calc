@@ -418,7 +418,9 @@ either, and each record names the data sheet its nominal values come from.
 The generic `Al-7075-T6` record uses 54 ksi, the lowest minimum among the
 product forms and thickness bands documented in its provenance.
 These values are calculation inputs rather than design allowables. They are not
-statistical A-basis or B-basis allowables and have no temperature derating,
+statistical A-basis or B-basis allowables; the two aluminium compression
+anchors use an A-basis compressive yield only to scale a typical curve into a
+minimum curve (MIL-HDBK-5J Section 9.8.4.4). They have no temperature derating,
 weld or heat-affected-zone knockdown, fatigue or notch correction, or
 environmental-cracking adjustment. The calculator applies no safety factor.
 
@@ -432,7 +434,8 @@ record shape, anchor, product form, direction, and any substitution. The
 proportional limits use this project's `E_tan = 0.99 E` screen, which differs
 from the handbook convention of 0.0001 plastic strain (Section 1.4.4.2,
 p. 1-9). MIL-HDBK-5J is cancelled; its notice identifies MMPDS as a successor.
-The Al-6061-T6 curve describes LT extrusion compression. The Al-7075-T6 curve
+The Al-6061-T6 curve describes LT compression of extrusions up to 1.000 in
+thick; thicker extrusions have a 14% lower Fcy(LT). The Al-7075-T6 curve
 describes L compression of T651 plate, anchored at the A-basis Fcy(L) of the
 thickest plate band, which lies below the stored yield. The Ti-6Al-4V curve
 describes longitudinal compression of annealed extrusion, with a tensile

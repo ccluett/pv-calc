@@ -12,8 +12,9 @@
 # flaw-dominated property rather than material constants.
 #
 # These values are calculation inputs, not design allowables. None is a statistical
-# A-basis or B-basis allowable; the Al-7075-T6 compression anchor borrows an
-# A-basis compressive yield only to scale a typical curve. None carries a
+# A-basis or B-basis allowable; the Al-6061-T6 and Al-7075-T6 compression
+# anchors use an A-basis compressive yield only to scale a typical curve into a
+# minimum curve, as MIL-HDBK-5J Section 9.8.4.4 directs. None carries a
 # temperature derating, a weld or heat-affected-zone knockdown, a fatigue or
 # notch correction, or an environmental-cracking caveat, and the calculator
 # applies no safety factor of its own. Everything is room temperature unless a
@@ -60,8 +61,10 @@ materials:
       Figure 3.6.2.2.6(i), printed p. 3-283, supplies the typical LT
       compressive exponent n = 28 for room-temperature 6061-T6 extrusion;
       LT is the hoop direction of an extruded tube. Table 3.6.2.0(g) gives
-      Fcy(LT) = 35 ksi for extruded rod, bar, and shapes, rounded to
-      241 MPa, matching the stored tensile minimum. A minimum anchor with
+      A-basis Fcy(LT) = 35 ksi for T6, T6510, and T6511 extruded rod, bar,
+      and shapes up to 1.000 in thick, rounded to 241 MPa, matching the
+      stored tensile minimum; from 1.001 to 6.500 in it gives 30 ksi, 14%
+      lower, which this anchor does not cover. A minimum anchor with
       a typical shape, not a statistical design allowable. This curve is
       retained as reference-only data because the generic alloy name does not
       establish that product form and direction for a particular request.
