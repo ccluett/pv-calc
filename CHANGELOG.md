@@ -9,6 +9,16 @@ model; both predate this changelog.
 
 ## [Unreleased]
 
+- Ring-shell model 5.1.0 -> 6.0.0:
+  - When the inter-ring bay falls in the NASA moderate/long correlation
+    overlap, the lowest buckling pressure is no longer the global mode alone.
+    The bay is withheld there on every material path, so the old minimum
+    could sit far above both bay candidates (over 100 times in one synthetic
+    case). The lowest pressure is now not established: the candidate list is
+    empty, the governing fields are null, and a note says why. The global and
+    yield pressures are still reported, and text and summary output say the
+    lowest pressure is not established.
+
 ## [0.4.0] - 2026-09-23
 
 - Ring-shell model 4.0.0 -> 5.1.0:

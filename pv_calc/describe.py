@@ -232,7 +232,8 @@ _RESULT_FIELD_DESCRIPTIONS: dict[str, str] = {
         "pressure is an elastic upper bound; 'advisory_unqualified_material' when the "
         "winning inter-ring estimate uses reference-only material data; and "
         "'advisory_plasticity_undetermined' otherwise, such as a stress below yield with no "
-        "proportional limit. Null when every mode was withheld. This describes the selected "
+        "proportional limit. Null when no minimum is formed: every mode was withheld, or the "
+        "inter-ring bay was withheld on an otherwise valid record. This describes the selected "
         "mode; global_elastic_applicability separately reports the global mode."
     ),
     "working_circumferential_membrane_stress_mpa": (
@@ -246,7 +247,9 @@ _RESULT_FIELD_DESCRIPTIONS: dict[str, str] = {
         "the governing-pressure minimum. Without a proportional limit or compressive "
         "curve, the inter-ring bay enters at its elastic pressure, screened like the "
         "global mode. Withheld and unimplemented modes are absent; capacity_status and "
-        "mode_dispositions record them."
+        "mode_dispositions record them. Empty when the inter-ring bay is withheld on an "
+        "otherwise valid record, as in the NASA moderate/long correlation overlap: a minimum "
+        "without the bay is not the lowest pressure, so none is formed and a note says why."
     ),
     "advisory_margin": (
         "The advisory governing pressure divided by the applied pressure, minus one; null "

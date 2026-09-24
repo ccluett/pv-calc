@@ -147,7 +147,7 @@ def test_json_summary_and_text_report_the_yield_pressures():
     response = _response(288.3)
     result = response["result"]
 
-    assert response["calculation_source"]["model_version"] == "5.1.0"
+    assert response["calculation_source"]["model_version"] == "6.0.0"
     assert result["shell_yield_between_rings_pressure_mpa"] == {
         "value": pytest.approx(2.486631095097233, rel=1e-12), "unit": "MPa",
     }

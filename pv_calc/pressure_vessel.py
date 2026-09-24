@@ -649,7 +649,7 @@ class SmoothCylinderBucklingResult:
 
 
 RING_SHELL_MODEL_ID = "nasa_ring_stiffened_shell_external_pressure"
-RING_SHELL_MODEL_VERSION = "5.1.0"
+RING_SHELL_MODEL_VERSION = "6.0.0"
 RING_SHELL_EQ64_ADJUSTMENT_FACTOR = 0.75
 RING_SHELL_MIN_RADIUS_THICKNESS_RATIO = 10.0
 RING_SHELL_DEFAULT_MAX_MODE_EVALUATIONS = 2_000_000
@@ -694,6 +694,12 @@ RING_SHELL_ADJUSTED_VALUE_NOTE = (
 GENERAL_INSTABILITY_SMEARED_NOTE = (
     "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing "
     "screen is applied; widely spaced rings need a discrete-ring or code-rule check."
+)
+RING_SHELL_GOVERNING_NOT_ESTABLISHED_REASON = (
+    "The inter-ring bay capacity is {status}, so the lowest buckling pressure is not "
+    "established: a minimum without the bay would report the global mode however far "
+    "below it the bay lies. inter_ring_shell_buckling gives the bay's reasons and "
+    "candidates; global_with_ring_torsion keeps the global pressure."
 )
 RING_SHELL_GLOBAL_PLASTICITY_PENDING_REASON = (
     "the global Eq. 64/65 capacity implies a shell circumferential membrane stress "
@@ -3216,7 +3222,17 @@ def ring_stiffened_shell_external_pressure(
                 inter_ring_pressure * r_mm / t_mm, proportional_mpa, yield_mpa
             )
             inter_ring_status = _ring_advisory_status(bay_applicability, bay_basis)
-    if (
+    # A valid record whose bay still has no pressure forms no minimum. The
+    # bay's NASA moderate/long overlap is the one gate that can leave it
+    # without one here: every other bay withholding also invalidates the ring
+    # record or is replaced by the elastic pressure above.
+    governing_not_established: str | None = None
+    if capacity_status == "advisory" and inter_ring_pressure is None:
+        governing_not_established = RING_SHELL_GOVERNING_NOT_ESTABLISHED_REASON.format(
+            status=inter_ring.capacity_status
+        )
+        advisory_candidates.clear()
+    elif (
         capacity_status == "advisory"
         and inter_ring_pressure is not None
         and inter_ring_status is not None
@@ -3352,6 +3368,7 @@ def ring_stiffened_shell_external_pressure(
         *((RING_SHELL_YIELD_NOTE,) if shell_yield_pressure is not None else ()),
         *((BUCKLING_REFERENCE_ONLY_REASON,) if data_qualification == "reference_only" else ()),
         *((global_plasticity_pending,) if global_plasticity_pending is not None else ()),
+        *((governing_not_established,) if governing_not_established is not None else ()),
     )
     return RingShellResult(
         model_id=RING_SHELL_MODEL_ID,

@@ -107,10 +107,18 @@ def summarize_response(
     if material:
         summary["material"] = {key: value for key, value in material.get("source", material).items() if key in {"name", "type", "database"}}
     summary["assessment"] = assess_response(payload, checks, minimum_margin)
-    if payload.get("model") == "ring-shell" and _number(result.get("advisory_governing_pressure_mpa")) is not None:
+    # A valid ring record reports its yield pressures even when the bay leaves
+    # the lowest buckling pressure unestablished; then ring_buckling says why.
+    ring_governed = _number(result.get("advisory_governing_pressure_mpa")) is not None
+    ring_unestablished = result.get("capacity_status") == "advisory" and not ring_governed
+    if payload.get("model") == "ring-shell" and (ring_governed or ring_unestablished):
         summary["ring_buckling"] = deepcopy({key: result[key] for key in (
             "advisory_governing_pressure_mpa", "advisory_governing_mode", "advisory_governing_status",
         ) if key in result})
+        if ring_unestablished:
+            summary["ring_buckling"]["inter_ring_capacity_status"] = result.get(
+                "inter_ring_shell_buckling", {}
+            ).get("capacity_status")
         if result.get("advisory_governing_mode") == "global_eq64_with_eq91_ring_torsion":
             global_mode = result.get("global_with_ring_torsion", {})
             summary["ring_buckling"].update({key: global_mode[key] for key in (
@@ -224,7 +232,12 @@ def _render_summary(summary: dict[str, Any]) -> list[str]:
             ("depth", "depth"), ("design_factor", "factor"),
             ("service_external_pressure", "service pressure"), ("design_external_pressure", "design pressure"),
         ) if key in loading))
-    if "ring_buckling" in summary:
+    if "ring_buckling" in summary and "inter_ring_capacity_status" in summary["ring_buckling"]:
+        lines.append(
+            "Lowest buckling pressure: not established (inter-ring bay "
+            f"{summary['ring_buckling']['inter_ring_capacity_status']})"
+        )
+    elif "ring_buckling" in summary:
         buckling = summary["ring_buckling"]
         detail = [_RING_MODE_LABELS.get(buckling.get("advisory_governing_mode"), str(buckling.get("advisory_governing_mode")))]
         if "critical_circumferential_lobes_n" in buckling:

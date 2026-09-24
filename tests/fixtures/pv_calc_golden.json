@@ -3310,7 +3310,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "5.1.0",
+      "model_version": "6.0.0",
       "package_version": "0.4.0"
     },
     "material": {
@@ -3979,7 +3979,7 @@
         }
       ],
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "5.1.0",
+      "model_version": "6.0.0",
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
         "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
@@ -4071,7 +4071,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "5.1.0",
+      "model_version": "6.0.0",
       "package_version": "0.4.0"
     },
     "material": {
@@ -4740,7 +4740,7 @@
         }
       ],
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "5.1.0",
+      "model_version": "6.0.0",
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
         "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
@@ -4832,7 +4832,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "5.1.0",
+      "model_version": "6.0.0",
       "package_version": "0.4.0"
     },
     "material": {
@@ -5501,7 +5501,7 @@
         }
       ],
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "5.1.0",
+      "model_version": "6.0.0",
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
         "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
@@ -5593,7 +5593,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "5.1.0",
+      "model_version": "6.0.0",
       "package_version": "0.4.0"
     },
     "material": {
@@ -6262,7 +6262,7 @@
         }
       ],
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "5.1.0",
+      "model_version": "6.0.0",
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
         "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
@@ -6354,7 +6354,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "5.1.0",
+      "model_version": "6.0.0",
       "package_version": "0.4.0"
     },
     "material": {
@@ -7023,7 +7023,7 @@
         }
       ],
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "5.1.0",
+      "model_version": "6.0.0",
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
         "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
@@ -7115,7 +7115,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "5.1.0",
+      "model_version": "6.0.0",
       "package_version": "0.4.0"
     },
     "material": {
@@ -7784,7 +7784,7 @@
         }
       ],
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "5.1.0",
+      "model_version": "6.0.0",
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
         "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
@@ -7876,7 +7876,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "5.1.0",
+      "model_version": "6.0.0",
       "package_version": "0.4.0"
     },
     "material": {
@@ -8545,7 +8545,7 @@
         }
       ],
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "5.1.0",
+      "model_version": "6.0.0",
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
         "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
@@ -8637,7 +8637,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "5.1.0",
+      "model_version": "6.0.0",
       "package_version": "0.4.0"
     },
     "material": {
@@ -9306,7 +9306,7 @@
         }
       ],
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "5.1.0",
+      "model_version": "6.0.0",
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
         "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
@@ -9398,7 +9398,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "5.1.0",
+      "model_version": "6.0.0",
       "package_version": "0.4.0"
     },
     "material": {
@@ -10067,7 +10067,7 @@
         }
       ],
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "5.1.0",
+      "model_version": "6.0.0",
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
         "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
@@ -10159,7 +10159,7 @@
     "calculation_source": {
       "function": "pv_calc.pressure_vessel.ring_stiffened_shell_external_pressure",
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "5.1.0",
+      "model_version": "6.0.0",
       "package_version": "0.4.0"
     },
     "material": {
@@ -10828,7 +10828,7 @@
         }
       ],
       "model_id": "nasa_ring_stiffened_shell_external_pressure",
-      "model_version": "5.1.0",
+      "model_version": "6.0.0",
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
         "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",

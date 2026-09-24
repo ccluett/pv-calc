@@ -4,6 +4,9 @@ import math
 
 import pytest
 
+from pv_calc.api import calculate
+from pv_calc.contracts import CALC_SCHEMA_VERSION
+from pv_calc.presentation import render_text, summarize_response
 from pv_calc.pressure_vessel import (
     RingShellResult,
     ring_stiffened_shell_external_pressure,
@@ -484,3 +487,103 @@ def test_withheld_record_reports_the_exceedance_as_a_violation_not_a_pending_not
         in violation
         for violation in result.validity_violations
     )
+
+
+# R/t = 20 puts the NASA moderate/long overlap at 15.8 R <= spacing <= 20.0 R
+# for nu = 0.3, so a 1790 mm spacing is inside it with room on both sides.
+OVERLAP_BAY = dict(
+    external_pressure_mpa=0.01,
+    shell_mid_surface_radius_mm=100.0,
+    wall_thickness_mm=5.0,
+    unsupported_length_mm=3 * 1790.0,
+    ring_spacing_mm=1790.0,
+    ring_axial_width_mm=20.0,
+    ring_radial_height_mm=60.0,
+    ring_location="external",
+    elastic_modulus_mpa=110_000.0,
+    poisson_ratio=0.3,
+    yield_strength_mpa=880.0,
+)
+
+
+@pytest.mark.parametrize(
+    "material",
+    [
+        {},
+        {"proportional_limit_mpa": 800.0},
+        {"ramberg_osgood_n": 20.0, "compressive_proof_stress_mpa": 880.0},
+    ],
+    ids=["no_limit", "proportional_limit", "compressive_curve"],
+)
+def test_inter_ring_bay_in_the_correlation_overlap_forms_no_minimum(material):
+    # NASA gives no rule inside the overlap, so the bay is withheld on every
+    # material path. A minimum over the global mode alone would report the
+    # global pressure as the lowest one although both bay candidates lie far
+    # below it; the lowest pressure is not established instead.
+    result = ring_stiffened_shell_external_pressure(**OVERLAP_BAY, **material)
+    bay = result.inter_ring_shell_buckling
+    candidates = {item.regime: item for item in bay.candidates}
+
+    assert bay.regime == "moderate_long_correlation_overlap"
+    assert bay.capacity_status == "withheld_correlation_overlap"
+    assert candidates["moderate"].applicable and candidates["long"].applicable
+    global_pressure = result.global_with_ring_torsion.adjusted_critical_pressure_mpa
+    assert global_pressure is not None
+    assert global_pressure > 10.0 * max(
+        candidates["moderate"].correlated_critical_pressure_mpa,
+        candidates["long"].correlated_critical_pressure_mpa,
+    )
+
+    assert result.capacity_status == "advisory"
+    assert result.advisory_candidate_modes == ()
+    assert result.advisory_governing_mode is None
+    assert result.advisory_governing_pressure_mpa is None
+    assert result.advisory_governing_status is None
+    assert result.advisory_margin is None
+    assert any(
+        "lowest buckling pressure is not established" in note
+        and "withheld_correlation_overlap" in note
+        for note in result.notes
+    )
+    # The yield pressures do not depend on the bay's buckling correlation.
+    assert result.shell_yield_between_rings_pressure_mpa is not None
+    assert result.ring_yield_pressure_mpa is not None
+
+
+def test_text_report_says_the_lowest_pressure_is_not_established():
+    geometry = {
+        name: {"value": OVERLAP_BAY[f"{name}_mm"], "unit": "mm"}
+        for name in (
+            "shell_mid_surface_radius", "wall_thickness", "unsupported_length",
+            "ring_spacing", "ring_axial_width", "ring_radial_height",
+        )
+    }
+    response = calculate({
+        "schema_version": CALC_SCHEMA_VERSION,
+        "model": "ring-shell",
+        "inputs": {
+            "external_pressure": {"value": 0.01, "unit": "MPa"},
+            **geometry,
+            "ring_location": "external",
+        },
+        "material": {"type": "explicit", "name": "Overlap test metal", "properties": {
+            "failure_category": "ductile_metal",
+            "elastic_modulus": {"value": 110_000.0, "unit": "MPa"},
+            "poisson_ratio": 0.3,
+            "yield_strength": {"value": 880.0, "unit": "MPa"},
+        }},
+    })
+
+    summary = summarize_response(response)
+    assert summary["ring_buckling"]["advisory_governing_pressure_mpa"] == {
+        "value": None, "unit": "MPa",
+    }
+    assert summary["ring_buckling"]["inter_ring_capacity_status"] == (
+        "withheld_correlation_overlap"
+    )
+    text = render_text(response)
+    assert (
+        "Lowest buckling pressure: not established (inter-ring bay "
+        "withheld_correlation_overlap)"
+    ) in text
+    assert "Shell mean hoop yield at mid-bay (Pc5):" in text
