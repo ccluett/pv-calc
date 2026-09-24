@@ -199,7 +199,8 @@ _RESULT_FIELD_DESCRIPTIONS: dict[str, str] = {
         "value traceable and sets no capacity, margin, or regime."
     ),
     "elastic_applicability": (
-        "Compares applied membrane stress p*r/t with elastic_applicability_limit_mpa: "
+        "Compares the applied circumferential membrane stress, "
+        "working_circumferential_membrane_stress_mpa, with elastic_applicability_limit_mpa: "
         "'exceeded' above the limit, 'within' at or below it, and 'undetermined' when "
         "no limit is supplied. This screen is independent of unsupported length and "
         "sets neither capacity nor margin."
@@ -237,8 +238,9 @@ _RESULT_FIELD_DESCRIPTIONS: dict[str, str] = {
         "mode; global_elastic_applicability separately reports the global mode."
     ),
     "working_circumferential_membrane_stress_mpa": (
-        "Applied thin-shell circumferential membrane stress p*r/t at the mid-surface "
-        "radius, as a positive compression magnitude. It is the demand counterpart of "
+        "Applied circumferential membrane stress, the pressure times "
+        "circumferential_stress_per_unit_pressure (p*r/t at the mid-surface radius for a "
+        "smooth shell), as a positive compression magnitude. It is the demand counterpart of "
         "correlated_critical_circumferential_stress_mpa and exists to make the "
         "elastic_applicability comparison readable; it is not a capacity or a margin."
     ),
@@ -294,6 +296,19 @@ _RESULT_FIELD_DESCRIPTIONS: dict[str, str] = {
         "The ring's hoop stress at its smallest radius divided by the applied pressure; the "
         "yield strength divided by it is ring_first_yield_pressure_mpa. Like the centroid "
         "value it is uniaxial and leaves out the pressure on an external ring's faces."
+    ),
+    "circumferential_stress_basis": (
+        "Which circumferential membrane stress this result compares with material data: "
+        "unstiffened_membrane_p_r_over_t for a smooth shell, or "
+        "ring_stiffened_mid_bay_hoop_membrane for the bay of a ring-stiffened shell, whose "
+        "rings carry part of the hoop load. It drives the plasticity correction, the "
+        "proportional-limit and elastic-applicability screens, and the reported critical "
+        "stresses; pressures without a curve do not depend on it."
+    ),
+    "circumferential_stress_per_unit_pressure": (
+        "Circumferential membrane stress divided by pressure on circumferential_stress_basis: "
+        "r/t for a smooth shell, or the periodic bay's mid-bay hoop stress per unit pressure, "
+        "(R/t)(1 - gamma*G), for a ring-stiffened bay."
     ),
     "mode_domain": (
         "Integer modes searched: 1 <= m <= maximum_axial_half_waves_m axial half-waves and "
@@ -668,7 +683,8 @@ def _describe_model(
             "NASA recommends a 0.75 pressure multiplier (printed p. 38). Both the ideal"
             " and adjusted pressures are reported; the adjusted pressure enters the mode comparison.",
             "The inter-ring calculation treats an isolated smooth bay over ring center"
-            " spacing; a supplied compressive curve corrects this bay only.",
+            " spacing; a supplied compressive curve corrects this bay only, read at the"
+            " periodic bay's mid-bay hoop stress.",
             "Shell and ring yield use the axisymmetric solution of a periodic bay between"
             " identical rings, away from the ends, for a perfectly circular, linearly"
             " elastic shell; they need a yield strength.",

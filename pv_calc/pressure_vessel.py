@@ -295,7 +295,7 @@ FLAT_CIRCULAR_PLATE_SCOPE_NOTES = (
 )
 
 SMOOTH_CYLINDER_BUCKLING_MODEL_ID = "nasa_smooth_cylinder_external_pressure_buckling"
-SMOOTH_CYLINDER_BUCKLING_MODEL_VERSION = "5.0.0"
+SMOOTH_CYLINDER_BUCKLING_MODEL_VERSION = "5.1.0"
 SMOOTH_CYLINDER_BUCKLING_SOURCE = (
     "NASA/SP-8007-2020/REV 2, Eqs. 3-5, 17-29 and 30-32, pp. 22 and 26-29"
 )
@@ -321,6 +321,13 @@ SMOOTH_CYLINDER_CORRECTED_STRESS_ABOVE_YIELD_REASON = (
     "corrected critical circumferential membrane stress {stress:.6g} MPa exceeds the "
     "supplied yield strength {limit:.6g} MPa; the compressive curve is read beyond its "
     "anchor, and the separate material check decides whether material failure governs"
+)
+SMOOTH_CYLINDER_RING_BAY_STRESS_NOTE = (
+    "Circumferential membrane stresses, including the plasticity correction and the "
+    "proportional-limit and elastic-applicability screens, use the ring-stiffened bay's "
+    "mid-bay hoop membrane stress, {ratio:.6g} times the pressure, in place of "
+    "p*r/t = {nominal:.6g} times the pressure: NASA evaluates its plasticity factors at the "
+    "circumferential stress of the buckling shell, and the rings carry part of the hoop load."
 )
 SMOOTH_CYLINDER_SCOPE_NOTES = (
     "The NASA equations assume a thin, circular, isotropic, unstiffened shell with uniform "
@@ -629,6 +636,11 @@ class SmoothCylinderBucklingResult:
     ideal_critical_pressure_mpa: float | None
     correlated_critical_pressure_mpa: float | None
     correlated_critical_circumferential_stress_mpa: float | None
+    circumferential_stress_basis: Literal[
+        "unstiffened_membrane_p_r_over_t",
+        "ring_stiffened_mid_bay_hoop_membrane",
+    ]
+    circumferential_stress_per_unit_pressure: float
     working_circumferential_membrane_stress_mpa: float
     elastic_applicability_limit_mpa: float | None
     elastic_applicability_limit_basis: Literal[
@@ -1865,8 +1877,8 @@ def _smooth_short_candidate(
     curvature_parameter_z: float,
     flexural_rigidity_n_mm: float,
     shell_mid_surface_radius_mm: float,
-    wall_thickness_mm: float,
     unsupported_length_mm: float,
+    circumferential_stress_per_unit_pressure: float,
 ) -> SmoothCylinderBucklingCandidate:
     """Eqs. 20/22 minimized over beta, with the Eq. 28 correlation factor inside.
 
@@ -1909,7 +1921,7 @@ def _smooth_short_candidate(
         ideal_critical_pressure_mpa=ideal_pressure,
         correlated_critical_pressure_mpa=correlated_pressure,
         correlated_critical_circumferential_stress_mpa=(
-            correlated_pressure * shell_mid_surface_radius_mm / wall_thickness_mm
+            correlated_pressure * circumferential_stress_per_unit_pressure
         ),
         eq25_simplified_critical_pressure_mpa=None,
         applicability_conditions=(
@@ -1929,6 +1941,7 @@ def _smooth_moderate_candidate(
     shell_mid_surface_radius_mm: float,
     wall_thickness_mm: float,
     unsupported_length_mm: float,
+    circumferential_stress_per_unit_pressure: float,
 ) -> SmoothCylinderBucklingCandidate:
     gamma = SMOOTH_CYLINDER_MODERATE_GAMMA
     gamma_z = gamma * curvature_parameter_z
@@ -1991,7 +2004,7 @@ def _smooth_moderate_candidate(
         ideal_critical_pressure_mpa=ideal_pressure,
         correlated_critical_pressure_mpa=correlated_pressure,
         correlated_critical_circumferential_stress_mpa=(
-            correlated_pressure * radius_thickness
+            correlated_pressure * circumferential_stress_per_unit_pressure
         ),
         eq25_simplified_critical_pressure_mpa=eq25_pressure,
         applicability_conditions=(
@@ -2010,10 +2023,10 @@ def _smooth_long_candidate(
     poisson_ratio: float,
     shell_mid_surface_radius_mm: float,
     wall_thickness_mm: float,
+    circumferential_stress_per_unit_pressure: float,
 ) -> SmoothCylinderBucklingCandidate:
     gamma = SMOOTH_CYLINDER_LONG_GAMMA
     gamma_z = gamma * curvature_parameter_z
-    radius_thickness = shell_mid_surface_radius_mm / wall_thickness_mm
     ideal_pressure = (
         elastic_modulus_mpa
         / (4.0 * (1.0 - poisson_ratio**2))
@@ -2040,7 +2053,7 @@ def _smooth_long_candidate(
         ideal_critical_pressure_mpa=ideal_pressure,
         correlated_critical_pressure_mpa=correlated_pressure,
         correlated_critical_circumferential_stress_mpa=(
-            correlated_pressure * radius_thickness
+            correlated_pressure * circumferential_stress_per_unit_pressure
         ),
         eq25_simplified_critical_pressure_mpa=None,
         applicability_conditions=(
@@ -2197,7 +2210,9 @@ def solve_inelastic_critical_pressure(
 ) -> tuple[float, str]:
     """Bracketed solve of ``p = p_elastic * eta(p * r/t)``.
 
-    ``eta`` is 1 at zero stress and decreases as stress rises, so the residual
+    ``radius_over_thickness`` is the circumferential membrane stress per unit
+    pressure: ``r/t`` for an unstiffened shell, or the mid-bay hoop stress of
+    a ring-stiffened bay divided by the pressure. ``eta`` is 1 at zero stress and decreases as stress rises, so the residual
     ``p - p_elastic*eta(p*r/t)`` is negative at ``p=0`` and non-negative at
     ``p=p_elastic``. That brackets a root on ``[0, p_elastic]`` for every
     admissible curve. Bisection converges even when fixed-point iteration
@@ -2563,6 +2578,7 @@ def smooth_cylinder_external_pressure_buckling(
     ramberg_osgood_n: float | None = None,
     compressive_proof_stress_mpa: float | None = None,
     buckling_data_qualification: BucklingDataQualification = "qualified",
+    ring_stiffened_mid_bay_hoop_stress_per_unit_pressure: float | None = None,
 ) -> SmoothCylinderBucklingResult:
     """Calculate external-pressure buckling of a smooth cylinder.
 
@@ -2575,6 +2591,13 @@ def smooth_cylinder_external_pressure_buckling(
     critical stress stays under that limit and reported as an upper bound
     otherwise. Reference-only material data retain the numerical estimate and
     margin but label it ``released_unqualified_material``.
+
+    ``ring_stiffened_mid_bay_hoop_stress_per_unit_pressure`` is for the bay
+    of a ring-stiffened shell. Given, it replaces ``r/t`` as the ratio of
+    circumferential membrane stress to pressure in every stress this result
+    compares with material data: the plasticity correction, the
+    proportional-limit and elastic-applicability screens, and the reported
+    critical stresses. Pressures without a curve are unchanged.
     """
     p_mpa = _non_negative_pressure(external_pressure_mpa)
     r_mm = _positive_finite(
@@ -2621,6 +2644,19 @@ def smooth_cylinder_external_pressure_buckling(
 
     radius_thickness = r_mm / t_mm
     length_radius = length_mm / r_mm
+    stress_basis: Literal[
+        "unstiffened_membrane_p_r_over_t",
+        "ring_stiffened_mid_bay_hoop_membrane",
+    ]
+    if ring_stiffened_mid_bay_hoop_stress_per_unit_pressure is not None:
+        stress_per_pressure = _positive_finite(
+            ring_stiffened_mid_bay_hoop_stress_per_unit_pressure,
+            "ring_stiffened_mid_bay_hoop_stress_per_unit_pressure",
+        )
+        stress_basis = "ring_stiffened_mid_bay_hoop_membrane"
+    else:
+        stress_per_pressure = radius_thickness
+        stress_basis = "unstiffened_membrane_p_r_over_t"
     one_minus_v_squared = 1.0 - v**2
     # Products, not powers: an extreme input overflows to inf, which the check
     # below rejects, where ** would raise OverflowError instead.
@@ -2643,8 +2679,8 @@ def smooth_cylinder_external_pressure_buckling(
         curvature_parameter_z=z,
         flexural_rigidity_n_mm=flexural_rigidity,
         shell_mid_surface_radius_mm=r_mm,
-        wall_thickness_mm=t_mm,
         unsupported_length_mm=length_mm,
+        circumferential_stress_per_unit_pressure=stress_per_pressure,
     )
     moderate_candidate = _smooth_moderate_candidate(
         load_case=load_case,
@@ -2655,6 +2691,7 @@ def smooth_cylinder_external_pressure_buckling(
         shell_mid_surface_radius_mm=r_mm,
         wall_thickness_mm=t_mm,
         unsupported_length_mm=length_mm,
+        circumferential_stress_per_unit_pressure=stress_per_pressure,
     )
     long_candidate = _smooth_long_candidate(
         curvature_parameter_z=z,
@@ -2663,6 +2700,7 @@ def smooth_cylinder_external_pressure_buckling(
         poisson_ratio=v,
         shell_mid_surface_radius_mm=r_mm,
         wall_thickness_mm=t_mm,
+        circumferential_stress_per_unit_pressure=stress_per_pressure,
     )
     candidates = (short_candidate, moderate_candidate, long_candidate)
 
@@ -2724,7 +2762,7 @@ def smooth_cylinder_external_pressure_buckling(
                         elastic_critical_pressure_mpa=(
                             selected.correlated_critical_pressure_mpa
                         ),
-                        radius_over_thickness=radius_thickness,
+                        radius_over_thickness=stress_per_pressure,
                         elastic_modulus_mpa=e_mpa,
                         ramberg_osgood_n=hardening,
                         compressive_proof_stress_mpa=proof_mpa,
@@ -2736,7 +2774,7 @@ def smooth_cylinder_external_pressure_buckling(
                     inelastic_pressure / selected.correlated_critical_pressure_mpa
                 )
                 secant_modulus, tangent_modulus = ramberg_osgood_moduli(
-                    inelastic_pressure * radius_thickness,
+                    inelastic_pressure * stress_per_pressure,
                     elastic_modulus_mpa=e_mpa,
                     ramberg_osgood_n=hardening,
                     compressive_proof_stress_mpa=proof_mpa,
@@ -2792,7 +2830,7 @@ def smooth_cylinder_external_pressure_buckling(
     if capacity_status_not_withheld(capacity_status) and selected is not None:
         if inelastic_pressure is not None:
             correlated_pressure = inelastic_pressure
-            correlated_stress = inelastic_pressure * radius_thickness
+            correlated_stress = inelastic_pressure * stress_per_pressure
         else:
             correlated_pressure = selected.correlated_critical_pressure_mpa
             correlated_stress = selected.correlated_critical_circumferential_stress_mpa
@@ -2813,7 +2851,7 @@ def smooth_cylinder_external_pressure_buckling(
         and correlated_stress > yield_mpa
         else None
     )
-    working_stress = p_mpa * radius_thickness
+    working_stress = p_mpa * stress_per_pressure
     applicability_limit, applicability_basis, elastic_applicability = (
         _elastic_applicability_screen(working_stress, proportional_mpa, yield_mpa)
     )
@@ -2835,6 +2873,15 @@ def smooth_cylinder_external_pressure_buckling(
     )
     notes = (
         *SMOOTH_CYLINDER_SCOPE_NOTES,
+        *(
+            (
+                SMOOTH_CYLINDER_RING_BAY_STRESS_NOTE.format(
+                    ratio=stress_per_pressure, nominal=radius_thickness
+                ),
+            )
+            if stress_basis == "ring_stiffened_mid_bay_hoop_membrane"
+            else ()
+        ),
         *release_gate_violations,
         *((plasticity_pending,) if plasticity_pending is not None else ()),
         *(
@@ -2911,6 +2958,8 @@ def smooth_cylinder_external_pressure_buckling(
         ),
         correlated_critical_pressure_mpa=correlated_pressure,
         correlated_critical_circumferential_stress_mpa=correlated_stress,
+        circumferential_stress_basis=stress_basis,
+        circumferential_stress_per_unit_pressure=stress_per_pressure,
         working_circumferential_membrane_stress_mpa=working_stress,
         elastic_applicability_limit_mpa=applicability_limit,
         elastic_applicability_limit_basis=applicability_basis,
@@ -3138,20 +3187,6 @@ def ring_stiffened_shell_external_pressure(
     with_torsion = _ring_stiffened_orthotropic_external_pressure_pcr(
         include_ring_torsion=True, **ring_global_inputs
     )
-    inter_ring = smooth_cylinder_external_pressure_buckling(
-        external_pressure_mpa=p_mpa,
-        shell_mid_surface_radius_mm=r_mm,
-        wall_thickness_mm=t_mm,
-        unsupported_length_mm=spacing_mm,
-        elastic_modulus_mpa=e_mpa,
-        poisson_ratio=v,
-        yield_strength_mpa=yield_mpa,
-        proportional_limit_mpa=proportional_mpa,
-        ramberg_osgood_n=ramberg_osgood_n,
-        compressive_proof_stress_mpa=compressive_proof_stress_mpa,
-        buckling_data_qualification=data_qualification,
-        load_case="hydrostatic_closed_end",
-    )
     axisymmetric: RingAxisymmetricStressResult | None = None
     shell_yield_pressure: float | None = None
     ring_yield_pressure: float | None = None
@@ -3174,6 +3209,30 @@ def ring_stiffened_shell_external_pressure(
             ring_first_yield_pressure = (
                 yield_mpa / axisymmetric.ring_maximum_hoop_stress_per_unit_pressure
             )
+    # The bay's material comparisons, including the NASA plasticity factor,
+    # read the circumferential stress of the shell that buckles. Between rings
+    # that is the periodic bay's mid-bay hoop membrane stress, the largest in
+    # the bay, not the unstiffened p*r/t; the rings carry part of the hoop
+    # load. An invalid record has no bay solution and keeps p*r/t.
+    inter_ring = smooth_cylinder_external_pressure_buckling(
+        external_pressure_mpa=p_mpa,
+        shell_mid_surface_radius_mm=r_mm,
+        wall_thickness_mm=t_mm,
+        unsupported_length_mm=spacing_mm,
+        elastic_modulus_mpa=e_mpa,
+        poisson_ratio=v,
+        yield_strength_mpa=yield_mpa,
+        proportional_limit_mpa=proportional_mpa,
+        ramberg_osgood_n=ramberg_osgood_n,
+        compressive_proof_stress_mpa=compressive_proof_stress_mpa,
+        buckling_data_qualification=data_qualification,
+        load_case="hydrostatic_closed_end",
+        ring_stiffened_mid_bay_hoop_stress_per_unit_pressure=(
+            axisymmetric.midbay_shell_hoop_stress_per_unit_pressure
+            if axisymmetric is not None
+            else None
+        ),
+    )
 
     capacity_status: Literal[
         "advisory",
@@ -3268,17 +3327,16 @@ def ring_stiffened_shell_external_pressure(
         # or curve. It enters at its elastic pressure instead, screened like
         # the global mode, so the minimum never drops a buckling mode for want
         # of material data.
-        inter_ring_pressure = next(
-            (
-                item.correlated_critical_pressure_mpa
-                for item in inter_ring.candidates
-                if item.regime == inter_ring.regime
-            ),
+        bay_candidate = next(
+            (item for item in inter_ring.candidates if item.regime == inter_ring.regime),
             None,
         )
-        if inter_ring_pressure is not None:
+        if bay_candidate is not None:
+            inter_ring_pressure = bay_candidate.correlated_critical_pressure_mpa
             _, bay_basis, bay_applicability = _elastic_applicability_screen(
-                inter_ring_pressure * r_mm / t_mm, proportional_mpa, yield_mpa
+                bay_candidate.correlated_critical_circumferential_stress_mpa,
+                proportional_mpa,
+                yield_mpa,
             )
             inter_ring_status = _ring_advisory_status(bay_applicability, bay_basis)
     # A valid record whose bay still has no pressure forms no minimum. The
@@ -3348,7 +3406,8 @@ def ring_stiffened_shell_external_pressure(
             source_reference=SMOOTH_CYLINDER_BUCKLING_SOURCE,
             basis=(
                 "The source-gated smooth-shell method is evaluated over ring center-to-center "
-                "spacing with ideal simply supported circular lines; its own capacity_status "
+                "spacing with ideal simply supported circular lines, and its material stress "
+                "is the periodic bay's mid-bay hoop membrane stress; its own capacity_status "
                 f"is {inter_ring.capacity_status}."
             ),
         ),
@@ -3419,9 +3478,11 @@ def ring_stiffened_shell_external_pressure(
     )
     notes = (
         RING_SHELL_ADJUSTED_VALUE_NOTE,
-        "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional "
-        "limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t "
-        "exceeds yield and undetermined otherwise.",
+        "Each buckling pressure is labelled by comparing its shell circumferential membrane "
+        "stress with the proportional limit: the periodic bay's mid-bay hoop stress for the "
+        "inter-ring bay, nominal p*r/t for the global mode. With only a yield strength, a "
+        "pressure is an elastic upper bound when that stress exceeds yield and undetermined "
+        "otherwise.",
         RING_SHELL_PARTIAL_SCOPE_REASON,
         GENERAL_INSTABILITY_SMEARED_NOTE,
         *((RING_SHELL_YIELD_NOTE,) if shell_yield_pressure is not None else ()),

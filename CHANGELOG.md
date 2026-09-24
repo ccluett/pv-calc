@@ -38,6 +38,23 @@ model; both predate this changelog.
     on thicker shells. `axisymmetric_stress`
     adds the location, radius, and stress per unit pressure; text and summary
     output show it beside the mean ring yield, which is unchanged.
+  - The inter-ring bay's material comparisons read the periodic bay's
+    mid-bay hoop membrane stress instead of the unstiffened `p*r/t`. NASA
+    evaluates its Eqs. 30-32 plasticity factor at the circumferential stress
+    of the buckling shell, and the rings carry part of the hoop load. With a
+    compressive curve the corrected bay pressure now solves
+    `p = p_elastic * eta(k * p)` with the bay's own `k`; in the invented
+    titanium cases tested it rises 3-27%, and it falls about 1.5% where a
+    long bay's mid-bay stress overshoots `p*r/t`. The committed ring display
+    test's corrected aluminium bay moves from 7.33657 to 7.76432 MPa.
+    Without a curve the pressure is unchanged, but the proportional-limit
+    label and the reported critical stresses use the bay stress, so a bay
+    whose own stress is within the limit is no longer called an elastic
+    upper bound.
+- Smooth-buckling model 5.0.0 -> 5.1.0: results add
+  `circumferential_stress_basis` and `circumferential_stress_per_unit_pressure`,
+  naming the stress compared with material data. A smooth shell uses
+  `p*r/t` as before; its numbers are unchanged.
 
 ## [0.4.0] - 2026-09-23
 

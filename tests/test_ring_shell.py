@@ -9,7 +9,10 @@ from pv_calc.contracts import CALC_SCHEMA_VERSION
 from pv_calc.presentation import render_text, summarize_response
 from pv_calc.pressure_vessel import (
     RingShellResult,
+    SmoothCylinderBucklingResult,
     ring_stiffened_shell_external_pressure,
+    smooth_cylinder_external_pressure_buckling,
+    smooth_cylinder_plasticity_factor,
 )
 
 
@@ -615,3 +618,160 @@ def test_text_report_says_the_lowest_pressure_is_not_established():
         "withheld_correlation_overlap)"
     ) in text
     assert "Shell mean hoop yield at mid-bay (Pc5):" in text
+
+
+TITANIUM = dict(elastic_modulus_mpa=113_800.0, poisson_ratio=0.34, yield_strength_mpa=827.0)
+TITANIUM_CURVE = dict(ramberg_osgood_n=21.0, compressive_proof_stress_mpa=827.0)
+
+
+def _titanium_rings(**overrides) -> RingShellResult:
+    """An invented internal-ring titanium shell whose short bays yield before they buckle."""
+    inputs = dict(
+        external_pressure_mpa=40.0,
+        shell_mid_surface_radius_mm=150.0,
+        wall_thickness_mm=6.0,
+        unsupported_length_mm=1200.0,
+        ring_spacing_mm=60.0,
+        ring_axial_width_mm=8.0,
+        ring_radial_height_mm=20.0,
+        ring_location="internal",
+        **TITANIUM,
+    )
+    inputs.update(overrides)
+    return ring_stiffened_shell_external_pressure(**inputs)
+
+
+def _unstiffened_bay(**overrides) -> SmoothCylinderBucklingResult:
+    """The same 60 mm bay as a smooth cylinder, whose stresses are p*r/t."""
+    inputs = dict(
+        external_pressure_mpa=40.0,
+        shell_mid_surface_radius_mm=150.0,
+        wall_thickness_mm=6.0,
+        unsupported_length_mm=60.0,
+        load_case="hydrostatic_closed_end",
+        **TITANIUM,
+    )
+    inputs.update(overrides)
+    return smooth_cylinder_external_pressure_buckling(**inputs)
+
+
+def test_inter_ring_plasticity_is_evaluated_at_the_mid_bay_hoop_stress():
+    # NASA reads its plasticity factor at the circumferential stress of the
+    # buckling shell. Between rings that is the periodic bay's mid-bay hoop
+    # membrane stress, here 0.770 p*r/t, so the corrected bay pressure solves
+    # p = p_elastic * eta(k p) with that k. Reading eta at p*r/t overstated
+    # the plasticity and understated the bay pressure by 21%.
+    result = _titanium_rings(**TITANIUM_CURVE)
+    bay = result.inter_ring_shell_buckling
+    assert result.axisymmetric_stress is not None
+    ratio = result.axisymmetric_stress.midbay_shell_hoop_stress_per_unit_pressure
+    elastic = next(item for item in bay.candidates if item.regime == bay.regime)
+    pressure = bay.correlated_critical_pressure_mpa
+
+    assert bay.circumferential_stress_basis == "ring_stiffened_mid_bay_hoop_membrane"
+    assert bay.circumferential_stress_per_unit_pressure == ratio
+    assert ratio == pytest.approx(0.770 * 150.0 / 6.0, rel=1e-3)
+    assert pressure is not None and elastic.correlated_critical_pressure_mpa is not None
+    eta, _ = smooth_cylinder_plasticity_factor(
+        ratio * pressure,
+        elastic_modulus_mpa=113_800.0,
+        **TITANIUM_CURVE,
+        gamma_z=elastic.gamma_z,
+        more_than_two_wave_boundary=bay.moderate_long_boundary_parameter,
+    )
+    assert pressure == pytest.approx(elastic.correlated_critical_pressure_mpa * eta, rel=1e-9)
+    assert bay.correlated_critical_circumferential_stress_mpa == pytest.approx(ratio * pressure)
+    assert bay.working_circumferential_membrane_stress_mpa == pytest.approx(40.0 * ratio)
+    assert any("mid-bay hoop membrane stress" in note for note in bay.notes)
+
+    unstiffened = _unstiffened_bay(**TITANIUM_CURVE)
+    assert unstiffened.circumferential_stress_basis == "unstiffened_membrane_p_r_over_t"
+    assert unstiffened.circumferential_stress_per_unit_pressure == 150.0 / 6.0
+    assert not any("mid-bay hoop membrane stress" in note for note in unstiffened.notes)
+    assert unstiffened.correlated_critical_pressure_mpa is not None
+    assert pressure / unstiffened.correlated_critical_pressure_mpa == pytest.approx(
+        1.269, rel=1e-3
+    )
+    # The corrected bay no longer governs so far below the global mode.
+    assert result.advisory_governing_mode == "inter_ring_smooth_shell"
+    assert result.advisory_governing_pressure_mpa == pressure
+
+
+def test_the_corrected_bay_pressure_rises_with_the_curve_proof_stress():
+    pressures = [
+        _titanium_rings(
+            ramberg_osgood_n=21.0, compressive_proof_stress_mpa=proof_stress
+        ).inter_ring_shell_buckling.correlated_critical_pressure_mpa
+        for proof_stress in (650.0, 750.0, 827.0, 950.0)
+    ]
+
+    assert all(
+        lower is not None and higher is not None and lower < higher
+        for lower, higher in zip(pressures, pressures[1:])
+    )
+
+
+def test_a_bay_whose_mid_bay_stress_exceeds_p_r_over_t_corrects_lower():
+    # Past the ring's first half-wave of influence the bay deflection
+    # overshoots the free shell's (G < 0), so the mid-bay hoop stress is 2%
+    # above p*r/t and the corrected pressure falls below what p*r/t gave. The
+    # correction follows the bay's stress; it is not a blanket increase.
+    common = dict(
+        external_pressure_mpa=10.0,
+        shell_mid_surface_radius_mm=100.0,
+        wall_thickness_mm=5.0,
+        **TITANIUM,
+        **TITANIUM_CURVE,
+    )
+    result = ring_stiffened_shell_external_pressure(
+        unsupported_length_mm=1100.0,
+        ring_spacing_mm=110.0,
+        ring_axial_width_mm=5.0,
+        ring_radial_height_mm=15.0,
+        ring_location="internal",
+        **common,
+    )
+    unstiffened = smooth_cylinder_external_pressure_buckling(
+        unsupported_length_mm=110.0, load_case="hydrostatic_closed_end", **common
+    )
+    bay = result.inter_ring_shell_buckling
+
+    assert result.axisymmetric_stress is not None
+    assert result.axisymmetric_stress.g_function < 0.0
+    assert bay.circumferential_stress_per_unit_pressure == pytest.approx(
+        1.0206 * 100.0 / 5.0, rel=1e-4
+    )
+    assert bay.correlated_critical_pressure_mpa is not None
+    assert unstiffened.correlated_critical_pressure_mpa is not None
+    assert bay.correlated_critical_pressure_mpa < unstiffened.correlated_critical_pressure_mpa
+
+
+def test_without_a_curve_the_bay_pressure_is_unchanged_but_its_label_reads_the_bay_stress():
+    # DTMB case 17: the bay's mid-bay hoop stress is 0.923 p*r/t. A
+    # proportional limit between the two stresses at the bay's elastic
+    # pressure used to mark the bay an elastic upper bound; its own stress is
+    # within the limit, so it is released. The pressure is unchanged.
+    limit = 76_000.0 * PSI_TO_MPA
+    bay = _dtmb_case(17, proportional_limit_mpa=limit).inter_ring_shell_buckling
+    unstiffened = smooth_cylinder_external_pressure_buckling(
+        external_pressure_mpa=1.0 * PSI_TO_MPA,
+        shell_mid_surface_radius_mm=4.0765 * INCH_TO_MM,
+        wall_thickness_mm=0.035 * INCH_TO_MM,
+        unsupported_length_mm=1.152 * INCH_TO_MM,
+        elastic_modulus_mpa=30_000_000.0 * PSI_TO_MPA,
+        poisson_ratio=0.3,
+        yield_strength_mpa=DTMB_YIELD_MPA,
+        proportional_limit_mpa=limit,
+        load_case="hydrostatic_closed_end",
+    )
+
+    assert bay.correlated_critical_pressure_mpa == unstiffened.correlated_critical_pressure_mpa
+    assert unstiffened.capacity_status == "released_pending_plasticity"
+    assert bay.capacity_status == "released"
+    assert bay.correlated_critical_circumferential_stress_mpa is not None
+    assert unstiffened.correlated_critical_circumferential_stress_mpa is not None
+    assert (
+        bay.correlated_critical_circumferential_stress_mpa
+        < limit
+        < unstiffened.correlated_critical_circumferential_stress_mpa
+    )
