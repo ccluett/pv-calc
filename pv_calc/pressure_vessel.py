@@ -2214,7 +2214,8 @@ def solve_inelastic_critical_pressure(
 
     ``radius_over_thickness`` is the circumferential membrane stress per unit
     pressure: ``r/t`` for an unstiffened shell, or the mid-bay hoop stress of
-    a ring-stiffened bay divided by the pressure. ``eta`` is 1 at zero stress and decreases as stress rises, so the residual
+    a ring-stiffened bay divided by the pressure. ``eta`` is 1 at zero stress
+    and decreases as stress rises, so the residual
     ``p - p_elastic*eta(p*r/t)`` is negative at ``p=0`` and non-negative at
     ``p=p_elastic``. That brackets a root on ``[0, p_elastic]`` for every
     admissible curve. Bisection converges even when fixed-point iteration
@@ -3213,9 +3214,9 @@ def ring_stiffened_shell_external_pressure(
             )
     # The bay's material comparisons, including the NASA plasticity factor,
     # read the circumferential stress of the shell that buckles. Between rings
-    # that is the periodic bay's mid-bay hoop membrane stress, the largest in
-    # the bay, not the unstiffened p*r/t; the rings carry part of the hoop
-    # load. An invalid record has no bay solution and keeps p*r/t.
+    # that is the periodic bay's mid-bay hoop membrane stress, the stress Pc5
+    # compares with yield, not the unstiffened p*r/t; the rings carry part of
+    # the hoop load. An invalid record has no bay solution and keeps p*r/t.
     inter_ring = smooth_cylinder_external_pressure_buckling(
         external_pressure_mpa=p_mpa,
         shell_mid_surface_radius_mm=r_mm,
