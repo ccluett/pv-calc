@@ -3381,7 +3381,6 @@
         },
         "outer_midbay_bending_compressive": true,
         "plastic_reserve_factor_phi3": 1.09437830453,
-        "pressure_parameter_gamma_at_first_yield": 0.287301303449,
         "source_reference": "Lunchick's plastic reserve factor on first yield for axisymmetric collapse, as documented for DAPS4 by Renzi, IHTR 2944 (2008), Eqs. 65-66",
         "status": "advisory"
       },
@@ -3410,22 +3409,6 @@
       },
       "beam_column_bay": {
         "bay_parameter_theta": 3.62760607855,
-        "clear_bay_mm": {
-          "unit": "mm",
-          "value": 27.0764
-        },
-        "effective_ring_area_mm2": {
-          "unit": "mm^2",
-          "value": 8.92455703574
-        },
-        "f_functions": [
-          0.551921834914,
-          0.1722771872,
-          -1.09334942842,
-          0.474439039136,
-          0.51336022081,
-          0.261009087357
-        ],
         "frame": {
           "axial_inner_mpa": {
             "unit": "MPa",
@@ -3468,9 +3451,7 @@
             "value": 215.777549491
           }
         },
-        "frame_parameter_beta": 8.5186718781,
         "load_radius_convention": "hoop_at_mid_surface_axial_from_outer_surface",
-        "load_radius_ratio_alpha": 1.00429289832,
         "midbay": {
           "axial_inner_mpa": {
             "unit": "MPa",
@@ -4306,7 +4287,6 @@
         },
         "outer_midbay_bending_compressive": true,
         "plastic_reserve_factor_phi3": 1.09437830453,
-        "pressure_parameter_gamma_at_first_yield": 0.287301303449,
         "source_reference": "Lunchick's plastic reserve factor on first yield for axisymmetric collapse, as documented for DAPS4 by Renzi, IHTR 2944 (2008), Eqs. 65-66",
         "status": "advisory"
       },
@@ -4335,22 +4315,6 @@
       },
       "beam_column_bay": {
         "bay_parameter_theta": 3.62760607855,
-        "clear_bay_mm": {
-          "unit": "mm",
-          "value": 27.0764
-        },
-        "effective_ring_area_mm2": {
-          "unit": "mm^2",
-          "value": 8.92455703574
-        },
-        "f_functions": [
-          0.556755382504,
-          0.182116788922,
-          -1.08848839532,
-          0.46687633432,
-          0.502222364252,
-          0.259654224718
-        ],
         "frame": {
           "axial_inner_mpa": {
             "unit": "MPa",
@@ -4393,9 +4357,7 @@
             "value": 192.334331478
           }
         },
-        "frame_parameter_beta": 8.5186718781,
         "load_radius_convention": "hoop_at_mid_surface_axial_from_outer_surface",
-        "load_radius_ratio_alpha": 1.00429289832,
         "midbay": {
           "axial_inner_mpa": {
             "unit": "MPa",
@@ -5231,7 +5193,6 @@
         },
         "outer_midbay_bending_compressive": true,
         "plastic_reserve_factor_phi3": 1.09437830453,
-        "pressure_parameter_gamma_at_first_yield": 0.287301303449,
         "source_reference": "Lunchick's plastic reserve factor on first yield for axisymmetric collapse, as documented for DAPS4 by Renzi, IHTR 2944 (2008), Eqs. 65-66",
         "status": "advisory"
       },
@@ -5260,22 +5221,6 @@
       },
       "beam_column_bay": {
         "bay_parameter_theta": 3.62760607855,
-        "clear_bay_mm": {
-          "unit": "mm",
-          "value": 27.0764
-        },
-        "effective_ring_area_mm2": {
-          "unit": "mm^2",
-          "value": 8.92455703574
-        },
-        "f_functions": [
-          0.557689767513,
-          0.184017518982,
-          -1.08754413537,
-          0.465418836834,
-          0.50004631255,
-          0.259411002672
-        ],
         "frame": {
           "axial_inner_mpa": {
             "unit": "MPa",
@@ -5318,9 +5263,7 @@
             "value": 187.74467173
           }
         },
-        "frame_parameter_beta": 8.5186718781,
         "load_radius_convention": "hoop_at_mid_surface_axial_from_outer_surface",
-        "load_radius_ratio_alpha": 1.00429289832,
         "midbay": {
           "axial_inner_mpa": {
             "unit": "MPa",
@@ -6156,7 +6099,6 @@
         },
         "outer_midbay_bending_compressive": true,
         "plastic_reserve_factor_phi3": 1.09437830453,
-        "pressure_parameter_gamma_at_first_yield": 0.287301303449,
         "source_reference": "Lunchick's plastic reserve factor on first yield for axisymmetric collapse, as documented for DAPS4 by Renzi, IHTR 2944 (2008), Eqs. 65-66",
         "status": "advisory"
       },
@@ -6185,22 +6127,6 @@
       },
       "beam_column_bay": {
         "bay_parameter_theta": 3.62760607855,
-        "clear_bay_mm": {
-          "unit": "mm",
-          "value": 27.0764
-        },
-        "effective_ring_area_mm2": {
-          "unit": "mm^2",
-          "value": 8.92455703574
-        },
-        "f_functions": [
-          0.558712615606,
-          0.186097681953,
-          -1.08650876771,
-          0.463825020393,
-          0.497655444341,
-          0.259151768212
-        ],
         "frame": {
           "axial_inner_mpa": {
             "unit": "MPa",
@@ -6243,9 +6169,7 @@
             "value": 182.698555461
           }
         },
-        "frame_parameter_beta": 8.5186718781,
         "load_radius_convention": "hoop_at_mid_surface_axial_from_outer_surface",
-        "load_radius_ratio_alpha": 1.00429289832,
         "midbay": {
           "axial_inner_mpa": {
             "unit": "MPa",
@@ -7081,7 +7005,6 @@
         },
         "outer_midbay_bending_compressive": true,
         "plastic_reserve_factor_phi3": 1.09437830453,
-        "pressure_parameter_gamma_at_first_yield": 0.287301303449,
         "source_reference": "Lunchick's plastic reserve factor on first yield for axisymmetric collapse, as documented for DAPS4 by Renzi, IHTR 2944 (2008), Eqs. 65-66",
         "status": "advisory"
       },
@@ -7110,22 +7033,6 @@
       },
       "beam_column_bay": {
         "bay_parameter_theta": 3.62760607855,
-        "clear_bay_mm": {
-          "unit": "mm",
-          "value": 27.0764
-        },
-        "effective_ring_area_mm2": {
-          "unit": "mm^2",
-          "value": 8.92455703574
-        },
-        "f_functions": [
-          0.558990674758,
-          0.186663075971,
-          -1.0862269953,
-          0.463392047022,
-          0.497003885601,
-          0.259082567901
-        ],
         "frame": {
           "axial_inner_mpa": {
             "unit": "MPa",
@@ -7168,9 +7075,7 @@
             "value": 181.322788844
           }
         },
-        "frame_parameter_beta": 8.5186718781,
         "load_radius_convention": "hoop_at_mid_surface_axial_from_outer_surface",
-        "load_radius_ratio_alpha": 1.00429289832,
         "midbay": {
           "axial_inner_mpa": {
             "unit": "MPa",
@@ -8006,7 +7911,6 @@
         },
         "outer_midbay_bending_compressive": true,
         "plastic_reserve_factor_phi3": 1.09437830453,
-        "pressure_parameter_gamma_at_first_yield": 0.287301303449,
         "source_reference": "Lunchick's plastic reserve factor on first yield for axisymmetric collapse, as documented for DAPS4 by Renzi, IHTR 2944 (2008), Eqs. 65-66",
         "status": "advisory"
       },
@@ -8035,22 +7939,6 @@
       },
       "beam_column_bay": {
         "bay_parameter_theta": 3.62760607855,
-        "clear_bay_mm": {
-          "unit": "mm",
-          "value": 27.0764
-        },
-        "effective_ring_area_mm2": {
-          "unit": "mm^2",
-          "value": 8.92455703574
-        },
-        "f_functions": [
-          0.559360823263,
-          0.187415658222,
-          -1.08585169777,
-          0.462815879701,
-          0.49613546606,
-          0.258991295463
-        ],
         "frame": {
           "axial_inner_mpa": {
             "unit": "MPa",
@@ -8093,9 +7981,7 @@
             "value": 179.488726682
           }
         },
-        "frame_parameter_beta": 8.5186718781,
         "load_radius_convention": "hoop_at_mid_surface_axial_from_outer_surface",
-        "load_radius_ratio_alpha": 1.00429289832,
         "midbay": {
           "axial_inner_mpa": {
             "unit": "MPa",
@@ -8931,7 +8817,6 @@
         },
         "outer_midbay_bending_compressive": true,
         "plastic_reserve_factor_phi3": 1.09437830453,
-        "pressure_parameter_gamma_at_first_yield": 0.287301303449,
         "source_reference": "Lunchick's plastic reserve factor on first yield for axisymmetric collapse, as documented for DAPS4 by Renzi, IHTR 2944 (2008), Eqs. 65-66",
         "status": "advisory"
       },
@@ -8960,22 +8845,6 @@
       },
       "beam_column_bay": {
         "bay_parameter_theta": 3.62760607855,
-        "clear_bay_mm": {
-          "unit": "mm",
-          "value": 27.0764
-        },
-        "effective_ring_area_mm2": {
-          "unit": "mm^2",
-          "value": 8.92455703574
-        },
-        "f_functions": [
-          0.559637987941,
-          0.187979139927,
-          -1.08557052334,
-          0.462384599859,
-          0.495484393258,
-          0.258923584912
-        ],
         "frame": {
           "axial_inner_mpa": {
             "unit": "MPa",
@@ -9018,9 +8887,7 @@
             "value": 178.113398153
           }
         },
-        "frame_parameter_beta": 8.5186718781,
         "load_radius_convention": "hoop_at_mid_surface_axial_from_outer_surface",
-        "load_radius_ratio_alpha": 1.00429289832,
         "midbay": {
           "axial_inner_mpa": {
             "unit": "MPa",
@@ -9856,7 +9723,6 @@
         },
         "outer_midbay_bending_compressive": true,
         "plastic_reserve_factor_phi3": 1.09437830453,
-        "pressure_parameter_gamma_at_first_yield": 0.287301303449,
         "source_reference": "Lunchick's plastic reserve factor on first yield for axisymmetric collapse, as documented for DAPS4 by Renzi, IHTR 2944 (2008), Eqs. 65-66",
         "status": "advisory"
       },
@@ -9885,22 +9751,6 @@
       },
       "beam_column_bay": {
         "bay_parameter_theta": 3.62760607855,
-        "clear_bay_mm": {
-          "unit": "mm",
-          "value": 27.0764
-        },
-        "effective_ring_area_mm2": {
-          "unit": "mm^2",
-          "value": 8.92455703574
-        },
-        "f_functions": [
-          0.560375228557,
-          0.189477770671,
-          -1.08482197303,
-          0.461238049981,
-          0.49374919863,
-          0.258746126495
-        ],
         "frame": {
           "axial_inner_mpa": {
             "unit": "MPa",
@@ -9943,9 +9793,7 @@
             "value": 174.44675747
           }
         },
-        "frame_parameter_beta": 8.5186718781,
         "load_radius_convention": "hoop_at_mid_surface_axial_from_outer_surface",
-        "load_radius_ratio_alpha": 1.00429289832,
         "midbay": {
           "axial_inner_mpa": {
             "unit": "MPa",
@@ -10781,7 +10629,6 @@
         },
         "outer_midbay_bending_compressive": true,
         "plastic_reserve_factor_phi3": 1.09437830453,
-        "pressure_parameter_gamma_at_first_yield": 0.287301303449,
         "source_reference": "Lunchick's plastic reserve factor on first yield for axisymmetric collapse, as documented for DAPS4 by Renzi, IHTR 2944 (2008), Eqs. 65-66",
         "status": "advisory"
       },
@@ -10810,22 +10657,6 @@
       },
       "beam_column_bay": {
         "bay_parameter_theta": 3.62760607855,
-        "clear_bay_mm": {
-          "unit": "mm",
-          "value": 27.0764
-        },
-        "effective_ring_area_mm2": {
-          "unit": "mm^2",
-          "value": 8.92455703574
-        },
-        "f_functions": [
-          0.56528172719,
-          0.199444217276,
-          -1.07981617216,
-          0.453630864764,
-          0.482072386113,
-          0.257664160859
-        ],
         "frame": {
           "axial_inner_mpa": {
             "unit": "MPa",
@@ -10868,9 +10699,7 @@
             "value": 149.729362267
           }
         },
-        "frame_parameter_beta": 8.5186718781,
         "load_radius_convention": "hoop_at_mid_surface_axial_from_outer_surface",
-        "load_radius_ratio_alpha": 1.00429289832,
         "midbay": {
           "axial_inner_mpa": {
             "unit": "MPa",
@@ -11706,7 +11535,6 @@
         },
         "outer_midbay_bending_compressive": true,
         "plastic_reserve_factor_phi3": 1.09437830453,
-        "pressure_parameter_gamma_at_first_yield": 0.287301303449,
         "source_reference": "Lunchick's plastic reserve factor on first yield for axisymmetric collapse, as documented for DAPS4 by Renzi, IHTR 2944 (2008), Eqs. 65-66",
         "status": "advisory"
       },
@@ -11735,22 +11563,6 @@
       },
       "beam_column_bay": {
         "bay_parameter_theta": 3.62760607855,
-        "clear_bay_mm": {
-          "unit": "mm",
-          "value": 27.0764
-        },
-        "effective_ring_area_mm2": {
-          "unit": "mm^2",
-          "value": 8.92455703574
-        },
-        "f_functions": [
-          0.569543492563,
-          0.208090667743,
-          -1.07543378865,
-          0.447056550966,
-          0.471739749804,
-          0.256866809427
-        ],
         "frame": {
           "axial_inner_mpa": {
             "unit": "MPa",
@@ -11793,9 +11605,7 @@
             "value": 127.801339044
           }
         },
-        "frame_parameter_beta": 8.5186718781,
         "load_radius_convention": "hoop_at_mid_surface_axial_from_outer_surface",
-        "load_radius_ratio_alpha": 1.00429289832,
         "midbay": {
           "axial_inner_mpa": {
             "unit": "MPa",

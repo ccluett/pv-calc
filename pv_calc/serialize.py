@@ -155,8 +155,6 @@ RING_AXISYMMETRIC_STRESS_UNITS = {
 }
 RING_BEAM_COLUMN_BAY_UNITS = {
     "pressure_mpa": "MPa",
-    "effective_ring_area_mm2": "mm^2",
-    "clear_bay_mm": "mm",
     "ring_hoop_stress_mpa": "MPa",
 }
 RING_BAY_SURFACE_STRESS_UNITS = {

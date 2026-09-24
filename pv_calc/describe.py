@@ -321,8 +321,9 @@ _RESULT_FIELD_DESCRIPTIONS: dict[str, str] = {
         "DAPS4 (IHTR 2944, Eqs. 7 and 43-64): mid-bay and frame stresses on both surfaces, "
         "their plane-stress von Mises values, the membrane stresses, deflections, and the ring "
         "hoop stress, with the beam-column term. The hoop load acts at the mean radius and the "
-        "axial load is p R_o^2 / (2 R). Null for invalid geometry, or when the applied pressure "
-        "reaches the gamma = 1 limit of the closed form."
+        "axial load is p R_o^2 / (2 R). The ring area is Renzi's A_f (R/R_cg)^2 (Eq. 7), which "
+        "for an internal ring exceeds the A_f R/R_c of axisymmetric_stress. Null for invalid "
+        "geometry, or when the applied pressure reaches the gamma = 1 limit of the closed form."
     ),
     "axisymmetric_collapse": (
         "Lunchick's axisymmetric collapse of the periodic bay (Renzi Eqs. 65-66): the pressure "

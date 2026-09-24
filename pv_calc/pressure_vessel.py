@@ -955,13 +955,8 @@ class RingBeamColumnBayResult:
     load_radius_convention: Literal["hoop_at_mid_surface_axial_from_outer_surface"]
     von_mises_convention: Literal["plane_stress_radial_omitted"]
     pressure_mpa: float
-    load_radius_ratio_alpha: float
-    effective_ring_area_mm2: float
-    clear_bay_mm: float
     bay_parameter_theta: float
-    frame_parameter_beta: float
     pressure_parameter_gamma: float
-    f_functions: tuple[float, float, float, float, float, float]
     midbay: RingBaySurfaceStress
     frame: RingBaySurfaceStress
     ring_hoop_stress_mpa: float
@@ -975,7 +970,6 @@ class RingAxisymmetricCollapseResult:
     status: Literal["advisory", "withheld_beam_column_limit"]
     beam_column_limit_pressure_mpa: float
     first_yield_pressure_mpa: float | None
-    pressure_parameter_gamma_at_first_yield: float | None
     outer_midbay_bending_compressive: bool | None
     plastic_reserve_factor_phi3: float | None
     collapse_pressure_mpa: float | None
@@ -3231,9 +3225,9 @@ def ring_bay_beam_column_stress(
     clear bay, and the frame parameter beta; Eqs. 49-62 give the mid-bay and
     frame stresses on both surfaces and Eq. 55 the ring hoop stress, all
     through the functions F1-F6. The solution needs gamma < 1 (Eq. 64). The
-    ring enters through its area, centroid radius, and faying width, so any
-    section can be described. Stresses are tension positive; von Mises is the
-    plane-stress value DAPS4 prints, without the radial stress.
+    ring enters through its area, centroid radius, and faying width. Stresses
+    are tension positive; von Mises is the plane-stress value DAPS4 prints,
+    without the radial stress.
     """
     p_mpa = _non_negative_pressure(pressure_mpa)
     r_mm, t_mm, spacing_mm, width_mm, area_mm2, centroid_mm, e_mpa, v = _ring_bay_inputs(
@@ -3275,8 +3269,6 @@ def ring_bay_beam_column_stress(
     f2 = decay * (ch * si / eta_2 + sh * co / eta_1) / omega
     f3 = (decay * decay * co * si / eta_2 - ch * sh / eta_1) / omega
     f4 = decay * (ch * si / eta_2 - sh * co / eta_1) / omega
-    f5 = decay * (ch * si / eta_1 - sh * co / eta_2) / omega
-    f6 = decay * (ch * si / eta_1 + sh * co / eta_2) / omega
     # F2 cosh(x) cos(y) + F5 sinh(x) sin(y) at the frame (Eq. 46); the exp(-x)
     # in F2 and F5 cancels the growth of cosh and sinh.
     frame_shape = (
@@ -3312,13 +3304,8 @@ def ring_bay_beam_column_stress(
         load_radius_convention="hoop_at_mid_surface_axial_from_outer_surface",
         von_mises_convention="plane_stress_radial_omitted",
         pressure_mpa=p_mpa,
-        load_radius_ratio_alpha=alpha,
-        effective_ring_area_mm2=effective_area,
-        clear_bay_mm=clear_bay,
         bay_parameter_theta=theta,
-        frame_parameter_beta=beta,
         pressure_parameter_gamma=gamma,
-        f_functions=(f1, f2, f3, f4, f5, f6),
         midbay=station(
             midbay_bending,
             sigma_u - sigma_mf * f2,
@@ -3395,7 +3382,6 @@ def ring_bay_axisymmetric_collapse(
             status="withheld_beam_column_limit",
             beam_column_limit_pressure_mpa=limit_mpa,
             first_yield_pressure_mpa=None,
-            pressure_parameter_gamma_at_first_yield=None,
             outer_midbay_bending_compressive=None,
             plastic_reserve_factor_phi3=None,
             collapse_pressure_mpa=None,
@@ -3430,7 +3416,6 @@ def ring_bay_axisymmetric_collapse(
         status="advisory",
         beam_column_limit_pressure_mpa=limit_mpa,
         first_yield_pressure_mpa=first_yield,
-        pressure_parameter_gamma_at_first_yield=state.pressure_parameter_gamma,
         outer_midbay_bending_compressive=(
             state.midbay.axial_outer_mpa < state.midbay.axial_membrane_mpa
         ),
