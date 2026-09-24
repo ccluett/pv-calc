@@ -123,7 +123,15 @@ def test_dtmb_published_geometry_cases_span_length_and_lobe_count(
     assert result.critical_circumferential_lobes_n == lobes
 
 
-def test_expanding_search_converges_on_an_axial_mode_far_above_the_initial_bound():
+def test_global_search_excludes_axial_half_waves_shorter_than_two_ring_spacings():
+    # Deep rings on a thin shell. Unscreened, the smeared search kept falling
+    # with m to (42, 2): an 11.9 mm half-wave against a 20 mm ring spacing,
+    # an axial-compression wave resting on ring hoop area smeared under it,
+    # which no discrete ring can supply there. At one spacing per half-wave
+    # (m = 25, 29.0 MPa ideal) that branch is still below the m = 1 mode, so
+    # the screen asks for two: m <= 500 / (2 * 20) = 12. The global mode is
+    # then the m = 1 lobar mode, and the inter-ring bay, which is what those
+    # short waves really are, governs far below it.
     result = ring_stiffened_shell_external_pressure(
         external_pressure_mpa=1.0,
         shell_mid_surface_radius_mm=100.0,
@@ -141,11 +149,28 @@ def test_expanding_search_converges_on_an_axial_mode_far_above_the_initial_bound
 
     assert search.converged is True
     assert search.termination_reason == "stable_interior_governing_mode"
-    assert search.ideal_critical_pressure_mpa == pytest.approx(19.4498805173, abs=1e-9)
-    assert (search.critical_axial_half_waves_m, search.critical_circumferential_lobes_n) == (42, 2)
-    assert search.evaluated_axial_half_waves >= 100
-    assert len(search.iterations) >= 3
+    assert search.mode_domain == "1<=m<=maximum_axial_half_waves_m,n>=2"
+    assert search.minimum_ring_spacings_per_axial_half_wave == 2.0
+    assert search.maximum_axial_half_waves_m == 12
+    assert search.evaluated_axial_half_waves == 12
+    assert (search.critical_axial_half_waves_m, search.critical_circumferential_lobes_n) == (1, 2)
+    assert search.ideal_critical_pressure_mpa == pytest.approx(37.619761422245475, rel=1e-12)
     assert search.iterations[-1].frontier_above_governing is True
+    assert result.advisory_governing_mode == "inter_ring_smooth_shell"
+    assert result.advisory_governing_pressure_mpa < 0.2 * search.adjusted_critical_pressure_mpa
+
+
+@pytest.mark.parametrize(
+    ("frame_spaces", "maximum_m"),
+    [(17, 8), (26, 13), (28, 14), (29, 14), (33, 16)],
+)
+def test_admissible_half_waves_count_whole_pairs_of_ring_spacings(frame_spaces, maximum_m):
+    # An exact multiple of two spacings (26 and 28 spaces) counts in full
+    # despite rounding in the lengths; an odd spacing left over does not.
+    search = _dtmb_case(frame_spaces).global_with_ring_torsion
+
+    assert search.maximum_axial_half_waves_m == maximum_m
+    assert search.evaluated_axial_half_waves == maximum_m
 
 
 def test_expanding_search_finds_circumferential_mode_beyond_initial_bound():
@@ -284,6 +309,9 @@ def test_one_bay_spanning_the_whole_length_stays_released():
     assert not result.validity_violations
     assert result.capacity_status == "advisory"
     assert result.advisory_governing_pressure_mpa is not None
+    # Below two spacings the only global mode left is m = 1, which is kept.
+    assert result.global_with_ring_torsion.maximum_axial_half_waves_m == 1
+    assert result.global_with_ring_torsion.critical_axial_half_waves_m == 1
 
 
 def test_completeness_dispositions_are_machine_readable():

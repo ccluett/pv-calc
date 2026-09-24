@@ -276,8 +276,21 @@ _RESULT_FIELD_DESCRIPTIONS: dict[str, str] = {
         "The ring's mean hoop stress at its centroid radius divided by the applied pressure."
     ),
     "mode_domain": (
-        "Integer modes searched: m >= 1 axial half-waves and n >= 2 circumferential "
-        "lobes. Convergence refers to this domain; n=0 and n=1 are not searched."
+        "Integer modes searched: 1 <= m <= maximum_axial_half_waves_m axial half-waves and "
+        "n >= 2 circumferential lobes. Convergence refers to this domain; n=0 and n=1 are "
+        "not searched."
+    ),
+    "maximum_axial_half_waves_m": (
+        "Largest axial half-wave count searched: the most half-waves that each span "
+        "minimum_ring_spacings_per_axial_half_wave ring spacings, and at least 1. Shorter "
+        "half-waves fall between rings, where the smeared stiffness does not apply and the "
+        "inter-ring check does."
+    ),
+    "minimum_ring_spacings_per_axial_half_wave": (
+        "pv-calc's smeared-mode screen, 2: a global axial half-wave spans at least two ring "
+        "spacings, so every half-wave averages over an interior ring. NASA gives no number; "
+        "it says only that the smeared theory's adequacy should be investigated for "
+        "sufficiently large stiffener spacing."
     ),
 }
 
@@ -643,7 +656,9 @@ def _describe_model(
         checks = [
             "solid rectangular A_r, centroidal I_r, eccentricity, and exact Saint-Venant J_r",
             "NASA Eq. 64/65 global pressure before and after the separate Eq. 91 torsion term",
-            "expanding integer mode search over m >= 1, n >= 2 with stability, frontier, bounds, and termination evidence",
+            "integer mode search over every axial half-wave count spanning at least two ring"
+            " spacings (always m = 1) and expanding n >= 2, with stability, frontier, bounds,"
+            " and termination evidence",
             "isolated-bay smooth-shell buckling with its own applicability checks",
             "optional NASA Eq. 30-32 inelastic correction of the inter-ring bay only",
             "nominal stress at the adjusted global pressure against the proportional limit or yield strength",
@@ -654,7 +669,8 @@ def _describe_model(
         ]
         omissions = [
             "interframe collapse: the interaction of shell yield, inter-ring buckling, and imperfections",
-            "a ring-spacing screen for the smeared global model",
+            "a discrete-ring check of widely spaced rings; the smeared global search only"
+            " excludes axial half-waves shorter than two ring spacings",
             "axisymmetric hydrostatic instability (n=0); the mode search starts at n=2",
             "discrete-ring global deformation and alternative classical shell formulations;"
             " this calculation implements NASA's smeared Eq. 64/65",

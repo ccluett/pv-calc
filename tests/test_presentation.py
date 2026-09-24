@@ -273,7 +273,7 @@ def test_converged_lobar_search_cannot_pass_with_a_lower_excluded_axisymmetric_m
     result = response["result"]
     lobar = result["global_with_ring_torsion"]
     assert lobar["converged"] is True
-    assert lobar["mode_domain"] == "m>=1,n>=2"
+    assert lobar["mode_domain"] == "1<=m<=maximum_axial_half_waves_m,n>=2"
     assert axisymmetric_pressure < lobar["ideal_critical_pressure_mpa"]["value"]
     assert result["global_elastic_applicability"] == "within"
     dispositions = {item["mode"]: item["disposition"] for item in result["mode_dispositions"]}

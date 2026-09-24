@@ -18,6 +18,17 @@ model; both predate this changelog.
     empty, the governing fields are null, and a note says why. The global and
     yield pressures are still reported, and text and summary output say the
     lowest pressure is not established.
+  - The smeared global search no longer accepts axial half-waves shorter than
+    two ring spacings; `m = 1` is always searched. A shorter wave falls
+    between rings, where the smeared ring stiffness does not apply and the
+    inter-ring check does. One committed test case had governed at
+    `(m, n) = (42, 2)`, an 11.9 mm half-wave against a 20 mm spacing; it now
+    governs at `(1, 2)`, with the ideal pressure 19.45 -> 37.62 MPa. Every
+    admissible `m` is evaluated from the first pass, so only `n` expands.
+    `mode_domain` becomes `1<=m<=maximum_axial_half_waves_m,n>=2`, and
+    `maximum_axial_half_waves_m` and `minimum_ring_spacings_per_axial_half_wave`
+    are added. The DTMB examples keep their `m = 1` modes and pressures; their
+    search evidence (bounds, mode counts, frontier) changes.
 
 ## [0.4.0] - 2026-09-23
 

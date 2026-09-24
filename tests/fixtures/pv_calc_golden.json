@@ -3415,24 +3415,24 @@
         "converged": true,
         "critical_axial_half_waves_m": 1,
         "critical_circumferential_lobes_n": 3,
-        "evaluated_axial_half_waves": 136,
+        "evaluated_axial_half_waves": 8,
         "evaluated_circumferential_lobes": 88,
-        "evaluated_mode_count": 11832,
+        "evaluated_mode_count": 696,
         "ideal_critical_pressure_mpa": {
           "unit": "MPa",
           "value": 3.70972324475
         },
         "iterations": [
           {
-            "axial_half_wave_bound": 34,
+            "axial_half_wave_bound": 8,
             "circumferential_lobe_bound": 22,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 3,
-            "cumulative_evaluated_modes": 714,
+            "cumulative_evaluated_modes": 168,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 21.8413251797
+              "value": 111.642392877
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": false,
@@ -3440,19 +3440,19 @@
               "unit": "MPa",
               "value": 3.70972324475
             },
-            "newly_evaluated_modes": 714,
+            "newly_evaluated_modes": 168,
             "relative_pressure_change": null
           },
           {
-            "axial_half_wave_bound": 68,
+            "axial_half_wave_bound": 8,
             "circumferential_lobe_bound": 44,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 3,
-            "cumulative_evaluated_modes": 2924,
+            "cumulative_evaluated_modes": 344,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 32.2621442028
+              "value": 462.818284196
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -3460,19 +3460,19 @@
               "unit": "MPa",
               "value": 3.70972324475
             },
-            "newly_evaluated_modes": 2210,
+            "newly_evaluated_modes": 176,
             "relative_pressure_change": 0.0
           },
           {
-            "axial_half_wave_bound": 136,
+            "axial_half_wave_bound": 8,
             "circumferential_lobe_bound": 88,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 3,
-            "cumulative_evaluated_modes": 11832,
+            "cumulative_evaluated_modes": 696,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 110.095445299
+              "value": 1814.18186953
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -3480,11 +3480,13 @@
               "unit": "MPa",
               "value": 3.70972324475
             },
-            "newly_evaluated_modes": 8908,
+            "newly_evaluated_modes": 352,
             "relative_pressure_change": 0.0
           }
         ],
-        "mode_domain": "m>=1,n>=2",
+        "maximum_axial_half_waves_m": 8,
+        "minimum_ring_spacings_per_axial_half_wave": 2.0,
+        "mode_domain": "1<=m<=maximum_axial_half_waves_m,n>=2",
         "orthotropic_bending_x_n_mm": {
           "unit": "N*mm",
           "value": 13308.3091883
@@ -3537,24 +3539,24 @@
         "converged": true,
         "critical_axial_half_waves_m": 1,
         "critical_circumferential_lobes_n": 3,
-        "evaluated_axial_half_waves": 136,
+        "evaluated_axial_half_waves": 8,
         "evaluated_circumferential_lobes": 88,
-        "evaluated_mode_count": 11832,
+        "evaluated_mode_count": 696,
         "ideal_critical_pressure_mpa": {
           "unit": "MPa",
           "value": 3.69933874424
         },
         "iterations": [
           {
-            "axial_half_wave_bound": 34,
+            "axial_half_wave_bound": 8,
             "circumferential_lobe_bound": 22,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 3,
-            "cumulative_evaluated_modes": 714,
+            "cumulative_evaluated_modes": 168,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 21.6460089908
+              "value": 110.992756056
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": false,
@@ -3562,19 +3564,19 @@
               "unit": "MPa",
               "value": 3.69933874424
             },
-            "newly_evaluated_modes": 714,
+            "newly_evaluated_modes": 168,
             "relative_pressure_change": null
           },
           {
-            "axial_half_wave_bound": 68,
+            "axial_half_wave_bound": 8,
             "circumferential_lobe_bound": 44,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 3,
-            "cumulative_evaluated_modes": 2924,
+            "cumulative_evaluated_modes": 344,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 32.0646262806
+              "value": 462.145846839
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -3582,19 +3584,19 @@
               "unit": "MPa",
               "value": 3.69933874424
             },
-            "newly_evaluated_modes": 2210,
+            "newly_evaluated_modes": 176,
             "relative_pressure_change": 0.0
           },
           {
-            "axial_half_wave_bound": 136,
+            "axial_half_wave_bound": 8,
             "circumferential_lobe_bound": 88,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 3,
-            "cumulative_evaluated_modes": 11832,
+            "cumulative_evaluated_modes": 696,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 109.89691094
+              "value": 1813.50353995
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -3602,11 +3604,13 @@
               "unit": "MPa",
               "value": 3.69933874424
             },
-            "newly_evaluated_modes": 8908,
+            "newly_evaluated_modes": 352,
             "relative_pressure_change": 0.0
           }
         ],
-        "mode_domain": "m>=1,n>=2",
+        "maximum_axial_half_waves_m": 8,
+        "minimum_ring_spacings_per_axial_half_wave": 2.0,
+        "mode_domain": "1<=m<=maximum_axial_half_waves_m,n>=2",
         "orthotropic_bending_x_n_mm": {
           "unit": "N*mm",
           "value": 13308.3091883
@@ -3912,7 +3916,7 @@
           "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 64-65 and 82-91, pp. 37 and 40-42"
         },
         {
-          "basis": "The n=0 branch driven by axial end compression is outside the m >= 1, n >= 2 search; NASA TN D-3647 shows it can govern when the axial wavelength approaches the ring spacing.",
+          "basis": "The n=0 branch driven by axial end compression is outside the n >= 2 search; NASA TN D-3647 shows it can govern when the axial wavelength approaches the ring spacing.",
           "disposition": "not_implemented",
           "mode": "axisymmetric_hydrostatic_buckling",
           "source_reference": "NASA TN D-3647, pp. 6-7; NASA/SP-8007-2020/REV 2 Eqs. 64-65"
@@ -3983,8 +3987,8 @@
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
         "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
-        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
-        "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing screen is applied; widely spaced rings need a discrete-ring or code-rule check.",
+        "Global buckling is elastic: lobar modes (n >= 2, axial half-waves of at least two ring spacings, and always m = 1) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
+        "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves of at least two ring spacings, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. Widely spaced rings still need a discrete-ring or code-rule check.",
         "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay. They are not collapse pressures."
       ],
       "poisson_ratio": 0.3,
@@ -4176,24 +4180,24 @@
         "converged": true,
         "critical_axial_half_waves_m": 1,
         "critical_circumferential_lobes_n": 2,
-        "evaluated_axial_half_waves": 172,
+        "evaluated_axial_half_waves": 10,
         "evaluated_circumferential_lobes": 88,
-        "evaluated_mode_count": 14964,
+        "evaluated_mode_count": 870,
         "ideal_critical_pressure_mpa": {
           "unit": "MPa",
           "value": 3.10423546837
         },
         "iterations": [
           {
-            "axial_half_wave_bound": 43,
+            "axial_half_wave_bound": 10,
             "circumferential_lobe_bound": 22,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 903,
+            "cumulative_evaluated_modes": 210,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 21.8434498299
+              "value": 111.532475363
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": false,
@@ -4201,19 +4205,19 @@
               "unit": "MPa",
               "value": 3.10423546837
             },
-            "newly_evaluated_modes": 903,
+            "newly_evaluated_modes": 210,
             "relative_pressure_change": null
           },
           {
-            "axial_half_wave_bound": 86,
+            "axial_half_wave_bound": 10,
             "circumferential_lobe_bound": 44,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 3698,
+            "cumulative_evaluated_modes": 430,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 32.8263897709
+              "value": 462.682488278
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -4221,19 +4225,19 @@
               "unit": "MPa",
               "value": 3.10423546837
             },
-            "newly_evaluated_modes": 2795,
+            "newly_evaluated_modes": 220,
             "relative_pressure_change": 0.0
           },
           {
-            "axial_half_wave_bound": 172,
+            "axial_half_wave_bound": 10,
             "circumferential_lobe_bound": 88,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 14964,
+            "cumulative_evaluated_modes": 870,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 114.827106324
+              "value": 1814.0408075
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -4241,11 +4245,13 @@
               "unit": "MPa",
               "value": 3.10423546837
             },
-            "newly_evaluated_modes": 11266,
+            "newly_evaluated_modes": 440,
             "relative_pressure_change": 0.0
           }
         ],
-        "mode_domain": "m>=1,n>=2",
+        "maximum_axial_half_waves_m": 10,
+        "minimum_ring_spacings_per_axial_half_wave": 2.0,
+        "mode_domain": "1<=m<=maximum_axial_half_waves_m,n>=2",
         "orthotropic_bending_x_n_mm": {
           "unit": "N*mm",
           "value": 13308.3091883
@@ -4298,24 +4304,24 @@
         "converged": true,
         "critical_axial_half_waves_m": 1,
         "critical_circumferential_lobes_n": 2,
-        "evaluated_axial_half_waves": 172,
+        "evaluated_axial_half_waves": 10,
         "evaluated_circumferential_lobes": 88,
-        "evaluated_mode_count": 14964,
+        "evaluated_mode_count": 870,
         "ideal_critical_pressure_mpa": {
           "unit": "MPa",
           "value": 3.09750432318
         },
         "iterations": [
           {
-            "axial_half_wave_bound": 43,
+            "axial_half_wave_bound": 10,
             "circumferential_lobe_bound": 22,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 903,
+            "cumulative_evaluated_modes": 210,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 21.6480516389
+              "value": 110.867998445
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": false,
@@ -4323,19 +4329,19 @@
               "unit": "MPa",
               "value": 3.09750432318
             },
-            "newly_evaluated_modes": 903,
+            "newly_evaluated_modes": 210,
             "relative_pressure_change": null
           },
           {
-            "axial_half_wave_bound": 86,
+            "axial_half_wave_bound": 10,
             "circumferential_lobe_bound": 44,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 3698,
+            "cumulative_evaluated_modes": 430,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 32.6288400988
+              "value": 461.99413809
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -4343,19 +4349,19 @@
               "unit": "MPa",
               "value": 3.09750432318
             },
-            "newly_evaluated_modes": 2795,
+            "newly_evaluated_modes": 220,
             "relative_pressure_change": 0.0
           },
           {
-            "axial_half_wave_bound": 172,
+            "axial_half_wave_bound": 10,
             "circumferential_lobe_bound": 88,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 14964,
+            "cumulative_evaluated_modes": 870,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 114.628557257
+              "value": 1813.34628163
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -4363,11 +4369,13 @@
               "unit": "MPa",
               "value": 3.09750432318
             },
-            "newly_evaluated_modes": 11266,
+            "newly_evaluated_modes": 440,
             "relative_pressure_change": 0.0
           }
         ],
-        "mode_domain": "m>=1,n>=2",
+        "maximum_axial_half_waves_m": 10,
+        "minimum_ring_spacings_per_axial_half_wave": 2.0,
+        "mode_domain": "1<=m<=maximum_axial_half_waves_m,n>=2",
         "orthotropic_bending_x_n_mm": {
           "unit": "N*mm",
           "value": 13308.3091883
@@ -4673,7 +4681,7 @@
           "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 64-65 and 82-91, pp. 37 and 40-42"
         },
         {
-          "basis": "The n=0 branch driven by axial end compression is outside the m >= 1, n >= 2 search; NASA TN D-3647 shows it can govern when the axial wavelength approaches the ring spacing.",
+          "basis": "The n=0 branch driven by axial end compression is outside the n >= 2 search; NASA TN D-3647 shows it can govern when the axial wavelength approaches the ring spacing.",
           "disposition": "not_implemented",
           "mode": "axisymmetric_hydrostatic_buckling",
           "source_reference": "NASA TN D-3647, pp. 6-7; NASA/SP-8007-2020/REV 2 Eqs. 64-65"
@@ -4744,8 +4752,8 @@
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
         "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
-        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
-        "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing screen is applied; widely spaced rings need a discrete-ring or code-rule check.",
+        "Global buckling is elastic: lobar modes (n >= 2, axial half-waves of at least two ring spacings, and always m = 1) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
+        "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves of at least two ring spacings, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. Widely spaced rings still need a discrete-ring or code-rule check.",
         "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay. They are not collapse pressures."
       ],
       "poisson_ratio": 0.3,
@@ -4937,24 +4945,24 @@
         "converged": true,
         "critical_axial_half_waves_m": 1,
         "critical_circumferential_lobes_n": 2,
-        "evaluated_axial_half_waves": 184,
+        "evaluated_axial_half_waves": 11,
         "evaluated_circumferential_lobes": 88,
-        "evaluated_mode_count": 16008,
+        "evaluated_mode_count": 957,
         "ideal_critical_pressure_mpa": {
           "unit": "MPa",
           "value": 2.61490908584
         },
         "iterations": [
           {
-            "axial_half_wave_bound": 46,
+            "axial_half_wave_bound": 11,
             "circumferential_lobe_bound": 22,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 966,
+            "cumulative_evaluated_modes": 231,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 21.8452376446
+              "value": 111.491750169
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": false,
@@ -4962,19 +4970,19 @@
               "unit": "MPa",
               "value": 2.61490908584
             },
-            "newly_evaluated_modes": 966,
+            "newly_evaluated_modes": 231,
             "relative_pressure_change": null
           },
           {
-            "axial_half_wave_bound": 92,
+            "axial_half_wave_bound": 11,
             "circumferential_lobe_bound": 44,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 3956,
+            "cumulative_evaluated_modes": 473,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 32.0277741344
+              "value": 462.631958852
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -4982,19 +4990,19 @@
               "unit": "MPa",
               "value": 2.61490908584
             },
-            "newly_evaluated_modes": 2990,
+            "newly_evaluated_modes": 242,
             "relative_pressure_change": 0.0
           },
           {
-            "axial_half_wave_bound": 184,
+            "axial_half_wave_bound": 11,
             "circumferential_lobe_bound": 88,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 16008,
+            "cumulative_evaluated_modes": 957,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 109.550812273
+              "value": 1813.98826982
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -5002,11 +5010,13 @@
               "unit": "MPa",
               "value": 2.61490908584
             },
-            "newly_evaluated_modes": 12052,
+            "newly_evaluated_modes": 484,
             "relative_pressure_change": 0.0
           }
         ],
-        "mode_domain": "m>=1,n>=2",
+        "maximum_axial_half_waves_m": 11,
+        "minimum_ring_spacings_per_axial_half_wave": 2.0,
+        "mode_domain": "1<=m<=maximum_axial_half_waves_m,n>=2",
         "orthotropic_bending_x_n_mm": {
           "unit": "N*mm",
           "value": 13308.3091883
@@ -5059,24 +5069,24 @@
         "converged": true,
         "critical_axial_half_waves_m": 1,
         "critical_circumferential_lobes_n": 2,
-        "evaluated_axial_half_waves": 184,
+        "evaluated_axial_half_waves": 11,
         "evaluated_circumferential_lobes": 88,
-        "evaluated_mode_count": 16008,
+        "evaluated_mode_count": 957,
         "ideal_critical_pressure_mpa": {
           "unit": "MPa",
           "value": 2.60926590587
         },
         "iterations": [
           {
-            "axial_half_wave_bound": 46,
+            "axial_half_wave_bound": 11,
             "circumferential_lobe_bound": 22,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 966,
+            "cumulative_evaluated_modes": 231,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 21.6499695454
+              "value": 110.821752628
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": false,
@@ -5084,19 +5094,19 @@
               "unit": "MPa",
               "value": 2.60926590587
             },
-            "newly_evaluated_modes": 966,
+            "newly_evaluated_modes": 231,
             "relative_pressure_change": null
           },
           {
-            "axial_half_wave_bound": 92,
+            "axial_half_wave_bound": 11,
             "circumferential_lobe_bound": 44,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 3956,
+            "cumulative_evaluated_modes": 473,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 31.8302699312
+              "value": 461.937682455
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -5104,19 +5114,19 @@
               "unit": "MPa",
               "value": 2.60926590587
             },
-            "newly_evaluated_modes": 2990,
+            "newly_evaluated_modes": 242,
             "relative_pressure_change": 0.0
           },
           {
-            "axial_half_wave_bound": 184,
+            "axial_half_wave_bound": 11,
             "circumferential_lobe_bound": 88,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 16008,
+            "cumulative_evaluated_modes": 957,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 109.352279691
+              "value": 1813.28771046
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -5124,11 +5134,13 @@
               "unit": "MPa",
               "value": 2.60926590587
             },
-            "newly_evaluated_modes": 12052,
+            "newly_evaluated_modes": 484,
             "relative_pressure_change": 0.0
           }
         ],
-        "mode_domain": "m>=1,n>=2",
+        "maximum_axial_half_waves_m": 11,
+        "minimum_ring_spacings_per_axial_half_wave": 2.0,
+        "mode_domain": "1<=m<=maximum_axial_half_waves_m,n>=2",
         "orthotropic_bending_x_n_mm": {
           "unit": "N*mm",
           "value": 13308.3091883
@@ -5434,7 +5446,7 @@
           "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 64-65 and 82-91, pp. 37 and 40-42"
         },
         {
-          "basis": "The n=0 branch driven by axial end compression is outside the m >= 1, n >= 2 search; NASA TN D-3647 shows it can govern when the axial wavelength approaches the ring spacing.",
+          "basis": "The n=0 branch driven by axial end compression is outside the n >= 2 search; NASA TN D-3647 shows it can govern when the axial wavelength approaches the ring spacing.",
           "disposition": "not_implemented",
           "mode": "axisymmetric_hydrostatic_buckling",
           "source_reference": "NASA TN D-3647, pp. 6-7; NASA/SP-8007-2020/REV 2 Eqs. 64-65"
@@ -5505,8 +5517,8 @@
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
         "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
-        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
-        "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing screen is applied; widely spaced rings need a discrete-ring or code-rule check.",
+        "Global buckling is elastic: lobar modes (n >= 2, axial half-waves of at least two ring spacings, and always m = 1) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
+        "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves of at least two ring spacings, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. Widely spaced rings still need a discrete-ring or code-rule check.",
         "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay. They are not collapse pressures."
       ],
       "poisson_ratio": 0.3,
@@ -5698,24 +5710,24 @@
         "converged": true,
         "critical_axial_half_waves_m": 1,
         "critical_circumferential_lobes_n": 2,
-        "evaluated_axial_half_waves": 204,
+        "evaluated_axial_half_waves": 12,
         "evaluated_circumferential_lobes": 88,
-        "evaluated_mode_count": 17748,
+        "evaluated_mode_count": 1044,
         "ideal_critical_pressure_mpa": {
           "unit": "MPa",
           "value": 2.29555252256
         },
         "iterations": [
           {
-            "axial_half_wave_bound": 51,
+            "axial_half_wave_bound": 12,
             "circumferential_lobe_bound": 22,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 1071,
+            "cumulative_evaluated_modes": 252,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 21.8417621514
+              "value": 111.457499067
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": false,
@@ -5723,19 +5735,19 @@
               "unit": "MPa",
               "value": 2.29555252256
             },
-            "newly_evaluated_modes": 1071,
+            "newly_evaluated_modes": 252,
             "relative_pressure_change": null
           },
           {
-            "axial_half_wave_bound": 102,
+            "axial_half_wave_bound": 12,
             "circumferential_lobe_bound": 44,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 4386,
+            "cumulative_evaluated_modes": 516,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 32.5888976382
+              "value": 462.589371144
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -5743,19 +5755,19 @@
               "unit": "MPa",
               "value": 2.29555252256
             },
-            "newly_evaluated_modes": 3315,
+            "newly_evaluated_modes": 264,
             "relative_pressure_change": 0.0
           },
           {
-            "axial_half_wave_bound": 204,
+            "axial_half_wave_bound": 12,
             "circumferential_lobe_bound": 88,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 17748,
+            "cumulative_evaluated_modes": 1044,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 113.722374592
+              "value": 1813.94396894
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -5763,11 +5775,13 @@
               "unit": "MPa",
               "value": 2.29555252256
             },
-            "newly_evaluated_modes": 13362,
+            "newly_evaluated_modes": 528,
             "relative_pressure_change": 0.0
           }
         ],
-        "mode_domain": "m>=1,n>=2",
+        "maximum_axial_half_waves_m": 12,
+        "minimum_ring_spacings_per_axial_half_wave": 2.0,
+        "mode_domain": "1<=m<=maximum_axial_half_waves_m,n>=2",
         "orthotropic_bending_x_n_mm": {
           "unit": "N*mm",
           "value": 13308.3091883
@@ -5820,24 +5834,24 @@
         "converged": true,
         "critical_axial_half_waves_m": 1,
         "critical_circumferential_lobes_n": 2,
-        "evaluated_axial_half_waves": 204,
+        "evaluated_axial_half_waves": 12,
         "evaluated_circumferential_lobes": 88,
-        "evaluated_mode_count": 17748,
+        "evaluated_mode_count": 1044,
         "ideal_critical_pressure_mpa": {
           "unit": "MPa",
           "value": 2.29075522711
         },
         "iterations": [
           {
-            "axial_half_wave_bound": 51,
+            "axial_half_wave_bound": 12,
             "circumferential_lobe_bound": 22,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 1071,
+            "cumulative_evaluated_modes": 252,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 21.6464547392
+              "value": 110.782849148
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": false,
@@ -5845,19 +5859,19 @@
               "unit": "MPa",
               "value": 2.29075522711
             },
-            "newly_evaluated_modes": 1071,
+            "newly_evaluated_modes": 252,
             "relative_pressure_change": null
           },
           {
-            "axial_half_wave_bound": 102,
+            "axial_half_wave_bound": 12,
             "circumferential_lobe_bound": 44,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 4386,
+            "cumulative_evaluated_modes": 516,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 32.3913611165
+              "value": 461.890097826
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -5865,19 +5879,19 @@
               "unit": "MPa",
               "value": 2.29075522711
             },
-            "newly_evaluated_modes": 3315,
+            "newly_evaluated_modes": 264,
             "relative_pressure_change": 0.0
           },
           {
-            "axial_half_wave_bound": 204,
+            "axial_half_wave_bound": 12,
             "circumferential_lobe_bound": 88,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 17748,
+            "cumulative_evaluated_modes": 1044,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 113.523828847
+              "value": 1813.23832148
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -5885,11 +5899,13 @@
               "unit": "MPa",
               "value": 2.29075522711
             },
-            "newly_evaluated_modes": 13362,
+            "newly_evaluated_modes": 528,
             "relative_pressure_change": 0.0
           }
         ],
-        "mode_domain": "m>=1,n>=2",
+        "maximum_axial_half_waves_m": 12,
+        "minimum_ring_spacings_per_axial_half_wave": 2.0,
+        "mode_domain": "1<=m<=maximum_axial_half_waves_m,n>=2",
         "orthotropic_bending_x_n_mm": {
           "unit": "N*mm",
           "value": 13308.3091883
@@ -6195,7 +6211,7 @@
           "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 64-65 and 82-91, pp. 37 and 40-42"
         },
         {
-          "basis": "The n=0 branch driven by axial end compression is outside the m >= 1, n >= 2 search; NASA TN D-3647 shows it can govern when the axial wavelength approaches the ring spacing.",
+          "basis": "The n=0 branch driven by axial end compression is outside the n >= 2 search; NASA TN D-3647 shows it can govern when the axial wavelength approaches the ring spacing.",
           "disposition": "not_implemented",
           "mode": "axisymmetric_hydrostatic_buckling",
           "source_reference": "NASA TN D-3647, pp. 6-7; NASA/SP-8007-2020/REV 2 Eqs. 64-65"
@@ -6266,8 +6282,8 @@
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
         "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
-        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
-        "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing screen is applied; widely spaced rings need a discrete-ring or code-rule check.",
+        "Global buckling is elastic: lobar modes (n >= 2, axial half-waves of at least two ring spacings, and always m = 1) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
+        "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves of at least two ring spacings, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. Widely spaced rings still need a discrete-ring or code-rule check.",
         "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay. They are not collapse pressures."
       ],
       "poisson_ratio": 0.3,
@@ -6459,24 +6475,24 @@
         "converged": true,
         "critical_axial_half_waves_m": 1,
         "critical_circumferential_lobes_n": 2,
-        "evaluated_axial_half_waves": 212,
+        "evaluated_axial_half_waves": 13,
         "evaluated_circumferential_lobes": 88,
-        "evaluated_mode_count": 18444,
+        "evaluated_mode_count": 1131,
         "ideal_critical_pressure_mpa": {
           "unit": "MPa",
           "value": 2.17845477744
         },
         "iterations": [
           {
-            "axial_half_wave_bound": 53,
+            "axial_half_wave_bound": 13,
             "circumferential_lobe_bound": 22,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 1113,
+            "cumulative_evaluated_modes": 273,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 21.8410244622
+              "value": 111.061060154
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": false,
@@ -6484,19 +6500,19 @@
               "unit": "MPa",
               "value": 2.17845477744
             },
-            "newly_evaluated_modes": 1113,
+            "newly_evaluated_modes": 273,
             "relative_pressure_change": null
           },
           {
-            "axial_half_wave_bound": 106,
+            "axial_half_wave_bound": 13,
             "circumferential_lobe_bound": 44,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 4558,
+            "cumulative_evaluated_modes": 559,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 32.5411824241
+              "value": 462.090308121
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -6504,19 +6520,19 @@
               "unit": "MPa",
               "value": 2.17845477744
             },
-            "newly_evaluated_modes": 3445,
+            "newly_evaluated_modes": 286,
             "relative_pressure_change": 0.0
           },
           {
-            "axial_half_wave_bound": 212,
+            "axial_half_wave_bound": 13,
             "circumferential_lobe_bound": 88,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 18444,
+            "cumulative_evaluated_modes": 1131,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 113.499990733
+              "value": 1813.42342597
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -6524,11 +6540,13 @@
               "unit": "MPa",
               "value": 2.17845477744
             },
-            "newly_evaluated_modes": 13886,
+            "newly_evaluated_modes": 572,
             "relative_pressure_change": 0.0
           }
         ],
-        "mode_domain": "m>=1,n>=2",
+        "maximum_axial_half_waves_m": 13,
+        "minimum_ring_spacings_per_axial_half_wave": 2.0,
+        "mode_domain": "1<=m<=maximum_axial_half_waves_m,n>=2",
         "orthotropic_bending_x_n_mm": {
           "unit": "N*mm",
           "value": 13308.3091883
@@ -6581,24 +6599,24 @@
         "converged": true,
         "critical_axial_half_waves_m": 1,
         "critical_circumferential_lobes_n": 2,
-        "evaluated_axial_half_waves": 212,
+        "evaluated_axial_half_waves": 13,
         "evaluated_circumferential_lobes": 88,
-        "evaluated_mode_count": 18444,
+        "evaluated_mode_count": 1131,
         "ideal_critical_pressure_mpa": {
           "unit": "MPa",
           "value": 2.17401132201
         },
         "iterations": [
           {
-            "axial_half_wave_bound": 53,
+            "axial_half_wave_bound": 13,
             "circumferential_lobe_bound": 22,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 1113,
+            "cumulative_evaluated_modes": 273,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 21.6456998644
+              "value": 110.331930322
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": false,
@@ -6606,19 +6624,19 @@
               "unit": "MPa",
               "value": 2.17401132201
             },
-            "newly_evaluated_modes": 1113,
+            "newly_evaluated_modes": 273,
             "relative_pressure_change": null
           },
           {
-            "axial_half_wave_bound": 106,
+            "axial_half_wave_bound": 13,
             "circumferential_lobe_bound": 44,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 4558,
+            "cumulative_evaluated_modes": 559,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 32.3436485813
+              "value": 461.332332481
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -6626,19 +6644,19 @@
               "unit": "MPa",
               "value": 2.17401132201
             },
-            "newly_evaluated_modes": 3445,
+            "newly_evaluated_modes": 286,
             "relative_pressure_change": 0.0
           },
           {
-            "axial_half_wave_bound": 212,
+            "axial_half_wave_bound": 13,
             "circumferential_lobe_bound": 88,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 18444,
+            "cumulative_evaluated_modes": 1131,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 113.301445664
+              "value": 1812.65795534
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -6646,11 +6664,13 @@
               "unit": "MPa",
               "value": 2.17401132201
             },
-            "newly_evaluated_modes": 13886,
+            "newly_evaluated_modes": 572,
             "relative_pressure_change": 0.0
           }
         ],
-        "mode_domain": "m>=1,n>=2",
+        "maximum_axial_half_waves_m": 13,
+        "minimum_ring_spacings_per_axial_half_wave": 2.0,
+        "mode_domain": "1<=m<=maximum_axial_half_waves_m,n>=2",
         "orthotropic_bending_x_n_mm": {
           "unit": "N*mm",
           "value": 13308.3091883
@@ -6956,7 +6976,7 @@
           "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 64-65 and 82-91, pp. 37 and 40-42"
         },
         {
-          "basis": "The n=0 branch driven by axial end compression is outside the m >= 1, n >= 2 search; NASA TN D-3647 shows it can govern when the axial wavelength approaches the ring spacing.",
+          "basis": "The n=0 branch driven by axial end compression is outside the n >= 2 search; NASA TN D-3647 shows it can govern when the axial wavelength approaches the ring spacing.",
           "disposition": "not_implemented",
           "mode": "axisymmetric_hydrostatic_buckling",
           "source_reference": "NASA TN D-3647, pp. 6-7; NASA/SP-8007-2020/REV 2 Eqs. 64-65"
@@ -7027,8 +7047,8 @@
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
         "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
-        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
-        "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing screen is applied; widely spaced rings need a discrete-ring or code-rule check.",
+        "Global buckling is elastic: lobar modes (n >= 2, axial half-waves of at least two ring spacings, and always m = 1) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
+        "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves of at least two ring spacings, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. Widely spaced rings still need a discrete-ring or code-rule check.",
         "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay. They are not collapse pressures."
       ],
       "poisson_ratio": 0.3,
@@ -7220,24 +7240,24 @@
         "converged": true,
         "critical_axial_half_waves_m": 1,
         "critical_circumferential_lobes_n": 2,
-        "evaluated_axial_half_waves": 216,
+        "evaluated_axial_half_waves": 13,
         "evaluated_circumferential_lobes": 88,
-        "evaluated_mode_count": 18792,
+        "evaluated_mode_count": 1131,
         "ideal_critical_pressure_mpa": {
           "unit": "MPa",
           "value": 2.08221915259
         },
         "iterations": [
           {
-            "axial_half_wave_bound": 54,
+            "axial_half_wave_bound": 13,
             "circumferential_lobe_bound": 22,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 1134,
+            "cumulative_evaluated_modes": 273,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 21.8407745796
+              "value": 111.428292494
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": false,
@@ -7245,19 +7265,19 @@
               "unit": "MPa",
               "value": 2.08221915259
             },
-            "newly_evaluated_modes": 1134,
+            "newly_evaluated_modes": 273,
             "relative_pressure_change": null
           },
           {
-            "axial_half_wave_bound": 108,
+            "axial_half_wave_bound": 13,
             "circumferential_lobe_bound": 44,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 4644,
+            "cumulative_evaluated_modes": 559,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 31.9300029104
+              "value": 462.552989944
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -7265,19 +7285,19 @@
               "unit": "MPa",
               "value": 2.08221915259
             },
-            "newly_evaluated_modes": 3510,
+            "newly_evaluated_modes": 286,
             "relative_pressure_change": 0.0
           },
           {
-            "axial_half_wave_bound": 216,
+            "axial_half_wave_bound": 13,
             "circumferential_lobe_bound": 88,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 18792,
+            "cumulative_evaluated_modes": 1131,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 109.322629526
+              "value": 1813.90610935
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -7285,11 +7305,13 @@
               "unit": "MPa",
               "value": 2.08221915259
             },
-            "newly_evaluated_modes": 14148,
+            "newly_evaluated_modes": 572,
             "relative_pressure_change": 0.0
           }
         ],
-        "mode_domain": "m>=1,n>=2",
+        "maximum_axial_half_waves_m": 13,
+        "minimum_ring_spacings_per_axial_half_wave": 2.0,
+        "mode_domain": "1<=m<=maximum_axial_half_waves_m,n>=2",
         "orthotropic_bending_x_n_mm": {
           "unit": "N*mm",
           "value": 13308.3091883
@@ -7342,24 +7364,24 @@
         "converged": true,
         "critical_axial_half_waves_m": 1,
         "critical_circumferential_lobes_n": 2,
-        "evaluated_axial_half_waves": 216,
+        "evaluated_axial_half_waves": 13,
         "evaluated_circumferential_lobes": 88,
-        "evaluated_mode_count": 18792,
+        "evaluated_mode_count": 1131,
         "ideal_critical_pressure_mpa": {
           "unit": "MPa",
           "value": 2.07809204303
         },
         "iterations": [
           {
-            "axial_half_wave_bound": 54,
+            "axial_half_wave_bound": 13,
             "circumferential_lobe_bound": 22,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 1134,
+            "cumulative_evaluated_modes": 273,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 21.6454341788
+              "value": 110.749668623
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": false,
@@ -7367,19 +7389,19 @@
               "unit": "MPa",
               "value": 2.07809204303
             },
-            "newly_evaluated_modes": 1134,
+            "newly_evaluated_modes": 273,
             "relative_pressure_change": null
           },
           {
-            "axial_half_wave_bound": 108,
+            "axial_half_wave_bound": 13,
             "circumferential_lobe_bound": 44,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 4644,
+            "cumulative_evaluated_modes": 559,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 31.7325045272
+              "value": 461.849446379
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -7387,19 +7409,19 @@
               "unit": "MPa",
               "value": 2.07809204303
             },
-            "newly_evaluated_modes": 3510,
+            "newly_evaluated_modes": 286,
             "relative_pressure_change": 0.0
           },
           {
-            "axial_half_wave_bound": 216,
+            "axial_half_wave_bound": 13,
             "circumferential_lobe_bound": 88,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 18792,
+            "cumulative_evaluated_modes": 1131,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 109.124097694
+              "value": 1813.19611319
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -7407,11 +7429,13 @@
               "unit": "MPa",
               "value": 2.07809204303
             },
-            "newly_evaluated_modes": 14148,
+            "newly_evaluated_modes": 572,
             "relative_pressure_change": 0.0
           }
         ],
-        "mode_domain": "m>=1,n>=2",
+        "maximum_axial_half_waves_m": 13,
+        "minimum_ring_spacings_per_axial_half_wave": 2.0,
+        "mode_domain": "1<=m<=maximum_axial_half_waves_m,n>=2",
         "orthotropic_bending_x_n_mm": {
           "unit": "N*mm",
           "value": 13308.3091883
@@ -7717,7 +7741,7 @@
           "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 64-65 and 82-91, pp. 37 and 40-42"
         },
         {
-          "basis": "The n=0 branch driven by axial end compression is outside the m >= 1, n >= 2 search; NASA TN D-3647 shows it can govern when the axial wavelength approaches the ring spacing.",
+          "basis": "The n=0 branch driven by axial end compression is outside the n >= 2 search; NASA TN D-3647 shows it can govern when the axial wavelength approaches the ring spacing.",
           "disposition": "not_implemented",
           "mode": "axisymmetric_hydrostatic_buckling",
           "source_reference": "NASA TN D-3647, pp. 6-7; NASA/SP-8007-2020/REV 2 Eqs. 64-65"
@@ -7788,8 +7812,8 @@
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
         "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
-        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
-        "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing screen is applied; widely spaced rings need a discrete-ring or code-rule check.",
+        "Global buckling is elastic: lobar modes (n >= 2, axial half-waves of at least two ring spacings, and always m = 1) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
+        "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves of at least two ring spacings, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. Widely spaced rings still need a discrete-ring or code-rule check.",
         "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay. They are not collapse pressures."
       ],
       "poisson_ratio": 0.3,
@@ -7981,24 +8005,24 @@
         "converged": true,
         "critical_axial_half_waves_m": 1,
         "critical_circumferential_lobes_n": 2,
-        "evaluated_axial_half_waves": 224,
+        "evaluated_axial_half_waves": 14,
         "evaluated_circumferential_lobes": 88,
-        "evaluated_mode_count": 19488,
+        "evaluated_mode_count": 1218,
         "ideal_critical_pressure_mpa": {
           "unit": "MPa",
           "value": 2.00275233749
         },
         "iterations": [
           {
-            "axial_half_wave_bound": 56,
+            "axial_half_wave_bound": 14,
             "circumferential_lobe_bound": 22,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 1176,
+            "cumulative_evaluated_modes": 294,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 21.8409131786
+              "value": 111.061060154
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": false,
@@ -8006,19 +8030,19 @@
               "unit": "MPa",
               "value": 2.00275233749
             },
-            "newly_evaluated_modes": 1176,
+            "newly_evaluated_modes": 294,
             "relative_pressure_change": null
           },
           {
-            "axial_half_wave_bound": 112,
+            "axial_half_wave_bound": 14,
             "circumferential_lobe_bound": 44,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 4816,
+            "cumulative_evaluated_modes": 602,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 31.9099694017
+              "value": 462.090308121
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -8026,19 +8050,19 @@
               "unit": "MPa",
               "value": 2.00275233749
             },
-            "newly_evaluated_modes": 3640,
+            "newly_evaluated_modes": 308,
             "relative_pressure_change": 0.0
           },
           {
-            "axial_half_wave_bound": 224,
+            "axial_half_wave_bound": 14,
             "circumferential_lobe_bound": 88,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 19488,
+            "cumulative_evaluated_modes": 1218,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 109.275801943
+              "value": 1813.42342597
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -8046,11 +8070,13 @@
               "unit": "MPa",
               "value": 2.00275233749
             },
-            "newly_evaluated_modes": 14672,
+            "newly_evaluated_modes": 616,
             "relative_pressure_change": 0.0
           }
         ],
-        "mode_domain": "m>=1,n>=2",
+        "maximum_axial_half_waves_m": 14,
+        "minimum_ring_spacings_per_axial_half_wave": 2.0,
+        "mode_domain": "1<=m<=maximum_axial_half_waves_m,n>=2",
         "orthotropic_bending_x_n_mm": {
           "unit": "N*mm",
           "value": 13308.3091883
@@ -8103,24 +8129,24 @@
         "converged": true,
         "critical_axial_half_waves_m": 1,
         "critical_circumferential_lobes_n": 2,
-        "evaluated_axial_half_waves": 224,
+        "evaluated_axial_half_waves": 14,
         "evaluated_circumferential_lobes": 88,
-        "evaluated_mode_count": 19488,
+        "evaluated_mode_count": 1218,
         "ideal_critical_pressure_mpa": {
           "unit": "MPa",
           "value": 1.99890916255
         },
         "iterations": [
           {
-            "axial_half_wave_bound": 56,
+            "axial_half_wave_bound": 14,
             "circumferential_lobe_bound": 22,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 1176,
+            "cumulative_evaluated_modes": 294,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 21.6455581972
+              "value": 110.331930322
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": false,
@@ -8128,19 +8154,19 @@
               "unit": "MPa",
               "value": 1.99890916255
             },
-            "newly_evaluated_modes": 1176,
+            "newly_evaluated_modes": 294,
             "relative_pressure_change": null
           },
           {
-            "axial_half_wave_bound": 112,
+            "axial_half_wave_bound": 14,
             "circumferential_lobe_bound": 44,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 4816,
+            "cumulative_evaluated_modes": 602,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 31.7124722183
+              "value": 461.332332481
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -8148,19 +8174,19 @@
               "unit": "MPa",
               "value": 1.99890916255
             },
-            "newly_evaluated_modes": 3640,
+            "newly_evaluated_modes": 308,
             "relative_pressure_change": 0.0
           },
           {
-            "axial_half_wave_bound": 224,
+            "axial_half_wave_bound": 14,
             "circumferential_lobe_bound": 88,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 19488,
+            "cumulative_evaluated_modes": 1218,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 109.077270265
+              "value": 1812.65795534
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -8168,11 +8194,13 @@
               "unit": "MPa",
               "value": 1.99890916255
             },
-            "newly_evaluated_modes": 14672,
+            "newly_evaluated_modes": 616,
             "relative_pressure_change": 0.0
           }
         ],
-        "mode_domain": "m>=1,n>=2",
+        "maximum_axial_half_waves_m": 14,
+        "minimum_ring_spacings_per_axial_half_wave": 2.0,
+        "mode_domain": "1<=m<=maximum_axial_half_waves_m,n>=2",
         "orthotropic_bending_x_n_mm": {
           "unit": "N*mm",
           "value": 13308.3091883
@@ -8478,7 +8506,7 @@
           "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 64-65 and 82-91, pp. 37 and 40-42"
         },
         {
-          "basis": "The n=0 branch driven by axial end compression is outside the m >= 1, n >= 2 search; NASA TN D-3647 shows it can govern when the axial wavelength approaches the ring spacing.",
+          "basis": "The n=0 branch driven by axial end compression is outside the n >= 2 search; NASA TN D-3647 shows it can govern when the axial wavelength approaches the ring spacing.",
           "disposition": "not_implemented",
           "mode": "axisymmetric_hydrostatic_buckling",
           "source_reference": "NASA TN D-3647, pp. 6-7; NASA/SP-8007-2020/REV 2 Eqs. 64-65"
@@ -8549,8 +8577,8 @@
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
         "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
-        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
-        "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing screen is applied; widely spaced rings need a discrete-ring or code-rule check.",
+        "Global buckling is elastic: lobar modes (n >= 2, axial half-waves of at least two ring spacings, and always m = 1) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
+        "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves of at least two ring spacings, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. Widely spaced rings still need a discrete-ring or code-rule check.",
         "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay. They are not collapse pressures."
       ],
       "poisson_ratio": 0.3,
@@ -8742,24 +8770,24 @@
         "converged": true,
         "critical_axial_half_waves_m": 1,
         "critical_circumferential_lobes_n": 2,
-        "evaluated_axial_half_waves": 232,
+        "evaluated_axial_half_waves": 14,
         "evaluated_circumferential_lobes": 88,
-        "evaluated_mode_count": 20184,
+        "evaluated_mode_count": 1218,
         "ideal_critical_pressure_mpa": {
           "unit": "MPa",
           "value": 1.93684468298
         },
         "iterations": [
           {
-            "axial_half_wave_bound": 58,
+            "axial_half_wave_bound": 14,
             "circumferential_lobe_bound": 22,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 1218,
+            "cumulative_evaluated_modes": 294,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 21.8413612166
+              "value": 111.403092786
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": false,
@@ -8767,19 +8795,19 @@
               "unit": "MPa",
               "value": 1.93684468298
             },
-            "newly_evaluated_modes": 1218,
+            "newly_evaluated_modes": 294,
             "relative_pressure_change": null
           },
           {
-            "axial_half_wave_bound": 116,
+            "axial_half_wave_bound": 14,
             "circumferential_lobe_bound": 44,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 4988,
+            "cumulative_evaluated_modes": 602,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 31.8913311646
+              "value": 462.521551065
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -8787,19 +8815,19 @@
               "unit": "MPa",
               "value": 1.93684468298
             },
-            "newly_evaluated_modes": 3770,
+            "newly_evaluated_modes": 308,
             "relative_pressure_change": 0.0
           },
           {
-            "axial_half_wave_bound": 232,
+            "axial_half_wave_bound": 14,
             "circumferential_lobe_bound": 88,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 20184,
+            "cumulative_evaluated_modes": 1218,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 109.232213459
+              "value": 1813.87338185
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -8807,11 +8835,13 @@
               "unit": "MPa",
               "value": 1.93684468298
             },
-            "newly_evaluated_modes": 15196,
+            "newly_evaluated_modes": 616,
             "relative_pressure_change": 0.0
           }
         ],
-        "mode_domain": "m>=1,n>=2",
+        "maximum_axial_half_waves_m": 14,
+        "minimum_ring_spacings_per_axial_half_wave": 2.0,
+        "mode_domain": "1<=m<=maximum_axial_half_waves_m,n>=2",
         "orthotropic_bending_x_n_mm": {
           "unit": "N*mm",
           "value": 13308.3091883
@@ -8864,24 +8894,24 @@
         "converged": true,
         "critical_axial_half_waves_m": 1,
         "critical_circumferential_lobes_n": 2,
-        "evaluated_axial_half_waves": 232,
+        "evaluated_axial_half_waves": 14,
         "evaluated_circumferential_lobes": 88,
-        "evaluated_mode_count": 20184,
+        "evaluated_mode_count": 1218,
         "ideal_critical_pressure_mpa": {
           "unit": "MPa",
           "value": 1.93325728644
         },
         "iterations": [
           {
-            "axial_half_wave_bound": 58,
+            "axial_half_wave_bound": 14,
             "circumferential_lobe_bound": 22,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 1218,
+            "cumulative_evaluated_modes": 294,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 21.6459927402
+              "value": 110.721035124
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": false,
@@ -8889,19 +8919,19 @@
               "unit": "MPa",
               "value": 1.93325728644
             },
-            "newly_evaluated_modes": 1218,
+            "newly_evaluated_modes": 294,
             "relative_pressure_change": null
           },
           {
-            "axial_half_wave_bound": 116,
+            "axial_half_wave_bound": 14,
             "circumferential_lobe_bound": 44,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 4988,
+            "cumulative_evaluated_modes": 602,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 31.6938350995
+              "value": 461.814316209
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -8909,19 +8939,19 @@
               "unit": "MPa",
               "value": 1.93325728644
             },
-            "newly_evaluated_modes": 3770,
+            "newly_evaluated_modes": 308,
             "relative_pressure_change": 0.0
           },
           {
-            "axial_half_wave_bound": 232,
+            "axial_half_wave_bound": 14,
             "circumferential_lobe_bound": 88,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 20184,
+            "cumulative_evaluated_modes": 1218,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 109.033681925
+              "value": 1813.1596262
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -8929,11 +8959,13 @@
               "unit": "MPa",
               "value": 1.93325728644
             },
-            "newly_evaluated_modes": 15196,
+            "newly_evaluated_modes": 616,
             "relative_pressure_change": 0.0
           }
         ],
-        "mode_domain": "m>=1,n>=2",
+        "maximum_axial_half_waves_m": 14,
+        "minimum_ring_spacings_per_axial_half_wave": 2.0,
+        "mode_domain": "1<=m<=maximum_axial_half_waves_m,n>=2",
         "orthotropic_bending_x_n_mm": {
           "unit": "N*mm",
           "value": 13308.3091883
@@ -9239,7 +9271,7 @@
           "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 64-65 and 82-91, pp. 37 and 40-42"
         },
         {
-          "basis": "The n=0 branch driven by axial end compression is outside the m >= 1, n >= 2 search; NASA TN D-3647 shows it can govern when the axial wavelength approaches the ring spacing.",
+          "basis": "The n=0 branch driven by axial end compression is outside the n >= 2 search; NASA TN D-3647 shows it can govern when the axial wavelength approaches the ring spacing.",
           "disposition": "not_implemented",
           "mode": "axisymmetric_hydrostatic_buckling",
           "source_reference": "NASA TN D-3647, pp. 6-7; NASA/SP-8007-2020/REV 2 Eqs. 64-65"
@@ -9310,8 +9342,8 @@
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
         "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
-        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
-        "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing screen is applied; widely spaced rings need a discrete-ring or code-rule check.",
+        "Global buckling is elastic: lobar modes (n >= 2, axial half-waves of at least two ring spacings, and always m = 1) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
+        "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves of at least two ring spacings, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. Widely spaced rings still need a discrete-ring or code-rule check.",
         "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay. They are not collapse pressures."
       ],
       "poisson_ratio": 0.3,
@@ -9503,24 +9535,24 @@
         "converged": true,
         "critical_axial_half_waves_m": 1,
         "critical_circumferential_lobes_n": 2,
-        "evaluated_axial_half_waves": 252,
+        "evaluated_axial_half_waves": 15,
         "evaluated_circumferential_lobes": 88,
-        "evaluated_mode_count": 21924,
+        "evaluated_mode_count": 1305,
         "ideal_critical_pressure_mpa": {
           "unit": "MPa",
           "value": 1.83609289072
         },
         "iterations": [
           {
-            "axial_half_wave_bound": 63,
+            "axial_half_wave_bound": 15,
             "circumferential_lobe_bound": 22,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 1323,
+            "cumulative_evaluated_modes": 315,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 21.84294498
+              "value": 111.381128537
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": false,
@@ -9528,19 +9560,19 @@
               "unit": "MPa",
               "value": 1.83609289072
             },
-            "newly_evaluated_modes": 1323,
+            "newly_evaluated_modes": 315,
             "relative_pressure_change": null
           },
           {
-            "axial_half_wave_bound": 126,
+            "axial_half_wave_bound": 15,
             "circumferential_lobe_bound": 44,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 5418,
+            "cumulative_evaluated_modes": 645,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 32.3496035042
+              "value": 462.494111728
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -9548,19 +9580,19 @@
               "unit": "MPa",
               "value": 1.83609289072
             },
-            "newly_evaluated_modes": 4095,
+            "newly_evaluated_modes": 330,
             "relative_pressure_change": 0.0
           },
           {
-            "axial_half_wave_bound": 252,
+            "axial_half_wave_bound": 15,
             "circumferential_lobe_bound": 88,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 21924,
+            "cumulative_evaluated_modes": 1305,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 112.605624333
+              "value": 1813.84480944
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -9568,11 +9600,13 @@
               "unit": "MPa",
               "value": 1.83609289072
             },
-            "newly_evaluated_modes": 16506,
+            "newly_evaluated_modes": 660,
             "relative_pressure_change": 0.0
           }
         ],
-        "mode_domain": "m>=1,n>=2",
+        "maximum_axial_half_waves_m": 15,
+        "minimum_ring_spacings_per_axial_half_wave": 2.0,
+        "mode_domain": "1<=m<=maximum_axial_half_waves_m,n>=2",
         "orthotropic_bending_x_n_mm": {
           "unit": "N*mm",
           "value": 13308.3091883
@@ -9625,24 +9659,24 @@
         "converged": true,
         "critical_axial_half_waves_m": 1,
         "critical_circumferential_lobes_n": 2,
-        "evaluated_axial_half_waves": 252,
+        "evaluated_axial_half_waves": 15,
         "evaluated_circumferential_lobes": 88,
-        "evaluated_mode_count": 21924,
+        "evaluated_mode_count": 1305,
         "ideal_critical_pressure_mpa": {
           "unit": "MPa",
           "value": 1.83294636503
         },
         "iterations": [
           {
-            "axial_half_wave_bound": 63,
+            "axial_half_wave_bound": 15,
             "circumferential_lobe_bound": 22,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 1323,
+            "cumulative_evaluated_modes": 315,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 21.6475523199
+              "value": 110.696074151
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": false,
@@ -9650,19 +9684,19 @@
               "unit": "MPa",
               "value": 1.83294636503
             },
-            "newly_evaluated_modes": 1323,
+            "newly_evaluated_modes": 315,
             "relative_pressure_change": null
           },
           {
-            "axial_half_wave_bound": 126,
+            "axial_half_wave_bound": 15,
             "circumferential_lobe_bound": 44,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 5418,
+            "cumulative_evaluated_modes": 645,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 32.1520805445
+              "value": 461.783654302
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -9670,19 +9704,19 @@
               "unit": "MPa",
               "value": 1.83294636503
             },
-            "newly_evaluated_modes": 4095,
+            "newly_evaluated_modes": 330,
             "relative_pressure_change": 0.0
           },
           {
-            "axial_half_wave_bound": 252,
+            "axial_half_wave_bound": 15,
             "circumferential_lobe_bound": 88,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 21924,
+            "cumulative_evaluated_modes": 1305,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 112.407082013
+              "value": 1813.12777139
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -9690,11 +9724,13 @@
               "unit": "MPa",
               "value": 1.83294636503
             },
-            "newly_evaluated_modes": 16506,
+            "newly_evaluated_modes": 660,
             "relative_pressure_change": 0.0
           }
         ],
-        "mode_domain": "m>=1,n>=2",
+        "maximum_axial_half_waves_m": 15,
+        "minimum_ring_spacings_per_axial_half_wave": 2.0,
+        "mode_domain": "1<=m<=maximum_axial_half_waves_m,n>=2",
         "orthotropic_bending_x_n_mm": {
           "unit": "N*mm",
           "value": 13308.3091883
@@ -10000,7 +10036,7 @@
           "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 64-65 and 82-91, pp. 37 and 40-42"
         },
         {
-          "basis": "The n=0 branch driven by axial end compression is outside the m >= 1, n >= 2 search; NASA TN D-3647 shows it can govern when the axial wavelength approaches the ring spacing.",
+          "basis": "The n=0 branch driven by axial end compression is outside the n >= 2 search; NASA TN D-3647 shows it can govern when the axial wavelength approaches the ring spacing.",
           "disposition": "not_implemented",
           "mode": "axisymmetric_hydrostatic_buckling",
           "source_reference": "NASA TN D-3647, pp. 6-7; NASA/SP-8007-2020/REV 2 Eqs. 64-65"
@@ -10071,8 +10107,8 @@
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
         "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
-        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
-        "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing screen is applied; widely spaced rings need a discrete-ring or code-rule check.",
+        "Global buckling is elastic: lobar modes (n >= 2, axial half-waves of at least two ring spacings, and always m = 1) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
+        "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves of at least two ring spacings, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. Widely spaced rings still need a discrete-ring or code-rule check.",
         "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay. They are not collapse pressures."
       ],
       "poisson_ratio": 0.3,
@@ -10264,24 +10300,24 @@
         "converged": true,
         "critical_axial_half_waves_m": 1,
         "critical_circumferential_lobes_n": 2,
-        "evaluated_axial_half_waves": 264,
+        "evaluated_axial_half_waves": 16,
         "evaluated_circumferential_lobes": 88,
-        "evaluated_mode_count": 22968,
+        "evaluated_mode_count": 1392,
         "ideal_critical_pressure_mpa": {
           "unit": "MPa",
           "value": 1.76527192007
         },
         "iterations": [
           {
-            "axial_half_wave_bound": 66,
+            "axial_half_wave_bound": 16,
             "circumferential_lobe_bound": 22,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 1386,
+            "cumulative_evaluated_modes": 336,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 21.8420368296
+              "value": 111.36181437
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": false,
@@ -10289,19 +10325,19 @@
               "unit": "MPa",
               "value": 1.76527192007
             },
-            "newly_evaluated_modes": 1386,
+            "newly_evaluated_modes": 336,
             "relative_pressure_change": null
           },
           {
-            "axial_half_wave_bound": 132,
+            "axial_half_wave_bound": 16,
             "circumferential_lobe_bound": 44,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 5676,
+            "cumulative_evaluated_modes": 688,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 31.8281723534
+              "value": 462.469954547
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -10309,19 +10345,19 @@
               "unit": "MPa",
               "value": 1.76527192007
             },
-            "newly_evaluated_modes": 4290,
+            "newly_evaluated_modes": 352,
             "relative_pressure_change": 0.0
           },
           {
-            "axial_half_wave_bound": 264,
+            "axial_half_wave_bound": 16,
             "circumferential_lobe_bound": 88,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 22968,
+            "cumulative_evaluated_modes": 1392,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 109.084345889
+              "value": 1813.81964825
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -10329,11 +10365,13 @@
               "unit": "MPa",
               "value": 1.76527192007
             },
-            "newly_evaluated_modes": 17292,
+            "newly_evaluated_modes": 704,
             "relative_pressure_change": 0.0
           }
         ],
-        "mode_domain": "m>=1,n>=2",
+        "maximum_axial_half_waves_m": 16,
+        "minimum_ring_spacings_per_axial_half_wave": 2.0,
+        "mode_domain": "1<=m<=maximum_axial_half_waves_m,n>=2",
         "orthotropic_bending_x_n_mm": {
           "unit": "N*mm",
           "value": 13308.3091883
@@ -10386,24 +10424,24 @@
         "converged": true,
         "critical_axial_half_waves_m": 1,
         "critical_circumferential_lobes_n": 2,
-        "evaluated_axial_half_waves": 264,
+        "evaluated_axial_half_waves": 16,
         "evaluated_circumferential_lobes": 88,
-        "evaluated_mode_count": 22968,
+        "evaluated_mode_count": 1392,
         "ideal_critical_pressure_mpa": {
           "unit": "MPa",
           "value": 1.76249006089
         },
         "iterations": [
           {
-            "axial_half_wave_bound": 66,
+            "axial_half_wave_bound": 16,
             "circumferential_lobe_bound": 22,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 1386,
+            "cumulative_evaluated_modes": 336,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 21.6467339512
+              "value": 110.674121891
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": false,
@@ -10411,19 +10449,19 @@
               "unit": "MPa",
               "value": 1.76249006089
             },
-            "newly_evaluated_modes": 1386,
+            "newly_evaluated_modes": 336,
             "relative_pressure_change": null
           },
           {
-            "axial_half_wave_bound": 132,
+            "axial_half_wave_bound": 16,
             "circumferential_lobe_bound": 44,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 5676,
+            "cumulative_evaluated_modes": 688,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 31.6306800941
+              "value": 461.756659346
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -10431,19 +10469,19 @@
               "unit": "MPa",
               "value": 1.76249006089
             },
-            "newly_evaluated_modes": 4290,
+            "newly_evaluated_modes": 352,
             "relative_pressure_change": 0.0
           },
           {
-            "axial_half_wave_bound": 264,
+            "axial_half_wave_bound": 16,
             "circumferential_lobe_bound": 88,
             "critical_axial_half_waves_m": 1,
             "critical_circumferential_lobes_n": 2,
-            "cumulative_evaluated_modes": 22968,
+            "cumulative_evaluated_modes": 1392,
             "frontier_above_governing": true,
             "frontier_minimum_pressure_mpa": {
               "unit": "MPa",
-              "value": 108.885814844
+              "value": 1813.0997195
             },
             "governing_mode_below_frontier": true,
             "governing_mode_stable": true,
@@ -10451,11 +10489,13 @@
               "unit": "MPa",
               "value": 1.76249006089
             },
-            "newly_evaluated_modes": 17292,
+            "newly_evaluated_modes": 704,
             "relative_pressure_change": 0.0
           }
         ],
-        "mode_domain": "m>=1,n>=2",
+        "maximum_axial_half_waves_m": 16,
+        "minimum_ring_spacings_per_axial_half_wave": 2.0,
+        "mode_domain": "1<=m<=maximum_axial_half_waves_m,n>=2",
         "orthotropic_bending_x_n_mm": {
           "unit": "N*mm",
           "value": 13308.3091883
@@ -10761,7 +10801,7 @@
           "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 64-65 and 82-91, pp. 37 and 40-42"
         },
         {
-          "basis": "The n=0 branch driven by axial end compression is outside the m >= 1, n >= 2 search; NASA TN D-3647 shows it can govern when the axial wavelength approaches the ring spacing.",
+          "basis": "The n=0 branch driven by axial end compression is outside the n >= 2 search; NASA TN D-3647 shows it can govern when the axial wavelength approaches the ring spacing.",
           "disposition": "not_implemented",
           "mode": "axisymmetric_hydrostatic_buckling",
           "source_reference": "NASA TN D-3647, pp. 6-7; NASA/SP-8007-2020/REV 2 Eqs. 64-65"
@@ -10832,8 +10872,8 @@
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
         "Each buckling pressure is labelled by comparing nominal p*r/t with the proportional limit. With only a yield strength, a pressure is an elastic upper bound when p*r/t exceeds yield and undetermined otherwise.",
-        "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
-        "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing screen is applied; widely spaced rings need a discrete-ring or code-rule check.",
+        "Global buckling is elastic: lobar modes (n >= 2, axial half-waves of at least two ring spacings, and always m = 1) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
+        "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves of at least two ring spacings, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. Widely spaced rings still need a discrete-ring or code-rule check.",
         "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay. They are not collapse pressures."
       ],
       "poisson_ratio": 0.3,

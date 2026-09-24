@@ -653,6 +653,15 @@ RING_SHELL_MODEL_VERSION = "6.0.0"
 RING_SHELL_EQ64_ADJUSTMENT_FACTOR = 0.75
 RING_SHELL_MIN_RADIUS_THICKNESS_RATIO = 10.0
 RING_SHELL_DEFAULT_MAX_MODE_EVALUATIONS = 2_000_000
+# Smeared ring stiffness stands for rings averaged over a buckle, so a global
+# axial half-wave must span ring spacings rather than fall between two rings.
+# At one spacing per half-wave the ring deflection depends on the wave's phase
+# against the rings, and the lowest-energy phase puts the rings at the nodes:
+# the inter-ring mode, which is checked separately. Two spacings keep an
+# interior ring in every half-wave. This is a pv-calc screen; NASA says only
+# that the smeared theory's adequacy should be investigated for sufficiently
+# large stiffener spacing (SP-8007 Rev. 2, printed p. 34).
+RING_SHELL_MIN_RING_SPACINGS_PER_AXIAL_HALF_WAVE = 2.0
 RING_SHELL_SOURCE = (
     "NASA/SP-8007-2020/REV 2, Eqs. 64-65 and 82-91, pp. 37 and 40-42"
 )
@@ -671,7 +680,8 @@ RING_SHELL_BOUNDARY_ASSUMPTIONS = (
     "Inter-ring bays assume ideal circular supports at ring center lines.",
 )
 RING_SHELL_PARTIAL_SCOPE_REASON = (
-    "Global buckling is elastic: lobar modes (m >= 1, n >= 2) with ideal simple supports. "
+    "Global buckling is elastic: lobar modes (n >= 2, axial half-waves of at least two ring "
+    "spacings, and always m = 1) with ideal simple supports. "
     "Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and "
     "the long-cylinder Eq. 66 transition are not checked."
 )
@@ -692,8 +702,10 @@ RING_SHELL_ADJUSTED_VALUE_NOTE = (
     "SP-8007, printed p. 38, and enters the governing-pressure comparison."
 )
 GENERAL_INSTABILITY_SMEARED_NOTE = (
-    "The smeared-ring model assumes closely and uniformly spaced rings. No ring-spacing "
-    "screen is applied; widely spaced rings need a discrete-ring or code-rule check."
+    "The smeared-ring model assumes closely and uniformly spaced rings. The global search "
+    "admits axial half-waves of at least two ring spacings, and always m = 1; shorter waves "
+    "fall between rings, where the inter-ring check applies. Widely spaced rings still need "
+    "a discrete-ring or code-rule check."
 )
 RING_SHELL_GOVERNING_NOT_ESTABLISHED_REASON = (
     "The inter-ring bay capacity is {status}, so the lowest buckling pressure is not "
@@ -799,7 +811,9 @@ class RingModeSearchIteration:
 @dataclass(frozen=True)
 class RingGlobalBucklingResult:
     ring_torsion_included: bool
-    mode_domain: Literal["m>=1,n>=2"]
+    mode_domain: Literal["1<=m<=maximum_axial_half_waves_m,n>=2"]
+    maximum_axial_half_waves_m: int
+    minimum_ring_spacings_per_axial_half_wave: float
     converged: bool
     termination_reason: Literal[
         "stable_interior_governing_mode",
@@ -2312,7 +2326,13 @@ def _ring_stiffened_orthotropic_external_pressure_pcr(
     include_ring_torsion: bool,
     max_mode_evaluations: int = RING_SHELL_DEFAULT_MAX_MODE_EVALUATIONS,
 ) -> RingGlobalBucklingResult:
-    """Evaluate NASA Eq. 64/65 with an expanding, evidenced mode search over m >= 1, n >= 2."""
+    """Evaluate NASA Eq. 64/65 over every admissible m and an expanding, evidenced n >= 2.
+
+    ``m`` runs to the largest count whose axial half-wave spans
+    ``RING_SHELL_MIN_RING_SPACINGS_PER_AXIAL_HALF_WAVE`` ring spacings, and
+    always includes ``m = 1``. The circumferential bound doubles until the
+    governing mode is stable and lies below the newly added lobes.
+    """
     e_mpa = elastic_modulus_mpa
     v = poisson_ratio
     r_mm = shell_mid_surface_radius_mm
@@ -2387,10 +2407,19 @@ def _ring_stiffened_orthotropic_external_pressure_pcr(
         pcr_mpa = (r_mm / mode_term) * numerator / denominator
         return pcr_mpa if math.isfinite(pcr_mpa) and pcr_mpa > 0.0 else None
 
-    # The initial bounds scale with both the number of ring spaces in the
-    # modeled length and the shell slenderness.  Stability is not considered
-    # until the winner is away from the newly added outer strips.
-    axial_bound = max(8, int(math.ceil(2.0 * length_mm / ring_spacing_mm)))
+    # Every admissible m is evaluated from the first pass. The relative
+    # allowance keeps an exact multiple of the minimum span from rounding
+    # down. The circumferential bound starts from the shell slenderness, and
+    # stability is not considered until the winner is away from the newly
+    # added lobes.
+    axial_bound = max(
+        1,
+        math.floor(
+            length_mm
+            / (RING_SHELL_MIN_RING_SPACINGS_PER_AXIAL_HALF_WAVE * ring_spacing_mm)
+            * (1.0 + 1.0e-12)
+        ),
+    )
     circumferential_bound = max(8, int(math.ceil(2.0 * math.sqrt(r_mm / t_mm))))
     evaluated: dict[tuple[int, int], float] = {}
     iterations: list[RingModeSearchIteration] = []
@@ -2427,17 +2456,14 @@ def _ring_stiffened_orthotropic_external_pressure_pcr(
 
         (best_m, best_n), best_pressure = min(evaluated.items(), key=lambda item: item[1])
         best = (best_m, best_n, best_pressure)
-        frontier_m_start = max(1, int(math.floor(0.75 * axial_bound)) + 1)
         frontier_n_start = max(2, int(math.floor(0.75 * circumferential_bound)) + 1)
         frontier_pressures = [
             pressure
-            for (mode_m, mode_n), pressure in evaluated.items()
-            if mode_m >= frontier_m_start or mode_n >= frontier_n_start
+            for (_, mode_n), pressure in evaluated.items()
+            if mode_n >= frontier_n_start
         ]
         frontier_minimum = min(frontier_pressures)
-        governing_mode_below_frontier = (
-            best_m < frontier_m_start and best_n < frontier_n_start
-        )
+        governing_mode_below_frontier = best_n < frontier_n_start
         frontier_above = frontier_minimum > best_pressure * (1.0 + 1.0e-10)
         if previous_best is None:
             relative_change = None
@@ -2475,13 +2501,16 @@ def _ring_stiffened_orthotropic_external_pressure_pcr(
             converged = True
             break
         previous_best = best
-        axial_bound *= 2
         circumferential_bound *= 2
 
     ideal_pressure = best[2] if converged and best is not None else None
     return RingGlobalBucklingResult(
         ring_torsion_included=include_ring_torsion,
-        mode_domain="m>=1,n>=2",
+        mode_domain="1<=m<=maximum_axial_half_waves_m,n>=2",
+        maximum_axial_half_waves_m=axial_bound,
+        minimum_ring_spacings_per_axial_half_wave=(
+            RING_SHELL_MIN_RING_SPACINGS_PER_AXIAL_HALF_WAVE
+        ),
         converged=converged,
         termination_reason=termination_reason,
         ideal_critical_pressure_mpa=ideal_pressure,
@@ -3265,7 +3294,7 @@ def ring_stiffened_shell_external_pressure(
             disposition="not_implemented",
             source_reference="NASA TN D-3647, pp. 6-7; NASA/SP-8007-2020/REV 2 Eqs. 64-65",
             basis=(
-                "The n=0 branch driven by axial end compression is outside the m >= 1, n >= 2 "
+                "The n=0 branch driven by axial end compression is outside the n >= 2 "
                 "search; NASA TN D-3647 shows it can govern when the axial wavelength "
                 "approaches the ring spacing."
             ),
