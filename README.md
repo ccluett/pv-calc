@@ -111,10 +111,11 @@ elastic properties. Smooth-cylinder capacity additionally needs either a
 proportional limit or a complete compressive Ramberg-Osgood curve; hemisphere
 buckling needs a proportional limit.
 
-The Al-6061-T6 and Ti-6Al-4V records mark their handbook compression data
-`reference_only`: the curves describe specific extrusion forms and loading
-directions that a generic alloy name does not establish. For acceptance checks,
-supply data applicable to the part through explicit inputs or a custom record.
+The Al-6061-T6, Al-7075-T6, Ti-6Al-4V, and Ni-625 records mark their handbook
+compression data `reference_only`: each curve describes a specific product form
+and loading direction that a generic alloy name does not establish. For
+acceptance checks, supply data applicable to the part through explicit inputs
+or a custom record.
 
 The generic `Al-7075-T6` yield value is 372 MPa (54 ksi), from ASTM B209 plate
 at 3.501–4.000 inches thick: the lowest minimum among the surveyed product forms.

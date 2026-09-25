@@ -134,7 +134,7 @@ def test_nested_depth_load_still_rejects_conflicting_pressure_and_preserves_part
     database = _qualified_comparison_database(tmp_path)
     base = depth_request("smooth_buckling_size_moderate.json")
     request = {"schema_version": CALC_SCHEMA_VERSION, "model": "compare-materials", "request": base,
-               "inputs": {"materials": ["Al-7075-T6", "Test-Buckling-A"]}}
+               "inputs": {"materials": ["SS-316-316L", "Test-Buckling-A"]}}
     response = calculate(request, materials_file=database)
     entries = response["comparison"]["entries"]
     assert entries[0]["outcome"] == "no_reliable_solution"

@@ -108,8 +108,16 @@ def test_bundled_materials_work_outside_checkout_and_explicit_override_wins(tmp_
         "missing_properties": [],
         "buckling_data_qualification": "reference_only",
     }
-    other = show_material("Al-7075-T6")
-    assert other["properties"]["yield_strength_mpa"] == 372.0
+    for name, limit, exponent, proof in (
+        ("Al-7075-T6", 228.8, 16.0, 352.0), ("Ni-625", 302.4, 26.0, 414.0),
+    ):
+        properties = show_material(name)["properties"]
+        assert properties["proportional_limit_mpa"] == limit
+        assert properties["ramberg_osgood_n"] == exponent
+        assert properties["compressive_proof_stress_mpa"] == proof
+        assert properties["buckling_data_qualification"] == "reference_only"
+    other = show_material("SS-316-316L")
+    assert other["properties"]["yield_strength_mpa"] == 207.0
     assert other["capabilities"]["smooth_cylinder_buckling_capacity"] == {
         "available": False, "missing_properties": ["proportional_limit_mpa"],
     }

@@ -40,6 +40,18 @@ model; both predate this changelog.
   `circumferential_stress_basis` and `circumferential_stress_per_unit_pressure`,
   naming the stress compared with material data. A smooth shell's numbers are
   unchanged.
+- Add reference-only compressive Ramberg-Osgood curves from MIL-HDBK-5J, with
+  their curve-derived proportional limits, to the bundled `Al-7075-T6` (T651
+  plate in L compression: n = 16, anchored at the thick-plate Fcy(L) of
+  352 MPa; limit 228.8 MPa) and `Ni-625` (annealed bar in L compression:
+  n = 26, anchored at 414 MPa; limit 302.4 MPa) records. Each stores the
+  lesser of its directional exponents.
+  Smooth-cylinder buckling now returns corrected
+  `released_unqualified_material` estimates for these materials where it
+  withheld capacity, the ring model's inter-ring bay applies the same
+  correction, and hemisphere buckling can release against the derived limits;
+  `check` still cannot pass on them. `Ti-Grade-2`, `SS-316-316L`, and
+  `SS-2507` still carry no curve: no public source found supports one.
 - The tests run in a checkout without symlink support.
 - Model versions: tube 3.1.0, hemisphere 5.0.0, plate 5.0.0, smooth buckling
   5.1.0, ring shell 6.0.0; cylinder composition 1.0.0. Sizing operation
