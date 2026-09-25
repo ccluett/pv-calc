@@ -71,6 +71,29 @@ model; both predate this changelog.
     the load on the outer surface would raise the unstiffened mean hoop
     stress by `R_o/R = 1 + t/(2R)` and the bay's slightly less. The numbers
     are unchanged.
+  - Add the bay's surface stresses and axisymmetric collapse. `beam_column_bay`
+    solves the periodic bay with its beam-column term, the Pulos-Salerno
+    solution as Renzi documents it for DAPS4 (IHTR 2944, Eqs. 7 and 43-64):
+    mid-bay and frame axial and hoop stress on both surfaces at the applied
+    pressure, tension positive, their plane-stress von Mises values, the
+    membrane stresses, deflections, and the ring hoop stress. It takes the
+    hoop load at the mean radius and the axial load from the outer radius, as
+    DAPS4 does, and is reported while Renzi's gamma < 1. With a yield
+    strength, `axisymmetric_collapse` applies Lunchick's plastic reserve
+    factor (Eqs. 65-66) to the pressure at which the outer surface at mid-bay
+    first yields, and the collapse pressure enters the lowest pressure beside
+    the buckling modes (mode `axisymmetric_collapse_lunchick`, status
+    `advisory`), so text output now says "Lowest buckling or collapse
+    pressure". In stocky bays it often governs, and a corrected bay buckling
+    pressure above Pc5 is now bounded by it. The closed form matches an
+    independent characteristic-root solution to 1e-10 and reproduces DAPS4's
+    published Case 2 output: every printed stress within 1 psi, and the
+    collapse pressure 1095.7 against 1096 psi. A long bay whose mid-bay
+    bending relieves the outer surface, outside Lunchick's derivation, is
+    flagged; DAPS4's test comparison covers bay parameters theta 1.0-2.5.
+    Collapse is a perfect-shell estimate without end bays. New kernels
+    `ring_bay_beam_column_stress` and `ring_bay_axisymmetric_collapse` take
+    the ring as area, centroid radius, and faying width.
 - Smooth-buckling model 5.0.0 -> 5.1.0: results add
   `circumferential_stress_basis` and `circumferential_stress_per_unit_pressure`,
   naming the stress compared with material data. A smooth shell uses

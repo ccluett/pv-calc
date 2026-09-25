@@ -70,13 +70,14 @@ def test_yield_pressures_are_reported_beside_the_buckling_minimum():
         2.486631095097233, rel=1e-12
     )
     assert result.ring_yield_pressure_mpa == pytest.approx(5.66939427151082, rel=1e-12)
-    # Pc5 is below both buckling pressures here, and the governing pressure
-    # is still the lowest buckling pressure.
+    # Pc5 is below every mode pressure here. The lowest is axisymmetric
+    # collapse, which carries Lunchick's plastic reserve above first yield.
     assert result.advisory_candidate_modes == (
         "global_eq64_with_eq91_ring_torsion",
         "inter_ring_smooth_shell",
+        "axisymmetric_collapse_lunchick",
     )
-    assert result.advisory_governing_mode == "inter_ring_smooth_shell"
+    assert result.advisory_governing_mode == "axisymmetric_collapse_lunchick"
     assert result.shell_yield_between_rings_pressure_mpa < result.advisory_governing_pressure_mpa
     assert RING_SHELL_YIELD_NOTE in result.notes
 
@@ -198,7 +199,10 @@ def test_json_summary_and_text_report_the_yield_pressures():
     assert summary["assessment"]["status"] == "indeterminate"
     assert summary["ring_yield"]["ring_yield_pressure_mpa"]["unit"] == "MPa"
     text = render_text(response)
-    assert "Lowest buckling pressure: 3.67912 MPa (inter-ring bay;" in text
+    assert (
+        "Lowest buckling or collapse pressure: 2.73537 MPa (axisymmetric collapse, Lunchick)"
+    ) in text
+    assert "Axisymmetric collapse (Lunchick, perfect shell): 2.73537 MPa" in text
     assert "Shell mean hoop yield at mid-bay (Pc5): 2.48663 MPa" in text
     assert "Ring mean hoop yield: 5.66939 MPa" in text
     first_yield = 5.66939427151082 * (274.5 + 1.19) / (274.5 + 13.69)

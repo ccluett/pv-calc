@@ -131,6 +131,19 @@ def summarize_response(
         location = (result.get("axisymmetric_stress") or {}).get("ring_maximum_hoop_stress_location")
         if location is not None:
             summary["ring_yield"]["ring_maximum_hoop_stress_location"] = location
+        collapse = result.get("axisymmetric_collapse")
+        if collapse is not None:
+            summary["ring_collapse"] = deepcopy({key: collapse[key] for key in (
+                "status", "collapse_pressure_mpa", "first_yield_pressure_mpa",
+                "plastic_reserve_factor_phi3", "outer_midbay_bending_compressive",
+            ) if key in collapse})
+        bay = result.get("beam_column_bay")
+        if bay is not None:
+            summary["ring_bay_stress"] = deepcopy({
+                f"{station}_{key}": bay[station][key]
+                for station in ("midbay", "frame")
+                for key in ("von_mises_outer_mpa", "von_mises_inner_mpa", "von_mises_membrane_mpa")
+            })
     if "sizing" in payload:
         summary["sizing"] = {key: value for key, value in payload["sizing"].items() if key in {
             "selected_wall_thickness", "selected_plate_thickness", "selected_shell_mid_surface_radius",
@@ -186,6 +199,7 @@ def summarize_response(
 _RING_MODE_LABELS = {
     "global_eq64_with_eq91_ring_torsion": "global, NASA SP-8007 Eq. 64 x 0.75",
     "inter_ring_smooth_shell": "inter-ring bay",
+    "axisymmetric_collapse_lunchick": "axisymmetric collapse, Lunchick",
 }
 _RING_FIRST_YIELD_LABELS = {
     "internal_ring_free_edge": "inner free edge",
@@ -242,7 +256,7 @@ def _render_summary(summary: dict[str, Any]) -> list[str]:
         ) if key in loading))
     if "ring_buckling" in summary and "inter_ring_capacity_status" in summary["ring_buckling"]:
         lines.append(
-            "Lowest buckling pressure: not established (inter-ring bay "
+            "Lowest buckling or collapse pressure: not established (inter-ring bay "
             f"{summary['ring_buckling']['inter_ring_capacity_status']})"
         )
     elif "ring_buckling" in summary:
@@ -252,7 +266,7 @@ def _render_summary(summary: dict[str, Any]) -> list[str]:
             detail.append(f"m={buckling.get('critical_axial_half_waves_m')}, n={buckling['critical_circumferential_lobes_n']}")
         if buckling.get("advisory_governing_status") in _RING_STATUS_LABELS:
             detail.append(_RING_STATUS_LABELS[buckling["advisory_governing_status"]])
-        lines.append(f"Lowest buckling pressure: {_format(buckling['advisory_governing_pressure_mpa'])} ({'; '.join(detail)})")
+        lines.append(f"Lowest buckling or collapse pressure: {_format(buckling['advisory_governing_pressure_mpa'])} ({'; '.join(detail)})")
     if "ring_yield" in summary:
         shell_yield = summary["ring_yield"].get("shell_yield_between_rings_pressure_mpa")
         ring_yield = summary["ring_yield"].get("ring_yield_pressure_mpa")
@@ -267,6 +281,23 @@ def _render_summary(summary: dict[str, Any]) -> list[str]:
                     summary["ring_yield"].get("ring_maximum_hoop_stress_location"), "smallest radius"
                 )
                 lines.append(f"Ring first yield ({location}): {_format(first_yield)}")
+    if "ring_collapse" in summary:
+        collapse = summary["ring_collapse"]
+        if _number(collapse.get("collapse_pressure_mpa")) is None:
+            lines.append("Axisymmetric collapse: withheld (the periodic-bay closed form ends before first yield)")
+        else:
+            lines.append(
+                f"Axisymmetric collapse (Lunchick, perfect shell): {_format(collapse['collapse_pressure_mpa'])}"
+                f"; mid-bay outer-surface first yield {_format(collapse['first_yield_pressure_mpa'])}"
+            )
+    if "ring_bay_stress" in summary:
+        bay = summary["ring_bay_stress"]
+        lines.append(
+            "Bay surface von Mises at the applied pressure: mid-bay outer "
+            f"{_format(bay['midbay_von_mises_outer_mpa'])}, inner {_format(bay['midbay_von_mises_inner_mpa'])}, "
+            f"membrane {_format(bay['midbay_von_mises_membrane_mpa'])}; frame outer "
+            f"{_format(bay['frame_von_mises_outer_mpa'])}, inner {_format(bay['frame_von_mises_inner_mpa'])}"
+        )
     check_reasons: set[str] = set()
     for check in assessment["checks"]:
         margin = "undefined" if check.get("margin") is None else _format(check["margin"])

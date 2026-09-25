@@ -124,6 +124,7 @@ def _assert_mode_parity(case: RingCase) -> None:
     [
         "tests/reference/ring_shell_reference.py",
         "tests/reference/ring_yield_reference.py",
+        "tests/reference/ring_bay_reference.py",
     ],
 )
 def test_independent_reference_has_no_production_imports(reference: str) -> None:

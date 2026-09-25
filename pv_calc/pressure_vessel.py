@@ -704,8 +704,9 @@ RING_SHELL_BOUNDARY_ASSUMPTIONS = (
 RING_SHELL_PARTIAL_SCOPE_REASON = (
     "Global buckling is elastic: lobar modes (n >= 2, axial half-waves longer than one ring "
     "spacing, and always m = 1) with ideal simple supports. "
-    "Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and "
-    "the long-cylinder Eq. 66 transition are not checked."
+    "Interframe collapse of an imperfect shell, ring tripping, ring spacing, axisymmetric "
+    "elastic buckling (n=0), and the long-cylinder Eq. 66 transition are not checked; "
+    "axisymmetric collapse is a perfect-shell estimate."
 )
 RING_SHELL_YIELD_SOURCE = (
     "von Sanden and Guenther periodic-bay solution (DTMB Report 1497, Pulos and Salerno, "
@@ -713,6 +714,31 @@ RING_SHELL_YIELD_SOURCE = (
     "Morandi (1994, University of Glasgow PhD thesis), Eqs. 48-53; effective ring area "
     "from DTMB Report 1639 (Pulos, 1963), Eq. (9); ring stress from DTMB 1497 Eq. [58] "
     "and DTMB 1639 Eq. (175), at the ring centroid radius"
+)
+RING_SHELL_BEAM_COLUMN_SOURCE = (
+    "Pulos and Salerno periodic-bay solution with the beam-column term (DTMB Report 1497), "
+    "as documented for DAPS4 by Renzi, NSWC Indian Head IHTR 2944 (2008), Eqs. 7 and 43-64"
+)
+RING_SHELL_COLLAPSE_SOURCE = (
+    "Lunchick's plastic reserve factor on first yield for axisymmetric collapse, as documented "
+    "for DAPS4 by Renzi, IHTR 2944 (2008), Eqs. 65-66"
+)
+RING_SHELL_COLLAPSE_NOTE = (
+    "Axisymmetric collapse is Lunchick's plastic reserve on the pressure at which the outer "
+    "surface at mid-bay first yields (von Mises), from the beam-column periodic bay: a perfect "
+    "shell of elastic-perfectly plastic material between identical rings, without end bays. "
+    "It enters the lowest pressure. DAPS4's comparison with machined aluminium models "
+    "(Boichot and Reynolds) covers theta from 1.0 to 2.5."
+)
+RING_SHELL_COLLAPSE_REVERSED_BENDING_NOTE = (
+    "At first yield the mid-bay bending relieves the outer surface, as in a long bay; "
+    "Lunchick's derivation assumes it adds compression there, so phi3 falls just below 1 "
+    "and the collapse pressure is about the first-yield pressure."
+)
+RING_SHELL_BEAM_COLUMN_LIMIT_NOTE = (
+    "The applied pressure is at or above {limit:.6g} MPa, where the beam-column parameter "
+    "gamma reaches 1 and the periodic-bay closed form ends, so bay surface stresses are not "
+    "reported."
 )
 RING_SHELL_YIELD_NOTE = (
     "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at "
@@ -740,11 +766,6 @@ RING_SHELL_GOVERNING_NOT_ESTABLISHED_REASON = (
     "established: a minimum without the bay would report the global mode however far "
     "below it the bay lies. inter_ring_shell_buckling gives the bay's reasons and "
     "candidates; global_with_ring_torsion keeps the global pressure."
-)
-RING_SHELL_BAY_ABOVE_PC5_NOTE = (
-    "The inter-ring bay's corrected buckling pressure, {bay:.6g} MPa, is above Pc5, "
-    "{pc5:.6g} MPa: its mid-bay hoop stress passes yield before it buckles, so interframe "
-    "collapse, which this model does not check, can govern."
 )
 RING_SHELL_GLOBAL_PLASTICITY_PENDING_REASON = (
     "the global Eq. 64/65 capacity implies a shell circumferential membrane stress "
@@ -910,6 +931,57 @@ class RingAxisymmetricStressResult:
 
 
 @dataclass(frozen=True)
+class RingBaySurfaceStress:
+    """Stresses and deflection at one station of the periodic bay, tension positive."""
+
+    axial_outer_mpa: float
+    axial_inner_mpa: float
+    hoop_outer_mpa: float
+    hoop_inner_mpa: float
+    axial_membrane_mpa: float
+    hoop_membrane_mpa: float
+    von_mises_outer_mpa: float
+    von_mises_inner_mpa: float
+    von_mises_membrane_mpa: float
+    radial_deflection_mm: float
+
+
+@dataclass(frozen=True)
+class RingBeamColumnBayResult:
+    """Pulos-Salerno periodic bay at one pressure, as Renzi documents for DAPS4."""
+
+    source_reference: str
+    stress_sign_convention: Literal["tension_positive"]
+    load_radius_convention: Literal["hoop_at_mid_surface_axial_from_outer_surface"]
+    von_mises_convention: Literal["plane_stress_radial_omitted"]
+    pressure_mpa: float
+    load_radius_ratio_alpha: float
+    effective_ring_area_mm2: float
+    clear_bay_mm: float
+    bay_parameter_theta: float
+    frame_parameter_beta: float
+    pressure_parameter_gamma: float
+    f_functions: tuple[float, float, float, float, float, float]
+    midbay: RingBaySurfaceStress
+    frame: RingBaySurfaceStress
+    ring_hoop_stress_mpa: float
+
+
+@dataclass(frozen=True)
+class RingAxisymmetricCollapseResult:
+    """Lunchick axisymmetric collapse of the periodic bay, as Renzi documents for DAPS4."""
+
+    source_reference: str
+    status: Literal["advisory", "withheld_beam_column_limit"]
+    beam_column_limit_pressure_mpa: float
+    first_yield_pressure_mpa: float | None
+    pressure_parameter_gamma_at_first_yield: float | None
+    outer_midbay_bending_compressive: bool | None
+    plastic_reserve_factor_phi3: float | None
+    collapse_pressure_mpa: float | None
+
+
+@dataclass(frozen=True)
 class RingShellResult:
     model_id: str
     model_version: str
@@ -963,6 +1035,8 @@ class RingShellResult:
     shell_yield_between_rings_pressure_mpa: float | None
     ring_yield_pressure_mpa: float | None
     ring_first_yield_pressure_mpa: float | None
+    beam_column_bay: RingBeamColumnBayResult | None
+    axisymmetric_collapse: RingAxisymmetricCollapseResult | None
     advisory_candidate_modes: tuple[str, ...]
     advisory_governing_mode: str | None
     advisory_governing_status: (
@@ -3100,6 +3174,271 @@ def _ring_axisymmetric_stress(
     )
 
 
+def _von_mises_plane(axial_mpa: float, hoop_mpa: float) -> float:
+    return math.sqrt(axial_mpa * axial_mpa - axial_mpa * hoop_mpa + hoop_mpa * hoop_mpa)
+
+
+def _ring_bay_inputs(
+    shell_mid_surface_radius_mm: float,
+    wall_thickness_mm: float,
+    ring_spacing_mm: float,
+    ring_faying_width_mm: float,
+    ring_area_mm2: float,
+    ring_centroid_radius_mm: float,
+    elastic_modulus_mpa: float,
+    poisson_ratio: float,
+) -> tuple[float, float, float, float, float, float, float, float]:
+    r_mm = _positive_finite(shell_mid_surface_radius_mm, "shell_mid_surface_radius_mm")
+    t_mm = _positive_finite(wall_thickness_mm, "wall_thickness_mm")
+    spacing_mm = _positive_finite(ring_spacing_mm, "ring_spacing_mm")
+    width_mm = _positive_finite(ring_faying_width_mm, "ring_faying_width_mm")
+    area_mm2 = _positive_finite(ring_area_mm2, "ring_area_mm2")
+    centroid_mm = _positive_finite(ring_centroid_radius_mm, "ring_centroid_radius_mm")
+    e_mpa = _positive_finite(elastic_modulus_mpa, "elastic_modulus_mpa")
+    v = _validated_poisson_ratio(poisson_ratio)
+    if width_mm >= spacing_mm:
+        raise ValueError("ring_faying_width_mm must be less than ring_spacing_mm")
+    if t_mm >= 2.0 * r_mm:
+        raise ValueError("wall_thickness_mm must be less than the shell diameter")
+    return r_mm, t_mm, spacing_mm, width_mm, area_mm2, centroid_mm, e_mpa, v
+
+
+def _ring_bay_limit_pressure(r_mm: float, t_mm: float, e_mpa: float, v: float) -> float:
+    """Pressure at which Renzi's gamma (Eq. 64) reaches 1 and the closed form ends."""
+    alpha = (r_mm + 0.5 * t_mm) / r_mm
+    rigidity = e_mpa * t_mm**3 / (12.0 * (1.0 - v * v))
+    return 4.0 * math.sqrt(rigidity * e_mpa * t_mm) / (r_mm * r_mm * alpha * alpha)
+
+
+def ring_bay_beam_column_stress(
+    *,
+    pressure_mpa: float,
+    shell_mid_surface_radius_mm: float,
+    wall_thickness_mm: float,
+    ring_spacing_mm: float,
+    ring_faying_width_mm: float,
+    ring_area_mm2: float,
+    ring_centroid_radius_mm: float,
+    elastic_modulus_mpa: float,
+    poisson_ratio: float,
+) -> RingBeamColumnBayResult:
+    """Stresses of a periodic bay between identical rings, with the beam-column term.
+
+    Renzi (IHTR 2944, 2008) documents the Pulos-Salerno solution DAPS4 uses;
+    this is its isotropic case. Eq. 43 takes the hoop load at the mean radius
+    R and the axial load p R alpha^2 / 2 with alpha = R_o / R; Eq. 7 gives the
+    effective ring area A_f (R / R_cg)^2, the bay parameter theta over the
+    clear bay, and the frame parameter beta; Eqs. 49-62 give the mid-bay and
+    frame stresses on both surfaces and Eq. 55 the ring hoop stress, all
+    through the functions F1-F6. The solution needs gamma < 1 (Eq. 64). The
+    ring enters through its area, centroid radius, and faying width, so any
+    section can be described. Stresses are tension positive; von Mises is the
+    plane-stress value DAPS4 prints, without the radial stress.
+    """
+    p_mpa = _non_negative_pressure(pressure_mpa)
+    r_mm, t_mm, spacing_mm, width_mm, area_mm2, centroid_mm, e_mpa, v = _ring_bay_inputs(
+        shell_mid_surface_radius_mm,
+        wall_thickness_mm,
+        ring_spacing_mm,
+        ring_faying_width_mm,
+        ring_area_mm2,
+        ring_centroid_radius_mm,
+        elastic_modulus_mpa,
+        poisson_ratio,
+    )
+    alpha = (r_mm + 0.5 * t_mm) / r_mm
+    membrane = e_mpa * t_mm  # C_phi (1 - nu^2) for an isotropic wall
+    rigidity = e_mpa * t_mm**3 / (12.0 * (1.0 - v * v))  # D_x
+    effective_area = area_mm2 * (r_mm / centroid_mm) ** 2
+    clear_bay = spacing_mm - width_mm
+    theta = (membrane / (4.0 * rigidity * r_mm * r_mm)) ** 0.25 * clear_bay
+    beta = (
+        effective_area * (1.0 - 0.5 * v * alpha * alpha) / t_mm
+        + 0.5 * width_mm * alpha * (v - v * alpha)
+    )
+    root = math.sqrt(rigidity * membrane)
+    gamma = p_mpa * r_mm * r_mm * alpha * alpha / (4.0 * root)
+    if not gamma < 1.0:
+        raise ValueError("the periodic-bay closed form needs gamma < 1 (Renzi Eq. 64)")
+    eta_1 = 0.5 * math.sqrt(1.0 - gamma)
+    eta_2 = 0.5 * math.sqrt(1.0 + gamma)
+    x = theta * eta_1
+    y = theta * eta_2
+    # cosh x and sinh x times exp(-x); Omega and each F scaled by exp(-2x), so a
+    # long bay cannot overflow and expm1 keeps a short one accurate.
+    decay = math.exp(-x)
+    ch = 0.5 * (1.0 + decay * decay)
+    sh = -0.5 * math.expm1(-2.0 * x)
+    co, si = math.cos(y), math.sin(y)
+    omega = ch * sh / eta_1 + decay * decay * co * si / eta_2
+    f1 = 4.0 / theta * (ch * ch - decay * decay * co * co) / omega
+    f2 = decay * (ch * si / eta_2 + sh * co / eta_1) / omega
+    f3 = (decay * decay * co * si / eta_2 - ch * sh / eta_1) / omega
+    f4 = decay * (ch * si / eta_2 - sh * co / eta_1) / omega
+    f5 = decay * (ch * si / eta_1 - sh * co / eta_2) / omega
+    f6 = decay * (ch * si / eta_1 + sh * co / eta_2) / omega
+    # F2 cosh(x) cos(y) + F5 sinh(x) sin(y) at the frame (Eq. 46); the exp(-x)
+    # in F2 and F5 cancels the growth of cosh and sinh.
+    frame_shape = (
+        (ch * si / eta_2 + sh * co / eta_1) * ch * co
+        + (ch * si / eta_1 - sh * co / eta_2) * sh * si
+    ) / omega
+    delta = e_mpa * effective_area + membrane * (width_mm + clear_bay * f1)
+    sigma_u = -p_mpa * r_mm / t_mm
+    sigma_mf = sigma_u * beta * membrane / delta
+    midbay_bending = 6.0 * sigma_u * beta * f4 * root / (t_mm * delta)
+    frame_bending = 6.0 * sigma_mf * f3 * math.sqrt(rigidity / membrane) / t_mm
+    axial = 0.5 * sigma_u * alpha * alpha
+    free_deflection = -p_mpa * r_mm * r_mm / membrane * (1.0 - 0.5 * v * alpha * alpha)
+    ring_deflection_scale = p_mpa * r_mm * r_mm * beta / delta
+
+    def station(bending: float, hoop: float, deflection: float) -> RingBaySurfaceStress:
+        return RingBaySurfaceStress(
+            axial_outer_mpa=axial + bending,
+            axial_inner_mpa=axial - bending,
+            hoop_outer_mpa=hoop + v * bending,
+            hoop_inner_mpa=hoop - v * bending,
+            axial_membrane_mpa=axial,
+            hoop_membrane_mpa=hoop,
+            von_mises_outer_mpa=_von_mises_plane(axial + bending, hoop + v * bending),
+            von_mises_inner_mpa=_von_mises_plane(axial - bending, hoop - v * bending),
+            von_mises_membrane_mpa=_von_mises_plane(axial, hoop),
+            radial_deflection_mm=deflection,
+        )
+
+    return RingBeamColumnBayResult(
+        source_reference=RING_SHELL_BEAM_COLUMN_SOURCE,
+        stress_sign_convention="tension_positive",
+        load_radius_convention="hoop_at_mid_surface_axial_from_outer_surface",
+        von_mises_convention="plane_stress_radial_omitted",
+        pressure_mpa=p_mpa,
+        load_radius_ratio_alpha=alpha,
+        effective_ring_area_mm2=effective_area,
+        clear_bay_mm=clear_bay,
+        bay_parameter_theta=theta,
+        frame_parameter_beta=beta,
+        pressure_parameter_gamma=gamma,
+        f_functions=(f1, f2, f3, f4, f5, f6),
+        midbay=station(
+            midbay_bending,
+            sigma_u - sigma_mf * f2,
+            free_deflection + ring_deflection_scale * f2,
+        ),
+        frame=station(
+            frame_bending,
+            sigma_u - sigma_mf,
+            free_deflection + ring_deflection_scale * frame_shape,
+        ),
+        ring_hoop_stress_mpa=(
+            (-p_mpa * width_mm * (1.0 - 0.5 * v * alpha) + sigma_mf * t_mm * clear_bay * f1 / r_mm)
+            * r_mm
+            / (effective_area + width_mm * t_mm)
+        ),
+    )
+
+
+def ring_bay_axisymmetric_collapse(
+    *,
+    yield_strength_mpa: float,
+    shell_mid_surface_radius_mm: float,
+    wall_thickness_mm: float,
+    ring_spacing_mm: float,
+    ring_faying_width_mm: float,
+    ring_area_mm2: float,
+    ring_centroid_radius_mm: float,
+    elastic_modulus_mpa: float,
+    poisson_ratio: float,
+) -> RingAxisymmetricCollapseResult:
+    """Lunchick axisymmetric collapse of a periodic bay (Renzi IHTR 2944, Eqs. 65-66).
+
+    P_y is the pressure at which the outer-surface von Mises stress at
+    mid-bay, from ``ring_bay_beam_column_stress``, reaches the yield strength;
+    the stresses are nonlinear in pressure through gamma, so it is solved by
+    bisection. Lunchick's phi3, evaluated with the mid-bay stresses at P_y as
+    DAPS4 does, carries the plastic reserve to three hinges: P_c = phi3 P_y.
+    The derivation assumes the mid-bay bending adds compression at the outer
+    surface, and phi3 >= 1 there; a long bay, beyond about theta = 7, reverses
+    that bending and phi3 falls just below 1, which the result flags. When
+    gamma reaches 1 before first yield the closed form ends first and the
+    collapse pressure is withheld.
+    """
+    fy_mpa = _positive_finite(yield_strength_mpa, "yield_strength_mpa")
+    r_mm, t_mm, spacing_mm, width_mm, area_mm2, centroid_mm, e_mpa, v = _ring_bay_inputs(
+        shell_mid_surface_radius_mm,
+        wall_thickness_mm,
+        ring_spacing_mm,
+        ring_faying_width_mm,
+        ring_area_mm2,
+        ring_centroid_radius_mm,
+        elastic_modulus_mpa,
+        poisson_ratio,
+    )
+    limit_mpa = _ring_bay_limit_pressure(r_mm, t_mm, e_mpa, v)
+
+    def bay(pressure: float) -> RingBeamColumnBayResult:
+        return ring_bay_beam_column_stress(
+            pressure_mpa=pressure,
+            shell_mid_surface_radius_mm=r_mm,
+            wall_thickness_mm=t_mm,
+            ring_spacing_mm=spacing_mm,
+            ring_faying_width_mm=width_mm,
+            ring_area_mm2=area_mm2,
+            ring_centroid_radius_mm=centroid_mm,
+            elastic_modulus_mpa=e_mpa,
+            poisson_ratio=v,
+        )
+
+    upper = limit_mpa * (1.0 - 1.0e-9)
+    if bay(upper).midbay.von_mises_outer_mpa < fy_mpa:
+        return RingAxisymmetricCollapseResult(
+            source_reference=RING_SHELL_COLLAPSE_SOURCE,
+            status="withheld_beam_column_limit",
+            beam_column_limit_pressure_mpa=limit_mpa,
+            first_yield_pressure_mpa=None,
+            pressure_parameter_gamma_at_first_yield=None,
+            outer_midbay_bending_compressive=None,
+            plastic_reserve_factor_phi3=None,
+            collapse_pressure_mpa=None,
+        )
+    lower = 0.0
+    for _ in range(200):
+        middle = lower + 0.5 * (upper - lower)
+        if middle <= lower or middle >= upper:
+            break
+        if bay(middle).midbay.von_mises_outer_mpa < fy_mpa:
+            lower = middle
+        else:
+            upper = middle
+    first_yield = lower + 0.5 * (upper - lower)
+    state = bay(first_yield)
+    # Eq. 66 from the mid-bay stresses at first yield; B_x = B_phi / (nu r).
+    ratio = state.midbay.axial_membrane_mpa / state.midbay.hoop_membrane_mpa
+    b_phi = (state.midbay.hoop_outer_mpa - state.midbay.hoop_membrane_mpa) / (
+        6.0 * state.midbay.hoop_membrane_mpa
+    )
+    b_x = b_phi / (v * ratio)
+    theta_1 = b_phi**2 - b_x * b_phi * ratio + b_x**2 * ratio**2
+    theta_2 = b_phi - 0.5 * (b_phi + b_x) * ratio + b_x * ratio**2
+    theta_4 = 1.0 - ratio + ratio**2
+    phi_1, phi_2 = theta_1 / theta_4, theta_2 / theta_4
+    phi_3 = math.sqrt(
+        (1.0 + 36.0 * phi_1 + 12.0 * phi_2)
+        / (1.0 + 8.0 * phi_1 + 4.0 * math.sqrt(4.0 * phi_1**2 + phi_2**2))
+    )
+    return RingAxisymmetricCollapseResult(
+        source_reference=RING_SHELL_COLLAPSE_SOURCE,
+        status="advisory",
+        beam_column_limit_pressure_mpa=limit_mpa,
+        first_yield_pressure_mpa=first_yield,
+        pressure_parameter_gamma_at_first_yield=state.pressure_parameter_gamma,
+        outer_midbay_bending_compressive=(
+            state.midbay.axial_outer_mpa < state.midbay.axial_membrane_mpa
+        ),
+        plastic_reserve_factor_phi3=phi_3,
+        collapse_pressure_mpa=phi_3 * first_yield,
+    )
+
+
 def ring_stiffened_shell_external_pressure(
     *,
     external_pressure_mpa: float,
@@ -3242,6 +3581,29 @@ def ring_stiffened_shell_external_pressure(
             ring_yield_pressure = yield_mpa / axisymmetric.ring_hoop_stress_per_unit_pressure
             ring_first_yield_pressure = (
                 yield_mpa / axisymmetric.ring_maximum_hoop_stress_per_unit_pressure
+            )
+    beam_column_bay: RingBeamColumnBayResult | None = None
+    collapse: RingAxisymmetricCollapseResult | None = None
+    beam_column_limit: float | None = None
+    if not validity_violations:
+        bay_geometry = dict(
+            shell_mid_surface_radius_mm=r_mm,
+            wall_thickness_mm=t_mm,
+            ring_spacing_mm=spacing_mm,
+            ring_faying_width_mm=width_mm,
+            ring_area_mm2=area_mm2,
+            ring_centroid_radius_mm=r_mm + (
+                1.0 if ring_location == "external" else -1.0
+            ) * (0.5 * t_mm + centroid_mm),
+            elastic_modulus_mpa=e_mpa,
+            poisson_ratio=v,
+        )
+        beam_column_limit = _ring_bay_limit_pressure(r_mm, t_mm, e_mpa, v)
+        if p_mpa < beam_column_limit:
+            beam_column_bay = ring_bay_beam_column_stress(pressure_mpa=p_mpa, **bay_geometry)
+        if yield_mpa is not None:
+            collapse = ring_bay_axisymmetric_collapse(
+                yield_strength_mpa=yield_mpa, **bay_geometry
             )
     # NASA defines its plasticity factors at the circumferential stress of an
     # unstiffened shell, p*r/t. Between rings, which carry part of the hoop
@@ -3391,6 +3753,17 @@ def ring_stiffened_shell_external_pressure(
         advisory_candidates.append(
             ("inter_ring_smooth_shell", inter_ring_pressure, inter_ring_status)
         )
+    # Axisymmetric collapse, a yield-driven mode, competes with the buckling
+    # modes as DAPS4's minimum over modes does.
+    if (
+        governing_not_established is None
+        and capacity_status == "advisory"
+        and collapse is not None
+        and collapse.collapse_pressure_mpa is not None
+    ):
+        advisory_candidates.append(
+            ("axisymmetric_collapse_lunchick", collapse.collapse_pressure_mpa, "advisory")
+        )
     if advisory_candidates:
         advisory_mode, advisory_pressure, advisory_status = min(
             advisory_candidates, key=lambda item: item[1]
@@ -3419,6 +3792,17 @@ def ring_stiffened_shell_external_pressure(
                 "The n=0 branch driven by axial end compression is outside the n >= 2 "
                 "search; NASA TN D-3647 shows it can govern when the axial wavelength "
                 "approaches the ring spacing."
+            ),
+        ),
+        RingModeDisposition(
+            mode="axisymmetric_collapse",
+            disposition="implemented_advisory",
+            source_reference=RING_SHELL_COLLAPSE_SOURCE,
+            basis=(
+                "Lunchick's plastic reserve on first yield at the outer surface at mid-bay, from "
+                "the Pulos-Salerno beam-column periodic bay; needs a yield strength and "
+                "gamma < 1 at first yield. Perfect shell, elastic-perfectly plastic material, "
+                "identical rings; imperfections and end bays are not included."
             ),
         ),
         RingModeDisposition(
@@ -3529,15 +3913,18 @@ def ring_stiffened_shell_external_pressure(
             else ()
         ),
         *(
-            (
-                RING_SHELL_BAY_ABOVE_PC5_NOTE.format(
-                    bay=inter_ring.correlated_critical_pressure_mpa, pc5=shell_yield_pressure
-                ),
-            )
-            if inter_ring.plasticity_factor is not None
-            and inter_ring.correlated_critical_pressure_mpa is not None
-            and shell_yield_pressure is not None
-            and inter_ring.correlated_critical_pressure_mpa > shell_yield_pressure
+            (RING_SHELL_COLLAPSE_NOTE,)
+            if collapse is not None and collapse.collapse_pressure_mpa is not None
+            else ()
+        ),
+        *(
+            (RING_SHELL_COLLAPSE_REVERSED_BENDING_NOTE,)
+            if collapse is not None and collapse.outer_midbay_bending_compressive is False
+            else ()
+        ),
+        *(
+            (RING_SHELL_BEAM_COLUMN_LIMIT_NOTE.format(limit=beam_column_limit),)
+            if beam_column_limit is not None and beam_column_bay is None
             else ()
         ),
         *((governing_not_established,) if governing_not_established is not None else ()),
@@ -3589,6 +3976,8 @@ def ring_stiffened_shell_external_pressure(
         shell_yield_between_rings_pressure_mpa=shell_yield_pressure,
         ring_yield_pressure_mpa=ring_yield_pressure,
         ring_first_yield_pressure_mpa=ring_first_yield_pressure,
+        beam_column_bay=beam_column_bay,
+        axisymmetric_collapse=collapse,
         advisory_candidate_modes=tuple(mode for mode, _, _ in advisory_candidates),
         advisory_governing_mode=advisory_mode,
         advisory_governing_status=advisory_status,

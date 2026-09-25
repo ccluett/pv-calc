@@ -465,14 +465,23 @@ def test_global_capacity_above_the_material_limit_is_published_as_an_elastic_bou
     assert result.elastic_applicability_limit_basis == "yield_strength"
     assert result.global_elastic_applicability == "exceeded"
     # The pressure is still compared; the model releases nothing either way.
-    # The inter-ring bay's elastic bound, also above yield, is lower.
+    # The inter-ring bay's elastic bound, also above yield, is lower, and the
+    # shell's axisymmetric collapse by yield is lower still.
     assert result.advisory_candidate_modes == (
         "global_eq64_with_eq91_ring_torsion",
         "inter_ring_smooth_shell",
+        "axisymmetric_collapse_lunchick",
     )
-    assert result.advisory_governing_mode == "inter_ring_smooth_shell"
-    assert result.advisory_governing_pressure_mpa == pytest.approx(15.143474789029423)
-    assert result.advisory_governing_status == "advisory_pending_plasticity"
+    bay = result.inter_ring_shell_buckling
+    elastic_bay = next(item for item in bay.candidates if item.regime == bay.regime)
+    assert elastic_bay.correlated_critical_pressure_mpa == pytest.approx(15.143474789029423)
+    assert result.axisymmetric_collapse is not None
+    assert result.advisory_governing_mode == "axisymmetric_collapse_lunchick"
+    assert result.advisory_governing_pressure_mpa == (
+        result.axisymmetric_collapse.collapse_pressure_mpa
+    )
+    assert result.advisory_governing_pressure_mpa < elastic_bay.correlated_critical_pressure_mpa
+    assert result.advisory_governing_status == "advisory"
     assert any("because NASA provides no plasticity correction" in note for note in result.notes)
 
 
@@ -507,11 +516,12 @@ def test_no_material_limit_leaves_the_global_screen_undetermined():
     assert result.advisory_governing_status == "advisory_plasticity_undetermined"
 
 
-def test_pending_plasticity_inter_ring_bound_governs_the_advisory_minimum():
+def test_pending_plasticity_inter_ring_bound_enters_the_advisory_minimum():
     # A released_pending_plasticity inter-ring result is an elastic upper bound,
     # so it is a valid minimand: dropping it could only raise the reported
     # pressure. Without the proportional limit the bay's elastic pressure is
-    # screened against yield instead, so both runs report the same bound.
+    # screened against yield instead, so both runs carry the same bound. Here
+    # the shell collapses by yield first, well below both bounds.
     screened = _over_limit_case(
         elastic_modulus_mpa=200_000.0,
         poisson_ratio=0.3,
@@ -524,19 +534,21 @@ def test_pending_plasticity_inter_ring_bound_governs_the_advisory_minimum():
 
     assert screened.inter_ring_shell_buckling.capacity_status == "released_pending_plasticity"
     assert screened.inter_ring_shell_buckling.margin is None
-    assert screened.advisory_candidate_modes == (
-        "global_eq64_with_eq91_ring_torsion",
-        "inter_ring_smooth_shell",
+    assert screened.inter_ring_shell_buckling.correlated_critical_pressure_mpa == pytest.approx(
+        42.567981637437406
     )
-    assert screened.advisory_governing_mode == "inter_ring_smooth_shell"
-    assert screened.advisory_governing_pressure_mpa == pytest.approx(42.567981637437406)
-    assert screened.advisory_margin == pytest.approx(3.2567981637437406)
-    assert screened.advisory_governing_status == "advisory_pending_plasticity"
+    for result in (screened, unscreened):
+        assert result.advisory_candidate_modes == (
+            "global_eq64_with_eq91_ring_torsion",
+            "inter_ring_smooth_shell",
+            "axisymmetric_collapse_lunchick",
+        )
+        assert result.advisory_governing_mode == "axisymmetric_collapse_lunchick"
+        assert result.advisory_governing_status == "advisory"
+    assert screened.advisory_governing_pressure_mpa == pytest.approx(14.417504542280323)
+    assert unscreened.advisory_governing_pressure_mpa == screened.advisory_governing_pressure_mpa
 
     assert unscreened.inter_ring_shell_buckling.capacity_status == "withheld_applicability"
-    assert unscreened.advisory_governing_mode == "inter_ring_smooth_shell"
-    assert unscreened.advisory_governing_pressure_mpa == screened.advisory_governing_pressure_mpa
-    assert unscreened.advisory_governing_status == "advisory_pending_plasticity"
 
 
 def test_withheld_record_reports_the_exceedance_as_a_violation_not_a_pending_note():
@@ -655,7 +667,7 @@ def test_text_report_says_the_lowest_pressure_is_not_established():
     )
     text = render_text(response)
     assert (
-        "Lowest buckling pressure: not established (inter-ring bay "
+        "Lowest buckling or collapse pressure: not established (inter-ring bay "
         "withheld_correlation_overlap)"
     ) in text
     assert "Shell mean hoop yield at mid-bay (Pc5):" in text
@@ -851,18 +863,25 @@ def test_without_limit_or_curve_the_bay_label_reads_the_bay_stress():
     assert result.advisory_governing_status == "advisory_plasticity_undetermined"
 
 
-def test_a_corrected_bay_pressure_above_pc5_is_noted():
+def test_collapse_bounds_a_corrected_bay_pressure_above_pc5():
     # Heavy internal rings on a stocky titanium bay: the curve-corrected bay
-    # pressure is above the pressure at which its mid-bay hoop stress reaches
-    # yield, so interframe collapse can govern and a note says so. Without a
-    # curve the bay pressure is an elastic value and carries no such note.
-    heavy_rings = dict(ring_spacing_mm=30.0, unsupported_length_mm=300.0, ring_radial_height_mm=40.0)
-    result = _titanium_rings(**heavy_rings, **TITANIUM_CURVE)
+    # buckling pressure is above Pc5, so the shell would yield before it
+    # buckled. Axisymmetric collapse by yield governs instead, below both.
+    result = _titanium_rings(
+        ring_spacing_mm=30.0,
+        unsupported_length_mm=300.0,
+        ring_radial_height_mm=40.0,
+        **TITANIUM_CURVE,
+    )
     bay_pressure = result.inter_ring_shell_buckling.correlated_critical_pressure_mpa
     pc5 = result.shell_yield_between_rings_pressure_mpa
+    collapse = result.axisymmetric_collapse
 
-    assert bay_pressure is not None and pc5 is not None
+    assert bay_pressure is not None and pc5 is not None and collapse is not None
     assert bay_pressure == pytest.approx(83.19, abs=0.01)
     assert pc5 == pytest.approx(74.90, abs=0.01)
-    assert any("is above Pc5" in note for note in result.notes)
-    assert not any("is above Pc5" in note for note in _titanium_rings(**heavy_rings).notes)
+    assert collapse.status == "advisory"
+    assert collapse.outer_midbay_bending_compressive is True
+    assert collapse.collapse_pressure_mpa == pytest.approx(66.34, abs=0.01)
+    assert result.advisory_governing_mode == "axisymmetric_collapse_lunchick"
+    assert result.advisory_governing_pressure_mpa == collapse.collapse_pressure_mpa

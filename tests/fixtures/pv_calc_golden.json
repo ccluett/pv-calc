@@ -3356,7 +3356,8 @@
     "result": {
       "advisory_candidate_modes": [
         "global_eq64_with_eq91_ring_torsion",
-        "inter_ring_smooth_shell"
+        "inter_ring_smooth_shell",
+        "axisymmetric_collapse_lunchick"
       ],
       "advisory_governing_mode": "global_eq64_with_eq91_ring_torsion",
       "advisory_governing_pressure_mpa": {
@@ -3365,6 +3366,25 @@
       },
       "advisory_governing_status": "advisory_plasticity_undetermined",
       "advisory_margin": -0.146855390554,
+      "axisymmetric_collapse": {
+        "beam_column_limit_pressure_mpa": {
+          "unit": "MPa",
+          "value": 18.2990827814
+        },
+        "collapse_pressure_mpa": {
+          "unit": "MPa",
+          "value": 5.75353014595
+        },
+        "first_yield_pressure_mpa": {
+          "unit": "MPa",
+          "value": 5.25735033503
+        },
+        "outer_midbay_bending_compressive": true,
+        "plastic_reserve_factor_phi3": 1.09437830453,
+        "pressure_parameter_gamma_at_first_yield": 0.287301303449,
+        "source_reference": "Lunchick's plastic reserve factor on first yield for axisymmetric collapse, as documented for DAPS4 by Renzi, IHTR 2944 (2008), Eqs. 65-66",
+        "status": "advisory"
+      },
       "axisymmetric_stress": {
         "clear_bay_mm": {
           "unit": "mm",
@@ -3387,6 +3407,124 @@
           "value": 103.9876
         },
         "source_reference": "von Sanden and Guenther periodic-bay solution (DTMB Report 1497, Pulos and Salerno, 1961) without the beam-column term, in the Wilson and PD 5500 Pc5 form printed by Morandi (1994, University of Glasgow PhD thesis), Eqs. 48-53; effective ring area from DTMB Report 1639 (Pulos, 1963), Eq. (9); ring stress from DTMB 1497 Eq. [58] and DTMB 1639 Eq. (175), at the ring centroid radius"
+      },
+      "beam_column_bay": {
+        "bay_parameter_theta": 3.62760607855,
+        "clear_bay_mm": {
+          "unit": "mm",
+          "value": 27.0764
+        },
+        "effective_ring_area_mm2": {
+          "unit": "mm^2",
+          "value": 8.92455703574
+        },
+        "f_functions": [
+          0.551921834914,
+          0.1722771872,
+          -1.09334942842,
+          0.474439039136,
+          0.51336022081,
+          0.261009087357
+        ],
+        "frame": {
+          "axial_inner_mpa": {
+            "unit": "MPa",
+            "value": -427.994931812
+          },
+          "axial_membrane_mpa": {
+            "unit": "MPa",
+            "value": -191.553597892
+          },
+          "axial_outer_mpa": {
+            "unit": "MPa",
+            "value": 44.8877360273
+          },
+          "hoop_inner_mpa": {
+            "unit": "MPa",
+            "value": -331.667885744
+          },
+          "hoop_membrane_mpa": {
+            "unit": "MPa",
+            "value": -260.735485568
+          },
+          "hoop_outer_mpa": {
+            "unit": "MPa",
+            "value": -189.803085392
+          },
+          "radial_deflection_mm": {
+            "unit": "mm",
+            "value": -0.101754340572
+          },
+          "von_mises_inner_mpa": {
+            "unit": "MPa",
+            "value": 388.884396636
+          },
+          "von_mises_membrane_mpa": {
+            "unit": "MPa",
+            "value": 233.946476659
+          },
+          "von_mises_outer_mpa": {
+            "unit": "MPa",
+            "value": 215.777549491
+          }
+        },
+        "frame_parameter_beta": 8.5186718781,
+        "load_radius_convention": "hoop_at_mid_surface_axial_from_outer_surface",
+        "load_radius_ratio_alpha": 1.00429289832,
+        "midbay": {
+          "axial_inner_mpa": {
+            "unit": "MPa",
+            "value": -88.9541942972
+          },
+          "axial_membrane_mpa": {
+            "unit": "MPa",
+            "value": -191.553597892
+          },
+          "axial_outer_mpa": {
+            "unit": "MPa",
+            "value": -294.153001487
+          },
+          "hoop_inner_mpa": {
+            "unit": "MPa",
+            "value": -328.540340224
+          },
+          "hoop_membrane_mpa": {
+            "unit": "MPa",
+            "value": -359.320161303
+          },
+          "hoop_outer_mpa": {
+            "unit": "MPa",
+            "value": -390.099982381
+          },
+          "radial_deflection_mm": {
+            "unit": "mm",
+            "value": -0.151104702033
+          },
+          "von_mises_inner_mpa": {
+            "unit": "MPa",
+            "value": 294.32390759
+          },
+          "von_mises_membrane_mpa": {
+            "unit": "MPa",
+            "value": 311.407593824
+          },
+          "von_mises_outer_mpa": {
+            "unit": "MPa",
+            "value": 352.072299166
+          }
+        },
+        "pressure_mpa": {
+          "unit": "MPa",
+          "value": 3.26122019967
+        },
+        "pressure_parameter_gamma": 0.178217686571,
+        "ring_hoop_stress_mpa": {
+          "unit": "MPa",
+          "value": -203.2694062
+        },
+        "source_reference": "Pulos and Salerno periodic-bay solution with the beam-column term (DTMB Report 1497), as documented for DAPS4 by Renzi, NSWC Indian Head IHTR 2944 (2008), Eqs. 7 and 43-64",
+        "stress_sign_convention": "tension_positive",
+        "von_mises_convention": "plane_stress_radial_omitted"
       },
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
       "boundary_assumptions": [
@@ -3937,6 +4075,12 @@
           "source_reference": "NASA TN D-3647, pp. 6-7; NASA/SP-8007-2020/REV 2 Eqs. 64-65"
         },
         {
+          "basis": "Lunchick's plastic reserve on first yield at the outer surface at mid-bay, from the Pulos-Salerno beam-column periodic bay; needs a yield strength and gamma < 1 at first yield. Perfect shell, elastic-perfectly plastic material, identical rings; imperfections and end bays are not included.",
+          "disposition": "implemented_advisory",
+          "mode": "axisymmetric_collapse",
+          "source_reference": "Lunchick's plastic reserve factor on first yield for axisymmetric collapse, as documented for DAPS4 by Renzi, IHTR 2944 (2008), Eqs. 65-66"
+        },
+        {
           "basis": "The equation uses ideal simple supports with freely warping ends. Actual closure stiffness, contact, and shell continuing beyond a support are not inputs to this calculation; no additional restraint is credited.",
           "disposition": "external_blocker",
           "mode": "physical_end_restraint",
@@ -4002,9 +4146,10 @@
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
         "Each buckling pressure is labelled by comparing its shell circumferential membrane stress with the proportional limit: on a valid record, the periodic bay's mid-bay hoop stress for the inter-ring bay, and nominal p*r/t for the global mode. With only a yield strength, a pressure is an elastic upper bound when that stress exceeds yield and undetermined otherwise.",
-        "Global buckling is elastic: lobar modes (n >= 2, axial half-waves longer than one ring spacing, and always m = 1) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
+        "Global buckling is elastic: lobar modes (n >= 2, axial half-waves longer than one ring spacing, and always m = 1) with ideal simple supports. Interframe collapse of an imperfect shell, ring tripping, ring spacing, axisymmetric elastic buckling (n=0), and the long-cylinder Eq. 66 transition are not checked; axisymmetric collapse is a perfect-shell estimate.",
         "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves longer than one ring spacing, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. NASA notes that its orthotropic equations lose accuracy against Love or Sanders theory for n <= 4 (printed p. 35) and that a more accurate discrete-ring theory gives somewhat lower pressures (p. 38), so widely spaced or deep eccentric rings still need a discrete-ring or code-rule check.",
-        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does (hoop stress only, perfect shell). They are not collapse pressures. As in the PD 5500 form, and as DAPS4 takes the hoop load, the pressure acts at the shell mid-surface radius; on the outer surface, exact equilibrium would raise the unstiffened mean hoop stress by R_o/R = 1 + t/(2R) and the bay's slightly less."
+        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does (hoop stress only, perfect shell). They are not collapse pressures. As in the PD 5500 form, and as DAPS4 takes the hoop load, the pressure acts at the shell mid-surface radius; on the outer surface, exact equilibrium would raise the unstiffened mean hoop stress by R_o/R = 1 + t/(2R) and the bay's slightly less.",
+        "Axisymmetric collapse is Lunchick's plastic reserve on the pressure at which the outer surface at mid-bay first yields (von Mises), from the beam-column periodic bay: a perfect shell of elastic-perfectly plastic material between identical rings, without end bays. It enters the lowest pressure. DAPS4's comparison with machined aluminium models (Boichot and Reynolds) covers theta from 1.0 to 2.5."
       ],
       "poisson_ratio": 0.3,
       "proportional_limit_mpa": {
@@ -4136,7 +4281,8 @@
     "result": {
       "advisory_candidate_modes": [
         "global_eq64_with_eq91_ring_torsion",
-        "inter_ring_smooth_shell"
+        "inter_ring_smooth_shell",
+        "axisymmetric_collapse_lunchick"
       ],
       "advisory_governing_mode": "global_eq64_with_eq91_ring_torsion",
       "advisory_governing_pressure_mpa": {
@@ -4145,6 +4291,25 @@
       },
       "advisory_governing_status": "advisory_plasticity_undetermined",
       "advisory_margin": -0.199825906905,
+      "axisymmetric_collapse": {
+        "beam_column_limit_pressure_mpa": {
+          "unit": "MPa",
+          "value": 18.2990827814
+        },
+        "collapse_pressure_mpa": {
+          "unit": "MPa",
+          "value": 5.75353014595
+        },
+        "first_yield_pressure_mpa": {
+          "unit": "MPa",
+          "value": 5.25735033503
+        },
+        "outer_midbay_bending_compressive": true,
+        "plastic_reserve_factor_phi3": 1.09437830453,
+        "pressure_parameter_gamma_at_first_yield": 0.287301303449,
+        "source_reference": "Lunchick's plastic reserve factor on first yield for axisymmetric collapse, as documented for DAPS4 by Renzi, IHTR 2944 (2008), Eqs. 65-66",
+        "status": "advisory"
+      },
       "axisymmetric_stress": {
         "clear_bay_mm": {
           "unit": "mm",
@@ -4167,6 +4332,124 @@
           "value": 103.9876
         },
         "source_reference": "von Sanden and Guenther periodic-bay solution (DTMB Report 1497, Pulos and Salerno, 1961) without the beam-column term, in the Wilson and PD 5500 Pc5 form printed by Morandi (1994, University of Glasgow PhD thesis), Eqs. 48-53; effective ring area from DTMB Report 1639 (Pulos, 1963), Eq. (9); ring stress from DTMB 1497 Eq. [58] and DTMB 1639 Eq. (175), at the ring centroid radius"
+      },
+      "beam_column_bay": {
+        "bay_parameter_theta": 3.62760607855,
+        "clear_bay_mm": {
+          "unit": "mm",
+          "value": 27.0764
+        },
+        "effective_ring_area_mm2": {
+          "unit": "mm^2",
+          "value": 8.92455703574
+        },
+        "f_functions": [
+          0.556755382504,
+          0.182116788922,
+          -1.08848839532,
+          0.46687633432,
+          0.502222364252,
+          0.259654224718
+        ],
+        "frame": {
+          "axial_inner_mpa": {
+            "unit": "MPa",
+            "value": -379.90276867
+          },
+          "axial_membrane_mpa": {
+            "unit": "MPa",
+            "value": -170.899827295
+          },
+          "axial_outer_mpa": {
+            "unit": "MPa",
+            "value": 38.1031140802
+          },
+          "hoop_inner_mpa": {
+            "unit": "MPa",
+            "value": -295.8326861
+          },
+          "hoop_membrane_mpa": {
+            "unit": "MPa",
+            "value": -233.131803687
+          },
+          "hoop_outer_mpa": {
+            "unit": "MPa",
+            "value": -170.430921275
+          },
+          "radial_deflection_mm": {
+            "unit": "mm",
+            "value": -0.0910379654637
+          },
+          "von_mises_inner_mpa": {
+            "unit": "MPa",
+            "value": 345.623256301
+          },
+          "von_mises_membrane_mpa": {
+            "unit": "MPa",
+            "value": 209.081333152
+          },
+          "von_mises_outer_mpa": {
+            "unit": "MPa",
+            "value": 192.334331478
+          }
+        },
+        "frame_parameter_beta": 8.5186718781,
+        "load_radius_convention": "hoop_at_mid_surface_axial_from_outer_surface",
+        "load_radius_ratio_alpha": 1.00429289832,
+        "midbay": {
+          "axial_inner_mpa": {
+            "unit": "MPa",
+            "value": -81.2539224318
+          },
+          "axial_membrane_mpa": {
+            "unit": "MPa",
+            "value": -170.899827295
+          },
+          "axial_outer_mpa": {
+            "unit": "MPa",
+            "value": -260.545732158
+          },
+          "hoop_inner_mpa": {
+            "unit": "MPa",
+            "value": -292.730832323
+          },
+          "hoop_membrane_mpa": {
+            "unit": "MPa",
+            "value": -319.624603782
+          },
+          "hoop_outer_mpa": {
+            "unit": "MPa",
+            "value": -346.518375241
+          },
+          "radial_deflection_mm": {
+            "unit": "mm",
+            "value": -0.134335272237
+          },
+          "von_mises_inner_mpa": {
+            "unit": "MPa",
+            "value": 261.7403518
+          },
+          "von_mises_membrane_mpa": {
+            "unit": "MPa",
+            "value": 277.024996574
+          },
+          "von_mises_outer_mpa": {
+            "unit": "MPa",
+            "value": 312.53028516
+          }
+        },
+        "pressure_mpa": {
+          "unit": "MPa",
+          "value": 2.90958757772
+        },
+        "pressure_parameter_gamma": 0.159001826074,
+        "ring_hoop_stress_mpa": {
+          "unit": "MPa",
+          "value": -181.861855499
+        },
+        "source_reference": "Pulos and Salerno periodic-bay solution with the beam-column term (DTMB Report 1497), as documented for DAPS4 by Renzi, NSWC Indian Head IHTR 2944 (2008), Eqs. 7 and 43-64",
+        "stress_sign_convention": "tension_positive",
+        "von_mises_convention": "plane_stress_radial_omitted"
       },
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
       "boundary_assumptions": [
@@ -4717,6 +5000,12 @@
           "source_reference": "NASA TN D-3647, pp. 6-7; NASA/SP-8007-2020/REV 2 Eqs. 64-65"
         },
         {
+          "basis": "Lunchick's plastic reserve on first yield at the outer surface at mid-bay, from the Pulos-Salerno beam-column periodic bay; needs a yield strength and gamma < 1 at first yield. Perfect shell, elastic-perfectly plastic material, identical rings; imperfections and end bays are not included.",
+          "disposition": "implemented_advisory",
+          "mode": "axisymmetric_collapse",
+          "source_reference": "Lunchick's plastic reserve factor on first yield for axisymmetric collapse, as documented for DAPS4 by Renzi, IHTR 2944 (2008), Eqs. 65-66"
+        },
+        {
           "basis": "The equation uses ideal simple supports with freely warping ends. Actual closure stiffness, contact, and shell continuing beyond a support are not inputs to this calculation; no additional restraint is credited.",
           "disposition": "external_blocker",
           "mode": "physical_end_restraint",
@@ -4782,9 +5071,10 @@
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
         "Each buckling pressure is labelled by comparing its shell circumferential membrane stress with the proportional limit: on a valid record, the periodic bay's mid-bay hoop stress for the inter-ring bay, and nominal p*r/t for the global mode. With only a yield strength, a pressure is an elastic upper bound when that stress exceeds yield and undetermined otherwise.",
-        "Global buckling is elastic: lobar modes (n >= 2, axial half-waves longer than one ring spacing, and always m = 1) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
+        "Global buckling is elastic: lobar modes (n >= 2, axial half-waves longer than one ring spacing, and always m = 1) with ideal simple supports. Interframe collapse of an imperfect shell, ring tripping, ring spacing, axisymmetric elastic buckling (n=0), and the long-cylinder Eq. 66 transition are not checked; axisymmetric collapse is a perfect-shell estimate.",
         "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves longer than one ring spacing, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. NASA notes that its orthotropic equations lose accuracy against Love or Sanders theory for n <= 4 (printed p. 35) and that a more accurate discrete-ring theory gives somewhat lower pressures (p. 38), so widely spaced or deep eccentric rings still need a discrete-ring or code-rule check.",
-        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does (hoop stress only, perfect shell). They are not collapse pressures. As in the PD 5500 form, and as DAPS4 takes the hoop load, the pressure acts at the shell mid-surface radius; on the outer surface, exact equilibrium would raise the unstiffened mean hoop stress by R_o/R = 1 + t/(2R) and the bay's slightly less."
+        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does (hoop stress only, perfect shell). They are not collapse pressures. As in the PD 5500 form, and as DAPS4 takes the hoop load, the pressure acts at the shell mid-surface radius; on the outer surface, exact equilibrium would raise the unstiffened mean hoop stress by R_o/R = 1 + t/(2R) and the bay's slightly less.",
+        "Axisymmetric collapse is Lunchick's plastic reserve on the pressure at which the outer surface at mid-bay first yields (von Mises), from the beam-column periodic bay: a perfect shell of elastic-perfectly plastic material between identical rings, without end bays. It enters the lowest pressure. DAPS4's comparison with machined aluminium models (Boichot and Reynolds) covers theta from 1.0 to 2.5."
       ],
       "poisson_ratio": 0.3,
       "proportional_limit_mpa": {
@@ -4916,7 +5206,8 @@
     "result": {
       "advisory_candidate_modes": [
         "global_eq64_with_eq91_ring_torsion",
-        "inter_ring_smooth_shell"
+        "inter_ring_smooth_shell",
+        "axisymmetric_collapse_lunchick"
       ],
       "advisory_governing_mode": "global_eq64_with_eq91_ring_torsion",
       "advisory_governing_pressure_mpa": {
@@ -4925,6 +5216,25 @@
       },
       "advisory_governing_status": "advisory_plasticity_undetermined",
       "advisory_margin": -0.309598607681,
+      "axisymmetric_collapse": {
+        "beam_column_limit_pressure_mpa": {
+          "unit": "MPa",
+          "value": 18.2990827814
+        },
+        "collapse_pressure_mpa": {
+          "unit": "MPa",
+          "value": 5.75353014595
+        },
+        "first_yield_pressure_mpa": {
+          "unit": "MPa",
+          "value": 5.25735033503
+        },
+        "outer_midbay_bending_compressive": true,
+        "plastic_reserve_factor_phi3": 1.09437830453,
+        "pressure_parameter_gamma_at_first_yield": 0.287301303449,
+        "source_reference": "Lunchick's plastic reserve factor on first yield for axisymmetric collapse, as documented for DAPS4 by Renzi, IHTR 2944 (2008), Eqs. 65-66",
+        "status": "advisory"
+      },
       "axisymmetric_stress": {
         "clear_bay_mm": {
           "unit": "mm",
@@ -4947,6 +5257,124 @@
           "value": 103.9876
         },
         "source_reference": "von Sanden and Guenther periodic-bay solution (DTMB Report 1497, Pulos and Salerno, 1961) without the beam-column term, in the Wilson and PD 5500 Pc5 form printed by Morandi (1994, University of Glasgow PhD thesis), Eqs. 48-53; effective ring area from DTMB Report 1639 (Pulos, 1963), Eq. (9); ring stress from DTMB 1497 Eq. [58] and DTMB 1639 Eq. (175), at the ring centroid radius"
+      },
+      "beam_column_bay": {
+        "bay_parameter_theta": 3.62760607855,
+        "clear_bay_mm": {
+          "unit": "mm",
+          "value": 27.0764
+        },
+        "effective_ring_area_mm2": {
+          "unit": "mm^2",
+          "value": 8.92455703574
+        },
+        "f_functions": [
+          0.557689767513,
+          0.184017518982,
+          -1.08754413537,
+          0.465418836834,
+          0.50004631255,
+          0.259411002672
+        ],
+        "frame": {
+          "axial_inner_mpa": {
+            "unit": "MPa",
+            "value": -370.534547151
+          },
+          "axial_membrane_mpa": {
+            "unit": "MPa",
+            "value": -166.850068354
+          },
+          "axial_outer_mpa": {
+            "unit": "MPa",
+            "value": 36.8344104426
+          },
+          "hoop_inner_mpa": {
+            "unit": "MPa",
+            "value": -288.808296109
+          },
+          "hoop_membrane_mpa": {
+            "unit": "MPa",
+            "value": -227.70295247
+          },
+          "hoop_outer_mpa": {
+            "unit": "MPa",
+            "value": -166.597608831
+          },
+          "radial_deflection_mm": {
+            "unit": "mm",
+            "value": -0.0889285235237
+          },
+          "von_mises_inner_mpa": {
+            "unit": "MPa",
+            "value": 337.183379367
+          },
+          "von_mises_membrane_mpa": {
+            "unit": "MPa",
+            "value": 204.194335595
+          },
+          "von_mises_outer_mpa": {
+            "unit": "MPa",
+            "value": 187.74467173
+          }
+        },
+        "frame_parameter_beta": 8.5186718781,
+        "load_radius_convention": "hoop_at_mid_surface_axial_from_outer_surface",
+        "load_radius_ratio_alpha": 1.00429289832,
+        "midbay": {
+          "axial_inner_mpa": {
+            "unit": "MPa",
+            "value": -79.682485799
+          },
+          "axial_membrane_mpa": {
+            "unit": "MPa",
+            "value": -166.850068354
+          },
+          "axial_outer_mpa": {
+            "unit": "MPa",
+            "value": -254.01765091
+          },
+          "hoop_inner_mpa": {
+            "unit": "MPa",
+            "value": -285.721635319
+          },
+          "hoop_membrane_mpa": {
+            "unit": "MPa",
+            "value": -311.871910086
+          },
+          "hoop_outer_mpa": {
+            "unit": "MPa",
+            "value": -338.022184852
+          },
+          "radial_deflection_mm": {
+            "unit": "mm",
+            "value": -0.131062541323
+          },
+          "von_mises_inner_mpa": {
+            "unit": "MPa",
+            "value": 255.380385472
+          },
+          "von_mises_membrane_mpa": {
+            "unit": "MPa",
+            "value": 270.309422875
+          },
+          "von_mises_outer_mpa": {
+            "unit": "MPa",
+            "value": 304.828415792
+          }
+        },
+        "pressure_mpa": {
+          "unit": "MPa",
+          "value": 2.84064000479
+        },
+        "pressure_parameter_gamma": 0.15523401029,
+        "ring_hoop_stress_mpa": {
+          "unit": "MPa",
+          "value": -177.647931963
+        },
+        "source_reference": "Pulos and Salerno periodic-bay solution with the beam-column term (DTMB Report 1497), as documented for DAPS4 by Renzi, NSWC Indian Head IHTR 2944 (2008), Eqs. 7 and 43-64",
+        "stress_sign_convention": "tension_positive",
+        "von_mises_convention": "plane_stress_radial_omitted"
       },
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
       "boundary_assumptions": [
@@ -5497,6 +5925,12 @@
           "source_reference": "NASA TN D-3647, pp. 6-7; NASA/SP-8007-2020/REV 2 Eqs. 64-65"
         },
         {
+          "basis": "Lunchick's plastic reserve on first yield at the outer surface at mid-bay, from the Pulos-Salerno beam-column periodic bay; needs a yield strength and gamma < 1 at first yield. Perfect shell, elastic-perfectly plastic material, identical rings; imperfections and end bays are not included.",
+          "disposition": "implemented_advisory",
+          "mode": "axisymmetric_collapse",
+          "source_reference": "Lunchick's plastic reserve factor on first yield for axisymmetric collapse, as documented for DAPS4 by Renzi, IHTR 2944 (2008), Eqs. 65-66"
+        },
+        {
           "basis": "The equation uses ideal simple supports with freely warping ends. Actual closure stiffness, contact, and shell continuing beyond a support are not inputs to this calculation; no additional restraint is credited.",
           "disposition": "external_blocker",
           "mode": "physical_end_restraint",
@@ -5562,9 +5996,10 @@
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
         "Each buckling pressure is labelled by comparing its shell circumferential membrane stress with the proportional limit: on a valid record, the periodic bay's mid-bay hoop stress for the inter-ring bay, and nominal p*r/t for the global mode. With only a yield strength, a pressure is an elastic upper bound when that stress exceeds yield and undetermined otherwise.",
-        "Global buckling is elastic: lobar modes (n >= 2, axial half-waves longer than one ring spacing, and always m = 1) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
+        "Global buckling is elastic: lobar modes (n >= 2, axial half-waves longer than one ring spacing, and always m = 1) with ideal simple supports. Interframe collapse of an imperfect shell, ring tripping, ring spacing, axisymmetric elastic buckling (n=0), and the long-cylinder Eq. 66 transition are not checked; axisymmetric collapse is a perfect-shell estimate.",
         "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves longer than one ring spacing, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. NASA notes that its orthotropic equations lose accuracy against Love or Sanders theory for n <= 4 (printed p. 35) and that a more accurate discrete-ring theory gives somewhat lower pressures (p. 38), so widely spaced or deep eccentric rings still need a discrete-ring or code-rule check.",
-        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does (hoop stress only, perfect shell). They are not collapse pressures. As in the PD 5500 form, and as DAPS4 takes the hoop load, the pressure acts at the shell mid-surface radius; on the outer surface, exact equilibrium would raise the unstiffened mean hoop stress by R_o/R = 1 + t/(2R) and the bay's slightly less."
+        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does (hoop stress only, perfect shell). They are not collapse pressures. As in the PD 5500 form, and as DAPS4 takes the hoop load, the pressure acts at the shell mid-surface radius; on the outer surface, exact equilibrium would raise the unstiffened mean hoop stress by R_o/R = 1 + t/(2R) and the bay's slightly less.",
+        "Axisymmetric collapse is Lunchick's plastic reserve on the pressure at which the outer surface at mid-bay first yields (von Mises), from the beam-column periodic bay: a perfect shell of elastic-perfectly plastic material between identical rings, without end bays. It enters the lowest pressure. DAPS4's comparison with machined aluminium models (Boichot and Reynolds) covers theta from 1.0 to 2.5."
       ],
       "poisson_ratio": 0.3,
       "proportional_limit_mpa": {
@@ -5696,7 +6131,8 @@
     "result": {
       "advisory_candidate_modes": [
         "global_eq64_with_eq91_ring_torsion",
-        "inter_ring_smooth_shell"
+        "inter_ring_smooth_shell",
+        "axisymmetric_collapse_lunchick"
       ],
       "advisory_governing_mode": "global_eq64_with_eq91_ring_torsion",
       "advisory_governing_pressure_mpa": {
@@ -5705,6 +6141,25 @@
       },
       "advisory_governing_status": "advisory_plasticity_undetermined",
       "advisory_margin": -0.377291001161,
+      "axisymmetric_collapse": {
+        "beam_column_limit_pressure_mpa": {
+          "unit": "MPa",
+          "value": 18.2990827814
+        },
+        "collapse_pressure_mpa": {
+          "unit": "MPa",
+          "value": 5.75353014595
+        },
+        "first_yield_pressure_mpa": {
+          "unit": "MPa",
+          "value": 5.25735033503
+        },
+        "outer_midbay_bending_compressive": true,
+        "plastic_reserve_factor_phi3": 1.09437830453,
+        "pressure_parameter_gamma_at_first_yield": 0.287301303449,
+        "source_reference": "Lunchick's plastic reserve factor on first yield for axisymmetric collapse, as documented for DAPS4 by Renzi, IHTR 2944 (2008), Eqs. 65-66",
+        "status": "advisory"
+      },
       "axisymmetric_stress": {
         "clear_bay_mm": {
           "unit": "mm",
@@ -5727,6 +6182,124 @@
           "value": 103.9876
         },
         "source_reference": "von Sanden and Guenther periodic-bay solution (DTMB Report 1497, Pulos and Salerno, 1961) without the beam-column term, in the Wilson and PD 5500 Pc5 form printed by Morandi (1994, University of Glasgow PhD thesis), Eqs. 48-53; effective ring area from DTMB Report 1639 (Pulos, 1963), Eq. (9); ring stress from DTMB 1497 Eq. [58] and DTMB 1639 Eq. (175), at the ring centroid radius"
+      },
+      "beam_column_bay": {
+        "bay_parameter_theta": 3.62760607855,
+        "clear_bay_mm": {
+          "unit": "mm",
+          "value": 27.0764
+        },
+        "effective_ring_area_mm2": {
+          "unit": "mm^2",
+          "value": 8.92455703574
+        },
+        "f_functions": [
+          0.558712615606,
+          0.186097681953,
+          -1.08650876771,
+          0.463825020393,
+          0.497655444341,
+          0.259151768212
+        ],
+        "frame": {
+          "axial_inner_mpa": {
+            "unit": "MPa",
+            "value": -360.252351881
+          },
+          "axial_membrane_mpa": {
+            "unit": "MPa",
+            "value": -162.39533352
+          },
+          "axial_outer_mpa": {
+            "unit": "MPa",
+            "value": 35.4616848422
+          },
+          "hoop_inner_mpa": {
+            "unit": "MPa",
+            "value": -281.082268784
+          },
+          "hoop_membrane_mpa": {
+            "unit": "MPa",
+            "value": -221.725163275
+          },
+          "hoop_outer_mpa": {
+            "unit": "MPa",
+            "value": -162.368057767
+          },
+          "radial_deflection_mm": {
+            "unit": "mm",
+            "value": -0.0866051073995
+          },
+          "von_mises_inner_mpa": {
+            "unit": "MPa",
+            "value": 327.915309888
+          },
+          "von_mises_membrane_mpa": {
+            "unit": "MPa",
+            "value": 198.814387152
+          },
+          "von_mises_outer_mpa": {
+            "unit": "MPa",
+            "value": 182.698555461
+          }
+        },
+        "frame_parameter_beta": 8.5186718781,
+        "load_radius_convention": "hoop_at_mid_surface_axial_from_outer_surface",
+        "load_radius_ratio_alpha": 1.00429289832,
+        "midbay": {
+          "axial_inner_mpa": {
+            "unit": "MPa",
+            "value": -77.9311871604
+          },
+          "axial_membrane_mpa": {
+            "unit": "MPa",
+            "value": -162.39533352
+          },
+          "axial_outer_mpa": {
+            "unit": "MPa",
+            "value": -246.859479879
+          },
+          "hoop_inner_mpa": {
+            "unit": "MPa",
+            "value": -278.016066454
+          },
+          "hoop_membrane_mpa": {
+            "unit": "MPa",
+            "value": -303.355310362
+          },
+          "hoop_outer_mpa": {
+            "unit": "MPa",
+            "value": -328.69455427
+          },
+          "radial_deflection_mm": {
+            "unit": "mm",
+            "value": -0.127468225676
+          },
+          "von_mises_inner_mpa": {
+            "unit": "MPa",
+            "value": 248.395010075
+          },
+          "von_mises_membrane_mpa": {
+            "unit": "MPa",
+            "value": 262.931933915
+          },
+          "von_mises_outer_mpa": {
+            "unit": "MPa",
+            "value": 296.375346658
+          }
+        },
+        "pressure_mpa": {
+          "unit": "MPa",
+          "value": 2.76479767456
+        },
+        "pressure_parameter_gamma": 0.151089412928,
+        "ring_hoop_stress_mpa": {
+          "unit": "MPa",
+          "value": -173.006563219
+        },
+        "source_reference": "Pulos and Salerno periodic-bay solution with the beam-column term (DTMB Report 1497), as documented for DAPS4 by Renzi, NSWC Indian Head IHTR 2944 (2008), Eqs. 7 and 43-64",
+        "stress_sign_convention": "tension_positive",
+        "von_mises_convention": "plane_stress_radial_omitted"
       },
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
       "boundary_assumptions": [
@@ -6277,6 +6850,12 @@
           "source_reference": "NASA TN D-3647, pp. 6-7; NASA/SP-8007-2020/REV 2 Eqs. 64-65"
         },
         {
+          "basis": "Lunchick's plastic reserve on first yield at the outer surface at mid-bay, from the Pulos-Salerno beam-column periodic bay; needs a yield strength and gamma < 1 at first yield. Perfect shell, elastic-perfectly plastic material, identical rings; imperfections and end bays are not included.",
+          "disposition": "implemented_advisory",
+          "mode": "axisymmetric_collapse",
+          "source_reference": "Lunchick's plastic reserve factor on first yield for axisymmetric collapse, as documented for DAPS4 by Renzi, IHTR 2944 (2008), Eqs. 65-66"
+        },
+        {
           "basis": "The equation uses ideal simple supports with freely warping ends. Actual closure stiffness, contact, and shell continuing beyond a support are not inputs to this calculation; no additional restraint is credited.",
           "disposition": "external_blocker",
           "mode": "physical_end_restraint",
@@ -6342,9 +6921,10 @@
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
         "Each buckling pressure is labelled by comparing its shell circumferential membrane stress with the proportional limit: on a valid record, the periodic bay's mid-bay hoop stress for the inter-ring bay, and nominal p*r/t for the global mode. With only a yield strength, a pressure is an elastic upper bound when that stress exceeds yield and undetermined otherwise.",
-        "Global buckling is elastic: lobar modes (n >= 2, axial half-waves longer than one ring spacing, and always m = 1) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
+        "Global buckling is elastic: lobar modes (n >= 2, axial half-waves longer than one ring spacing, and always m = 1) with ideal simple supports. Interframe collapse of an imperfect shell, ring tripping, ring spacing, axisymmetric elastic buckling (n=0), and the long-cylinder Eq. 66 transition are not checked; axisymmetric collapse is a perfect-shell estimate.",
         "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves longer than one ring spacing, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. NASA notes that its orthotropic equations lose accuracy against Love or Sanders theory for n <= 4 (printed p. 35) and that a more accurate discrete-ring theory gives somewhat lower pressures (p. 38), so widely spaced or deep eccentric rings still need a discrete-ring or code-rule check.",
-        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does (hoop stress only, perfect shell). They are not collapse pressures. As in the PD 5500 form, and as DAPS4 takes the hoop load, the pressure acts at the shell mid-surface radius; on the outer surface, exact equilibrium would raise the unstiffened mean hoop stress by R_o/R = 1 + t/(2R) and the bay's slightly less."
+        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does (hoop stress only, perfect shell). They are not collapse pressures. As in the PD 5500 form, and as DAPS4 takes the hoop load, the pressure acts at the shell mid-surface radius; on the outer surface, exact equilibrium would raise the unstiffened mean hoop stress by R_o/R = 1 + t/(2R) and the bay's slightly less.",
+        "Axisymmetric collapse is Lunchick's plastic reserve on the pressure at which the outer surface at mid-bay first yields (von Mises), from the beam-column periodic bay: a perfect shell of elastic-perfectly plastic material between identical rings, without end bays. It enters the lowest pressure. DAPS4's comparison with machined aluminium models (Boichot and Reynolds) covers theta from 1.0 to 2.5."
       ],
       "poisson_ratio": 0.3,
       "proportional_limit_mpa": {
@@ -6476,7 +7056,8 @@
     "result": {
       "advisory_candidate_modes": [
         "global_eq64_with_eq91_ring_torsion",
-        "inter_ring_smooth_shell"
+        "inter_ring_smooth_shell",
+        "axisymmetric_collapse_lunchick"
       ],
       "advisory_governing_mode": "global_eq64_with_eq91_ring_torsion",
       "advisory_governing_pressure_mpa": {
@@ -6485,6 +7066,25 @@
       },
       "advisory_governing_status": "advisory_plasticity_undetermined",
       "advisory_margin": -0.404601471105,
+      "axisymmetric_collapse": {
+        "beam_column_limit_pressure_mpa": {
+          "unit": "MPa",
+          "value": 18.2990827814
+        },
+        "collapse_pressure_mpa": {
+          "unit": "MPa",
+          "value": 5.75353014595
+        },
+        "first_yield_pressure_mpa": {
+          "unit": "MPa",
+          "value": 5.25735033503
+        },
+        "outer_midbay_bending_compressive": true,
+        "plastic_reserve_factor_phi3": 1.09437830453,
+        "pressure_parameter_gamma_at_first_yield": 0.287301303449,
+        "source_reference": "Lunchick's plastic reserve factor on first yield for axisymmetric collapse, as documented for DAPS4 by Renzi, IHTR 2944 (2008), Eqs. 65-66",
+        "status": "advisory"
+      },
       "axisymmetric_stress": {
         "clear_bay_mm": {
           "unit": "mm",
@@ -6507,6 +7107,124 @@
           "value": 103.9876
         },
         "source_reference": "von Sanden and Guenther periodic-bay solution (DTMB Report 1497, Pulos and Salerno, 1961) without the beam-column term, in the Wilson and PD 5500 Pc5 form printed by Morandi (1994, University of Glasgow PhD thesis), Eqs. 48-53; effective ring area from DTMB Report 1639 (Pulos, 1963), Eq. (9); ring stress from DTMB 1497 Eq. [58] and DTMB 1639 Eq. (175), at the ring centroid radius"
+      },
+      "beam_column_bay": {
+        "bay_parameter_theta": 3.62760607855,
+        "clear_bay_mm": {
+          "unit": "mm",
+          "value": 27.0764
+        },
+        "effective_ring_area_mm2": {
+          "unit": "mm^2",
+          "value": 8.92455703574
+        },
+        "f_functions": [
+          0.558990674758,
+          0.186663075971,
+          -1.0862269953,
+          0.463392047022,
+          0.497003885601,
+          0.259082567901
+        ],
+        "frame": {
+          "axial_inner_mpa": {
+            "unit": "MPa",
+            "value": -357.45224241
+          },
+          "axial_membrane_mpa": {
+            "unit": "MPa",
+            "value": -161.180405837
+          },
+          "axial_outer_mpa": {
+            "unit": "MPa",
+            "value": 35.0914307355
+          },
+          "hoop_inner_mpa": {
+            "unit": "MPa",
+            "value": -278.975316109
+          },
+          "hoop_membrane_mpa": {
+            "unit": "MPa",
+            "value": -220.093765137
+          },
+          "hoop_outer_mpa": {
+            "unit": "MPa",
+            "value": -161.212214165
+          },
+          "radial_deflection_mm": {
+            "unit": "mm",
+            "value": -0.0859709018168
+          },
+          "von_mises_inner_mpa": {
+            "unit": "MPa",
+            "value": 325.39050429
+          },
+          "von_mises_membrane_mpa": {
+            "unit": "MPa",
+            "value": 197.346361231
+          },
+          "von_mises_outer_mpa": {
+            "unit": "MPa",
+            "value": 181.322788844
+          }
+        },
+        "frame_parameter_beta": 8.5186718781,
+        "load_radius_convention": "hoop_at_mid_surface_axial_from_outer_surface",
+        "load_radius_ratio_alpha": 1.00429289832,
+        "midbay": {
+          "axial_inner_mpa": {
+            "unit": "MPa",
+            "value": -77.4494651445
+          },
+          "axial_membrane_mpa": {
+            "unit": "MPa",
+            "value": -161.180405837
+          },
+          "axial_outer_mpa": {
+            "unit": "MPa",
+            "value": -244.91134653
+          },
+          "hoop_inner_mpa": {
+            "unit": "MPa",
+            "value": -275.9153686
+          },
+          "hoop_membrane_mpa": {
+            "unit": "MPa",
+            "value": -301.034650808
+          },
+          "hoop_outer_mpa": {
+            "unit": "MPa",
+            "value": -326.153933016
+          },
+          "radial_deflection_mm": {
+            "unit": "mm",
+            "value": -0.12648898371
+          },
+          "von_mises_inner_mpa": {
+            "unit": "MPa",
+            "value": 246.491810326
+          },
+          "von_mises_membrane_mpa": {
+            "unit": "MPa",
+            "value": 260.921630043
+          },
+          "von_mises_outer_mpa": {
+            "unit": "MPa",
+            "value": 294.073386708
+          }
+        },
+        "pressure_mpa": {
+          "unit": "MPa",
+          "value": 2.74411340268
+        },
+        "pressure_parameter_gamma": 0.149959068193,
+        "ring_hoop_stress_mpa": {
+          "unit": "MPa",
+          "value": -171.739643386
+        },
+        "source_reference": "Pulos and Salerno periodic-bay solution with the beam-column term (DTMB Report 1497), as documented for DAPS4 by Renzi, NSWC Indian Head IHTR 2944 (2008), Eqs. 7 and 43-64",
+        "stress_sign_convention": "tension_positive",
+        "von_mises_convention": "plane_stress_radial_omitted"
       },
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
       "boundary_assumptions": [
@@ -7057,6 +7775,12 @@
           "source_reference": "NASA TN D-3647, pp. 6-7; NASA/SP-8007-2020/REV 2 Eqs. 64-65"
         },
         {
+          "basis": "Lunchick's plastic reserve on first yield at the outer surface at mid-bay, from the Pulos-Salerno beam-column periodic bay; needs a yield strength and gamma < 1 at first yield. Perfect shell, elastic-perfectly plastic material, identical rings; imperfections and end bays are not included.",
+          "disposition": "implemented_advisory",
+          "mode": "axisymmetric_collapse",
+          "source_reference": "Lunchick's plastic reserve factor on first yield for axisymmetric collapse, as documented for DAPS4 by Renzi, IHTR 2944 (2008), Eqs. 65-66"
+        },
+        {
           "basis": "The equation uses ideal simple supports with freely warping ends. Actual closure stiffness, contact, and shell continuing beyond a support are not inputs to this calculation; no additional restraint is credited.",
           "disposition": "external_blocker",
           "mode": "physical_end_restraint",
@@ -7122,9 +7846,10 @@
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
         "Each buckling pressure is labelled by comparing its shell circumferential membrane stress with the proportional limit: on a valid record, the periodic bay's mid-bay hoop stress for the inter-ring bay, and nominal p*r/t for the global mode. With only a yield strength, a pressure is an elastic upper bound when that stress exceeds yield and undetermined otherwise.",
-        "Global buckling is elastic: lobar modes (n >= 2, axial half-waves longer than one ring spacing, and always m = 1) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
+        "Global buckling is elastic: lobar modes (n >= 2, axial half-waves longer than one ring spacing, and always m = 1) with ideal simple supports. Interframe collapse of an imperfect shell, ring tripping, ring spacing, axisymmetric elastic buckling (n=0), and the long-cylinder Eq. 66 transition are not checked; axisymmetric collapse is a perfect-shell estimate.",
         "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves longer than one ring spacing, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. NASA notes that its orthotropic equations lose accuracy against Love or Sanders theory for n <= 4 (printed p. 35) and that a more accurate discrete-ring theory gives somewhat lower pressures (p. 38), so widely spaced or deep eccentric rings still need a discrete-ring or code-rule check.",
-        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does (hoop stress only, perfect shell). They are not collapse pressures. As in the PD 5500 form, and as DAPS4 takes the hoop load, the pressure acts at the shell mid-surface radius; on the outer surface, exact equilibrium would raise the unstiffened mean hoop stress by R_o/R = 1 + t/(2R) and the bay's slightly less."
+        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does (hoop stress only, perfect shell). They are not collapse pressures. As in the PD 5500 form, and as DAPS4 takes the hoop load, the pressure acts at the shell mid-surface radius; on the outer surface, exact equilibrium would raise the unstiffened mean hoop stress by R_o/R = 1 + t/(2R) and the bay's slightly less.",
+        "Axisymmetric collapse is Lunchick's plastic reserve on the pressure at which the outer surface at mid-bay first yields (von Mises), from the beam-column periodic bay: a perfect shell of elastic-perfectly plastic material between identical rings, without end bays. It enters the lowest pressure. DAPS4's comparison with machined aluminium models (Boichot and Reynolds) covers theta from 1.0 to 2.5."
       ],
       "poisson_ratio": 0.3,
       "proportional_limit_mpa": {
@@ -7256,7 +7981,8 @@
     "result": {
       "advisory_candidate_modes": [
         "global_eq64_with_eq91_ring_torsion",
-        "inter_ring_smooth_shell"
+        "inter_ring_smooth_shell",
+        "axisymmetric_collapse_lunchick"
       ],
       "advisory_governing_mode": "global_eq64_with_eq91_ring_torsion",
       "advisory_governing_pressure_mpa": {
@@ -7265,6 +7991,25 @@
       },
       "advisory_governing_status": "advisory_plasticity_undetermined",
       "advisory_margin": -0.425126227127,
+      "axisymmetric_collapse": {
+        "beam_column_limit_pressure_mpa": {
+          "unit": "MPa",
+          "value": 18.2990827814
+        },
+        "collapse_pressure_mpa": {
+          "unit": "MPa",
+          "value": 5.75353014595
+        },
+        "first_yield_pressure_mpa": {
+          "unit": "MPa",
+          "value": 5.25735033503
+        },
+        "outer_midbay_bending_compressive": true,
+        "plastic_reserve_factor_phi3": 1.09437830453,
+        "pressure_parameter_gamma_at_first_yield": 0.287301303449,
+        "source_reference": "Lunchick's plastic reserve factor on first yield for axisymmetric collapse, as documented for DAPS4 by Renzi, IHTR 2944 (2008), Eqs. 65-66",
+        "status": "advisory"
+      },
       "axisymmetric_stress": {
         "clear_bay_mm": {
           "unit": "mm",
@@ -7287,6 +8032,124 @@
           "value": 103.9876
         },
         "source_reference": "von Sanden and Guenther periodic-bay solution (DTMB Report 1497, Pulos and Salerno, 1961) without the beam-column term, in the Wilson and PD 5500 Pc5 form printed by Morandi (1994, University of Glasgow PhD thesis), Eqs. 48-53; effective ring area from DTMB Report 1639 (Pulos, 1963), Eq. (9); ring stress from DTMB 1497 Eq. [58] and DTMB 1639 Eq. (175), at the ring centroid radius"
+      },
+      "beam_column_bay": {
+        "bay_parameter_theta": 3.62760607855,
+        "clear_bay_mm": {
+          "unit": "mm",
+          "value": 27.0764
+        },
+        "effective_ring_area_mm2": {
+          "unit": "mm^2",
+          "value": 8.92455703574
+        },
+        "f_functions": [
+          0.559360823263,
+          0.187415658222,
+          -1.08585169777,
+          0.462815879701,
+          0.49613546606,
+          0.258991295463
+        ],
+        "frame": {
+          "axial_inner_mpa": {
+            "unit": "MPa",
+            "value": -353.721499318
+          },
+          "axial_membrane_mpa": {
+            "unit": "MPa",
+            "value": -159.560502261
+          },
+          "axial_outer_mpa": {
+            "unit": "MPa",
+            "value": 34.6004947955
+          },
+          "hoop_inner_mpa": {
+            "unit": "MPa",
+            "value": -276.166142964
+          },
+          "hoop_membrane_mpa": {
+            "unit": "MPa",
+            "value": -217.917843847
+          },
+          "hoop_outer_mpa": {
+            "unit": "MPa",
+            "value": -159.66954473
+          },
+          "radial_deflection_mm": {
+            "unit": "mm",
+            "value": -0.0851249320609
+          },
+          "von_mises_inner_mpa": {
+            "unit": "MPa",
+            "value": 322.025985674
+          },
+          "von_mises_membrane_mpa": {
+            "unit": "MPa",
+            "value": 195.388484647
+          },
+          "von_mises_outer_mpa": {
+            "unit": "MPa",
+            "value": 179.488726682
+          }
+        },
+        "frame_parameter_beta": 8.5186718781,
+        "load_radius_convention": "hoop_at_mid_surface_axial_from_outer_surface",
+        "load_radius_ratio_alpha": 1.00429289832,
+        "midbay": {
+          "axial_inner_mpa": {
+            "unit": "MPa",
+            "value": -76.8044566237
+          },
+          "axial_membrane_mpa": {
+            "unit": "MPa",
+            "value": -159.560502261
+          },
+          "axial_outer_mpa": {
+            "unit": "MPa",
+            "value": -242.316547899
+          },
+          "hoop_inner_mpa": {
+            "unit": "MPa",
+            "value": -273.114982463
+          },
+          "hoop_membrane_mpa": {
+            "unit": "MPa",
+            "value": -297.941796154
+          },
+          "hoop_outer_mpa": {
+            "unit": "MPa",
+            "value": -322.768609845
+          },
+          "radial_deflection_mm": {
+            "unit": "mm",
+            "value": -0.125184007596
+          },
+          "von_mises_inner_mpa": {
+            "unit": "MPa",
+            "value": 243.955468024
+          },
+          "von_mises_membrane_mpa": {
+            "unit": "MPa",
+            "value": 258.242376728
+          },
+          "von_mises_outer_mpa": {
+            "unit": "MPa",
+            "value": 291.006373778
+          }
+        },
+        "pressure_mpa": {
+          "unit": "MPa",
+          "value": 2.71653437351
+        },
+        "pressure_parameter_gamma": 0.148451941879,
+        "ring_hoop_stress_mpa": {
+          "unit": "MPa",
+          "value": -170.049693169
+        },
+        "source_reference": "Pulos and Salerno periodic-bay solution with the beam-column term (DTMB Report 1497), as documented for DAPS4 by Renzi, NSWC Indian Head IHTR 2944 (2008), Eqs. 7 and 43-64",
+        "stress_sign_convention": "tension_positive",
+        "von_mises_convention": "plane_stress_radial_omitted"
       },
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
       "boundary_assumptions": [
@@ -7837,6 +8700,12 @@
           "source_reference": "NASA TN D-3647, pp. 6-7; NASA/SP-8007-2020/REV 2 Eqs. 64-65"
         },
         {
+          "basis": "Lunchick's plastic reserve on first yield at the outer surface at mid-bay, from the Pulos-Salerno beam-column periodic bay; needs a yield strength and gamma < 1 at first yield. Perfect shell, elastic-perfectly plastic material, identical rings; imperfections and end bays are not included.",
+          "disposition": "implemented_advisory",
+          "mode": "axisymmetric_collapse",
+          "source_reference": "Lunchick's plastic reserve factor on first yield for axisymmetric collapse, as documented for DAPS4 by Renzi, IHTR 2944 (2008), Eqs. 65-66"
+        },
+        {
           "basis": "The equation uses ideal simple supports with freely warping ends. Actual closure stiffness, contact, and shell continuing beyond a support are not inputs to this calculation; no additional restraint is credited.",
           "disposition": "external_blocker",
           "mode": "physical_end_restraint",
@@ -7902,9 +8771,10 @@
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
         "Each buckling pressure is labelled by comparing its shell circumferential membrane stress with the proportional limit: on a valid record, the periodic bay's mid-bay hoop stress for the inter-ring bay, and nominal p*r/t for the global mode. With only a yield strength, a pressure is an elastic upper bound when that stress exceeds yield and undetermined otherwise.",
-        "Global buckling is elastic: lobar modes (n >= 2, axial half-waves longer than one ring spacing, and always m = 1) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
+        "Global buckling is elastic: lobar modes (n >= 2, axial half-waves longer than one ring spacing, and always m = 1) with ideal simple supports. Interframe collapse of an imperfect shell, ring tripping, ring spacing, axisymmetric elastic buckling (n=0), and the long-cylinder Eq. 66 transition are not checked; axisymmetric collapse is a perfect-shell estimate.",
         "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves longer than one ring spacing, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. NASA notes that its orthotropic equations lose accuracy against Love or Sanders theory for n <= 4 (printed p. 35) and that a more accurate discrete-ring theory gives somewhat lower pressures (p. 38), so widely spaced or deep eccentric rings still need a discrete-ring or code-rule check.",
-        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does (hoop stress only, perfect shell). They are not collapse pressures. As in the PD 5500 form, and as DAPS4 takes the hoop load, the pressure acts at the shell mid-surface radius; on the outer surface, exact equilibrium would raise the unstiffened mean hoop stress by R_o/R = 1 + t/(2R) and the bay's slightly less."
+        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does (hoop stress only, perfect shell). They are not collapse pressures. As in the PD 5500 form, and as DAPS4 takes the hoop load, the pressure acts at the shell mid-surface radius; on the outer surface, exact equilibrium would raise the unstiffened mean hoop stress by R_o/R = 1 + t/(2R) and the bay's slightly less.",
+        "Axisymmetric collapse is Lunchick's plastic reserve on the pressure at which the outer surface at mid-bay first yields (von Mises), from the beam-column periodic bay: a perfect shell of elastic-perfectly plastic material between identical rings, without end bays. It enters the lowest pressure. DAPS4's comparison with machined aluminium models (Boichot and Reynolds) covers theta from 1.0 to 2.5."
       ],
       "poisson_ratio": 0.3,
       "proportional_limit_mpa": {
@@ -8036,7 +8906,8 @@
     "result": {
       "advisory_candidate_modes": [
         "global_eq64_with_eq91_ring_torsion",
-        "inter_ring_smooth_shell"
+        "inter_ring_smooth_shell",
+        "axisymmetric_collapse_lunchick"
       ],
       "advisory_governing_mode": "global_eq64_with_eq91_ring_torsion",
       "advisory_governing_pressure_mpa": {
@@ -8045,6 +8916,25 @@
       },
       "advisory_governing_status": "advisory_plasticity_undetermined",
       "advisory_margin": -0.442823526348,
+      "axisymmetric_collapse": {
+        "beam_column_limit_pressure_mpa": {
+          "unit": "MPa",
+          "value": 18.2990827814
+        },
+        "collapse_pressure_mpa": {
+          "unit": "MPa",
+          "value": 5.75353014595
+        },
+        "first_yield_pressure_mpa": {
+          "unit": "MPa",
+          "value": 5.25735033503
+        },
+        "outer_midbay_bending_compressive": true,
+        "plastic_reserve_factor_phi3": 1.09437830453,
+        "pressure_parameter_gamma_at_first_yield": 0.287301303449,
+        "source_reference": "Lunchick's plastic reserve factor on first yield for axisymmetric collapse, as documented for DAPS4 by Renzi, IHTR 2944 (2008), Eqs. 65-66",
+        "status": "advisory"
+      },
       "axisymmetric_stress": {
         "clear_bay_mm": {
           "unit": "mm",
@@ -8067,6 +8957,124 @@
           "value": 103.9876
         },
         "source_reference": "von Sanden and Guenther periodic-bay solution (DTMB Report 1497, Pulos and Salerno, 1961) without the beam-column term, in the Wilson and PD 5500 Pc5 form printed by Morandi (1994, University of Glasgow PhD thesis), Eqs. 48-53; effective ring area from DTMB Report 1639 (Pulos, 1963), Eq. (9); ring stress from DTMB 1497 Eq. [58] and DTMB 1639 Eq. (175), at the ring centroid radius"
+      },
+      "beam_column_bay": {
+        "bay_parameter_theta": 3.62760607855,
+        "clear_bay_mm": {
+          "unit": "mm",
+          "value": 27.0764
+        },
+        "effective_ring_area_mm2": {
+          "unit": "mm^2",
+          "value": 8.92455703574
+        },
+        "f_functions": [
+          0.559637987941,
+          0.187979139927,
+          -1.08557052334,
+          0.462384599859,
+          0.495484393258,
+          0.258923584912
+        ],
+        "frame": {
+          "axial_inner_mpa": {
+            "unit": "MPa",
+            "value": -350.925488273
+          },
+          "axial_membrane_mpa": {
+            "unit": "MPa",
+            "value": -158.345574579
+          },
+          "axial_outer_mpa": {
+            "unit": "MPa",
+            "value": 34.2343391152
+          },
+          "hoop_inner_mpa": {
+            "unit": "MPa",
+            "value": -274.059335906
+          },
+          "hoop_membrane_mpa": {
+            "unit": "MPa",
+            "value": -216.285361797
+          },
+          "hoop_outer_mpa": {
+            "unit": "MPa",
+            "value": -158.511387689
+          },
+          "radial_deflection_mm": {
+            "unit": "mm",
+            "value": -0.0844901838845
+          },
+          "von_mises_inner_mpa": {
+            "unit": "MPa",
+            "value": 319.504008814
+          },
+          "von_mises_membrane_mpa": {
+            "unit": "MPa",
+            "value": 193.919696859
+          },
+          "von_mises_outer_mpa": {
+            "unit": "MPa",
+            "value": 178.113398153
+          }
+        },
+        "frame_parameter_beta": 8.5186718781,
+        "load_radius_convention": "hoop_at_mid_surface_axial_from_outer_surface",
+        "load_radius_ratio_alpha": 1.00429289832,
+        "midbay": {
+          "axial_inner_mpa": {
+            "unit": "MPa",
+            "value": -76.3186731294
+          },
+          "axial_membrane_mpa": {
+            "unit": "MPa",
+            "value": -158.345574579
+          },
+          "axial_outer_mpa": {
+            "unit": "MPa",
+            "value": -240.372476029
+          },
+          "hoop_inner_mpa": {
+            "unit": "MPa",
+            "value": -271.01509989
+          },
+          "hoop_membrane_mpa": {
+            "unit": "MPa",
+            "value": -295.623170325
+          },
+          "hoop_outer_mpa": {
+            "unit": "MPa",
+            "value": -320.23124076
+          },
+          "radial_deflection_mm": {
+            "unit": "mm",
+            "value": -0.124205783689
+          },
+          "von_mises_inner_mpa": {
+            "unit": "MPa",
+            "value": 242.054149758
+          },
+          "von_mises_membrane_mpa": {
+            "unit": "MPa",
+            "value": 256.233797649
+          },
+          "von_mises_outer_mpa": {
+            "unit": "MPa",
+            "value": 288.707808255
+          }
+        },
+        "pressure_mpa": {
+          "unit": "MPa",
+          "value": 2.69585010163
+        },
+        "pressure_parameter_gamma": 0.147321597144,
+        "ring_hoop_stress_mpa": {
+          "unit": "MPa",
+          "value": -168.781689424
+        },
+        "source_reference": "Pulos and Salerno periodic-bay solution with the beam-column term (DTMB Report 1497), as documented for DAPS4 by Renzi, NSWC Indian Head IHTR 2944 (2008), Eqs. 7 and 43-64",
+        "stress_sign_convention": "tension_positive",
+        "von_mises_convention": "plane_stress_radial_omitted"
       },
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
       "boundary_assumptions": [
@@ -8617,6 +9625,12 @@
           "source_reference": "NASA TN D-3647, pp. 6-7; NASA/SP-8007-2020/REV 2 Eqs. 64-65"
         },
         {
+          "basis": "Lunchick's plastic reserve on first yield at the outer surface at mid-bay, from the Pulos-Salerno beam-column periodic bay; needs a yield strength and gamma < 1 at first yield. Perfect shell, elastic-perfectly plastic material, identical rings; imperfections and end bays are not included.",
+          "disposition": "implemented_advisory",
+          "mode": "axisymmetric_collapse",
+          "source_reference": "Lunchick's plastic reserve factor on first yield for axisymmetric collapse, as documented for DAPS4 by Renzi, IHTR 2944 (2008), Eqs. 65-66"
+        },
+        {
           "basis": "The equation uses ideal simple supports with freely warping ends. Actual closure stiffness, contact, and shell continuing beyond a support are not inputs to this calculation; no additional restraint is credited.",
           "disposition": "external_blocker",
           "mode": "physical_end_restraint",
@@ -8682,9 +9696,10 @@
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
         "Each buckling pressure is labelled by comparing its shell circumferential membrane stress with the proportional limit: on a valid record, the periodic bay's mid-bay hoop stress for the inter-ring bay, and nominal p*r/t for the global mode. With only a yield strength, a pressure is an elastic upper bound when that stress exceeds yield and undetermined otherwise.",
-        "Global buckling is elastic: lobar modes (n >= 2, axial half-waves longer than one ring spacing, and always m = 1) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
+        "Global buckling is elastic: lobar modes (n >= 2, axial half-waves longer than one ring spacing, and always m = 1) with ideal simple supports. Interframe collapse of an imperfect shell, ring tripping, ring spacing, axisymmetric elastic buckling (n=0), and the long-cylinder Eq. 66 transition are not checked; axisymmetric collapse is a perfect-shell estimate.",
         "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves longer than one ring spacing, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. NASA notes that its orthotropic equations lose accuracy against Love or Sanders theory for n <= 4 (printed p. 35) and that a more accurate discrete-ring theory gives somewhat lower pressures (p. 38), so widely spaced or deep eccentric rings still need a discrete-ring or code-rule check.",
-        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does (hoop stress only, perfect shell). They are not collapse pressures. As in the PD 5500 form, and as DAPS4 takes the hoop load, the pressure acts at the shell mid-surface radius; on the outer surface, exact equilibrium would raise the unstiffened mean hoop stress by R_o/R = 1 + t/(2R) and the bay's slightly less."
+        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does (hoop stress only, perfect shell). They are not collapse pressures. As in the PD 5500 form, and as DAPS4 takes the hoop load, the pressure acts at the shell mid-surface radius; on the outer surface, exact equilibrium would raise the unstiffened mean hoop stress by R_o/R = 1 + t/(2R) and the bay's slightly less.",
+        "Axisymmetric collapse is Lunchick's plastic reserve on the pressure at which the outer surface at mid-bay first yields (von Mises), from the beam-column periodic bay: a perfect shell of elastic-perfectly plastic material between identical rings, without end bays. It enters the lowest pressure. DAPS4's comparison with machined aluminium models (Boichot and Reynolds) covers theta from 1.0 to 2.5."
       ],
       "poisson_ratio": 0.3,
       "proportional_limit_mpa": {
@@ -8816,7 +9831,8 @@
     "result": {
       "advisory_candidate_modes": [
         "global_eq64_with_eq91_ring_torsion",
-        "inter_ring_smooth_shell"
+        "inter_ring_smooth_shell",
+        "axisymmetric_collapse_lunchick"
       ],
       "advisory_governing_mode": "global_eq64_with_eq91_ring_torsion",
       "advisory_governing_pressure_mpa": {
@@ -8825,6 +9841,25 @@
       },
       "advisory_governing_status": "advisory_plasticity_undetermined",
       "advisory_margin": -0.449904234032,
+      "axisymmetric_collapse": {
+        "beam_column_limit_pressure_mpa": {
+          "unit": "MPa",
+          "value": 18.2990827814
+        },
+        "collapse_pressure_mpa": {
+          "unit": "MPa",
+          "value": 5.75353014595
+        },
+        "first_yield_pressure_mpa": {
+          "unit": "MPa",
+          "value": 5.25735033503
+        },
+        "outer_midbay_bending_compressive": true,
+        "plastic_reserve_factor_phi3": 1.09437830453,
+        "pressure_parameter_gamma_at_first_yield": 0.287301303449,
+        "source_reference": "Lunchick's plastic reserve factor on first yield for axisymmetric collapse, as documented for DAPS4 by Renzi, IHTR 2944 (2008), Eqs. 65-66",
+        "status": "advisory"
+      },
       "axisymmetric_stress": {
         "clear_bay_mm": {
           "unit": "mm",
@@ -8847,6 +9882,124 @@
           "value": 103.9876
         },
         "source_reference": "von Sanden and Guenther periodic-bay solution (DTMB Report 1497, Pulos and Salerno, 1961) without the beam-column term, in the Wilson and PD 5500 Pc5 form printed by Morandi (1994, University of Glasgow PhD thesis), Eqs. 48-53; effective ring area from DTMB Report 1639 (Pulos, 1963), Eq. (9); ring stress from DTMB 1497 Eq. [58] and DTMB 1639 Eq. (175), at the ring centroid radius"
+      },
+      "beam_column_bay": {
+        "bay_parameter_theta": 3.62760607855,
+        "clear_bay_mm": {
+          "unit": "mm",
+          "value": 27.0764
+        },
+        "effective_ring_area_mm2": {
+          "unit": "mm^2",
+          "value": 8.92455703574
+        },
+        "f_functions": [
+          0.560375228557,
+          0.189477770671,
+          -1.08482197303,
+          0.461238049981,
+          0.49374919863,
+          0.258746126495
+        ],
+        "frame": {
+          "axial_inner_mpa": {
+            "unit": "MPa",
+            "value": -343.477996952
+          },
+          "axial_membrane_mpa": {
+            "unit": "MPa",
+            "value": -155.105767426
+          },
+          "axial_outer_mpa": {
+            "unit": "MPa",
+            "value": 33.2664620995
+          },
+          "hoop_inner_mpa": {
+            "unit": "MPa",
+            "value": -268.441488719
+          },
+          "hoop_membrane_mpa": {
+            "unit": "MPa",
+            "value": -211.929819861
+          },
+          "hoop_outer_mpa": {
+            "unit": "MPa",
+            "value": -155.418151003
+          },
+          "radial_deflection_mm": {
+            "unit": "mm",
+            "value": -0.0827963925172
+          },
+          "von_mises_inner_mpa": {
+            "unit": "MPa",
+            "value": 312.78462624
+          },
+          "von_mises_membrane_mpa": {
+            "unit": "MPa",
+            "value": 190.001342851
+          },
+          "von_mises_outer_mpa": {
+            "unit": "MPa",
+            "value": 174.44675747
+          }
+        },
+        "frame_parameter_beta": 8.5186718781,
+        "load_radius_convention": "hoop_at_mid_surface_axial_from_outer_surface",
+        "load_radius_ratio_alpha": 1.00429289832,
+        "midbay": {
+          "axial_inner_mpa": {
+            "unit": "MPa",
+            "value": -75.0148013721
+          },
+          "axial_membrane_mpa": {
+            "unit": "MPa",
+            "value": -155.105767426
+          },
+          "axial_outer_mpa": {
+            "unit": "MPa",
+            "value": -235.196733481
+          },
+          "hoop_inner_mpa": {
+            "unit": "MPa",
+            "value": -265.41711105
+          },
+          "hoop_membrane_mpa": {
+            "unit": "MPa",
+            "value": -289.444400866
+          },
+          "hoop_outer_mpa": {
+            "unit": "MPa",
+            "value": -313.471690683
+          },
+          "radial_deflection_mm": {
+            "unit": "mm",
+            "value": -0.121599305471
+          },
+          "von_mises_inner_mpa": {
+            "unit": "MPa",
+            "value": 236.987871835
+          },
+          "von_mises_membrane_mpa": {
+            "unit": "MPa",
+            "value": 250.881175775
+          },
+          "von_mises_outer_mpa": {
+            "unit": "MPa",
+            "value": 282.585361638
+          }
+        },
+        "pressure_mpa": {
+          "unit": "MPa",
+          "value": 2.64069204328
+        },
+        "pressure_parameter_gamma": 0.144307344517,
+        "ring_hoop_stress_mpa": {
+          "unit": "MPa",
+          "value": -165.398089633
+        },
+        "source_reference": "Pulos and Salerno periodic-bay solution with the beam-column term (DTMB Report 1497), as documented for DAPS4 by Renzi, NSWC Indian Head IHTR 2944 (2008), Eqs. 7 and 43-64",
+        "stress_sign_convention": "tension_positive",
+        "von_mises_convention": "plane_stress_radial_omitted"
       },
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
       "boundary_assumptions": [
@@ -9397,6 +10550,12 @@
           "source_reference": "NASA TN D-3647, pp. 6-7; NASA/SP-8007-2020/REV 2 Eqs. 64-65"
         },
         {
+          "basis": "Lunchick's plastic reserve on first yield at the outer surface at mid-bay, from the Pulos-Salerno beam-column periodic bay; needs a yield strength and gamma < 1 at first yield. Perfect shell, elastic-perfectly plastic material, identical rings; imperfections and end bays are not included.",
+          "disposition": "implemented_advisory",
+          "mode": "axisymmetric_collapse",
+          "source_reference": "Lunchick's plastic reserve factor on first yield for axisymmetric collapse, as documented for DAPS4 by Renzi, IHTR 2944 (2008), Eqs. 65-66"
+        },
+        {
           "basis": "The equation uses ideal simple supports with freely warping ends. Actual closure stiffness, contact, and shell continuing beyond a support are not inputs to this calculation; no additional restraint is credited.",
           "disposition": "external_blocker",
           "mode": "physical_end_restraint",
@@ -9462,9 +10621,10 @@
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
         "Each buckling pressure is labelled by comparing its shell circumferential membrane stress with the proportional limit: on a valid record, the periodic bay's mid-bay hoop stress for the inter-ring bay, and nominal p*r/t for the global mode. With only a yield strength, a pressure is an elastic upper bound when that stress exceeds yield and undetermined otherwise.",
-        "Global buckling is elastic: lobar modes (n >= 2, axial half-waves longer than one ring spacing, and always m = 1) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
+        "Global buckling is elastic: lobar modes (n >= 2, axial half-waves longer than one ring spacing, and always m = 1) with ideal simple supports. Interframe collapse of an imperfect shell, ring tripping, ring spacing, axisymmetric elastic buckling (n=0), and the long-cylinder Eq. 66 transition are not checked; axisymmetric collapse is a perfect-shell estimate.",
         "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves longer than one ring spacing, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. NASA notes that its orthotropic equations lose accuracy against Love or Sanders theory for n <= 4 (printed p. 35) and that a more accurate discrete-ring theory gives somewhat lower pressures (p. 38), so widely spaced or deep eccentric rings still need a discrete-ring or code-rule check.",
-        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does (hoop stress only, perfect shell). They are not collapse pressures. As in the PD 5500 form, and as DAPS4 takes the hoop load, the pressure acts at the shell mid-surface radius; on the outer surface, exact equilibrium would raise the unstiffened mean hoop stress by R_o/R = 1 + t/(2R) and the bay's slightly less."
+        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does (hoop stress only, perfect shell). They are not collapse pressures. As in the PD 5500 form, and as DAPS4 takes the hoop load, the pressure acts at the shell mid-surface radius; on the outer surface, exact equilibrium would raise the unstiffened mean hoop stress by R_o/R = 1 + t/(2R) and the bay's slightly less.",
+        "Axisymmetric collapse is Lunchick's plastic reserve on the pressure at which the outer surface at mid-bay first yields (von Mises), from the beam-column periodic bay: a perfect shell of elastic-perfectly plastic material between identical rings, without end bays. It enters the lowest pressure. DAPS4's comparison with machined aluminium models (Boichot and Reynolds) covers theta from 1.0 to 2.5."
       ],
       "poisson_ratio": 0.3,
       "proportional_limit_mpa": {
@@ -9596,7 +10756,8 @@
     "result": {
       "advisory_candidate_modes": [
         "global_eq64_with_eq91_ring_torsion",
-        "inter_ring_smooth_shell"
+        "inter_ring_smooth_shell",
+        "axisymmetric_collapse_lunchick"
       ],
       "advisory_governing_mode": "global_eq64_with_eq91_ring_torsion",
       "advisory_governing_pressure_mpa": {
@@ -9605,6 +10766,25 @@
       },
       "advisory_governing_status": "advisory_plasticity_undetermined",
       "advisory_margin": -0.392926840884,
+      "axisymmetric_collapse": {
+        "beam_column_limit_pressure_mpa": {
+          "unit": "MPa",
+          "value": 18.2990827814
+        },
+        "collapse_pressure_mpa": {
+          "unit": "MPa",
+          "value": 5.75353014595
+        },
+        "first_yield_pressure_mpa": {
+          "unit": "MPa",
+          "value": 5.25735033503
+        },
+        "outer_midbay_bending_compressive": true,
+        "plastic_reserve_factor_phi3": 1.09437830453,
+        "pressure_parameter_gamma_at_first_yield": 0.287301303449,
+        "source_reference": "Lunchick's plastic reserve factor on first yield for axisymmetric collapse, as documented for DAPS4 by Renzi, IHTR 2944 (2008), Eqs. 65-66",
+        "status": "advisory"
+      },
       "axisymmetric_stress": {
         "clear_bay_mm": {
           "unit": "mm",
@@ -9627,6 +10807,124 @@
           "value": 103.9876
         },
         "source_reference": "von Sanden and Guenther periodic-bay solution (DTMB Report 1497, Pulos and Salerno, 1961) without the beam-column term, in the Wilson and PD 5500 Pc5 form printed by Morandi (1994, University of Glasgow PhD thesis), Eqs. 48-53; effective ring area from DTMB Report 1639 (Pulos, 1963), Eq. (9); ring stress from DTMB 1497 Eq. [58] and DTMB 1639 Eq. (175), at the ring centroid radius"
+      },
+      "beam_column_bay": {
+        "bay_parameter_theta": 3.62760607855,
+        "clear_bay_mm": {
+          "unit": "mm",
+          "value": 27.0764
+        },
+        "effective_ring_area_mm2": {
+          "unit": "mm^2",
+          "value": 8.92455703574
+        },
+        "f_functions": [
+          0.56528172719,
+          0.199444217276,
+          -1.07981617216,
+          0.453630864764,
+          0.482072386113,
+          0.257664160859
+        ],
+        "frame": {
+          "axial_inner_mpa": {
+            "unit": "MPa",
+            "value": -293.526340937
+          },
+          "axial_membrane_mpa": {
+            "unit": "MPa",
+            "value": -133.237069147
+          },
+          "axial_outer_mpa": {
+            "unit": "MPa",
+            "value": 27.0522026431
+          },
+          "hoop_inner_mpa": {
+            "unit": "MPa",
+            "value": -230.532605273
+          },
+          "hoop_membrane_mpa": {
+            "unit": "MPa",
+            "value": -182.445823736
+          },
+          "hoop_outer_mpa": {
+            "unit": "MPa",
+            "value": -134.359042199
+          },
+          "radial_deflection_mm": {
+            "unit": "mm",
+            "value": -0.0713212072693
+          },
+          "von_mises_inner_mpa": {
+            "unit": "MPa",
+            "value": 267.64828194
+          },
+          "von_mises_membrane_mpa": {
+            "unit": "MPa",
+            "value": 163.49326702
+          },
+          "von_mises_outer_mpa": {
+            "unit": "MPa",
+            "value": 149.729362267
+          }
+        },
+        "frame_parameter_beta": 8.5186718781,
+        "load_radius_convention": "hoop_at_mid_surface_axial_from_outer_surface",
+        "load_radius_ratio_alpha": 1.00429289832,
+        "midbay": {
+          "axial_inner_mpa": {
+            "unit": "MPa",
+            "value": -65.8995325838
+          },
+          "axial_membrane_mpa": {
+            "unit": "MPa",
+            "value": -133.237069147
+          },
+          "axial_outer_mpa": {
+            "unit": "MPa",
+            "value": -200.57460571
+          },
+          "hoop_inner_mpa": {
+            "unit": "MPa",
+            "value": -227.694057188
+          },
+          "hoop_membrane_mpa": {
+            "unit": "MPa",
+            "value": -247.895318157
+          },
+          "hoop_outer_mpa": {
+            "unit": "MPa",
+            "value": -268.096579126
+          },
+          "radial_deflection_mm": {
+            "unit": "mm",
+            "value": -0.104084475831
+          },
+          "von_mises_inner_mpa": {
+            "unit": "MPa",
+            "value": 202.93447251
+          },
+          "von_mises_membrane_mpa": {
+            "unit": "MPa",
+            "value": 214.884526461
+          },
+          "von_mises_outer_mpa": {
+            "unit": "MPa",
+            "value": 241.521391484
+          }
+        },
+        "pressure_mpa": {
+          "unit": "MPa",
+          "value": 2.26837514945
+        },
+        "pressure_parameter_gamma": 0.123961139285,
+        "ring_hoop_stress_mpa": {
+          "unit": "MPa",
+          "value": -142.474702992
+        },
+        "source_reference": "Pulos and Salerno periodic-bay solution with the beam-column term (DTMB Report 1497), as documented for DAPS4 by Renzi, NSWC Indian Head IHTR 2944 (2008), Eqs. 7 and 43-64",
+        "stress_sign_convention": "tension_positive",
+        "von_mises_convention": "plane_stress_radial_omitted"
       },
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
       "boundary_assumptions": [
@@ -10177,6 +11475,12 @@
           "source_reference": "NASA TN D-3647, pp. 6-7; NASA/SP-8007-2020/REV 2 Eqs. 64-65"
         },
         {
+          "basis": "Lunchick's plastic reserve on first yield at the outer surface at mid-bay, from the Pulos-Salerno beam-column periodic bay; needs a yield strength and gamma < 1 at first yield. Perfect shell, elastic-perfectly plastic material, identical rings; imperfections and end bays are not included.",
+          "disposition": "implemented_advisory",
+          "mode": "axisymmetric_collapse",
+          "source_reference": "Lunchick's plastic reserve factor on first yield for axisymmetric collapse, as documented for DAPS4 by Renzi, IHTR 2944 (2008), Eqs. 65-66"
+        },
+        {
           "basis": "The equation uses ideal simple supports with freely warping ends. Actual closure stiffness, contact, and shell continuing beyond a support are not inputs to this calculation; no additional restraint is credited.",
           "disposition": "external_blocker",
           "mode": "physical_end_restraint",
@@ -10242,9 +11546,10 @@
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
         "Each buckling pressure is labelled by comparing its shell circumferential membrane stress with the proportional limit: on a valid record, the periodic bay's mid-bay hoop stress for the inter-ring bay, and nominal p*r/t for the global mode. With only a yield strength, a pressure is an elastic upper bound when that stress exceeds yield and undetermined otherwise.",
-        "Global buckling is elastic: lobar modes (n >= 2, axial half-waves longer than one ring spacing, and always m = 1) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
+        "Global buckling is elastic: lobar modes (n >= 2, axial half-waves longer than one ring spacing, and always m = 1) with ideal simple supports. Interframe collapse of an imperfect shell, ring tripping, ring spacing, axisymmetric elastic buckling (n=0), and the long-cylinder Eq. 66 transition are not checked; axisymmetric collapse is a perfect-shell estimate.",
         "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves longer than one ring spacing, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. NASA notes that its orthotropic equations lose accuracy against Love or Sanders theory for n <= 4 (printed p. 35) and that a more accurate discrete-ring theory gives somewhat lower pressures (p. 38), so widely spaced or deep eccentric rings still need a discrete-ring or code-rule check.",
-        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does (hoop stress only, perfect shell). They are not collapse pressures. As in the PD 5500 form, and as DAPS4 takes the hoop load, the pressure acts at the shell mid-surface radius; on the outer surface, exact equilibrium would raise the unstiffened mean hoop stress by R_o/R = 1 + t/(2R) and the bay's slightly less."
+        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does (hoop stress only, perfect shell). They are not collapse pressures. As in the PD 5500 form, and as DAPS4 takes the hoop load, the pressure acts at the shell mid-surface radius; on the outer surface, exact equilibrium would raise the unstiffened mean hoop stress by R_o/R = 1 + t/(2R) and the bay's slightly less.",
+        "Axisymmetric collapse is Lunchick's plastic reserve on the pressure at which the outer surface at mid-bay first yields (von Mises), from the beam-column periodic bay: a perfect shell of elastic-perfectly plastic material between identical rings, without end bays. It enters the lowest pressure. DAPS4's comparison with machined aluminium models (Boichot and Reynolds) covers theta from 1.0 to 2.5."
       ],
       "poisson_ratio": 0.3,
       "proportional_limit_mpa": {
@@ -10376,7 +11681,8 @@
     "result": {
       "advisory_candidate_modes": [
         "global_eq64_with_eq91_ring_torsion",
-        "inter_ring_smooth_shell"
+        "inter_ring_smooth_shell",
+        "axisymmetric_collapse_lunchick"
       ],
       "advisory_governing_mode": "global_eq64_with_eq91_ring_torsion",
       "advisory_governing_pressure_mpa": {
@@ -10385,6 +11691,25 @@
       },
       "advisory_governing_status": "advisory_plasticity_undetermined",
       "advisory_margin": -0.316643116285,
+      "axisymmetric_collapse": {
+        "beam_column_limit_pressure_mpa": {
+          "unit": "MPa",
+          "value": 18.2990827814
+        },
+        "collapse_pressure_mpa": {
+          "unit": "MPa",
+          "value": 5.75353014595
+        },
+        "first_yield_pressure_mpa": {
+          "unit": "MPa",
+          "value": 5.25735033503
+        },
+        "outer_midbay_bending_compressive": true,
+        "plastic_reserve_factor_phi3": 1.09437830453,
+        "pressure_parameter_gamma_at_first_yield": 0.287301303449,
+        "source_reference": "Lunchick's plastic reserve factor on first yield for axisymmetric collapse, as documented for DAPS4 by Renzi, IHTR 2944 (2008), Eqs. 65-66",
+        "status": "advisory"
+      },
       "axisymmetric_stress": {
         "clear_bay_mm": {
           "unit": "mm",
@@ -10407,6 +11732,124 @@
           "value": 103.9876
         },
         "source_reference": "von Sanden and Guenther periodic-bay solution (DTMB Report 1497, Pulos and Salerno, 1961) without the beam-column term, in the Wilson and PD 5500 Pc5 form printed by Morandi (1994, University of Glasgow PhD thesis), Eqs. 48-53; effective ring area from DTMB Report 1639 (Pulos, 1963), Eq. (9); ring stress from DTMB 1497 Eq. [58] and DTMB 1639 Eq. (175), at the ring centroid radius"
+      },
+      "beam_column_bay": {
+        "bay_parameter_theta": 3.62760607855,
+        "clear_bay_mm": {
+          "unit": "mm",
+          "value": 27.0764
+        },
+        "effective_ring_area_mm2": {
+          "unit": "mm^2",
+          "value": 8.92455703574
+        },
+        "f_functions": [
+          0.569543492563,
+          0.208090667743,
+          -1.07543378865,
+          0.447056550966,
+          0.471739749804,
+          0.256866809427
+        ],
+        "frame": {
+          "axial_inner_mpa": {
+            "unit": "MPa",
+            "value": -249.577069718
+          },
+          "axial_membrane_mpa": {
+            "unit": "MPa",
+            "value": -113.798226232
+          },
+          "axial_outer_mpa": {
+            "unit": "MPa",
+            "value": 21.9806172544
+          },
+          "hoop_inner_mpa": {
+            "unit": "MPa",
+            "value": -196.852713527
+          },
+          "hoop_membrane_mpa": {
+            "unit": "MPa",
+            "value": -156.119060481
+          },
+          "hoop_outer_mpa": {
+            "unit": "MPa",
+            "value": -115.385407435
+          },
+          "radial_deflection_mm": {
+            "unit": "mm",
+            "value": -0.0610615893532
+          },
+          "von_mises_inner_mpa": {
+            "unit": "MPa",
+            "value": 227.837181215
+          },
+          "von_mises_membrane_mpa": {
+            "unit": "MPa",
+            "value": 139.846791795
+          },
+          "von_mises_outer_mpa": {
+            "unit": "MPa",
+            "value": 127.801339044
+          }
+        },
+        "frame_parameter_beta": 8.5186718781,
+        "load_radius_convention": "hoop_at_mid_surface_axial_from_outer_surface",
+        "load_radius_ratio_alpha": 1.00429289832,
+        "midbay": {
+          "axial_inner_mpa": {
+            "unit": "MPa",
+            "value": -57.3551219664
+          },
+          "axial_membrane_mpa": {
+            "unit": "MPa",
+            "value": -113.798226232
+          },
+          "axial_outer_mpa": {
+            "unit": "MPa",
+            "value": -170.241330497
+          },
+          "hoop_inner_mpa": {
+            "unit": "MPa",
+            "value": -194.25218337
+          },
+          "hoop_membrane_mpa": {
+            "unit": "MPa",
+            "value": -211.18511465
+          },
+          "hoop_outer_mpa": {
+            "unit": "MPa",
+            "value": -228.11804593
+          },
+          "radial_deflection_mm": {
+            "unit": "mm",
+            "value": -0.0886270264476
+          },
+          "von_mises_inner_mpa": {
+            "unit": "MPa",
+            "value": 172.864580208
+          },
+          "von_mises_membrane_mpa": {
+            "unit": "MPa",
+            "value": 183.07566056
+          },
+          "von_mises_outer_mpa": {
+            "unit": "MPa",
+            "value": 205.389468666
+          }
+        },
+        "pressure_mpa": {
+          "unit": "MPa",
+          "value": 1.93742679938
+        },
+        "pressure_parameter_gamma": 0.105875623523,
+        "ring_hoop_stress_mpa": {
+          "unit": "MPa",
+          "value": -121.979592612
+        },
+        "source_reference": "Pulos and Salerno periodic-bay solution with the beam-column term (DTMB Report 1497), as documented for DAPS4 by Renzi, NSWC Indian Head IHTR 2944 (2008), Eqs. 7 and 43-64",
+        "stress_sign_convention": "tension_positive",
+        "von_mises_convention": "plane_stress_radial_omitted"
       },
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
       "boundary_assumptions": [
@@ -10957,6 +12400,12 @@
           "source_reference": "NASA TN D-3647, pp. 6-7; NASA/SP-8007-2020/REV 2 Eqs. 64-65"
         },
         {
+          "basis": "Lunchick's plastic reserve on first yield at the outer surface at mid-bay, from the Pulos-Salerno beam-column periodic bay; needs a yield strength and gamma < 1 at first yield. Perfect shell, elastic-perfectly plastic material, identical rings; imperfections and end bays are not included.",
+          "disposition": "implemented_advisory",
+          "mode": "axisymmetric_collapse",
+          "source_reference": "Lunchick's plastic reserve factor on first yield for axisymmetric collapse, as documented for DAPS4 by Renzi, IHTR 2944 (2008), Eqs. 65-66"
+        },
+        {
           "basis": "The equation uses ideal simple supports with freely warping ends. Actual closure stiffness, contact, and shell continuing beyond a support are not inputs to this calculation; no additional restraint is credited.",
           "disposition": "external_blocker",
           "mode": "physical_end_restraint",
@@ -11022,9 +12471,10 @@
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
         "Each buckling pressure is labelled by comparing its shell circumferential membrane stress with the proportional limit: on a valid record, the periodic bay's mid-bay hoop stress for the inter-ring bay, and nominal p*r/t for the global mode. With only a yield strength, a pressure is an elastic upper bound when that stress exceeds yield and undetermined otherwise.",
-        "Global buckling is elastic: lobar modes (n >= 2, axial half-waves longer than one ring spacing, and always m = 1) with ideal simple supports. Interframe collapse, ring tripping, ring spacing, axisymmetric buckling (n=0), and the long-cylinder Eq. 66 transition are not checked.",
+        "Global buckling is elastic: lobar modes (n >= 2, axial half-waves longer than one ring spacing, and always m = 1) with ideal simple supports. Interframe collapse of an imperfect shell, ring tripping, ring spacing, axisymmetric elastic buckling (n=0), and the long-cylinder Eq. 66 transition are not checked; axisymmetric collapse is a perfect-shell estimate.",
         "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves longer than one ring spacing, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. NASA notes that its orthotropic equations lose accuracy against Love or Sanders theory for n <= 4 (printed p. 35) and that a more accurate discrete-ring theory gives somewhat lower pressures (p. 38), so widely spaced or deep eccentric rings still need a discrete-ring or code-rule check.",
-        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does (hoop stress only, perfect shell). They are not collapse pressures. As in the PD 5500 form, and as DAPS4 takes the hoop load, the pressure acts at the shell mid-surface radius; on the outer surface, exact equilibrium would raise the unstiffened mean hoop stress by R_o/R = 1 + t/(2R) and the bay's slightly less."
+        "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does (hoop stress only, perfect shell). They are not collapse pressures. As in the PD 5500 form, and as DAPS4 takes the hoop load, the pressure acts at the shell mid-surface radius; on the outer surface, exact equilibrium would raise the unstiffened mean hoop stress by R_o/R = 1 + t/(2R) and the bay's slightly less.",
+        "Axisymmetric collapse is Lunchick's plastic reserve on the pressure at which the outer surface at mid-bay first yields (von Mises), from the beam-column periodic bay: a perfect shell of elastic-perfectly plastic material between identical rings, without end bays. It enters the lowest pressure. DAPS4's comparison with machined aluminium models (Boichot and Reynolds) covers theta from 1.0 to 2.5."
       ],
       "poisson_ratio": 0.3,
       "proportional_limit_mpa": {
