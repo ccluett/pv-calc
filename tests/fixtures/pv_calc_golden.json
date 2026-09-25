@@ -3399,7 +3399,6 @@
         "midbay_shell_hoop_stress_per_unit_pressure": 107.506427763,
         "n_function": 1.07516730811,
         "ring_hoop_stress_per_unit_pressure": 62.2904320264,
-        "ring_maximum_hoop_stress_location": "external_ring_base_at_shell",
         "ring_maximum_hoop_stress_per_unit_pressure": 63.576104109,
         "ring_maximum_hoop_stress_radius_mm": {
           "unit": "mm",
@@ -3413,10 +3412,6 @@
           "axial_inner_mpa": {
             "unit": "MPa",
             "value": -427.994931812
-          },
-          "axial_membrane_mpa": {
-            "unit": "MPa",
-            "value": -191.553597892
           },
           "axial_outer_mpa": {
             "unit": "MPa",
@@ -3442,24 +3437,15 @@
             "unit": "MPa",
             "value": 388.884396636
           },
-          "von_mises_membrane_mpa": {
-            "unit": "MPa",
-            "value": 233.946476659
-          },
           "von_mises_outer_mpa": {
             "unit": "MPa",
             "value": 215.777549491
           }
         },
-        "load_radius_convention": "hoop_at_mid_surface_axial_from_outer_surface",
         "midbay": {
           "axial_inner_mpa": {
             "unit": "MPa",
             "value": -88.9541942972
-          },
-          "axial_membrane_mpa": {
-            "unit": "MPa",
-            "value": -191.553597892
           },
           "axial_outer_mpa": {
             "unit": "MPa",
@@ -3485,27 +3471,21 @@
             "unit": "MPa",
             "value": 294.32390759
           },
-          "von_mises_membrane_mpa": {
-            "unit": "MPa",
-            "value": 311.407593824
-          },
           "von_mises_outer_mpa": {
             "unit": "MPa",
             "value": 352.072299166
           }
         },
-        "pressure_mpa": {
+        "midbay_von_mises_membrane_mpa": {
           "unit": "MPa",
-          "value": 3.26122019967
+          "value": 311.407593824
         },
         "pressure_parameter_gamma": 0.178217686571,
         "ring_hoop_stress_mpa": {
           "unit": "MPa",
           "value": -202.400521342
         },
-        "source_reference": "Pulos and Salerno periodic-bay solution with the beam-column term (DTMB Report 1497), as documented for DAPS4 by Renzi, NSWC Indian Head IHTR 2944 (2008), Eqs. 7 and 43-64",
-        "stress_sign_convention": "tension_positive",
-        "von_mises_convention": "plane_stress_radial_omitted"
+        "source_reference": "Pulos and Salerno periodic-bay solution with the beam-column term (DTMB Report 1497), as documented for DAPS4 by Renzi, NSWC Indian Head IHTR 2944 (2008), Eqs. 7 and 43-64"
       },
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
       "boundary_assumptions": [
@@ -4306,7 +4286,6 @@
         "midbay_shell_hoop_stress_per_unit_pressure": 107.506427763,
         "n_function": 1.07516730811,
         "ring_hoop_stress_per_unit_pressure": 62.2904320264,
-        "ring_maximum_hoop_stress_location": "external_ring_base_at_shell",
         "ring_maximum_hoop_stress_per_unit_pressure": 63.576104109,
         "ring_maximum_hoop_stress_radius_mm": {
           "unit": "mm",
@@ -4320,10 +4299,6 @@
           "axial_inner_mpa": {
             "unit": "MPa",
             "value": -379.90276867
-          },
-          "axial_membrane_mpa": {
-            "unit": "MPa",
-            "value": -170.899827295
           },
           "axial_outer_mpa": {
             "unit": "MPa",
@@ -4349,24 +4324,15 @@
             "unit": "MPa",
             "value": 345.623256301
           },
-          "von_mises_membrane_mpa": {
-            "unit": "MPa",
-            "value": 209.081333152
-          },
           "von_mises_outer_mpa": {
             "unit": "MPa",
             "value": 192.334331478
           }
         },
-        "load_radius_convention": "hoop_at_mid_surface_axial_from_outer_surface",
         "midbay": {
           "axial_inner_mpa": {
             "unit": "MPa",
             "value": -81.2539224318
-          },
-          "axial_membrane_mpa": {
-            "unit": "MPa",
-            "value": -170.899827295
           },
           "axial_outer_mpa": {
             "unit": "MPa",
@@ -4392,27 +4358,21 @@
             "unit": "MPa",
             "value": 261.7403518
           },
-          "von_mises_membrane_mpa": {
-            "unit": "MPa",
-            "value": 277.024996574
-          },
           "von_mises_outer_mpa": {
             "unit": "MPa",
             "value": 312.53028516
           }
         },
-        "pressure_mpa": {
+        "midbay_von_mises_membrane_mpa": {
           "unit": "MPa",
-          "value": 2.90958757772
+          "value": 277.024996574
         },
         "pressure_parameter_gamma": 0.159001826074,
         "ring_hoop_stress_mpa": {
           "unit": "MPa",
           "value": -181.084478246
         },
-        "source_reference": "Pulos and Salerno periodic-bay solution with the beam-column term (DTMB Report 1497), as documented for DAPS4 by Renzi, NSWC Indian Head IHTR 2944 (2008), Eqs. 7 and 43-64",
-        "stress_sign_convention": "tension_positive",
-        "von_mises_convention": "plane_stress_radial_omitted"
+        "source_reference": "Pulos and Salerno periodic-bay solution with the beam-column term (DTMB Report 1497), as documented for DAPS4 by Renzi, NSWC Indian Head IHTR 2944 (2008), Eqs. 7 and 43-64"
       },
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
       "boundary_assumptions": [
@@ -5213,7 +5173,6 @@
         "midbay_shell_hoop_stress_per_unit_pressure": 107.506427763,
         "n_function": 1.07516730811,
         "ring_hoop_stress_per_unit_pressure": 62.2904320264,
-        "ring_maximum_hoop_stress_location": "external_ring_base_at_shell",
         "ring_maximum_hoop_stress_per_unit_pressure": 63.576104109,
         "ring_maximum_hoop_stress_radius_mm": {
           "unit": "mm",
@@ -5227,10 +5186,6 @@
           "axial_inner_mpa": {
             "unit": "MPa",
             "value": -370.534547151
-          },
-          "axial_membrane_mpa": {
-            "unit": "MPa",
-            "value": -166.850068354
           },
           "axial_outer_mpa": {
             "unit": "MPa",
@@ -5256,24 +5211,15 @@
             "unit": "MPa",
             "value": 337.183379367
           },
-          "von_mises_membrane_mpa": {
-            "unit": "MPa",
-            "value": 204.194335595
-          },
           "von_mises_outer_mpa": {
             "unit": "MPa",
             "value": 187.74467173
           }
         },
-        "load_radius_convention": "hoop_at_mid_surface_axial_from_outer_surface",
         "midbay": {
           "axial_inner_mpa": {
             "unit": "MPa",
             "value": -79.682485799
-          },
-          "axial_membrane_mpa": {
-            "unit": "MPa",
-            "value": -166.850068354
           },
           "axial_outer_mpa": {
             "unit": "MPa",
@@ -5299,27 +5245,21 @@
             "unit": "MPa",
             "value": 255.380385472
           },
-          "von_mises_membrane_mpa": {
-            "unit": "MPa",
-            "value": 270.309422875
-          },
           "von_mises_outer_mpa": {
             "unit": "MPa",
             "value": 304.828415792
           }
         },
-        "pressure_mpa": {
+        "midbay_von_mises_membrane_mpa": {
           "unit": "MPa",
-          "value": 2.84064000479
+          "value": 270.309422875
         },
         "pressure_parameter_gamma": 0.15523401029,
         "ring_hoop_stress_mpa": {
           "unit": "MPa",
           "value": -176.88856733
         },
-        "source_reference": "Pulos and Salerno periodic-bay solution with the beam-column term (DTMB Report 1497), as documented for DAPS4 by Renzi, NSWC Indian Head IHTR 2944 (2008), Eqs. 7 and 43-64",
-        "stress_sign_convention": "tension_positive",
-        "von_mises_convention": "plane_stress_radial_omitted"
+        "source_reference": "Pulos and Salerno periodic-bay solution with the beam-column term (DTMB Report 1497), as documented for DAPS4 by Renzi, NSWC Indian Head IHTR 2944 (2008), Eqs. 7 and 43-64"
       },
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
       "boundary_assumptions": [
@@ -6120,7 +6060,6 @@
         "midbay_shell_hoop_stress_per_unit_pressure": 107.506427763,
         "n_function": 1.07516730811,
         "ring_hoop_stress_per_unit_pressure": 62.2904320264,
-        "ring_maximum_hoop_stress_location": "external_ring_base_at_shell",
         "ring_maximum_hoop_stress_per_unit_pressure": 63.576104109,
         "ring_maximum_hoop_stress_radius_mm": {
           "unit": "mm",
@@ -6134,10 +6073,6 @@
           "axial_inner_mpa": {
             "unit": "MPa",
             "value": -360.252351881
-          },
-          "axial_membrane_mpa": {
-            "unit": "MPa",
-            "value": -162.39533352
           },
           "axial_outer_mpa": {
             "unit": "MPa",
@@ -6163,24 +6098,15 @@
             "unit": "MPa",
             "value": 327.915309888
           },
-          "von_mises_membrane_mpa": {
-            "unit": "MPa",
-            "value": 198.814387152
-          },
           "von_mises_outer_mpa": {
             "unit": "MPa",
             "value": 182.698555461
           }
         },
-        "load_radius_convention": "hoop_at_mid_surface_axial_from_outer_surface",
         "midbay": {
           "axial_inner_mpa": {
             "unit": "MPa",
             "value": -77.9311871604
-          },
-          "axial_membrane_mpa": {
-            "unit": "MPa",
-            "value": -162.39533352
           },
           "axial_outer_mpa": {
             "unit": "MPa",
@@ -6206,27 +6132,21 @@
             "unit": "MPa",
             "value": 248.395010075
           },
-          "von_mises_membrane_mpa": {
-            "unit": "MPa",
-            "value": 262.931933915
-          },
           "von_mises_outer_mpa": {
             "unit": "MPa",
             "value": 296.375346658
           }
         },
-        "pressure_mpa": {
+        "midbay_von_mises_membrane_mpa": {
           "unit": "MPa",
-          "value": 2.76479767456
+          "value": 262.931933915
         },
         "pressure_parameter_gamma": 0.151089412928,
         "ring_hoop_stress_mpa": {
           "unit": "MPa",
           "value": -172.26703834
         },
-        "source_reference": "Pulos and Salerno periodic-bay solution with the beam-column term (DTMB Report 1497), as documented for DAPS4 by Renzi, NSWC Indian Head IHTR 2944 (2008), Eqs. 7 and 43-64",
-        "stress_sign_convention": "tension_positive",
-        "von_mises_convention": "plane_stress_radial_omitted"
+        "source_reference": "Pulos and Salerno periodic-bay solution with the beam-column term (DTMB Report 1497), as documented for DAPS4 by Renzi, NSWC Indian Head IHTR 2944 (2008), Eqs. 7 and 43-64"
       },
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
       "boundary_assumptions": [
@@ -7027,7 +6947,6 @@
         "midbay_shell_hoop_stress_per_unit_pressure": 107.506427763,
         "n_function": 1.07516730811,
         "ring_hoop_stress_per_unit_pressure": 62.2904320264,
-        "ring_maximum_hoop_stress_location": "external_ring_base_at_shell",
         "ring_maximum_hoop_stress_per_unit_pressure": 63.576104109,
         "ring_maximum_hoop_stress_radius_mm": {
           "unit": "mm",
@@ -7041,10 +6960,6 @@
           "axial_inner_mpa": {
             "unit": "MPa",
             "value": -357.45224241
-          },
-          "axial_membrane_mpa": {
-            "unit": "MPa",
-            "value": -161.180405837
           },
           "axial_outer_mpa": {
             "unit": "MPa",
@@ -7070,24 +6985,15 @@
             "unit": "MPa",
             "value": 325.39050429
           },
-          "von_mises_membrane_mpa": {
-            "unit": "MPa",
-            "value": 197.346361231
-          },
           "von_mises_outer_mpa": {
             "unit": "MPa",
             "value": 181.322788844
           }
         },
-        "load_radius_convention": "hoop_at_mid_surface_axial_from_outer_surface",
         "midbay": {
           "axial_inner_mpa": {
             "unit": "MPa",
             "value": -77.4494651445
-          },
-          "axial_membrane_mpa": {
-            "unit": "MPa",
-            "value": -161.180405837
           },
           "axial_outer_mpa": {
             "unit": "MPa",
@@ -7113,27 +7019,21 @@
             "unit": "MPa",
             "value": 246.491810326
           },
-          "von_mises_membrane_mpa": {
-            "unit": "MPa",
-            "value": 260.921630043
-          },
           "von_mises_outer_mpa": {
             "unit": "MPa",
             "value": 294.073386708
           }
         },
-        "pressure_mpa": {
+        "midbay_von_mises_membrane_mpa": {
           "unit": "MPa",
-          "value": 2.74411340268
+          "value": 260.921630043
         },
         "pressure_parameter_gamma": 0.149959068193,
         "ring_hoop_stress_mpa": {
           "unit": "MPa",
           "value": -171.005534016
         },
-        "source_reference": "Pulos and Salerno periodic-bay solution with the beam-column term (DTMB Report 1497), as documented for DAPS4 by Renzi, NSWC Indian Head IHTR 2944 (2008), Eqs. 7 and 43-64",
-        "stress_sign_convention": "tension_positive",
-        "von_mises_convention": "plane_stress_radial_omitted"
+        "source_reference": "Pulos and Salerno periodic-bay solution with the beam-column term (DTMB Report 1497), as documented for DAPS4 by Renzi, NSWC Indian Head IHTR 2944 (2008), Eqs. 7 and 43-64"
       },
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
       "boundary_assumptions": [
@@ -7934,7 +7834,6 @@
         "midbay_shell_hoop_stress_per_unit_pressure": 107.506427763,
         "n_function": 1.07516730811,
         "ring_hoop_stress_per_unit_pressure": 62.2904320264,
-        "ring_maximum_hoop_stress_location": "external_ring_base_at_shell",
         "ring_maximum_hoop_stress_per_unit_pressure": 63.576104109,
         "ring_maximum_hoop_stress_radius_mm": {
           "unit": "mm",
@@ -7948,10 +7847,6 @@
           "axial_inner_mpa": {
             "unit": "MPa",
             "value": -353.721499318
-          },
-          "axial_membrane_mpa": {
-            "unit": "MPa",
-            "value": -159.560502261
           },
           "axial_outer_mpa": {
             "unit": "MPa",
@@ -7977,24 +7872,15 @@
             "unit": "MPa",
             "value": 322.025985674
           },
-          "von_mises_membrane_mpa": {
-            "unit": "MPa",
-            "value": 195.388484647
-          },
           "von_mises_outer_mpa": {
             "unit": "MPa",
             "value": 179.488726682
           }
         },
-        "load_radius_convention": "hoop_at_mid_surface_axial_from_outer_surface",
         "midbay": {
           "axial_inner_mpa": {
             "unit": "MPa",
             "value": -76.8044566237
-          },
-          "axial_membrane_mpa": {
-            "unit": "MPa",
-            "value": -159.560502261
           },
           "axial_outer_mpa": {
             "unit": "MPa",
@@ -8020,27 +7906,21 @@
             "unit": "MPa",
             "value": 243.955468024
           },
-          "von_mises_membrane_mpa": {
-            "unit": "MPa",
-            "value": 258.242376728
-          },
           "von_mises_outer_mpa": {
             "unit": "MPa",
             "value": 291.006373778
           }
         },
-        "pressure_mpa": {
+        "midbay_von_mises_membrane_mpa": {
           "unit": "MPa",
-          "value": 2.71653437351
+          "value": 258.242376728
         },
         "pressure_parameter_gamma": 0.148451941879,
         "ring_hoop_stress_mpa": {
           "unit": "MPa",
           "value": -169.322807572
         },
-        "source_reference": "Pulos and Salerno periodic-bay solution with the beam-column term (DTMB Report 1497), as documented for DAPS4 by Renzi, NSWC Indian Head IHTR 2944 (2008), Eqs. 7 and 43-64",
-        "stress_sign_convention": "tension_positive",
-        "von_mises_convention": "plane_stress_radial_omitted"
+        "source_reference": "Pulos and Salerno periodic-bay solution with the beam-column term (DTMB Report 1497), as documented for DAPS4 by Renzi, NSWC Indian Head IHTR 2944 (2008), Eqs. 7 and 43-64"
       },
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
       "boundary_assumptions": [
@@ -8841,7 +8721,6 @@
         "midbay_shell_hoop_stress_per_unit_pressure": 107.506427763,
         "n_function": 1.07516730811,
         "ring_hoop_stress_per_unit_pressure": 62.2904320264,
-        "ring_maximum_hoop_stress_location": "external_ring_base_at_shell",
         "ring_maximum_hoop_stress_per_unit_pressure": 63.576104109,
         "ring_maximum_hoop_stress_radius_mm": {
           "unit": "mm",
@@ -8855,10 +8734,6 @@
           "axial_inner_mpa": {
             "unit": "MPa",
             "value": -350.925488273
-          },
-          "axial_membrane_mpa": {
-            "unit": "MPa",
-            "value": -158.345574579
           },
           "axial_outer_mpa": {
             "unit": "MPa",
@@ -8884,24 +8759,15 @@
             "unit": "MPa",
             "value": 319.504008814
           },
-          "von_mises_membrane_mpa": {
-            "unit": "MPa",
-            "value": 193.919696859
-          },
           "von_mises_outer_mpa": {
             "unit": "MPa",
             "value": 178.113398153
           }
         },
-        "load_radius_convention": "hoop_at_mid_surface_axial_from_outer_surface",
         "midbay": {
           "axial_inner_mpa": {
             "unit": "MPa",
             "value": -76.3186731294
-          },
-          "axial_membrane_mpa": {
-            "unit": "MPa",
-            "value": -158.345574579
           },
           "axial_outer_mpa": {
             "unit": "MPa",
@@ -8927,27 +8793,21 @@
             "unit": "MPa",
             "value": 242.054149758
           },
-          "von_mises_membrane_mpa": {
-            "unit": "MPa",
-            "value": 256.233797649
-          },
           "von_mises_outer_mpa": {
             "unit": "MPa",
             "value": 288.707808255
           }
         },
-        "pressure_mpa": {
+        "midbay_von_mises_membrane_mpa": {
           "unit": "MPa",
-          "value": 2.69585010163
+          "value": 256.233797649
         },
         "pressure_parameter_gamma": 0.147321597144,
         "ring_hoop_stress_mpa": {
           "unit": "MPa",
           "value": -168.060223971
         },
-        "source_reference": "Pulos and Salerno periodic-bay solution with the beam-column term (DTMB Report 1497), as documented for DAPS4 by Renzi, NSWC Indian Head IHTR 2944 (2008), Eqs. 7 and 43-64",
-        "stress_sign_convention": "tension_positive",
-        "von_mises_convention": "plane_stress_radial_omitted"
+        "source_reference": "Pulos and Salerno periodic-bay solution with the beam-column term (DTMB Report 1497), as documented for DAPS4 by Renzi, NSWC Indian Head IHTR 2944 (2008), Eqs. 7 and 43-64"
       },
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
       "boundary_assumptions": [
@@ -9748,7 +9608,6 @@
         "midbay_shell_hoop_stress_per_unit_pressure": 107.506427763,
         "n_function": 1.07516730811,
         "ring_hoop_stress_per_unit_pressure": 62.2904320264,
-        "ring_maximum_hoop_stress_location": "external_ring_base_at_shell",
         "ring_maximum_hoop_stress_per_unit_pressure": 63.576104109,
         "ring_maximum_hoop_stress_radius_mm": {
           "unit": "mm",
@@ -9762,10 +9621,6 @@
           "axial_inner_mpa": {
             "unit": "MPa",
             "value": -343.477996952
-          },
-          "axial_membrane_mpa": {
-            "unit": "MPa",
-            "value": -155.105767426
           },
           "axial_outer_mpa": {
             "unit": "MPa",
@@ -9791,24 +9646,15 @@
             "unit": "MPa",
             "value": 312.78462624
           },
-          "von_mises_membrane_mpa": {
-            "unit": "MPa",
-            "value": 190.001342851
-          },
           "von_mises_outer_mpa": {
             "unit": "MPa",
             "value": 174.44675747
           }
         },
-        "load_radius_convention": "hoop_at_mid_surface_axial_from_outer_surface",
         "midbay": {
           "axial_inner_mpa": {
             "unit": "MPa",
             "value": -75.0148013721
-          },
-          "axial_membrane_mpa": {
-            "unit": "MPa",
-            "value": -155.105767426
           },
           "axial_outer_mpa": {
             "unit": "MPa",
@@ -9834,27 +9680,21 @@
             "unit": "MPa",
             "value": 236.987871835
           },
-          "von_mises_membrane_mpa": {
-            "unit": "MPa",
-            "value": 250.881175775
-          },
           "von_mises_outer_mpa": {
             "unit": "MPa",
             "value": 282.585361638
           }
         },
-        "pressure_mpa": {
+        "midbay_von_mises_membrane_mpa": {
           "unit": "MPa",
-          "value": 2.64069204328
+          "value": 250.881175775
         },
         "pressure_parameter_gamma": 0.144307344517,
         "ring_hoop_stress_mpa": {
           "unit": "MPa",
           "value": -164.69108754
         },
-        "source_reference": "Pulos and Salerno periodic-bay solution with the beam-column term (DTMB Report 1497), as documented for DAPS4 by Renzi, NSWC Indian Head IHTR 2944 (2008), Eqs. 7 and 43-64",
-        "stress_sign_convention": "tension_positive",
-        "von_mises_convention": "plane_stress_radial_omitted"
+        "source_reference": "Pulos and Salerno periodic-bay solution with the beam-column term (DTMB Report 1497), as documented for DAPS4 by Renzi, NSWC Indian Head IHTR 2944 (2008), Eqs. 7 and 43-64"
       },
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
       "boundary_assumptions": [
@@ -10655,7 +10495,6 @@
         "midbay_shell_hoop_stress_per_unit_pressure": 107.506427763,
         "n_function": 1.07516730811,
         "ring_hoop_stress_per_unit_pressure": 62.2904320264,
-        "ring_maximum_hoop_stress_location": "external_ring_base_at_shell",
         "ring_maximum_hoop_stress_per_unit_pressure": 63.576104109,
         "ring_maximum_hoop_stress_radius_mm": {
           "unit": "mm",
@@ -10669,10 +10508,6 @@
           "axial_inner_mpa": {
             "unit": "MPa",
             "value": -293.526340937
-          },
-          "axial_membrane_mpa": {
-            "unit": "MPa",
-            "value": -133.237069147
           },
           "axial_outer_mpa": {
             "unit": "MPa",
@@ -10698,24 +10533,15 @@
             "unit": "MPa",
             "value": 267.64828194
           },
-          "von_mises_membrane_mpa": {
-            "unit": "MPa",
-            "value": 163.49326702
-          },
           "von_mises_outer_mpa": {
             "unit": "MPa",
             "value": 149.729362267
           }
         },
-        "load_radius_convention": "hoop_at_mid_surface_axial_from_outer_surface",
         "midbay": {
           "axial_inner_mpa": {
             "unit": "MPa",
             "value": -65.8995325838
-          },
-          "axial_membrane_mpa": {
-            "unit": "MPa",
-            "value": -133.237069147
           },
           "axial_outer_mpa": {
             "unit": "MPa",
@@ -10741,27 +10567,21 @@
             "unit": "MPa",
             "value": 202.93447251
           },
-          "von_mises_membrane_mpa": {
-            "unit": "MPa",
-            "value": 214.884526461
-          },
           "von_mises_outer_mpa": {
             "unit": "MPa",
             "value": 241.521391484
           }
         },
-        "pressure_mpa": {
+        "midbay_von_mises_membrane_mpa": {
           "unit": "MPa",
-          "value": 2.26837514945
+          "value": 214.884526461
         },
         "pressure_parameter_gamma": 0.123961139285,
         "ring_hoop_stress_mpa": {
           "unit": "MPa",
           "value": -141.865688018
         },
-        "source_reference": "Pulos and Salerno periodic-bay solution with the beam-column term (DTMB Report 1497), as documented for DAPS4 by Renzi, NSWC Indian Head IHTR 2944 (2008), Eqs. 7 and 43-64",
-        "stress_sign_convention": "tension_positive",
-        "von_mises_convention": "plane_stress_radial_omitted"
+        "source_reference": "Pulos and Salerno periodic-bay solution with the beam-column term (DTMB Report 1497), as documented for DAPS4 by Renzi, NSWC Indian Head IHTR 2944 (2008), Eqs. 7 and 43-64"
       },
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
       "boundary_assumptions": [
@@ -11562,7 +11382,6 @@
         "midbay_shell_hoop_stress_per_unit_pressure": 107.506427763,
         "n_function": 1.07516730811,
         "ring_hoop_stress_per_unit_pressure": 62.2904320264,
-        "ring_maximum_hoop_stress_location": "external_ring_base_at_shell",
         "ring_maximum_hoop_stress_per_unit_pressure": 63.576104109,
         "ring_maximum_hoop_stress_radius_mm": {
           "unit": "mm",
@@ -11576,10 +11395,6 @@
           "axial_inner_mpa": {
             "unit": "MPa",
             "value": -249.577069718
-          },
-          "axial_membrane_mpa": {
-            "unit": "MPa",
-            "value": -113.798226232
           },
           "axial_outer_mpa": {
             "unit": "MPa",
@@ -11605,24 +11420,15 @@
             "unit": "MPa",
             "value": 227.837181215
           },
-          "von_mises_membrane_mpa": {
-            "unit": "MPa",
-            "value": 139.846791795
-          },
           "von_mises_outer_mpa": {
             "unit": "MPa",
             "value": 127.801339044
           }
         },
-        "load_radius_convention": "hoop_at_mid_surface_axial_from_outer_surface",
         "midbay": {
           "axial_inner_mpa": {
             "unit": "MPa",
             "value": -57.3551219664
-          },
-          "axial_membrane_mpa": {
-            "unit": "MPa",
-            "value": -113.798226232
           },
           "axial_outer_mpa": {
             "unit": "MPa",
@@ -11648,27 +11454,21 @@
             "unit": "MPa",
             "value": 172.864580208
           },
-          "von_mises_membrane_mpa": {
-            "unit": "MPa",
-            "value": 183.07566056
-          },
           "von_mises_outer_mpa": {
             "unit": "MPa",
             "value": 205.389468666
           }
         },
-        "pressure_mpa": {
+        "midbay_von_mises_membrane_mpa": {
           "unit": "MPa",
-          "value": 1.93742679938
+          "value": 183.07566056
         },
         "pressure_parameter_gamma": 0.105875623523,
         "ring_hoop_stress_mpa": {
           "unit": "MPa",
           "value": -121.458184974
         },
-        "source_reference": "Pulos and Salerno periodic-bay solution with the beam-column term (DTMB Report 1497), as documented for DAPS4 by Renzi, NSWC Indian Head IHTR 2944 (2008), Eqs. 7 and 43-64",
-        "stress_sign_convention": "tension_positive",
-        "von_mises_convention": "plane_stress_radial_omitted"
+        "source_reference": "Pulos and Salerno periodic-bay solution with the beam-column term (DTMB Report 1497), as documented for DAPS4 by Renzi, NSWC Indian Head IHTR 2944 (2008), Eqs. 7 and 43-64"
       },
       "benchmark_source_reference": "DTMB Report 1324, Figure 2 and Table 2: cylinder 4-A at ten internal-bulkhead spacings",
       "boundary_assumptions": [

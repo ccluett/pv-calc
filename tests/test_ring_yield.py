@@ -131,14 +131,14 @@ def test_yield_pressures_are_linear_elastic_mean_hoop_yield():
 
 
 @pytest.mark.parametrize(
-    ("ring_location", "location", "smallest_radius_mm"),
+    ("ring_location", "smallest_radius_mm"),
     [
-        ("internal", "internal_ring_free_edge", 274.5 - 2.38 / 2.0 - 25.0),
-        ("external", "external_ring_base_at_shell", 274.5 + 2.38 / 2.0),
+        ("internal", 274.5 - 2.38 / 2.0 - 25.0),
+        ("external", 274.5 + 2.38 / 2.0),
     ],
 )
 def test_ring_first_yield_is_at_the_smallest_radius_of_the_translating_ring(
-    ring_location, location, smallest_radius_mm
+    ring_location, smallest_radius_mm
 ):
     # Each ring section translates radially as a whole, so its hoop stress
     # E w_ring / r is largest at its smallest radius: the free edge of an
@@ -151,7 +151,6 @@ def test_ring_first_yield_is_at_the_smallest_radius_of_the_translating_ring(
     )
 
     assert stress is not None
-    assert stress.ring_maximum_hoop_stress_location == location
     assert stress.ring_maximum_hoop_stress_radius_mm == pytest.approx(smallest_radius_mm)
     assert stress.ring_maximum_hoop_stress_per_unit_pressure == pytest.approx(
         stress.ring_hoop_stress_per_unit_pressure * centroid_radius_mm / smallest_radius_mm,
@@ -209,9 +208,7 @@ def test_json_summary_and_text_report_the_yield_pressures():
     assert summary["ring_yield"]["ring_first_yield_pressure_mpa"]["value"] == pytest.approx(
         first_yield, rel=1e-12
     )
-    assert summary["ring_yield"]["ring_maximum_hoop_stress_location"] == (
-        "external_ring_base_at_shell"
-    )
+    assert summary["ring_yield"]["ring_location"] == "external"
     assert f"Ring first yield (ring base at the shell): {first_yield:.6g} MPa" in text
 
     without_yield = render_text(_response(None))

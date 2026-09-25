@@ -154,7 +154,7 @@ RING_AXISYMMETRIC_STRESS_UNITS = {
     "ring_maximum_hoop_stress_radius_mm": "mm",
 }
 RING_BEAM_COLUMN_BAY_UNITS = {
-    "pressure_mpa": "MPa",
+    "midbay_von_mises_membrane_mpa": "MPa",
     "ring_hoop_stress_mpa": "MPa",
 }
 RING_BAY_SURFACE_STRESS_UNITS = {
@@ -162,11 +162,9 @@ RING_BAY_SURFACE_STRESS_UNITS = {
     "axial_inner_mpa": "MPa",
     "hoop_outer_mpa": "MPa",
     "hoop_inner_mpa": "MPa",
-    "axial_membrane_mpa": "MPa",
     "hoop_membrane_mpa": "MPa",
     "von_mises_outer_mpa": "MPa",
     "von_mises_inner_mpa": "MPa",
-    "von_mises_membrane_mpa": "MPa",
     "radial_deflection_mm": "mm",
 }
 RING_AXISYMMETRIC_COLLAPSE_UNITS = {

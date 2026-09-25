@@ -128,9 +128,8 @@ def summarize_response(
             "shell_yield_between_rings_pressure_mpa", "ring_yield_pressure_mpa",
             "ring_first_yield_pressure_mpa",
         ) if key in result})
-        location = (result.get("axisymmetric_stress") or {}).get("ring_maximum_hoop_stress_location")
-        if location is not None:
-            summary["ring_yield"]["ring_maximum_hoop_stress_location"] = location
+        if "ring_location" in result:
+            summary["ring_yield"]["ring_location"] = result["ring_location"]
         collapse = result.get("axisymmetric_collapse")
         if collapse is not None:
             summary["ring_collapse"] = deepcopy({key: collapse[key] for key in (
@@ -140,9 +139,12 @@ def summarize_response(
         bay = result.get("beam_column_bay")
         if bay is not None:
             summary["ring_bay_stress"] = deepcopy({
-                f"{station}_{key}": bay[station][key]
-                for station in ("midbay", "frame")
-                for key in ("von_mises_outer_mpa", "von_mises_inner_mpa", "von_mises_membrane_mpa")
+                **{
+                    f"{station}_{key}": bay[station][key]
+                    for station in ("midbay", "frame")
+                    for key in ("von_mises_outer_mpa", "von_mises_inner_mpa")
+                },
+                "midbay_von_mises_membrane_mpa": bay["midbay_von_mises_membrane_mpa"],
             })
     if "sizing" in payload:
         summary["sizing"] = {key: value for key, value in payload["sizing"].items() if key in {
@@ -202,8 +204,8 @@ _RING_MODE_LABELS = {
     "axisymmetric_collapse_lunchick": "axisymmetric collapse, Lunchick",
 }
 _RING_FIRST_YIELD_LABELS = {
-    "internal_ring_free_edge": "inner free edge",
-    "external_ring_base_at_shell": "ring base at the shell",
+    "internal": "inner free edge",
+    "external": "ring base at the shell",
 }
 _RING_STATUS_LABELS = {
     "advisory_pending_plasticity": "elastic upper bound: stress exceeds the material limit",
@@ -278,7 +280,7 @@ def _render_summary(summary: dict[str, Any]) -> list[str]:
             first_yield = summary["ring_yield"].get("ring_first_yield_pressure_mpa")
             if _number(first_yield) is not None:
                 location = _RING_FIRST_YIELD_LABELS.get(
-                    summary["ring_yield"].get("ring_maximum_hoop_stress_location"), "smallest radius"
+                    summary["ring_yield"].get("ring_location"), "smallest radius"
                 )
                 lines.append(f"Ring first yield ({location}): {_format(first_yield)}")
     if "ring_collapse" in summary:

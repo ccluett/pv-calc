@@ -85,9 +85,9 @@ def _printed_stations(result: RingBeamColumnBayResult) -> dict[str, dict[str, fl
             "hoop_inner_psi": station.hoop_inner_mpa / PSI_TO_MPA,
             "von_mises_outer_psi": station.von_mises_outer_mpa / PSI_TO_MPA,
             "von_mises_inner_psi": station.von_mises_inner_mpa / PSI_TO_MPA,
-            "von_mises_membrane_psi": station.von_mises_membrane_mpa / PSI_TO_MPA,
             "radial_deflection_in": station.radial_deflection_mm / INCH_TO_MM,
         }
+    stations["midbay"]["von_mises_membrane_psi"] = result.midbay_von_mises_membrane_mpa / PSI_TO_MPA
     return stations
 
 
@@ -115,8 +115,6 @@ def test_daps4_case2_stresses_match_the_published_program_output():
     assert result.ring_hoop_stress_mpa / PSI_TO_MPA == pytest.approx(
         printed["ring_hoop_stress_psi"], abs=precision["stress_psi"]
     )
-    assert result.stress_sign_convention == "tension_positive"
-    assert result.load_radius_convention == "hoop_at_mid_surface_axial_from_outer_surface"
 
 
 def test_daps4_case2_axisymmetric_collapse_matches_the_published_output():
@@ -455,7 +453,6 @@ def test_the_ring_model_reports_collapse_with_its_disposition():
     # The applied-pressure bay stresses come from the same kernel.
     bay = result.beam_column_bay
     assert bay is not None
-    assert bay.pressure_mpa == 40.0
     assert bay.frame.von_mises_inner_mpa > bay.midbay.von_mises_outer_mpa
 
 

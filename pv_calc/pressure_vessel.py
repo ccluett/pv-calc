@@ -927,10 +927,6 @@ class RingAxisymmetricStressResult:
     frame_parameter_gamma: float
     midbay_shell_hoop_stress_per_unit_pressure: float
     ring_hoop_stress_per_unit_pressure: float
-    ring_maximum_hoop_stress_location: Literal[
-        "internal_ring_free_edge",
-        "external_ring_base_at_shell",
-    ]
     ring_maximum_hoop_stress_radius_mm: float
     ring_maximum_hoop_stress_per_unit_pressure: float
 
@@ -943,11 +939,9 @@ class RingBaySurfaceStress:
     axial_inner_mpa: float
     hoop_outer_mpa: float
     hoop_inner_mpa: float
-    axial_membrane_mpa: float
     hoop_membrane_mpa: float
     von_mises_outer_mpa: float
     von_mises_inner_mpa: float
-    von_mises_membrane_mpa: float
     radial_deflection_mm: float
 
 
@@ -956,14 +950,11 @@ class RingBeamColumnBayResult:
     """Pulos-Salerno periodic bay at one pressure, as Renzi documents for DAPS4."""
 
     source_reference: str
-    stress_sign_convention: Literal["tension_positive"]
-    load_radius_convention: Literal["hoop_at_mid_surface_axial_from_outer_surface"]
-    von_mises_convention: Literal["plane_stress_radial_omitted"]
-    pressure_mpa: float
     bay_parameter_theta: float
     pressure_parameter_gamma: float
     midbay: RingBaySurfaceStress
     frame: RingBaySurfaceStress
+    midbay_von_mises_membrane_mpa: float
     ring_hoop_stress_mpa: float
 
 
@@ -3163,11 +3154,6 @@ def _ring_axisymmetric_stress(
         ring_hoop_stress_per_unit_pressure=(
             r_mm / t_mm * (r_mm / centroid_radius_mm) * ring_deflection_share
         ),
-        ring_maximum_hoop_stress_location=(
-            "external_ring_base_at_shell"
-            if ring_location == "external"
-            else "internal_ring_free_edge"
-        ),
         ring_maximum_hoop_stress_radius_mm=innermost_radius_mm,
         ring_maximum_hoop_stress_per_unit_pressure=(
             r_mm / t_mm * (r_mm / innermost_radius_mm) * ring_deflection_share
@@ -3301,25 +3287,20 @@ def ring_bay_beam_column_stress(
             axial_inner_mpa=axial - bending,
             hoop_outer_mpa=hoop + v * bending,
             hoop_inner_mpa=hoop - v * bending,
-            axial_membrane_mpa=axial,
             hoop_membrane_mpa=hoop,
             von_mises_outer_mpa=_von_mises_plane(axial + bending, hoop + v * bending),
             von_mises_inner_mpa=_von_mises_plane(axial - bending, hoop - v * bending),
-            von_mises_membrane_mpa=_von_mises_plane(axial, hoop),
             radial_deflection_mm=deflection,
         )
 
+    midbay_hoop = sigma_u - sigma_mf * f2
     return RingBeamColumnBayResult(
         source_reference=RING_SHELL_BEAM_COLUMN_SOURCE,
-        stress_sign_convention="tension_positive",
-        load_radius_convention="hoop_at_mid_surface_axial_from_outer_surface",
-        von_mises_convention="plane_stress_radial_omitted",
-        pressure_mpa=p_mpa,
         bay_parameter_theta=theta,
         pressure_parameter_gamma=gamma,
         midbay=station(
             midbay_bending,
-            sigma_u - sigma_mf * f2,
+            midbay_hoop,
             free_deflection + ring_deflection_scale * f2,
         ),
         frame=station(
@@ -3327,6 +3308,7 @@ def ring_bay_beam_column_stress(
             sigma_u - sigma_mf,
             free_deflection + ring_deflection_scale * frame_shape,
         ),
+        midbay_von_mises_membrane_mpa=_von_mises_plane(axial, midbay_hoop),
         # Eq. 55 is E w_ring / R; the ring's hoop stress at radius r is E w_ring / r.
         ring_hoop_stress_mpa=(
             (-p_mpa * width_mm * (1.0 - 0.5 * v * alpha) + sigma_mf * t_mm * clear_bay * f1 / r_mm)
@@ -3420,7 +3402,9 @@ def ring_bay_axisymmetric_collapse(
     first_yield = lower + 0.5 * (upper - lower)
     state = bay(first_yield)
     # Eq. 66 from the mid-bay stresses at first yield; B_x = B_phi / (nu r).
-    ratio = state.midbay.axial_membrane_mpa / state.midbay.hoop_membrane_mpa
+    # The membrane stress is the mean of the two surfaces.
+    axial_membrane = 0.5 * (state.midbay.axial_outer_mpa + state.midbay.axial_inner_mpa)
+    ratio = axial_membrane / state.midbay.hoop_membrane_mpa
     b_phi = (state.midbay.hoop_outer_mpa - state.midbay.hoop_membrane_mpa) / (
         6.0 * state.midbay.hoop_membrane_mpa
     )
@@ -3439,7 +3423,7 @@ def ring_bay_axisymmetric_collapse(
         beam_column_limit_pressure_mpa=limit_mpa,
         first_yield_pressure_mpa=first_yield,
         outer_midbay_bending_compressive=(
-            state.midbay.axial_outer_mpa < state.midbay.axial_membrane_mpa
+            state.midbay.axial_outer_mpa < axial_membrane
         ),
         plastic_reserve_factor_phi3=phi_3,
         collapse_pressure_mpa=phi_3 * first_yield,

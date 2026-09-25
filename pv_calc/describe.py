@@ -289,14 +289,10 @@ _RESULT_FIELD_DESCRIPTIONS: dict[str, str] = {
         "ring_yield_pressure_mpa by the ratio of that radius to the centroid radius, "
         "1 - (h/2)/R_c. Null without a yield strength or valid geometry."
     ),
-    "ring_maximum_hoop_stress_location": (
-        "Where the ring's hoop stress is largest: the smallest radius of its section, "
-        "internal_ring_free_edge or external_ring_base_at_shell. Each section translates "
-        "radially as a whole, so its hoop strain w_ring / r peaks there."
-    ),
     "ring_maximum_hoop_stress_radius_mm": (
-        "Radius of ring_maximum_hoop_stress_location: R - t/2 - h for an internal ring, "
-        "R + t/2 for an external one."
+        "The ring's smallest radius, where its hoop stress is largest: R - t/2 - h at an "
+        "internal ring's free edge, R + t/2 at an external ring's base. Each section "
+        "translates radially as a whole, so its hoop strain w_ring / r peaks there."
     ),
     "ring_maximum_hoop_stress_per_unit_pressure": (
         "The ring's hoop stress at its smallest radius divided by the applied pressure; the "
@@ -321,8 +317,10 @@ _RESULT_FIELD_DESCRIPTIONS: dict[str, str] = {
     "beam_column_bay": (
         "The Pulos-Salerno periodic bay at the applied pressure, as Renzi documents for "
         "DAPS4 (IHTR 2944, Eqs. 7 and 43-64): mid-bay and frame stresses on both surfaces, "
-        "their plane-stress von Mises values, the membrane stresses, deflections, and the ring "
-        "hoop stress, with the beam-column term. The hoop load acts at the mean radius and the "
+        "tension positive, with their plane-stress von Mises values (radial stress omitted, as "
+        "DAPS4 prints them), deflections, and the ring hoop stress, with the beam-column term. "
+        "The axial membrane stress is the mean of the two surfaces. The hoop load acts at the "
+        "mean radius and the "
         "axial load is p R_o^2 / (2 R). The ring area is Renzi's A_f (R/R_cg)^2 (Eq. 7), which "
         "for an internal ring exceeds the A_f R/R_c of axisymmetric_stress. Null for invalid "
         "geometry, or when the applied pressure reaches the gamma = 1 limit of the closed form."
@@ -347,6 +345,9 @@ _RESULT_FIELD_DESCRIPTIONS: dict[str, str] = {
     "midbay": (
         "The shell at mid-bay: axial and hoop stress on the outer and inner surfaces, tension "
         "positive, with their von Mises values and the radial deflection."
+    ),
+    "midbay_von_mises_membrane_mpa": (
+        "The plane-stress von Mises value of the mid-bay membrane (mid-plane) stresses."
     ),
     "pressure_parameter_gamma": (
         "Renzi Eq. 64, p R^2 alpha^2 / (4 sqrt(D C (1 - nu^2))): the axial load against the "
