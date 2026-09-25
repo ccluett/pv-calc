@@ -168,12 +168,9 @@ def test_global_search_stops_at_half_waves_of_one_ring_spacing():
 def test_global_search_keeps_a_half_wave_between_one_and_two_ring_spacings():
     # A light internal ring on a very thin shell governs at (13, 6), a
     # half-wave of 1.54 ring spacings. Sampled at the rings, such a wave moves
-    # them with the smeared strain energy, so it is a global mode: an
-    # independent discrete-ring Fourier-Ritz model of this geometry (rings as
-    # curved beams at their centroid radius) gives 1.018 MPa at n = 6, where
-    # the smeared ideal is 1.0176 MPa. A screen at two spacings would have
-    # reported (10, 6) at 1.123 MPa, 10% high, and the inter-ring bay (1.29 MPa
-    # ideal) does not cover this mode.
+    # them with the smeared strain energy, so it is a global mode. A screen at
+    # two spacings would have reported (10, 6) at 1.123 MPa, 10% high, and the
+    # inter-ring bay (1.29 MPa ideal) does not cover this mode.
     result = ring_stiffened_shell_external_pressure(
         external_pressure_mpa=0.5,
         shell_mid_surface_radius_mm=500.0,

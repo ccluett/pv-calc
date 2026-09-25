@@ -456,6 +456,34 @@ def test_the_ring_model_reports_collapse_with_its_disposition():
     assert bay.frame.von_mises_inner_mpa > bay.midbay.von_mises_outer_mpa
 
 
+def test_reference_only_material_data_mark_a_collapse_minimum():
+    # The bundled Ti-6Al-4V curve is reference-only. Collapse governs this
+    # heavily ringed bay, and the minimum still says the data are unqualified,
+    # since the bay it beat was corrected with that curve.
+    response = calculate({
+        "schema_version": CALC_SCHEMA_VERSION,
+        "model": "ring-shell",
+        "inputs": {
+            "external_pressure": {"value": 40.0, "unit": "MPa"},
+            "shell_mid_surface_radius": {"value": 150.0, "unit": "mm"},
+            "wall_thickness": {"value": 6.0, "unit": "mm"},
+            "unsupported_length": {"value": 300.0, "unit": "mm"},
+            "ring_spacing": {"value": 30.0, "unit": "mm"},
+            "ring_axial_width": {"value": 8.0, "unit": "mm"},
+            "ring_radial_height": {"value": 40.0, "unit": "mm"},
+            "ring_location": "internal",
+        },
+        "material": {"type": "named", "name": "Ti-6Al-4V"},
+    })
+    result = response["result"]
+
+    assert result["buckling_data_qualification"] == "reference_only"
+    assert result["advisory_governing_mode"] == "axisymmetric_collapse_lunchick"
+    summary = summarize_response(response)
+    assert summary["ring_buckling"]["buckling_data_qualification"] == "reference_only"
+    assert "axisymmetric collapse, Lunchick; reference-only material data)" in render_text(response)
+
+
 def test_json_summary_and_text_carry_the_bay_stresses_and_collapse():
     response = calculate({
         "schema_version": CALC_SCHEMA_VERSION,

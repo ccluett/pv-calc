@@ -680,10 +680,9 @@ RING_SHELL_DEFAULT_MAX_MODE_EVALUATIONS = 2_000_000
 # investigated for sufficiently large stiffener spacing (SP-8007 Rev. 2,
 # printed p. 34).
 RING_SHELL_AXIAL_HALF_WAVE_BINDING_NOTE = (
-    "The smeared global minimum lies at the shortest admissible axial half-wave, just over "
-    "one ring spacing, and shorter waves would be lower. Those fall between the rings, "
-    "where the smeared stiffness does not apply and the inter-ring bay applies instead; "
-    "the global pressure reported is the lowest over half-waves longer than one spacing."
+    "The smeared global minimum lies at the shortest admissible axial half-wave, "
+    "{spacings:.3g} ring spacings, and shorter waves would be lower. The global pressure "
+    "reported is the lowest over half-waves longer than one spacing."
 )
 RING_SHELL_SOURCE = (
     "NASA/SP-8007-2020/REV 2, Eqs. 64-65 and 82-91, pp. 37 and 40-42"
@@ -703,8 +702,7 @@ RING_SHELL_BOUNDARY_ASSUMPTIONS = (
     "Inter-ring bays assume ideal circular supports at ring center lines.",
 )
 RING_SHELL_PARTIAL_SCOPE_REASON = (
-    "Global buckling is elastic: lobar modes (n >= 2, axial half-waves longer than one ring "
-    "spacing, and always m = 1) with ideal simple supports. "
+    "Global buckling is elastic: lobar modes (n >= 2) with ideal simple supports. "
     "Interframe collapse of an imperfect shell, ring tripping, ring spacing, axisymmetric "
     "elastic buckling (n=0), and the long-cylinder Eq. 66 transition are not checked; "
     "axisymmetric collapse is a perfect-shell estimate."
@@ -760,8 +758,9 @@ RING_SHELL_ADJUSTED_VALUE_NOTE = (
 )
 GENERAL_INSTABILITY_SMEARED_NOTE = (
     "The smeared-ring model assumes closely and uniformly spaced rings. The global search "
-    "admits axial half-waves longer than one ring spacing, and always m = 1; shorter waves "
-    "fall between rings, where the inter-ring check applies. NASA notes that its orthotropic "
+    "admits axial half-waves longer than one ring spacing, and always m = 1: a longer wave "
+    "moves the rings as the smeared stiffness assumes, and a shorter one falls between rings, "
+    "where the inter-ring check applies. NASA notes that its orthotropic "
     "equations lose accuracy against Love or Sanders theory for n <= 4 (printed p. 35) and "
     "that a more accurate discrete-ring theory gives somewhat lower pressures (p. 38), so "
     "widely spaced or deep eccentric rings still need a discrete-ring or code-rule check."
@@ -1069,16 +1068,16 @@ def _positive_finite(value: Any, name: str) -> float:
     return result
 
 
-def _non_negative_pressure(value: Any) -> float:
+def _non_negative_pressure(value: Any, name: str = "external_pressure_mpa") -> float:
     """Zero load is evaluable; its capacity/demand margin is undefined."""
     if isinstance(value, bool):
-        raise ValueError("external_pressure_mpa must be numeric")
+        raise ValueError(f"{name} must be numeric")
     try:
         result = float(value)
     except (TypeError, ValueError) as exc:
-        raise ValueError("external_pressure_mpa must be numeric") from exc
+        raise ValueError(f"{name} must be numeric") from exc
     if not math.isfinite(result) or result < 0.0:
-        raise ValueError("external_pressure_mpa must be finite and non-negative")
+        raise ValueError(f"{name} must be finite and non-negative")
     return result
 
 
@@ -3225,7 +3224,7 @@ def ring_bay_beam_column_stress(
     ``ring_stress_radius_mm``: the ring model passes the ring's smallest
     radius, where it is largest, and DAPS4 prints it at R.
     """
-    p_mpa = _non_negative_pressure(pressure_mpa)
+    p_mpa = _non_negative_pressure(pressure_mpa, "pressure_mpa")
     r_mm, t_mm, spacing_mm, width_mm, area_mm2, centroid_mm, e_mpa, v = _ring_bay_inputs(
         shell_mid_surface_radius_mm,
         wall_thickness_mm,
@@ -3889,7 +3888,7 @@ def ring_stiffened_shell_external_pressure(
             disposition="external_blocker",
             source_reference="NASA/SP-8007-2020/REV 2, joints and discontinuities, p. 57",
             basis=(
-                "The public geometry has no weld profile, heat-affected-zone properties, residual "
+                "The request has no weld profile, heat-affected-zone properties, residual "
                 "stress, or fabrication-tolerance inputs."
             ),
         ),
@@ -3914,7 +3913,11 @@ def ring_stiffened_shell_external_pressure(
         *((BUCKLING_REFERENCE_ONLY_REASON,) if data_qualification == "reference_only" else ()),
         *((global_plasticity_pending,) if global_plasticity_pending is not None else ()),
         *(
-            (RING_SHELL_AXIAL_HALF_WAVE_BINDING_NOTE,)
+            (
+                RING_SHELL_AXIAL_HALF_WAVE_BINDING_NOTE.format(
+                    spacings=with_torsion.critical_half_wave_over_ring_spacing
+                ),
+            )
             if with_torsion.axial_half_wave_limit_binding
             else ()
         ),

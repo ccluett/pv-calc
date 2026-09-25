@@ -389,10 +389,7 @@ _RESULT_FIELD_DESCRIPTIONS: dict[str, str] = {
     "maximum_axial_half_waves_m": (
         "Largest axial half-wave count searched: the most half-waves that are each longer "
         "than one ring spacing, and at least 1. This is pv-calc's smeared-mode screen; NASA "
-        "gives no number. A sine longer than one spacing moves the rings with the smeared "
-        "strain energy; at one spacing the rings can sit at the nodes, and shorter waves fall "
-        "between rings, where the smeared stiffness does not apply and the inter-ring check "
-        "does."
+        "gives no number."
     ),
     "axial_half_wave_limit_binding": (
         "True when the governing mode sits at maximum_axial_half_waves_m and the next shorter "

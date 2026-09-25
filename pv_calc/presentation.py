@@ -115,6 +115,10 @@ def summarize_response(
         summary["ring_buckling"] = deepcopy({key: result[key] for key in (
             "advisory_governing_pressure_mpa", "advisory_governing_mode", "advisory_governing_status",
         ) if key in result})
+        # Every candidate is compared on the record's data, so reference-only
+        # data mark the minimum whichever mode governs it.
+        if result.get("buckling_data_qualification") == "reference_only":
+            summary["ring_buckling"]["buckling_data_qualification"] = "reference_only"
         if ring_unestablished:
             summary["ring_buckling"]["inter_ring_capacity_status"] = result.get(
                 "inter_ring_shell_buckling", {}
@@ -268,6 +272,9 @@ def _render_summary(summary: dict[str, Any]) -> list[str]:
             detail.append(f"m={buckling.get('critical_axial_half_waves_m')}, n={buckling['critical_circumferential_lobes_n']}")
         if buckling.get("advisory_governing_status") in _RING_STATUS_LABELS:
             detail.append(_RING_STATUS_LABELS[buckling["advisory_governing_status"]])
+        unqualified = _RING_STATUS_LABELS["advisory_unqualified_material"]
+        if buckling.get("buckling_data_qualification") == "reference_only" and unqualified not in detail:
+            detail.append(unqualified)
         lines.append(f"Lowest buckling or collapse pressure: {_format(buckling['advisory_governing_pressure_mpa'])} ({'; '.join(detail)})")
     if "ring_yield" in summary:
         shell_yield = summary["ring_yield"].get("shell_yield_between_rings_pressure_mpa")
