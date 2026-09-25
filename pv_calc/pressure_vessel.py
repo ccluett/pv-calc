@@ -325,10 +325,11 @@ SMOOTH_CYLINDER_CORRECTED_STRESS_ABOVE_YIELD_REASON = (
 SMOOTH_CYLINDER_RING_BAY_STRESS_NOTE = (
     "Circumferential membrane stresses, including the plasticity correction and the "
     "proportional-limit and elastic-applicability screens, use the ring-stiffened bay's "
-    "mid-bay hoop membrane stress, {ratio:.6g} times the pressure, in place of "
-    "p*r/t = {nominal:.6g} times the pressure. NASA defines its factors at the circumferential "
-    "stress p*r/t of an unstiffened shell (Eq. 17); between rings, which carry part of the "
-    "hoop load, this extends that definition to the bay's own mid-bay hoop stress."
+    "mid-bay membrane stress, {ratio:.6g} times the pressure, in place of "
+    "p*r/t = {nominal:.6g} times the pressure: its von Mises stress divided by sqrt(3)/2, "
+    "which is p*r/t for an unstiffened shell under hydrostatic load. NASA defines its "
+    "factors at p*r/t (Eq. 17); rings carry part of the hoop load but none of the axial "
+    "load, so the bay's own stress state replaces it."
 )
 SMOOTH_CYLINDER_SCOPE_NOTES = (
     "The NASA equations assume a thin, circular, isotropic, unstiffened shell with uniform "
@@ -641,7 +642,7 @@ class SmoothCylinderBucklingResult:
     correlated_critical_circumferential_stress_mpa: float | None
     circumferential_stress_basis: Literal[
         "unstiffened_membrane_p_r_over_t",
-        "ring_stiffened_mid_bay_hoop_membrane",
+        "ring_stiffened_mid_bay_membrane_equivalent",
     ]
     circumferential_stress_per_unit_pressure: float
     working_circumferential_membrane_stress_mpa: float
@@ -2300,8 +2301,9 @@ def solve_inelastic_critical_pressure(
     """Bracketed solve of ``p = p_elastic * eta(p * r/t)``.
 
     ``radius_over_thickness`` is the circumferential membrane stress per unit
-    pressure: ``r/t`` for an unstiffened shell, or the mid-bay hoop stress of
-    a ring-stiffened bay divided by the pressure. ``eta`` is 1 at zero stress
+    pressure: ``r/t`` for an unstiffened shell, or the equivalent mid-bay
+    membrane stress of a ring-stiffened bay divided by the pressure. ``eta``
+    is 1 at zero stress
     and decreases as stress rises, so the residual
     ``p - p_elastic*eta(p*r/t)`` is negative at ``p=0`` and non-negative at
     ``p=p_elastic``. That brackets a root on ``[0, p_elastic]`` for every
@@ -2680,7 +2682,7 @@ def smooth_cylinder_external_pressure_buckling(
     ramberg_osgood_n: float | None = None,
     compressive_proof_stress_mpa: float | None = None,
     buckling_data_qualification: BucklingDataQualification = "qualified",
-    ring_stiffened_mid_bay_hoop_stress_per_unit_pressure: float | None = None,
+    ring_stiffened_mid_bay_stress_per_unit_pressure: float | None = None,
 ) -> SmoothCylinderBucklingResult:
     """Calculate external-pressure buckling of a smooth cylinder.
 
@@ -2694,9 +2696,10 @@ def smooth_cylinder_external_pressure_buckling(
     otherwise. Reference-only material data retain the numerical estimate and
     margin but label it ``released_unqualified_material``.
 
-    ``ring_stiffened_mid_bay_hoop_stress_per_unit_pressure`` is for the bay
-    of a ring-stiffened shell. Given, it replaces ``r/t`` as the ratio of
-    circumferential membrane stress to pressure in every stress this result
+    ``ring_stiffened_mid_bay_stress_per_unit_pressure`` is for the bay of a
+    ring-stiffened shell under hydrostatic load: the mid-bay membrane von
+    Mises stress divided by sqrt(3)/2 and by the pressure, which is ``r/t``
+    without rings. Given, it replaces ``r/t`` in every stress this result
     compares with material data: the plasticity correction, the
     proportional-limit and elastic-applicability screens, and the reported
     critical stresses. Pressures without a curve are unchanged.
@@ -2748,14 +2751,14 @@ def smooth_cylinder_external_pressure_buckling(
     length_radius = length_mm / r_mm
     stress_basis: Literal[
         "unstiffened_membrane_p_r_over_t",
-        "ring_stiffened_mid_bay_hoop_membrane",
+        "ring_stiffened_mid_bay_membrane_equivalent",
     ]
-    if ring_stiffened_mid_bay_hoop_stress_per_unit_pressure is not None:
+    if ring_stiffened_mid_bay_stress_per_unit_pressure is not None:
         stress_per_pressure = _positive_finite(
-            ring_stiffened_mid_bay_hoop_stress_per_unit_pressure,
-            "ring_stiffened_mid_bay_hoop_stress_per_unit_pressure",
+            ring_stiffened_mid_bay_stress_per_unit_pressure,
+            "ring_stiffened_mid_bay_stress_per_unit_pressure",
         )
-        stress_basis = "ring_stiffened_mid_bay_hoop_membrane"
+        stress_basis = "ring_stiffened_mid_bay_membrane_equivalent"
     else:
         stress_per_pressure = radius_thickness
         stress_basis = "unstiffened_membrane_p_r_over_t"
@@ -2981,7 +2984,7 @@ def smooth_cylinder_external_pressure_buckling(
                     ratio=stress_per_pressure, nominal=radius_thickness
                 ),
             )
-            if stress_basis == "ring_stiffened_mid_bay_hoop_membrane"
+            if stress_basis == "ring_stiffened_mid_bay_membrane_equivalent"
             else ()
         ),
         *release_gate_violations,
@@ -3591,10 +3594,18 @@ def ring_stiffened_shell_external_pressure(
                 yield_strength_mpa=yield_mpa, **bay_geometry
             )
     # NASA defines its plasticity factors at the circumferential stress of an
-    # unstiffened shell, p*r/t. Between rings, which carry part of the hoop
-    # load, the bay's material comparisons extend that to the periodic bay's
-    # mid-bay hoop membrane stress, the stress Pc5 compares with yield. An
-    # invalid record has no bay solution and keeps p*r/t.
+    # unstiffened shell, p*r/t, where the axial stress is half of it. Rings
+    # relieve the bay's hoop stress but not its axial stress, so the bay's
+    # material comparisons read its mid-bay membrane von Mises stress over
+    # sqrt(3)/2, which is p*r/t without rings. An invalid record has no bay
+    # solution and keeps p*r/t.
+    bay_stress_per_pressure: float | None = None
+    if axisymmetric is not None:
+        hoop = axisymmetric.midbay_shell_hoop_stress_per_unit_pressure
+        axial = 0.5 * r_mm / t_mm
+        bay_stress_per_pressure = math.sqrt(
+            axial * axial - axial * hoop + hoop * hoop
+        ) / (0.5 * math.sqrt(3.0))
     inter_ring = smooth_cylinder_external_pressure_buckling(
         external_pressure_mpa=p_mpa,
         shell_mid_surface_radius_mm=r_mm,
@@ -3608,11 +3619,7 @@ def ring_stiffened_shell_external_pressure(
         compressive_proof_stress_mpa=compressive_proof_stress_mpa,
         buckling_data_qualification=data_qualification,
         load_case="hydrostatic_closed_end",
-        ring_stiffened_mid_bay_hoop_stress_per_unit_pressure=(
-            axisymmetric.midbay_shell_hoop_stress_per_unit_pressure
-            if axisymmetric is not None
-            else None
-        ),
+        ring_stiffened_mid_bay_stress_per_unit_pressure=bay_stress_per_pressure,
     )
 
     capacity_status: Literal[
@@ -3810,7 +3817,7 @@ def ring_stiffened_shell_external_pressure(
             basis=(
                 "The source-gated smooth-shell method is evaluated over ring center-to-center "
                 "spacing with ideal simply supported circular lines, and on a valid record its "
-                "material stress is the periodic bay's mid-bay hoop membrane stress; its own "
+                "material stress is the periodic bay's mid-bay membrane stress; its own "
                 f"capacity_status is {inter_ring.capacity_status}."
             ),
         ),
@@ -3882,8 +3889,8 @@ def ring_stiffened_shell_external_pressure(
     notes = (
         RING_SHELL_ADJUSTED_VALUE_NOTE,
         "Each buckling pressure is labelled by comparing its shell circumferential membrane "
-        "stress with the proportional limit: on a valid record, the periodic bay's mid-bay hoop "
-        "stress for the inter-ring bay, and nominal p*r/t for the global mode. With only a "
+        "stress with the proportional limit: on a valid record, the periodic bay's mid-bay "
+        "membrane stress for the inter-ring bay, and nominal p*r/t for the global mode. With only a "
         "yield strength, a "
         "pressure is an elastic upper bound when that stress exceeds yield and undetermined "
         "otherwise.",

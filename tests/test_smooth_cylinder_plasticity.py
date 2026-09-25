@@ -787,8 +787,11 @@ def test_ring_shell_curve_corrects_its_bay_and_leaves_global_modes_unchanged() -
     without = ring_shell(base_properties)
     with_curve = ring_shell({**base_properties, **curve})
     # The bay is the smooth kernel over one ring spacing, with its stresses
-    # read at the periodic bay's mid-bay hoop stress rather than p*r/t.
+    # read at the periodic bay's mid-bay membrane von Mises stress over
+    # sqrt(3)/2 rather than p*r/t.
     ratio = with_curve["axisymmetric_stress"]["midbay_shell_hoop_stress_per_unit_pressure"]
+    axial = 0.5 * 100.0 / 4.0
+    equivalent = math.sqrt(axial * axial - axial * ratio + ratio * ratio) / (0.5 * math.sqrt(3.0))
     bay = smooth_cylinder_external_pressure_buckling(
         external_pressure_mpa=5.0,
         shell_mid_surface_radius_mm=100.0,
@@ -801,15 +804,15 @@ def test_ring_shell_curve_corrects_its_bay_and_leaves_global_modes_unchanged() -
         ramberg_osgood_n=21.0,
         compressive_proof_stress_mpa=827.0,
         load_case="hydrostatic_closed_end",
-        ring_stiffened_mid_bay_hoop_stress_per_unit_pressure=ratio,
+        ring_stiffened_mid_bay_stress_per_unit_pressure=equivalent,
     )
     ring_bay = with_curve["inter_ring_shell_buckling"]
 
     # beta*L = 6 here, so the mid-bay deflection overshoots the free shell's
     # and the mid-bay hoop stress sits just above p*r/t.
     assert ratio == pytest.approx(1.0212 * 100.0 / 4.0, rel=1e-4)
-    assert ring_bay["circumferential_stress_basis"] == "ring_stiffened_mid_bay_hoop_membrane"
-    assert ring_bay["circumferential_stress_per_unit_pressure"] == ratio
+    assert ring_bay["circumferential_stress_basis"] == "ring_stiffened_mid_bay_membrane_equivalent"
+    assert ring_bay["circumferential_stress_per_unit_pressure"] == pytest.approx(equivalent, rel=1e-15)
     assert ring_bay["correlated_critical_pressure_mpa"]["value"] == (
         bay.correlated_critical_pressure_mpa
     )

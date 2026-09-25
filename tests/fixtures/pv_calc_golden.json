@@ -3810,7 +3810,7 @@
             "continuous_circumferential_wave_count": 11.0201176433,
             "correlated_critical_circumferential_stress_mpa": {
               "unit": "MPa",
-              "value": 506.16469875
+              "value": 506.751000179
             },
             "correlated_critical_pressure_mpa": {
               "unit": "MPa",
@@ -3847,7 +3847,7 @@
             "continuous_circumferential_wave_count": 11.0201176433,
             "correlated_critical_circumferential_stress_mpa": {
               "unit": "MPa",
-              "value": 369.919703754
+              "value": 370.348189682
             },
             "correlated_critical_pressure_mpa": {
               "unit": "MPa",
@@ -3883,7 +3883,7 @@
             "continuous_circumferential_wave_count": 2.0,
             "correlated_critical_circumferential_stress_mpa": {
               "unit": "MPa",
-              "value": 3.47982647361
+              "value": 3.48385723127
             },
             "correlated_critical_pressure_mpa": {
               "unit": "MPa",
@@ -3915,8 +3915,8 @@
           "unit": "N/mm",
           "value": 337.676849256
         },
-        "circumferential_stress_basis": "ring_stiffened_mid_bay_hoop_membrane",
-        "circumferential_stress_per_unit_pressure": 107.506427763,
+        "circumferential_stress_basis": "ring_stiffened_mid_bay_membrane_equivalent",
+        "circumferential_stress_per_unit_pressure": 107.630954765,
         "circumferential_wave_count_n": null,
         "comparison_source_reference": "Roark's Formulas for Stress and Strain, 6th ed., Table 35 case 20, its theoretical pressure minimized over integer lobe counts and reduced by the table's 0.80 probable-minimum factor",
         "compressive_proof_stress_mpa": {
@@ -3981,7 +3981,7 @@
           "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
           "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
           "elastic_applicability compares the applied circumferential membrane stress, p*r/t for a smooth shell, with the proportional limit, falling back to yield strength. It sets neither capacity nor margin.",
-          "Circumferential membrane stresses, including the plasticity correction and the proportional-limit and elastic-applicability screens, use the ring-stiffened bay's mid-bay hoop membrane stress, 107.506 times the pressure, in place of p*r/t = 116.471 times the pressure. NASA defines its factors at the circumferential stress p*r/t of an unstiffened shell (Eq. 17); between rings, which carry part of the hoop load, this extends that definition to the bay's own mid-bay hoop stress."
+          "Circumferential membrane stresses, including the plasticity correction and the proportional-limit and elastic-applicability screens, use the ring-stiffened bay's mid-bay membrane stress, 107.631 times the pressure, in place of p*r/t = 116.471 times the pressure: its von Mises stress divided by sqrt(3)/2, which is p*r/t for an unstiffened shell under hydrostatic load. NASA defines its factors at p*r/t (Eq. 17); rings carry part of the hoop load but none of the axial load, so the bay's own stress state replaces it."
         ],
         "plasticity_factor": null,
         "poisson_ratio": 0.3,
@@ -4034,7 +4034,7 @@
         },
         "working_circumferential_membrane_stress_mpa": {
           "unit": "MPa",
-          "value": 350.602133816
+          "value": 351.008243788
         },
         "yield_strength_mpa": {
           "unit": "MPa",
@@ -4068,7 +4068,7 @@
           "source_reference": "DTMB Report 1324, Figs. 3 and 6 and Tables 1-2, pp. 5-10; NASA/SP-8007-2020/REV 2, pp. 28 and 36"
         },
         {
-          "basis": "The source-gated smooth-shell method is evaluated over ring center-to-center spacing with ideal simply supported circular lines, and on a valid record its material stress is the periodic bay's mid-bay hoop membrane stress; its own capacity_status is withheld_applicability.",
+          "basis": "The source-gated smooth-shell method is evaluated over ring center-to-center spacing with ideal simply supported circular lines, and on a valid record its material stress is the periodic bay's mid-bay membrane stress; its own capacity_status is withheld_applicability.",
           "disposition": "implemented_advisory",
           "mode": "inter_ring_shell_buckling",
           "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 3-5, 17-29 and 30-32, pp. 22 and 26-29"
@@ -4126,7 +4126,7 @@
       "model_version": "6.0.0",
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
-        "Each buckling pressure is labelled by comparing its shell circumferential membrane stress with the proportional limit: on a valid record, the periodic bay's mid-bay hoop stress for the inter-ring bay, and nominal p*r/t for the global mode. With only a yield strength, a pressure is an elastic upper bound when that stress exceeds yield and undetermined otherwise.",
+        "Each buckling pressure is labelled by comparing its shell circumferential membrane stress with the proportional limit: on a valid record, the periodic bay's mid-bay membrane stress for the inter-ring bay, and nominal p*r/t for the global mode. With only a yield strength, a pressure is an elastic upper bound when that stress exceeds yield and undetermined otherwise.",
         "Global buckling is elastic: lobar modes (n >= 2, axial half-waves longer than one ring spacing, and always m = 1) with ideal simple supports. Interframe collapse of an imperfect shell, ring tripping, ring spacing, axisymmetric elastic buckling (n=0), and the long-cylinder Eq. 66 transition are not checked; axisymmetric collapse is a perfect-shell estimate.",
         "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves longer than one ring spacing, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. NASA notes that its orthotropic equations lose accuracy against Love or Sanders theory for n <= 4 (printed p. 35) and that a more accurate discrete-ring theory gives somewhat lower pressures (p. 38), so widely spaced or deep eccentric rings still need a discrete-ring or code-rule check.",
         "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does (hoop stress only, perfect shell). They are not collapse pressures. As in the PD 5500 form, and as DAPS4 takes the hoop load, the pressure acts at the shell mid-surface radius; on the outer surface, exact equilibrium would raise the unstiffened mean hoop stress by R_o/R = 1 + t/(2R) and the bay's slightly less.",
@@ -4716,7 +4716,7 @@
             "continuous_circumferential_wave_count": 11.0201176433,
             "correlated_critical_circumferential_stress_mpa": {
               "unit": "MPa",
-              "value": 506.16469875
+              "value": 506.751000179
             },
             "correlated_critical_pressure_mpa": {
               "unit": "MPa",
@@ -4753,7 +4753,7 @@
             "continuous_circumferential_wave_count": 11.0201176433,
             "correlated_critical_circumferential_stress_mpa": {
               "unit": "MPa",
-              "value": 369.919703754
+              "value": 370.348189682
             },
             "correlated_critical_pressure_mpa": {
               "unit": "MPa",
@@ -4789,7 +4789,7 @@
             "continuous_circumferential_wave_count": 2.0,
             "correlated_critical_circumferential_stress_mpa": {
               "unit": "MPa",
-              "value": 3.47982647361
+              "value": 3.48385723127
             },
             "correlated_critical_pressure_mpa": {
               "unit": "MPa",
@@ -4821,8 +4821,8 @@
           "unit": "N/mm",
           "value": 301.267717518
         },
-        "circumferential_stress_basis": "ring_stiffened_mid_bay_hoop_membrane",
-        "circumferential_stress_per_unit_pressure": 107.506427763,
+        "circumferential_stress_basis": "ring_stiffened_mid_bay_membrane_equivalent",
+        "circumferential_stress_per_unit_pressure": 107.630954765,
         "circumferential_wave_count_n": null,
         "comparison_source_reference": "Roark's Formulas for Stress and Strain, 6th ed., Table 35 case 20, its theoretical pressure minimized over integer lobe counts and reduced by the table's 0.80 probable-minimum factor",
         "compressive_proof_stress_mpa": {
@@ -4887,7 +4887,7 @@
           "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
           "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
           "elastic_applicability compares the applied circumferential membrane stress, p*r/t for a smooth shell, with the proportional limit, falling back to yield strength. It sets neither capacity nor margin.",
-          "Circumferential membrane stresses, including the plasticity correction and the proportional-limit and elastic-applicability screens, use the ring-stiffened bay's mid-bay hoop membrane stress, 107.506 times the pressure, in place of p*r/t = 116.471 times the pressure. NASA defines its factors at the circumferential stress p*r/t of an unstiffened shell (Eq. 17); between rings, which carry part of the hoop load, this extends that definition to the bay's own mid-bay hoop stress."
+          "Circumferential membrane stresses, including the plasticity correction and the proportional-limit and elastic-applicability screens, use the ring-stiffened bay's mid-bay membrane stress, 107.631 times the pressure, in place of p*r/t = 116.471 times the pressure: its von Mises stress divided by sqrt(3)/2, which is p*r/t for an unstiffened shell under hydrostatic load. NASA defines its factors at p*r/t (Eq. 17); rings carry part of the hoop load but none of the axial load, so the bay's own stress state replaces it."
         ],
         "plasticity_factor": null,
         "poisson_ratio": 0.3,
@@ -4940,7 +4940,7 @@
         },
         "working_circumferential_membrane_stress_mpa": {
           "unit": "MPa",
-          "value": 312.799366745
+          "value": 313.161688961
         },
         "yield_strength_mpa": {
           "unit": "MPa",
@@ -4974,7 +4974,7 @@
           "source_reference": "DTMB Report 1324, Figs. 3 and 6 and Tables 1-2, pp. 5-10; NASA/SP-8007-2020/REV 2, pp. 28 and 36"
         },
         {
-          "basis": "The source-gated smooth-shell method is evaluated over ring center-to-center spacing with ideal simply supported circular lines, and on a valid record its material stress is the periodic bay's mid-bay hoop membrane stress; its own capacity_status is withheld_applicability.",
+          "basis": "The source-gated smooth-shell method is evaluated over ring center-to-center spacing with ideal simply supported circular lines, and on a valid record its material stress is the periodic bay's mid-bay membrane stress; its own capacity_status is withheld_applicability.",
           "disposition": "implemented_advisory",
           "mode": "inter_ring_shell_buckling",
           "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 3-5, 17-29 and 30-32, pp. 22 and 26-29"
@@ -5032,7 +5032,7 @@
       "model_version": "6.0.0",
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
-        "Each buckling pressure is labelled by comparing its shell circumferential membrane stress with the proportional limit: on a valid record, the periodic bay's mid-bay hoop stress for the inter-ring bay, and nominal p*r/t for the global mode. With only a yield strength, a pressure is an elastic upper bound when that stress exceeds yield and undetermined otherwise.",
+        "Each buckling pressure is labelled by comparing its shell circumferential membrane stress with the proportional limit: on a valid record, the periodic bay's mid-bay membrane stress for the inter-ring bay, and nominal p*r/t for the global mode. With only a yield strength, a pressure is an elastic upper bound when that stress exceeds yield and undetermined otherwise.",
         "Global buckling is elastic: lobar modes (n >= 2, axial half-waves longer than one ring spacing, and always m = 1) with ideal simple supports. Interframe collapse of an imperfect shell, ring tripping, ring spacing, axisymmetric elastic buckling (n=0), and the long-cylinder Eq. 66 transition are not checked; axisymmetric collapse is a perfect-shell estimate.",
         "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves longer than one ring spacing, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. NASA notes that its orthotropic equations lose accuracy against Love or Sanders theory for n <= 4 (printed p. 35) and that a more accurate discrete-ring theory gives somewhat lower pressures (p. 38), so widely spaced or deep eccentric rings still need a discrete-ring or code-rule check.",
         "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does (hoop stress only, perfect shell). They are not collapse pressures. As in the PD 5500 form, and as DAPS4 takes the hoop load, the pressure acts at the shell mid-surface radius; on the outer surface, exact equilibrium would raise the unstiffened mean hoop stress by R_o/R = 1 + t/(2R) and the bay's slightly less.",
@@ -5622,7 +5622,7 @@
             "continuous_circumferential_wave_count": 11.0201176433,
             "correlated_critical_circumferential_stress_mpa": {
               "unit": "MPa",
-              "value": 506.16469875
+              "value": 506.751000179
             },
             "correlated_critical_pressure_mpa": {
               "unit": "MPa",
@@ -5659,7 +5659,7 @@
             "continuous_circumferential_wave_count": 11.0201176433,
             "correlated_critical_circumferential_stress_mpa": {
               "unit": "MPa",
-              "value": 369.919703754
+              "value": 370.348189682
             },
             "correlated_critical_pressure_mpa": {
               "unit": "MPa",
@@ -5695,7 +5695,7 @@
             "continuous_circumferential_wave_count": 2.0,
             "correlated_critical_circumferential_stress_mpa": {
               "unit": "MPa",
-              "value": 3.47982647361
+              "value": 3.48385723127
             },
             "correlated_critical_pressure_mpa": {
               "unit": "MPa",
@@ -5727,8 +5727,8 @@
           "unit": "N/mm",
           "value": 294.128672079
         },
-        "circumferential_stress_basis": "ring_stiffened_mid_bay_hoop_membrane",
-        "circumferential_stress_per_unit_pressure": 107.506427763,
+        "circumferential_stress_basis": "ring_stiffened_mid_bay_membrane_equivalent",
+        "circumferential_stress_per_unit_pressure": 107.630954765,
         "circumferential_wave_count_n": null,
         "comparison_source_reference": "Roark's Formulas for Stress and Strain, 6th ed., Table 35 case 20, its theoretical pressure minimized over integer lobe counts and reduced by the table's 0.80 probable-minimum factor",
         "compressive_proof_stress_mpa": {
@@ -5793,7 +5793,7 @@
           "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
           "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
           "elastic_applicability compares the applied circumferential membrane stress, p*r/t for a smooth shell, with the proportional limit, falling back to yield strength. It sets neither capacity nor margin.",
-          "Circumferential membrane stresses, including the plasticity correction and the proportional-limit and elastic-applicability screens, use the ring-stiffened bay's mid-bay hoop membrane stress, 107.506 times the pressure, in place of p*r/t = 116.471 times the pressure. NASA defines its factors at the circumferential stress p*r/t of an unstiffened shell (Eq. 17); between rings, which carry part of the hoop load, this extends that definition to the bay's own mid-bay hoop stress."
+          "Circumferential membrane stresses, including the plasticity correction and the proportional-limit and elastic-applicability screens, use the ring-stiffened bay's mid-bay membrane stress, 107.631 times the pressure, in place of p*r/t = 116.471 times the pressure: its von Mises stress divided by sqrt(3)/2, which is p*r/t for an unstiffened shell under hydrostatic load. NASA defines its factors at p*r/t (Eq. 17); rings carry part of the hoop load but none of the axial load, so the bay's own stress state replaces it."
         ],
         "plasticity_factor": null,
         "poisson_ratio": 0.3,
@@ -5846,7 +5846,7 @@
         },
         "working_circumferential_membrane_stress_mpa": {
           "unit": "MPa",
-          "value": 305.387059476
+          "value": 305.740795858
         },
         "yield_strength_mpa": {
           "unit": "MPa",
@@ -5880,7 +5880,7 @@
           "source_reference": "DTMB Report 1324, Figs. 3 and 6 and Tables 1-2, pp. 5-10; NASA/SP-8007-2020/REV 2, pp. 28 and 36"
         },
         {
-          "basis": "The source-gated smooth-shell method is evaluated over ring center-to-center spacing with ideal simply supported circular lines, and on a valid record its material stress is the periodic bay's mid-bay hoop membrane stress; its own capacity_status is withheld_applicability.",
+          "basis": "The source-gated smooth-shell method is evaluated over ring center-to-center spacing with ideal simply supported circular lines, and on a valid record its material stress is the periodic bay's mid-bay membrane stress; its own capacity_status is withheld_applicability.",
           "disposition": "implemented_advisory",
           "mode": "inter_ring_shell_buckling",
           "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 3-5, 17-29 and 30-32, pp. 22 and 26-29"
@@ -5938,7 +5938,7 @@
       "model_version": "6.0.0",
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
-        "Each buckling pressure is labelled by comparing its shell circumferential membrane stress with the proportional limit: on a valid record, the periodic bay's mid-bay hoop stress for the inter-ring bay, and nominal p*r/t for the global mode. With only a yield strength, a pressure is an elastic upper bound when that stress exceeds yield and undetermined otherwise.",
+        "Each buckling pressure is labelled by comparing its shell circumferential membrane stress with the proportional limit: on a valid record, the periodic bay's mid-bay membrane stress for the inter-ring bay, and nominal p*r/t for the global mode. With only a yield strength, a pressure is an elastic upper bound when that stress exceeds yield and undetermined otherwise.",
         "Global buckling is elastic: lobar modes (n >= 2, axial half-waves longer than one ring spacing, and always m = 1) with ideal simple supports. Interframe collapse of an imperfect shell, ring tripping, ring spacing, axisymmetric elastic buckling (n=0), and the long-cylinder Eq. 66 transition are not checked; axisymmetric collapse is a perfect-shell estimate.",
         "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves longer than one ring spacing, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. NASA notes that its orthotropic equations lose accuracy against Love or Sanders theory for n <= 4 (printed p. 35) and that a more accurate discrete-ring theory gives somewhat lower pressures (p. 38), so widely spaced or deep eccentric rings still need a discrete-ring or code-rule check.",
         "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does (hoop stress only, perfect shell). They are not collapse pressures. As in the PD 5500 form, and as DAPS4 takes the hoop load, the pressure acts at the shell mid-surface radius; on the outer surface, exact equilibrium would raise the unstiffened mean hoop stress by R_o/R = 1 + t/(2R) and the bay's slightly less.",
@@ -6528,7 +6528,7 @@
             "continuous_circumferential_wave_count": 11.0201176433,
             "correlated_critical_circumferential_stress_mpa": {
               "unit": "MPa",
-              "value": 506.16469875
+              "value": 506.751000179
             },
             "correlated_critical_pressure_mpa": {
               "unit": "MPa",
@@ -6565,7 +6565,7 @@
             "continuous_circumferential_wave_count": 11.0201176433,
             "correlated_critical_circumferential_stress_mpa": {
               "unit": "MPa",
-              "value": 369.919703754
+              "value": 370.348189682
             },
             "correlated_critical_pressure_mpa": {
               "unit": "MPa",
@@ -6601,7 +6601,7 @@
             "continuous_circumferential_wave_count": 2.0,
             "correlated_critical_circumferential_stress_mpa": {
               "unit": "MPa",
-              "value": 3.47982647361
+              "value": 3.48385723127
             },
             "correlated_critical_pressure_mpa": {
               "unit": "MPa",
@@ -6633,8 +6633,8 @@
           "unit": "N/mm",
           "value": 286.275722097
         },
-        "circumferential_stress_basis": "ring_stiffened_mid_bay_hoop_membrane",
-        "circumferential_stress_per_unit_pressure": 107.506427763,
+        "circumferential_stress_basis": "ring_stiffened_mid_bay_membrane_equivalent",
+        "circumferential_stress_per_unit_pressure": 107.630954765,
         "circumferential_wave_count_n": null,
         "comparison_source_reference": "Roark's Formulas for Stress and Strain, 6th ed., Table 35 case 20, its theoretical pressure minimized over integer lobe counts and reduced by the table's 0.80 probable-minimum factor",
         "compressive_proof_stress_mpa": {
@@ -6699,7 +6699,7 @@
           "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
           "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
           "elastic_applicability compares the applied circumferential membrane stress, p*r/t for a smooth shell, with the proportional limit, falling back to yield strength. It sets neither capacity nor margin.",
-          "Circumferential membrane stresses, including the plasticity correction and the proportional-limit and elastic-applicability screens, use the ring-stiffened bay's mid-bay hoop membrane stress, 107.506 times the pressure, in place of p*r/t = 116.471 times the pressure. NASA defines its factors at the circumferential stress p*r/t of an unstiffened shell (Eq. 17); between rings, which carry part of the hoop load, this extends that definition to the bay's own mid-bay hoop stress."
+          "Circumferential membrane stresses, including the plasticity correction and the proportional-limit and elastic-applicability screens, use the ring-stiffened bay's mid-bay membrane stress, 107.631 times the pressure, in place of p*r/t = 116.471 times the pressure: its von Mises stress divided by sqrt(3)/2, which is p*r/t for an unstiffened shell under hydrostatic load. NASA defines its factors at p*r/t (Eq. 17); rings carry part of the hoop load but none of the axial load, so the bay's own stress state replaces it."
         ],
         "plasticity_factor": null,
         "poisson_ratio": 0.3,
@@ -6752,7 +6752,7 @@
         },
         "working_circumferential_membrane_stress_mpa": {
           "unit": "MPa",
-          "value": 297.23352148
+          "value": 297.577813444
         },
         "yield_strength_mpa": {
           "unit": "MPa",
@@ -6786,7 +6786,7 @@
           "source_reference": "DTMB Report 1324, Figs. 3 and 6 and Tables 1-2, pp. 5-10; NASA/SP-8007-2020/REV 2, pp. 28 and 36"
         },
         {
-          "basis": "The source-gated smooth-shell method is evaluated over ring center-to-center spacing with ideal simply supported circular lines, and on a valid record its material stress is the periodic bay's mid-bay hoop membrane stress; its own capacity_status is withheld_applicability.",
+          "basis": "The source-gated smooth-shell method is evaluated over ring center-to-center spacing with ideal simply supported circular lines, and on a valid record its material stress is the periodic bay's mid-bay membrane stress; its own capacity_status is withheld_applicability.",
           "disposition": "implemented_advisory",
           "mode": "inter_ring_shell_buckling",
           "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 3-5, 17-29 and 30-32, pp. 22 and 26-29"
@@ -6844,7 +6844,7 @@
       "model_version": "6.0.0",
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
-        "Each buckling pressure is labelled by comparing its shell circumferential membrane stress with the proportional limit: on a valid record, the periodic bay's mid-bay hoop stress for the inter-ring bay, and nominal p*r/t for the global mode. With only a yield strength, a pressure is an elastic upper bound when that stress exceeds yield and undetermined otherwise.",
+        "Each buckling pressure is labelled by comparing its shell circumferential membrane stress with the proportional limit: on a valid record, the periodic bay's mid-bay membrane stress for the inter-ring bay, and nominal p*r/t for the global mode. With only a yield strength, a pressure is an elastic upper bound when that stress exceeds yield and undetermined otherwise.",
         "Global buckling is elastic: lobar modes (n >= 2, axial half-waves longer than one ring spacing, and always m = 1) with ideal simple supports. Interframe collapse of an imperfect shell, ring tripping, ring spacing, axisymmetric elastic buckling (n=0), and the long-cylinder Eq. 66 transition are not checked; axisymmetric collapse is a perfect-shell estimate.",
         "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves longer than one ring spacing, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. NASA notes that its orthotropic equations lose accuracy against Love or Sanders theory for n <= 4 (printed p. 35) and that a more accurate discrete-ring theory gives somewhat lower pressures (p. 38), so widely spaced or deep eccentric rings still need a discrete-ring or code-rule check.",
         "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does (hoop stress only, perfect shell). They are not collapse pressures. As in the PD 5500 form, and as DAPS4 takes the hoop load, the pressure acts at the shell mid-surface radius; on the outer surface, exact equilibrium would raise the unstiffened mean hoop stress by R_o/R = 1 + t/(2R) and the bay's slightly less.",
@@ -7434,7 +7434,7 @@
             "continuous_circumferential_wave_count": 11.0201176433,
             "correlated_critical_circumferential_stress_mpa": {
               "unit": "MPa",
-              "value": 506.16469875
+              "value": 506.751000179
             },
             "correlated_critical_pressure_mpa": {
               "unit": "MPa",
@@ -7471,7 +7471,7 @@
             "continuous_circumferential_wave_count": 11.0201176433,
             "correlated_critical_circumferential_stress_mpa": {
               "unit": "MPa",
-              "value": 369.919703754
+              "value": 370.348189682
             },
             "correlated_critical_pressure_mpa": {
               "unit": "MPa",
@@ -7507,7 +7507,7 @@
             "continuous_circumferential_wave_count": 2.0,
             "correlated_critical_circumferential_stress_mpa": {
               "unit": "MPa",
-              "value": 3.47982647361
+              "value": 3.48385723127
             },
             "correlated_critical_pressure_mpa": {
               "unit": "MPa",
@@ -7539,8 +7539,8 @@
           "unit": "N/mm",
           "value": 284.134008465
         },
-        "circumferential_stress_basis": "ring_stiffened_mid_bay_hoop_membrane",
-        "circumferential_stress_per_unit_pressure": 107.506427763,
+        "circumferential_stress_basis": "ring_stiffened_mid_bay_membrane_equivalent",
+        "circumferential_stress_per_unit_pressure": 107.630954765,
         "circumferential_wave_count_n": null,
         "comparison_source_reference": "Roark's Formulas for Stress and Strain, 6th ed., Table 35 case 20, its theoretical pressure minimized over integer lobe counts and reduced by the table's 0.80 probable-minimum factor",
         "compressive_proof_stress_mpa": {
@@ -7605,7 +7605,7 @@
           "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
           "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
           "elastic_applicability compares the applied circumferential membrane stress, p*r/t for a smooth shell, with the proportional limit, falling back to yield strength. It sets neither capacity nor margin.",
-          "Circumferential membrane stresses, including the plasticity correction and the proportional-limit and elastic-applicability screens, use the ring-stiffened bay's mid-bay hoop membrane stress, 107.506 times the pressure, in place of p*r/t = 116.471 times the pressure. NASA defines its factors at the circumferential stress p*r/t of an unstiffened shell (Eq. 17); between rings, which carry part of the hoop load, this extends that definition to the bay's own mid-bay hoop stress."
+          "Circumferential membrane stresses, including the plasticity correction and the proportional-limit and elastic-applicability screens, use the ring-stiffened bay's mid-bay membrane stress, 107.631 times the pressure, in place of p*r/t = 116.471 times the pressure: its von Mises stress divided by sqrt(3)/2, which is p*r/t for an unstiffened shell under hydrostatic load. NASA defines its factors at p*r/t (Eq. 17); rings carry part of the hoop load but none of the axial load, so the bay's own stress state replaces it."
         ],
         "plasticity_factor": null,
         "poisson_ratio": 0.3,
@@ -7658,7 +7658,7 @@
         },
         "working_circumferential_membrane_stress_mpa": {
           "unit": "MPa",
-          "value": 295.009829299
+          "value": 295.351545513
         },
         "yield_strength_mpa": {
           "unit": "MPa",
@@ -7692,7 +7692,7 @@
           "source_reference": "DTMB Report 1324, Figs. 3 and 6 and Tables 1-2, pp. 5-10; NASA/SP-8007-2020/REV 2, pp. 28 and 36"
         },
         {
-          "basis": "The source-gated smooth-shell method is evaluated over ring center-to-center spacing with ideal simply supported circular lines, and on a valid record its material stress is the periodic bay's mid-bay hoop membrane stress; its own capacity_status is withheld_applicability.",
+          "basis": "The source-gated smooth-shell method is evaluated over ring center-to-center spacing with ideal simply supported circular lines, and on a valid record its material stress is the periodic bay's mid-bay membrane stress; its own capacity_status is withheld_applicability.",
           "disposition": "implemented_advisory",
           "mode": "inter_ring_shell_buckling",
           "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 3-5, 17-29 and 30-32, pp. 22 and 26-29"
@@ -7750,7 +7750,7 @@
       "model_version": "6.0.0",
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
-        "Each buckling pressure is labelled by comparing its shell circumferential membrane stress with the proportional limit: on a valid record, the periodic bay's mid-bay hoop stress for the inter-ring bay, and nominal p*r/t for the global mode. With only a yield strength, a pressure is an elastic upper bound when that stress exceeds yield and undetermined otherwise.",
+        "Each buckling pressure is labelled by comparing its shell circumferential membrane stress with the proportional limit: on a valid record, the periodic bay's mid-bay membrane stress for the inter-ring bay, and nominal p*r/t for the global mode. With only a yield strength, a pressure is an elastic upper bound when that stress exceeds yield and undetermined otherwise.",
         "Global buckling is elastic: lobar modes (n >= 2, axial half-waves longer than one ring spacing, and always m = 1) with ideal simple supports. Interframe collapse of an imperfect shell, ring tripping, ring spacing, axisymmetric elastic buckling (n=0), and the long-cylinder Eq. 66 transition are not checked; axisymmetric collapse is a perfect-shell estimate.",
         "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves longer than one ring spacing, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. NASA notes that its orthotropic equations lose accuracy against Love or Sanders theory for n <= 4 (printed p. 35) and that a more accurate discrete-ring theory gives somewhat lower pressures (p. 38), so widely spaced or deep eccentric rings still need a discrete-ring or code-rule check.",
         "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does (hoop stress only, perfect shell). They are not collapse pressures. As in the PD 5500 form, and as DAPS4 takes the hoop load, the pressure acts at the shell mid-surface radius; on the outer surface, exact equilibrium would raise the unstiffened mean hoop stress by R_o/R = 1 + t/(2R) and the bay's slightly less.",
@@ -8340,7 +8340,7 @@
             "continuous_circumferential_wave_count": 11.0201176433,
             "correlated_critical_circumferential_stress_mpa": {
               "unit": "MPa",
-              "value": 506.16469875
+              "value": 506.751000179
             },
             "correlated_critical_pressure_mpa": {
               "unit": "MPa",
@@ -8377,7 +8377,7 @@
             "continuous_circumferential_wave_count": 11.0201176433,
             "correlated_critical_circumferential_stress_mpa": {
               "unit": "MPa",
-              "value": 369.919703754
+              "value": 370.348189682
             },
             "correlated_critical_pressure_mpa": {
               "unit": "MPa",
@@ -8413,7 +8413,7 @@
             "continuous_circumferential_wave_count": 2.0,
             "correlated_critical_circumferential_stress_mpa": {
               "unit": "MPa",
-              "value": 3.47982647361
+              "value": 3.48385723127
             },
             "correlated_critical_pressure_mpa": {
               "unit": "MPa",
@@ -8445,8 +8445,8 @@
           "unit": "N/mm",
           "value": 281.27839029
         },
-        "circumferential_stress_basis": "ring_stiffened_mid_bay_hoop_membrane",
-        "circumferential_stress_per_unit_pressure": 107.506427763,
+        "circumferential_stress_basis": "ring_stiffened_mid_bay_membrane_equivalent",
+        "circumferential_stress_per_unit_pressure": 107.630954765,
         "circumferential_wave_count_n": null,
         "comparison_source_reference": "Roark's Formulas for Stress and Strain, 6th ed., Table 35 case 20, its theoretical pressure minimized over integer lobe counts and reduced by the table's 0.80 probable-minimum factor",
         "compressive_proof_stress_mpa": {
@@ -8511,7 +8511,7 @@
           "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
           "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
           "elastic_applicability compares the applied circumferential membrane stress, p*r/t for a smooth shell, with the proportional limit, falling back to yield strength. It sets neither capacity nor margin.",
-          "Circumferential membrane stresses, including the plasticity correction and the proportional-limit and elastic-applicability screens, use the ring-stiffened bay's mid-bay hoop membrane stress, 107.506 times the pressure, in place of p*r/t = 116.471 times the pressure. NASA defines its factors at the circumferential stress p*r/t of an unstiffened shell (Eq. 17); between rings, which carry part of the hoop load, this extends that definition to the bay's own mid-bay hoop stress."
+          "Circumferential membrane stresses, including the plasticity correction and the proportional-limit and elastic-applicability screens, use the ring-stiffened bay's mid-bay membrane stress, 107.631 times the pressure, in place of p*r/t = 116.471 times the pressure: its von Mises stress divided by sqrt(3)/2, which is p*r/t for an unstiffened shell under hydrostatic load. NASA defines its factors at p*r/t (Eq. 17); rings carry part of the hoop load but none of the axial load, so the bay's own stress state replaces it."
         ],
         "plasticity_factor": null,
         "poisson_ratio": 0.3,
@@ -8564,7 +8564,7 @@
         },
         "working_circumferential_membrane_stress_mpa": {
           "unit": "MPa",
-          "value": 292.044906392
+          "value": 292.383188272
         },
         "yield_strength_mpa": {
           "unit": "MPa",
@@ -8598,7 +8598,7 @@
           "source_reference": "DTMB Report 1324, Figs. 3 and 6 and Tables 1-2, pp. 5-10; NASA/SP-8007-2020/REV 2, pp. 28 and 36"
         },
         {
-          "basis": "The source-gated smooth-shell method is evaluated over ring center-to-center spacing with ideal simply supported circular lines, and on a valid record its material stress is the periodic bay's mid-bay hoop membrane stress; its own capacity_status is withheld_applicability.",
+          "basis": "The source-gated smooth-shell method is evaluated over ring center-to-center spacing with ideal simply supported circular lines, and on a valid record its material stress is the periodic bay's mid-bay membrane stress; its own capacity_status is withheld_applicability.",
           "disposition": "implemented_advisory",
           "mode": "inter_ring_shell_buckling",
           "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 3-5, 17-29 and 30-32, pp. 22 and 26-29"
@@ -8656,7 +8656,7 @@
       "model_version": "6.0.0",
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
-        "Each buckling pressure is labelled by comparing its shell circumferential membrane stress with the proportional limit: on a valid record, the periodic bay's mid-bay hoop stress for the inter-ring bay, and nominal p*r/t for the global mode. With only a yield strength, a pressure is an elastic upper bound when that stress exceeds yield and undetermined otherwise.",
+        "Each buckling pressure is labelled by comparing its shell circumferential membrane stress with the proportional limit: on a valid record, the periodic bay's mid-bay membrane stress for the inter-ring bay, and nominal p*r/t for the global mode. With only a yield strength, a pressure is an elastic upper bound when that stress exceeds yield and undetermined otherwise.",
         "Global buckling is elastic: lobar modes (n >= 2, axial half-waves longer than one ring spacing, and always m = 1) with ideal simple supports. Interframe collapse of an imperfect shell, ring tripping, ring spacing, axisymmetric elastic buckling (n=0), and the long-cylinder Eq. 66 transition are not checked; axisymmetric collapse is a perfect-shell estimate.",
         "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves longer than one ring spacing, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. NASA notes that its orthotropic equations lose accuracy against Love or Sanders theory for n <= 4 (printed p. 35) and that a more accurate discrete-ring theory gives somewhat lower pressures (p. 38), so widely spaced or deep eccentric rings still need a discrete-ring or code-rule check.",
         "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does (hoop stress only, perfect shell). They are not collapse pressures. As in the PD 5500 form, and as DAPS4 takes the hoop load, the pressure acts at the shell mid-surface radius; on the outer surface, exact equilibrium would raise the unstiffened mean hoop stress by R_o/R = 1 + t/(2R) and the bay's slightly less.",
@@ -9246,7 +9246,7 @@
             "continuous_circumferential_wave_count": 11.0201176433,
             "correlated_critical_circumferential_stress_mpa": {
               "unit": "MPa",
-              "value": 506.16469875
+              "value": 506.751000179
             },
             "correlated_critical_pressure_mpa": {
               "unit": "MPa",
@@ -9283,7 +9283,7 @@
             "continuous_circumferential_wave_count": 11.0201176433,
             "correlated_critical_circumferential_stress_mpa": {
               "unit": "MPa",
-              "value": 369.919703754
+              "value": 370.348189682
             },
             "correlated_critical_pressure_mpa": {
               "unit": "MPa",
@@ -9319,7 +9319,7 @@
             "continuous_circumferential_wave_count": 2.0,
             "correlated_critical_circumferential_stress_mpa": {
               "unit": "MPa",
-              "value": 3.47982647361
+              "value": 3.48385723127
             },
             "correlated_critical_pressure_mpa": {
               "unit": "MPa",
@@ -9351,8 +9351,8 @@
           "unit": "N/mm",
           "value": 279.136676658
         },
-        "circumferential_stress_basis": "ring_stiffened_mid_bay_hoop_membrane",
-        "circumferential_stress_per_unit_pressure": 107.506427763,
+        "circumferential_stress_basis": "ring_stiffened_mid_bay_membrane_equivalent",
+        "circumferential_stress_per_unit_pressure": 107.630954765,
         "circumferential_wave_count_n": null,
         "comparison_source_reference": "Roark's Formulas for Stress and Strain, 6th ed., Table 35 case 20, its theoretical pressure minimized over integer lobe counts and reduced by the table's 0.80 probable-minimum factor",
         "compressive_proof_stress_mpa": {
@@ -9417,7 +9417,7 @@
           "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
           "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
           "elastic_applicability compares the applied circumferential membrane stress, p*r/t for a smooth shell, with the proportional limit, falling back to yield strength. It sets neither capacity nor margin.",
-          "Circumferential membrane stresses, including the plasticity correction and the proportional-limit and elastic-applicability screens, use the ring-stiffened bay's mid-bay hoop membrane stress, 107.506 times the pressure, in place of p*r/t = 116.471 times the pressure. NASA defines its factors at the circumferential stress p*r/t of an unstiffened shell (Eq. 17); between rings, which carry part of the hoop load, this extends that definition to the bay's own mid-bay hoop stress."
+          "Circumferential membrane stresses, including the plasticity correction and the proportional-limit and elastic-applicability screens, use the ring-stiffened bay's mid-bay membrane stress, 107.631 times the pressure, in place of p*r/t = 116.471 times the pressure: its von Mises stress divided by sqrt(3)/2, which is p*r/t for an unstiffened shell under hydrostatic load. NASA defines its factors at p*r/t (Eq. 17); rings carry part of the hoop load but none of the axial load, so the bay's own stress state replaces it."
         ],
         "plasticity_factor": null,
         "poisson_ratio": 0.3,
@@ -9470,7 +9470,7 @@
         },
         "working_circumferential_membrane_stress_mpa": {
           "unit": "MPa",
-          "value": 289.821214211
+          "value": 290.156920341
         },
         "yield_strength_mpa": {
           "unit": "MPa",
@@ -9504,7 +9504,7 @@
           "source_reference": "DTMB Report 1324, Figs. 3 and 6 and Tables 1-2, pp. 5-10; NASA/SP-8007-2020/REV 2, pp. 28 and 36"
         },
         {
-          "basis": "The source-gated smooth-shell method is evaluated over ring center-to-center spacing with ideal simply supported circular lines, and on a valid record its material stress is the periodic bay's mid-bay hoop membrane stress; its own capacity_status is withheld_applicability.",
+          "basis": "The source-gated smooth-shell method is evaluated over ring center-to-center spacing with ideal simply supported circular lines, and on a valid record its material stress is the periodic bay's mid-bay membrane stress; its own capacity_status is withheld_applicability.",
           "disposition": "implemented_advisory",
           "mode": "inter_ring_shell_buckling",
           "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 3-5, 17-29 and 30-32, pp. 22 and 26-29"
@@ -9562,7 +9562,7 @@
       "model_version": "6.0.0",
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
-        "Each buckling pressure is labelled by comparing its shell circumferential membrane stress with the proportional limit: on a valid record, the periodic bay's mid-bay hoop stress for the inter-ring bay, and nominal p*r/t for the global mode. With only a yield strength, a pressure is an elastic upper bound when that stress exceeds yield and undetermined otherwise.",
+        "Each buckling pressure is labelled by comparing its shell circumferential membrane stress with the proportional limit: on a valid record, the periodic bay's mid-bay membrane stress for the inter-ring bay, and nominal p*r/t for the global mode. With only a yield strength, a pressure is an elastic upper bound when that stress exceeds yield and undetermined otherwise.",
         "Global buckling is elastic: lobar modes (n >= 2, axial half-waves longer than one ring spacing, and always m = 1) with ideal simple supports. Interframe collapse of an imperfect shell, ring tripping, ring spacing, axisymmetric elastic buckling (n=0), and the long-cylinder Eq. 66 transition are not checked; axisymmetric collapse is a perfect-shell estimate.",
         "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves longer than one ring spacing, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. NASA notes that its orthotropic equations lose accuracy against Love or Sanders theory for n <= 4 (printed p. 35) and that a more accurate discrete-ring theory gives somewhat lower pressures (p. 38), so widely spaced or deep eccentric rings still need a discrete-ring or code-rule check.",
         "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does (hoop stress only, perfect shell). They are not collapse pressures. As in the PD 5500 form, and as DAPS4 takes the hoop load, the pressure acts at the shell mid-surface radius; on the outer surface, exact equilibrium would raise the unstiffened mean hoop stress by R_o/R = 1 + t/(2R) and the bay's slightly less.",
@@ -10152,7 +10152,7 @@
             "continuous_circumferential_wave_count": 11.0201176433,
             "correlated_critical_circumferential_stress_mpa": {
               "unit": "MPa",
-              "value": 506.16469875
+              "value": 506.751000179
             },
             "correlated_critical_pressure_mpa": {
               "unit": "MPa",
@@ -10189,7 +10189,7 @@
             "continuous_circumferential_wave_count": 11.0201176433,
             "correlated_critical_circumferential_stress_mpa": {
               "unit": "MPa",
-              "value": 369.919703754
+              "value": 370.348189682
             },
             "correlated_critical_pressure_mpa": {
               "unit": "MPa",
@@ -10225,7 +10225,7 @@
             "continuous_circumferential_wave_count": 2.0,
             "correlated_critical_circumferential_stress_mpa": {
               "unit": "MPa",
-              "value": 3.47982647361
+              "value": 3.48385723127
             },
             "correlated_critical_pressure_mpa": {
               "unit": "MPa",
@@ -10257,8 +10257,8 @@
           "unit": "N/mm",
           "value": 273.425440307
         },
-        "circumferential_stress_basis": "ring_stiffened_mid_bay_hoop_membrane",
-        "circumferential_stress_per_unit_pressure": 107.506427763,
+        "circumferential_stress_basis": "ring_stiffened_mid_bay_membrane_equivalent",
+        "circumferential_stress_per_unit_pressure": 107.630954765,
         "circumferential_wave_count_n": null,
         "comparison_source_reference": "Roark's Formulas for Stress and Strain, 6th ed., Table 35 case 20, its theoretical pressure minimized over integer lobe counts and reduced by the table's 0.80 probable-minimum factor",
         "compressive_proof_stress_mpa": {
@@ -10323,7 +10323,7 @@
           "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
           "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
           "elastic_applicability compares the applied circumferential membrane stress, p*r/t for a smooth shell, with the proportional limit, falling back to yield strength. It sets neither capacity nor margin.",
-          "Circumferential membrane stresses, including the plasticity correction and the proportional-limit and elastic-applicability screens, use the ring-stiffened bay's mid-bay hoop membrane stress, 107.506 times the pressure, in place of p*r/t = 116.471 times the pressure. NASA defines its factors at the circumferential stress p*r/t of an unstiffened shell (Eq. 17); between rings, which carry part of the hoop load, this extends that definition to the bay's own mid-bay hoop stress."
+          "Circumferential membrane stresses, including the plasticity correction and the proportional-limit and elastic-applicability screens, use the ring-stiffened bay's mid-bay membrane stress, 107.631 times the pressure, in place of p*r/t = 116.471 times the pressure: its von Mises stress divided by sqrt(3)/2, which is p*r/t for an unstiffened shell under hydrostatic load. NASA defines its factors at p*r/t (Eq. 17); rings carry part of the hoop load but none of the axial load, so the bay's own stress state replaces it."
         ],
         "plasticity_factor": null,
         "poisson_ratio": 0.3,
@@ -10376,7 +10376,7 @@
         },
         "working_circumferential_membrane_stress_mpa": {
           "unit": "MPa",
-          "value": 283.891368396
+          "value": 284.220205858
         },
         "yield_strength_mpa": {
           "unit": "MPa",
@@ -10410,7 +10410,7 @@
           "source_reference": "DTMB Report 1324, Figs. 3 and 6 and Tables 1-2, pp. 5-10; NASA/SP-8007-2020/REV 2, pp. 28 and 36"
         },
         {
-          "basis": "The source-gated smooth-shell method is evaluated over ring center-to-center spacing with ideal simply supported circular lines, and on a valid record its material stress is the periodic bay's mid-bay hoop membrane stress; its own capacity_status is withheld_applicability.",
+          "basis": "The source-gated smooth-shell method is evaluated over ring center-to-center spacing with ideal simply supported circular lines, and on a valid record its material stress is the periodic bay's mid-bay membrane stress; its own capacity_status is withheld_applicability.",
           "disposition": "implemented_advisory",
           "mode": "inter_ring_shell_buckling",
           "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 3-5, 17-29 and 30-32, pp. 22 and 26-29"
@@ -10468,7 +10468,7 @@
       "model_version": "6.0.0",
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
-        "Each buckling pressure is labelled by comparing its shell circumferential membrane stress with the proportional limit: on a valid record, the periodic bay's mid-bay hoop stress for the inter-ring bay, and nominal p*r/t for the global mode. With only a yield strength, a pressure is an elastic upper bound when that stress exceeds yield and undetermined otherwise.",
+        "Each buckling pressure is labelled by comparing its shell circumferential membrane stress with the proportional limit: on a valid record, the periodic bay's mid-bay membrane stress for the inter-ring bay, and nominal p*r/t for the global mode. With only a yield strength, a pressure is an elastic upper bound when that stress exceeds yield and undetermined otherwise.",
         "Global buckling is elastic: lobar modes (n >= 2, axial half-waves longer than one ring spacing, and always m = 1) with ideal simple supports. Interframe collapse of an imperfect shell, ring tripping, ring spacing, axisymmetric elastic buckling (n=0), and the long-cylinder Eq. 66 transition are not checked; axisymmetric collapse is a perfect-shell estimate.",
         "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves longer than one ring spacing, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. NASA notes that its orthotropic equations lose accuracy against Love or Sanders theory for n <= 4 (printed p. 35) and that a more accurate discrete-ring theory gives somewhat lower pressures (p. 38), so widely spaced or deep eccentric rings still need a discrete-ring or code-rule check.",
         "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does (hoop stress only, perfect shell). They are not collapse pressures. As in the PD 5500 form, and as DAPS4 takes the hoop load, the pressure acts at the shell mid-surface radius; on the outer surface, exact equilibrium would raise the unstiffened mean hoop stress by R_o/R = 1 + t/(2R) and the bay's slightly less.",
@@ -11058,7 +11058,7 @@
             "continuous_circumferential_wave_count": 11.0201176433,
             "correlated_critical_circumferential_stress_mpa": {
               "unit": "MPa",
-              "value": 506.16469875
+              "value": 506.751000179
             },
             "correlated_critical_pressure_mpa": {
               "unit": "MPa",
@@ -11095,7 +11095,7 @@
             "continuous_circumferential_wave_count": 11.0201176433,
             "correlated_critical_circumferential_stress_mpa": {
               "unit": "MPa",
-              "value": 369.919703754
+              "value": 370.348189682
             },
             "correlated_critical_pressure_mpa": {
               "unit": "MPa",
@@ -11131,7 +11131,7 @@
             "continuous_circumferential_wave_count": 2.0,
             "correlated_critical_circumferential_stress_mpa": {
               "unit": "MPa",
-              "value": 3.47982647361
+              "value": 3.48385723127
             },
             "correlated_critical_pressure_mpa": {
               "unit": "MPa",
@@ -11163,8 +11163,8 @@
           "unit": "N/mm",
           "value": 234.874594937
         },
-        "circumferential_stress_basis": "ring_stiffened_mid_bay_hoop_membrane",
-        "circumferential_stress_per_unit_pressure": 107.506427763,
+        "circumferential_stress_basis": "ring_stiffened_mid_bay_membrane_equivalent",
+        "circumferential_stress_per_unit_pressure": 107.630954765,
         "circumferential_wave_count_n": null,
         "comparison_source_reference": "Roark's Formulas for Stress and Strain, 6th ed., Table 35 case 20, its theoretical pressure minimized over integer lobe counts and reduced by the table's 0.80 probable-minimum factor",
         "compressive_proof_stress_mpa": {
@@ -11229,7 +11229,7 @@
           "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
           "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
           "elastic_applicability compares the applied circumferential membrane stress, p*r/t for a smooth shell, with the proportional limit, falling back to yield strength. It sets neither capacity nor margin.",
-          "Circumferential membrane stresses, including the plasticity correction and the proportional-limit and elastic-applicability screens, use the ring-stiffened bay's mid-bay hoop membrane stress, 107.506 times the pressure, in place of p*r/t = 116.471 times the pressure. NASA defines its factors at the circumferential stress p*r/t of an unstiffened shell (Eq. 17); between rings, which carry part of the hoop load, this extends that definition to the bay's own mid-bay hoop stress."
+          "Circumferential membrane stresses, including the plasticity correction and the proportional-limit and elastic-applicability screens, use the ring-stiffened bay's mid-bay membrane stress, 107.631 times the pressure, in place of p*r/t = 116.471 times the pressure: its von Mises stress divided by sqrt(3)/2, which is p*r/t for an unstiffened shell under hydrostatic load. NASA defines its factors at p*r/t (Eq. 17); rings carry part of the hoop load but none of the axial load, so the bay's own stress state replaces it."
         ],
         "plasticity_factor": null,
         "poisson_ratio": 0.3,
@@ -11282,7 +11282,7 @@
         },
         "working_circumferential_membrane_stress_mpa": {
           "unit": "MPa",
-          "value": 243.864909144
+          "value": 244.1473831
         },
         "yield_strength_mpa": {
           "unit": "MPa",
@@ -11316,7 +11316,7 @@
           "source_reference": "DTMB Report 1324, Figs. 3 and 6 and Tables 1-2, pp. 5-10; NASA/SP-8007-2020/REV 2, pp. 28 and 36"
         },
         {
-          "basis": "The source-gated smooth-shell method is evaluated over ring center-to-center spacing with ideal simply supported circular lines, and on a valid record its material stress is the periodic bay's mid-bay hoop membrane stress; its own capacity_status is withheld_applicability.",
+          "basis": "The source-gated smooth-shell method is evaluated over ring center-to-center spacing with ideal simply supported circular lines, and on a valid record its material stress is the periodic bay's mid-bay membrane stress; its own capacity_status is withheld_applicability.",
           "disposition": "implemented_advisory",
           "mode": "inter_ring_shell_buckling",
           "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 3-5, 17-29 and 30-32, pp. 22 and 26-29"
@@ -11374,7 +11374,7 @@
       "model_version": "6.0.0",
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
-        "Each buckling pressure is labelled by comparing its shell circumferential membrane stress with the proportional limit: on a valid record, the periodic bay's mid-bay hoop stress for the inter-ring bay, and nominal p*r/t for the global mode. With only a yield strength, a pressure is an elastic upper bound when that stress exceeds yield and undetermined otherwise.",
+        "Each buckling pressure is labelled by comparing its shell circumferential membrane stress with the proportional limit: on a valid record, the periodic bay's mid-bay membrane stress for the inter-ring bay, and nominal p*r/t for the global mode. With only a yield strength, a pressure is an elastic upper bound when that stress exceeds yield and undetermined otherwise.",
         "Global buckling is elastic: lobar modes (n >= 2, axial half-waves longer than one ring spacing, and always m = 1) with ideal simple supports. Interframe collapse of an imperfect shell, ring tripping, ring spacing, axisymmetric elastic buckling (n=0), and the long-cylinder Eq. 66 transition are not checked; axisymmetric collapse is a perfect-shell estimate.",
         "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves longer than one ring spacing, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. NASA notes that its orthotropic equations lose accuracy against Love or Sanders theory for n <= 4 (printed p. 35) and that a more accurate discrete-ring theory gives somewhat lower pressures (p. 38), so widely spaced or deep eccentric rings still need a discrete-ring or code-rule check.",
         "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does (hoop stress only, perfect shell). They are not collapse pressures. As in the PD 5500 form, and as DAPS4 takes the hoop load, the pressure acts at the shell mid-surface radius; on the outer surface, exact equilibrium would raise the unstiffened mean hoop stress by R_o/R = 1 + t/(2R) and the bay's slightly less.",
@@ -11964,7 +11964,7 @@
             "continuous_circumferential_wave_count": 11.0201176433,
             "correlated_critical_circumferential_stress_mpa": {
               "unit": "MPa",
-              "value": 506.16469875
+              "value": 506.751000179
             },
             "correlated_critical_pressure_mpa": {
               "unit": "MPa",
@@ -12001,7 +12001,7 @@
             "continuous_circumferential_wave_count": 11.0201176433,
             "correlated_critical_circumferential_stress_mpa": {
               "unit": "MPa",
-              "value": 369.919703754
+              "value": 370.348189682
             },
             "correlated_critical_pressure_mpa": {
               "unit": "MPa",
@@ -12037,7 +12037,7 @@
             "continuous_circumferential_wave_count": 2.0,
             "correlated_critical_circumferential_stress_mpa": {
               "unit": "MPa",
-              "value": 3.47982647361
+              "value": 3.48385723127
             },
             "correlated_critical_pressure_mpa": {
               "unit": "MPa",
@@ -12069,8 +12069,8 @@
           "unit": "N/mm",
           "value": 200.607176831
         },
-        "circumferential_stress_basis": "ring_stiffened_mid_bay_hoop_membrane",
-        "circumferential_stress_per_unit_pressure": 107.506427763,
+        "circumferential_stress_basis": "ring_stiffened_mid_bay_membrane_equivalent",
+        "circumferential_stress_per_unit_pressure": 107.630954765,
         "circumferential_wave_count_n": null,
         "comparison_source_reference": "Roark's Formulas for Stress and Strain, 6th ed., Table 35 case 20, its theoretical pressure minimized over integer lobe counts and reduced by the table's 0.80 probable-minimum factor",
         "compressive_proof_stress_mpa": {
@@ -12135,7 +12135,7 @@
           "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
           "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
           "elastic_applicability compares the applied circumferential membrane stress, p*r/t for a smooth shell, with the proportional limit, falling back to yield strength. It sets neither capacity nor margin.",
-          "Circumferential membrane stresses, including the plasticity correction and the proportional-limit and elastic-applicability screens, use the ring-stiffened bay's mid-bay hoop membrane stress, 107.506 times the pressure, in place of p*r/t = 116.471 times the pressure. NASA defines its factors at the circumferential stress p*r/t of an unstiffened shell (Eq. 17); between rings, which carry part of the hoop load, this extends that definition to the bay's own mid-bay hoop stress."
+          "Circumferential membrane stresses, including the plasticity correction and the proportional-limit and elastic-applicability screens, use the ring-stiffened bay's mid-bay membrane stress, 107.631 times the pressure, in place of p*r/t = 116.471 times the pressure: its von Mises stress divided by sqrt(3)/2, which is p*r/t for an unstiffened shell under hydrostatic load. NASA defines its factors at p*r/t (Eq. 17); rings carry part of the hoop load but none of the axial load, so the bay's own stress state replaces it."
         ],
         "plasticity_factor": null,
         "poisson_ratio": 0.3,
@@ -12188,7 +12188,7 @@
         },
         "working_circumferential_membrane_stress_mpa": {
           "unit": "MPa",
-          "value": 208.285834254
+          "value": 208.527096204
         },
         "yield_strength_mpa": {
           "unit": "MPa",
@@ -12222,7 +12222,7 @@
           "source_reference": "DTMB Report 1324, Figs. 3 and 6 and Tables 1-2, pp. 5-10; NASA/SP-8007-2020/REV 2, pp. 28 and 36"
         },
         {
-          "basis": "The source-gated smooth-shell method is evaluated over ring center-to-center spacing with ideal simply supported circular lines, and on a valid record its material stress is the periodic bay's mid-bay hoop membrane stress; its own capacity_status is withheld_applicability.",
+          "basis": "The source-gated smooth-shell method is evaluated over ring center-to-center spacing with ideal simply supported circular lines, and on a valid record its material stress is the periodic bay's mid-bay membrane stress; its own capacity_status is withheld_applicability.",
           "disposition": "implemented_advisory",
           "mode": "inter_ring_shell_buckling",
           "source_reference": "NASA/SP-8007-2020/REV 2, Eqs. 3-5, 17-29 and 30-32, pp. 22 and 26-29"
@@ -12280,7 +12280,7 @@
       "model_version": "6.0.0",
       "notes": [
         "The global buckling pressure includes the 0.75 factor recommended by NASA SP-8007, printed p. 38, and enters the governing-pressure comparison.",
-        "Each buckling pressure is labelled by comparing its shell circumferential membrane stress with the proportional limit: on a valid record, the periodic bay's mid-bay hoop stress for the inter-ring bay, and nominal p*r/t for the global mode. With only a yield strength, a pressure is an elastic upper bound when that stress exceeds yield and undetermined otherwise.",
+        "Each buckling pressure is labelled by comparing its shell circumferential membrane stress with the proportional limit: on a valid record, the periodic bay's mid-bay membrane stress for the inter-ring bay, and nominal p*r/t for the global mode. With only a yield strength, a pressure is an elastic upper bound when that stress exceeds yield and undetermined otherwise.",
         "Global buckling is elastic: lobar modes (n >= 2, axial half-waves longer than one ring spacing, and always m = 1) with ideal simple supports. Interframe collapse of an imperfect shell, ring tripping, ring spacing, axisymmetric elastic buckling (n=0), and the long-cylinder Eq. 66 transition are not checked; axisymmetric collapse is a perfect-shell estimate.",
         "The smeared-ring model assumes closely and uniformly spaced rings. The global search admits axial half-waves longer than one ring spacing, and always m = 1; shorter waves fall between rings, where the inter-ring check applies. NASA notes that its orthotropic equations lose accuracy against Love or Sanders theory for n <= 4 (printed p. 35) and that a more accurate discrete-ring theory gives somewhat lower pressures (p. 38), so widely spaced or deep eccentric rings still need a discrete-ring or code-rule check.",
         "Pc5 and ring yield are the pressures at which the mean hoop stress in the shell at mid-bay, and in the ring at its centroid, reaches the yield strength in a perfect periodic bay; ring first yield is where the ring's largest hoop stress, at its smallest radius, does (hoop stress only, perfect shell). They are not collapse pressures. As in the PD 5500 form, and as DAPS4 takes the hoop load, the pressure acts at the shell mid-surface radius; on the outer surface, exact equilibrium would raise the unstiffened mean hoop stress by R_o/R = 1 + t/(2R) and the bay's slightly less.",

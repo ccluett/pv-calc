@@ -306,15 +306,17 @@ _RESULT_FIELD_DESCRIPTIONS: dict[str, str] = {
     "circumferential_stress_basis": (
         "Which circumferential membrane stress this result compares with material data: "
         "unstiffened_membrane_p_r_over_t for a smooth shell, or "
-        "ring_stiffened_mid_bay_hoop_membrane for the bay of a ring-stiffened shell, whose "
-        "rings carry part of the hoop load. It drives the plasticity correction, the "
+        "ring_stiffened_mid_bay_membrane_equivalent for the bay of a ring-stiffened shell: its "
+        "mid-bay membrane von Mises stress divided by sqrt(3)/2, which is p*r/t without rings. "
+        "Rings carry part of the hoop load but none of the axial. It drives the plasticity "
+        "correction, the "
         "proportional-limit and elastic-applicability screens, and the reported critical "
         "stresses; pressures without a curve do not depend on it."
     ),
     "circumferential_stress_per_unit_pressure": (
         "Circumferential membrane stress divided by pressure on circumferential_stress_basis: "
-        "r/t for a smooth shell, or the periodic bay's mid-bay hoop stress per unit pressure, "
-        "(R/t)(1 - gamma*G), for a ring-stiffened bay."
+        "r/t for a smooth shell, or the ring-stiffened bay's equivalent from its mid-bay hoop "
+        "stress (R/t)(1 - gamma*G) and axial stress R/(2t)."
     ),
     "beam_column_bay": (
         "The Pulos-Salerno periodic bay at the applied pressure, as Renzi documents for "
@@ -754,7 +756,7 @@ def _describe_model(
             " and adjusted pressures are reported; the adjusted pressure enters the mode comparison.",
             "The inter-ring calculation treats an isolated smooth bay over ring center"
             " spacing; a supplied compressive curve corrects this bay only, read at the"
-            " periodic bay's mid-bay hoop stress.",
+            " periodic bay's mid-bay membrane von Mises stress over sqrt(3)/2.",
             "Shell and ring yield use the axisymmetric solution of a periodic bay between"
             " identical rings, away from the ends, for a perfectly circular, linearly"
             " elastic shell; they need a yield strength.",

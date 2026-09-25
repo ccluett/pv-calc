@@ -126,16 +126,16 @@ def test_ring_display_with_a_plasticity_corrected_bay_governing_is_not_called_el
     assert bay["capacity_status"] == "released"
     assert 0.0 < bay["plasticity_factor"] < 1.0
     governing = bay["correlated_critical_pressure_mpa"]
-    # Corrected at the bay's mid-bay hoop stress; p*r/t gave 7.33657 MPa.
-    assert bay["circumferential_stress_basis"] == "ring_stiffened_mid_bay_hoop_membrane"
-    assert governing["value"] == pytest.approx(7.764324783821008)
+    # Corrected at the bay's mid-bay membrane stress; p*r/t gave 7.33657 MPa.
+    assert bay["circumferential_stress_basis"] == "ring_stiffened_mid_bay_membrane_equivalent"
+    assert governing["value"] == pytest.approx(7.759387917677017)
     assert governing["value"] < result["global_with_ring_torsion"]["adjusted_critical_pressure_mpa"]["value"]
 
     summary = summarize_response(response)
     assert summary["ring_buckling"]["advisory_governing_pressure_mpa"] == governing
     assert "critical_circumferential_lobes_n" not in summary["ring_buckling"]
     text = render_text(response)
-    assert "Lowest buckling or collapse pressure: 7.76432 MPa (inter-ring bay)" in text
+    assert "Lowest buckling or collapse pressure: 7.75939 MPa (inter-ring bay)" in text
     assert "Global buckling is elastic" in text
     assert "Elastic buckling only" not in text
     assert summary["assessment"]["status"] == "indeterminate"
