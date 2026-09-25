@@ -10,87 +10,37 @@ model; both predate this changelog.
 ## [Unreleased]
 
 - Ring-shell model 5.1.0 -> 6.0.0:
-  - When the inter-ring bay falls in the NASA moderate/long correlation
-    overlap, the lowest buckling pressure is no longer the global mode alone.
-    The bay is withheld there on every material path, so the old minimum
-    could sit far above both bay candidates (over 100 times in one synthetic
-    case). The lowest pressure is now not established: the candidate list is
-    empty, the governing fields are null, and a note says why. The global and
-    yield pressures are still reported, and text and summary output say the
-    lowest pressure is not established.
+  - When the inter-ring bay falls in NASA's moderate/long correlation overlap,
+    no lowest pressure is formed: the candidate list is empty, the governing
+    fields are null, and a note says why. Before, the global mode alone stood
+    in, far above the bay.
   - The smeared global search admits only axial half-waves longer than one
-    ring spacing, and always `m = 1`. Sampled at the rings, a longer sine
-    moves them with the smeared strain energy; at one spacing the rings can
-    sit at the nodes, and shorter waves fall between rings, where the smeared
-    ring stiffness does not apply and the inter-ring check does. One
-    committed test case had governed at `(m, n) = (42, 2)`, an 11.9 mm
-    half-wave against a 20 mm spacing; the smeared branch now stops at
-    `(24, 2)`, ideal 19.45 -> 30.63 MPa, and the inter-ring bay still governs.
-    A half-wave between one and two spacings is kept: in a case governing at
-    1.54 spacings, an independent discrete-ring model agrees with the smeared
-    value to 0.1%, and a two-spacing screen would have reported it 10% high.
-    When the minimum sits on the limit and a shorter wave would be lower,
-    `axial_half_wave_limit_binding` is true and a note says so. Every
-    admissible `m` is evaluated from the first pass, so only `n` expands.
-    `mode_domain` becomes `1<=m<=maximum_axial_half_waves_m,n>=2`, with
+    ring spacing, and always `m = 1`. `mode_domain` becomes
+    `1<=m<=maximum_axial_half_waves_m,n>=2`, and
     `maximum_axial_half_waves_m`, `axial_half_wave_limit_binding`, and
-    `critical_half_wave_over_ring_spacing` added. The smeared-ring note cites
-    NASA's own caveats: its orthotropic equations lose accuracy for `n <= 4`
-    (printed p. 35), and a discrete-ring theory gives somewhat lower pressures
-    (p. 38). The DTMB examples keep their `m = 1` modes and pressures; their
-    search evidence (bounds, mode counts, frontier) changes.
+    `critical_half_wave_over_ring_spacing` report the screen.
+  - The inter-ring bay's plasticity correction and material screens read the
+    bay's mid-bay membrane von Mises stress divided by `sqrt(3)/2`, which is
+    `p*r/t` without rings, instead of `p*r/t` itself.
   - Report `ring_first_yield_pressure_mpa`: the pressure at which the ring's
-    largest hoop stress, at its smallest radius, reaches yield. That is the
-    free edge of an internal ring and the base of an external ring at the
-    shell, because each ring section translates radially and its hoop strain
-    is `w_ring / r`. It is below the centroid (mean) ring yield by the
-    ring's half-depth over its centroid radius, `(h/2)/R_c`: 2.0% for the
-    DTMB 1324 examples. It is hoop stress only, in a perfect shell.
-    `axisymmetric_stress` adds the location, radius, and stress per unit
-    pressure; text and summary output show it beside the mean ring yield,
-    which is unchanged.
-  - The inter-ring bay's material comparisons read the periodic bay's
-    mid-bay hoop membrane stress instead of the unstiffened `p*r/t`. NASA
-    defines its Eqs. 30-32 plasticity factor at the circumferential stress
-    `p*r/t` of an unstiffened shell; between rings, which carry part of the
-    hoop load, this extends that definition to the bay's own mid-bay stress.
-    With a compressive curve the corrected bay pressure now solves
-    `p = p_elastic * eta(k * p)` with the bay's own `k`. In invented titanium
-    bays it rises 3-27%, and up to about 2x for heavily ringed short bays;
-    where a long bay's mid-bay deflection overshoots the free shell's, the
-    stress is up to about 7% above `p*r/t` and the pressure falls slightly.
-    The committed ring display test's corrected aluminium bay moves from
-    7.33657 to 7.76432 MPa. Without a curve the pressure is unchanged, but
-    the proportional-limit label and the reported critical stresses use the
-    bay stress, so a bay whose own stress is within the limit is no longer
-    called an elastic upper bound. When a corrected bay pressure exceeds Pc5,
-    a note says interframe collapse can govern.
-  - The ring result's yield note, the model assumptions, and the engineering
-    record state that the pressure acts at the shell mid-surface radius, as in
-    the PD 5500 form and as DAPS4 takes the hoop load. Exact equilibrium with
-    the load on the outer surface would raise the unstiffened mean hoop
-    stress by `R_o/R = 1 + t/(2R)` and the bay's slightly less. The numbers
-    are unchanged.
+    hoop stress at its smallest radius reaches yield.
   - Add the bay's surface stresses and axisymmetric collapse, from the
     Pulos-Salerno beam-column solution and Lunchick's plastic reserve as
-    Renzi documents them for DAPS4 (IHTR 2944, Eqs. 7 and 43-66).
-    `beam_column_bay` gives mid-bay and frame stresses on both surfaces at
-    the applied pressure, their plane-stress von Mises values, deflections,
-    and the ring hoop stress, while Renzi's gamma < 1. With a yield strength,
-    `axisymmetric_collapse` gives the collapse pressure, which enters the
-    lowest pressure as mode `axisymmetric_collapse_lunchick`, so text output
-    now says "Lowest buckling or collapse pressure". It often governs stocky
-    bays. The closed form matches an independent solution to 1e-10 and
-    DAPS4's published Case 2 output within 1 psi, with collapse at 1095.7
-    against 1096 psi. It is a perfect-shell estimate without end bays, and a
-    long bay whose bending relieves the outer surface at mid-bay is flagged.
+    Renzi documents them for DAPS4 (IHTR 2944). `beam_column_bay` gives
+    mid-bay and frame stresses on both surfaces, their plane-stress von Mises
+    values, deflections, and the ring hoop stress at the ring's smallest
+    radius. With a yield strength, `axisymmetric_collapse` gives a
+    perfect-shell collapse pressure that enters the lowest pressure, and text
+    output now says "Lowest buckling or collapse pressure". A note flags a
+    bay parameter theta outside the 1.0 to 2.5 that DAPS4's test comparison
+    covers.
+  - Notes and the engineering record state that the pressure acts at the
+    shell mid-surface radius.
 - Smooth-buckling model 5.0.0 -> 5.1.0: results add
   `circumferential_stress_basis` and `circumferential_stress_per_unit_pressure`,
-  naming the stress compared with material data. A smooth shell uses
-  `p*r/t` as before; its numbers are unchanged.
-- The tests pass the bundled `pv_calc/data/materials.yaml` by path instead of
-  the root compatibility symlink, so they run in a checkout without symlink
-  support, and the zip-import test no longer assumes `/` separators.
+  naming the stress compared with material data. A smooth shell's numbers are
+  unchanged.
+- The tests run in a checkout without symlink support.
 - Model versions: tube 3.1.0, hemisphere 5.0.0, plate 5.0.0, smooth buckling
   5.1.0, ring shell 6.0.0; cylinder composition 1.0.0. Sizing operation
   versions: tube 3.1.0, smooth buckling 4.0.0, plate 3.0.0. Sweep 1.2.0 and

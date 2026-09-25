@@ -64,7 +64,7 @@ and its mode, when one can be formed: global buckling including NASA's
 recommended 0.75 factor, buckling of the shell between rings, or, with a yield
 strength, axisymmetric collapse. The global calculation is elastic; the
 inter-ring bay includes NASA's plasticity correction, read at the bay's mid-bay
-hoop stress, when a complete compressive curve is supplied. The bay's surface
+membrane stress, when a complete compressive curve is supplied. The bay's surface
 stresses at the applied pressure and its axisymmetric collapse come from the
 Pulos-Salerno beam-column solution and Lunchick's plastic reserve, as
 documented for DAPS4, and reproduce DAPS4's published example. With a yield
@@ -167,7 +167,7 @@ typed request objects and an optional `materials_file` override.
 | `hemisphere` | Hemispherical head stress, NASA SP-8032 buckling, displacement, and seat stress |
 | `smooth-buckling` | NASA SP-8007 smooth-cylinder external-pressure buckling |
 | `smooth-buckling size` | The wall thickness meeting a margin across shell stress and buckling |
-| `ring-shell` | NASA SP-8007 ring-stiffened shell elastic buckling pressure and mode, and shell and ring mean hoop yield pressures (advisory) |
+| `ring-shell` | Ring-stiffened shell: NASA SP-8007 buckling pressure and mode, bay surface stresses, axisymmetric collapse, and shell and ring yield pressures (advisory) |
 | `mass-properties` | Submerged mass and buoyancy from resolved volumes, fluid density, and gravity |
 | `sweep` | One forward request over pressure, depth, or a supported geometric dimension |
 | `compare-materials` | One forward or sizing request against an ordered list of named materials |
