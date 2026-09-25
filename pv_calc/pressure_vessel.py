@@ -728,9 +728,13 @@ RING_SHELL_COLLAPSE_NOTE = (
     "Axisymmetric collapse is Lunchick's plastic reserve on the pressure at which the outer "
     "surface at mid-bay first yields (von Mises), from the beam-column periodic bay: a perfect "
     "shell of elastic-perfectly plastic material between identical rings, without end bays. "
-    "It enters the lowest pressure. DAPS4's comparison with machined aluminium models "
-    "(Boichot and Reynolds) covers theta from 1.0 to 2.5."
+    "It enters the lowest pressure."
 )
+RING_SHELL_COLLAPSE_THETA_NOTE = (
+    "The bay parameter theta is {theta:.3g}, outside the 1.0 to 2.5 that DAPS4's comparison of "
+    "axisymmetric collapse with machined aluminium models (Boichot and Reynolds) covers."
+)
+RING_BAY_FIRST_YIELD_GRID_STEPS = 256
 RING_SHELL_COLLAPSE_REVERSED_BENDING_NOTE = (
     "At first yield the mid-bay bending relieves the outer surface, as in a long bay; "
     "Lunchick's derivation assumes it adds compression there, so phi3 falls just below 1 "
@@ -3385,8 +3389,17 @@ def ring_bay_axisymmetric_collapse(
             ring_stress_radius_mm=r_mm,  # the ring stress is not used here
         )
 
-    upper = limit_mpa * (1.0 - 1.0e-9)
-    if bay(upper).midbay.von_mises_outer_mpa < fy_mpa:
+    # In a long bay the outer mid-bay stress can peak and fall again before
+    # gamma reaches 1, so bracket the first grid step that reaches yield.
+    limit_step = limit_mpa * (1.0 - 1.0e-9) / RING_BAY_FIRST_YIELD_GRID_STEPS
+    lower = 0.0
+    upper = 0.0
+    for step in range(1, RING_BAY_FIRST_YIELD_GRID_STEPS + 1):
+        upper = limit_step * step
+        if bay(upper).midbay.von_mises_outer_mpa >= fy_mpa:
+            break
+        lower = upper
+    else:
         return RingAxisymmetricCollapseResult(
             source_reference=RING_SHELL_COLLAPSE_SOURCE,
             status="withheld_beam_column_limit",
@@ -3396,7 +3409,6 @@ def ring_bay_axisymmetric_collapse(
             plastic_reserve_factor_phi3=None,
             collapse_pressure_mpa=None,
         )
-    lower = 0.0
     for _ in range(200):
         middle = lower + 0.5 * (upper - lower)
         if middle <= lower or middle >= upper:
@@ -3580,6 +3592,7 @@ def ring_stiffened_shell_external_pressure(
     beam_column_bay: RingBeamColumnBayResult | None = None
     collapse: RingAxisymmetricCollapseResult | None = None
     beam_column_limit: float | None = None
+    bay_theta = math.nan
     if not validity_violations:
         bay_geometry = dict(
             shell_mid_surface_radius_mm=r_mm,
@@ -3594,6 +3607,7 @@ def ring_stiffened_shell_external_pressure(
             poisson_ratio=v,
         )
         beam_column_limit = _ring_bay_limit_pressure(r_mm, t_mm, e_mpa, v)
+        bay_theta = (3.0 * (1.0 - v * v)) ** 0.25 * (spacing_mm - width_mm) / math.sqrt(r_mm * t_mm)
         if p_mpa < beam_column_limit:
             # The ring's smallest radius carries its largest hoop stress.
             beam_column_bay = ring_bay_beam_column_stress(
@@ -3923,6 +3937,13 @@ def ring_stiffened_shell_external_pressure(
         *(
             (RING_SHELL_COLLAPSE_NOTE,)
             if collapse is not None and collapse.collapse_pressure_mpa is not None
+            else ()
+        ),
+        *(
+            (RING_SHELL_COLLAPSE_THETA_NOTE.format(theta=bay_theta),)
+            if collapse is not None
+            and collapse.collapse_pressure_mpa is not None
+            and not 1.0 <= bay_theta <= 2.5
             else ()
         ),
         *(

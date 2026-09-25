@@ -282,6 +282,37 @@ def test_collapse_is_withheld_when_gamma_reaches_one_before_first_yield():
     assert result.beam_column_bay is not None
 
 
+def test_collapse_finds_first_yield_where_a_long_bay_stress_peaks_before_the_limit():
+    # theta = 8: the outer mid-bay stress passes yield below the gamma = 1
+    # limit and falls back under it before the limit, so checking the limit
+    # alone would withhold a collapse pressure that exists.
+    geometry = dict(
+        shell_mid_surface_radius_mm=1000.0,
+        wall_thickness_mm=6.667,
+        ring_spacing_mm=521.5,
+        ring_faying_width_mm=13.3,
+        ring_area_mm2=13.3 * 6.7,
+        ring_centroid_radius_mm=1000.0 + 6.667 / 2.0 + 6.7 / 2.0,
+        elastic_modulus_mpa=200_000.0,
+        poisson_ratio=0.3,
+    )
+    collapse = ring_bay_axisymmetric_collapse(yield_strength_mpa=1_075.0, **geometry)
+    assert collapse.status == "advisory"
+    assert collapse.first_yield_pressure_mpa is not None
+    at_limit = ring_bay_beam_column_stress(
+        pressure_mpa=collapse.beam_column_limit_pressure_mpa * (1.0 - 1.0e-9),
+        ring_stress_radius_mm=1000.0,
+        **geometry,
+    )
+    at_yield = ring_bay_beam_column_stress(
+        pressure_mpa=collapse.first_yield_pressure_mpa, ring_stress_radius_mm=1000.0, **geometry
+    )
+
+    assert at_limit.midbay.von_mises_outer_mpa < 1_075.0
+    assert at_yield.midbay.von_mises_outer_mpa == pytest.approx(1_075.0, rel=1e-9)
+    assert collapse.first_yield_pressure_mpa < collapse.beam_column_limit_pressure_mpa
+
+
 def test_bay_stresses_are_withheld_at_or_beyond_the_gamma_limit():
     inputs = _thin_shell()
     limit = ring_bay_axisymmetric_collapse(
@@ -338,6 +369,9 @@ def test_a_long_bay_reverses_the_mid_bay_bending_and_is_flagged():
     assert collapse.outer_midbay_bending_compressive is False
     assert 0.98 < collapse.plastic_reserve_factor_phi3 < 1.0
     assert any("relieves the outer surface" in note for note in result.notes)
+    assert any(
+        "theta is 11.3, outside the 1.0 to 2.5" in note for note in result.notes
+    )
 
 
 @pytest.mark.parametrize(
@@ -417,6 +451,7 @@ def test_the_ring_model_reports_collapse_with_its_disposition():
     )
     assert "axisymmetric_collapse_lunchick" in result.advisory_candidate_modes
     assert any("Lunchick's plastic reserve" in note for note in result.notes)
+    assert not any("outside the 1.0 to 2.5" in note for note in result.notes)
     # The applied-pressure bay stresses come from the same kernel.
     bay = result.beam_column_bay
     assert bay is not None
