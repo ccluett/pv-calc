@@ -909,6 +909,35 @@ def test_the_correction_is_not_a_strength_limit() -> None:
     assert not any("exceeds the supplied yield strength" in note for note in within.notes)
 
 
+def test_without_a_yield_strength_the_proof_stress_bounds_the_curve_reading():
+    # The same stocky shell with only the curve: nothing checks material
+    # failure, so a corrected stress past the curve's 0.2% proof stress says
+    # the curve was read beyond its anchor.
+    beyond = _kernel(
+        external_pressure_mpa=1.0,
+        shell_mid_surface_radius_mm=100.0,
+        wall_thickness_mm=8.0,
+        unsupported_length_mm=150.0,
+        yield_strength_mpa=None,
+        ramberg_osgood_n=21.0,
+        compressive_proof_stress_mpa=827.0,
+    )
+    assert beyond.correlated_critical_circumferential_stress_mpa > 827.0
+    assert any("exceeds the curve's compressive proof stress" in note for note in beyond.notes)
+    assert not any("exceeds the supplied yield strength" in note for note in beyond.notes)
+    below = _kernel(
+        external_pressure_mpa=1.0,
+        shell_mid_surface_radius_mm=100.0,
+        wall_thickness_mm=2.0,
+        unsupported_length_mm=150.0,
+        yield_strength_mpa=None,
+        ramberg_osgood_n=21.0,
+        compressive_proof_stress_mpa=827.0,
+    )
+    assert below.correlated_critical_circumferential_stress_mpa < 827.0
+    assert not any("compressive proof stress" in note for note in below.notes)
+
+
 @pytest.mark.parametrize(
     ("unsupported_length_mm", "equation"),
     [

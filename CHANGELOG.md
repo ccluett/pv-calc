@@ -39,7 +39,9 @@ model; both predate this changelog.
 - Smooth-buckling model 5.0.0 -> 5.1.0: results add
   `circumferential_stress_basis` and `circumferential_stress_per_unit_pressure`,
   naming the stress compared with material data. A smooth shell's numbers are
-  unchanged.
+  unchanged. Without a yield strength, a curve-corrected stress past the
+  curve's proof stress now carries a note that the curve is read beyond its
+  anchor.
 - Add reference-only compressive Ramberg-Osgood curves from MIL-HDBK-5J, with
   their curve-derived proportional limits, to the bundled `Al-7075-T6` (T651
   plate in L compression: n = 16, anchored at the thick-plate Fcy(L) of

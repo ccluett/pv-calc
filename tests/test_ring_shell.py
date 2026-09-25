@@ -907,3 +907,8 @@ def test_heavy_rings_correct_the_bay_at_its_axial_stress():
     assert curve_only.axisymmetric_collapse is None
     assert curve_only.advisory_governing_mode == "inter_ring_smooth_shell"
     assert curve_only.advisory_governing_pressure_mpa == pytest.approx(bay_pressure, rel=1e-12)
+    # That bay is corrected past the curve's proof stress, and says so.
+    assert any(
+        "exceeds the curve's compressive proof stress" in note
+        for note in curve_only.inter_ring_shell_buckling.notes
+    )

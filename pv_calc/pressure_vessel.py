@@ -322,6 +322,11 @@ SMOOTH_CYLINDER_CORRECTED_STRESS_ABOVE_YIELD_REASON = (
     "supplied yield strength {limit:.6g} MPa; the compressive curve is read beyond its "
     "anchor, and the separate material check decides whether material failure governs"
 )
+SMOOTH_CYLINDER_CORRECTED_STRESS_ABOVE_PROOF_REASON = (
+    "corrected critical circumferential membrane stress {stress:.6g} MPa exceeds the "
+    "curve's compressive proof stress {limit:.6g} MPa; the curve is read beyond its "
+    "anchor, and without a yield strength no material check bounds it"
+)
 SMOOTH_CYLINDER_RING_BAY_STRESS_NOTE = (
     "Circumferential membrane stresses, including the plasticity correction and the "
     "proportional-limit and elastic-applicability screens, use the ring-stiffened bay's "
@@ -2940,16 +2945,22 @@ def smooth_cylinder_external_pressure_buckling(
         and p_mpa > 0.0
         else None
     )
-    corrected_stress_above_yield = (
-        SMOOTH_CYLINDER_CORRECTED_STRESS_ABOVE_YIELD_REASON.format(
-            stress=correlated_stress, limit=yield_mpa
-        )
-        if inelastic_pressure is not None
-        and correlated_stress is not None
-        and yield_mpa is not None
-        and correlated_stress > yield_mpa
-        else None
-    )
+    # Past its anchor the curve is extrapolated. A yield strength bounds that
+    # through the material check; without one, the proof stress is the limit.
+    corrected_stress_above_yield: str | None = None
+    if inelastic_pressure is not None and correlated_stress is not None and curve is not None:
+        if yield_mpa is not None and correlated_stress > yield_mpa:
+            corrected_stress_above_yield = (
+                SMOOTH_CYLINDER_CORRECTED_STRESS_ABOVE_YIELD_REASON.format(
+                    stress=correlated_stress, limit=yield_mpa
+                )
+            )
+        elif yield_mpa is None and correlated_stress > curve[1]:
+            corrected_stress_above_yield = (
+                SMOOTH_CYLINDER_CORRECTED_STRESS_ABOVE_PROOF_REASON.format(
+                    stress=correlated_stress, limit=curve[1]
+                )
+            )
     working_stress = p_mpa * stress_per_pressure
     applicability_limit, applicability_basis, elastic_applicability = (
         _elastic_applicability_screen(working_stress, proportional_mpa, yield_mpa)
