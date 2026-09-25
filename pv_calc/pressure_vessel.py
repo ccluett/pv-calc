@@ -3218,6 +3218,7 @@ def ring_bay_beam_column_stress(
     ring_centroid_radius_mm: float,
     elastic_modulus_mpa: float,
     poisson_ratio: float,
+    ring_stress_radius_mm: float,
 ) -> RingBeamColumnBayResult:
     """Stresses of a periodic bay between identical rings, with the beam-column term.
 
@@ -3226,11 +3227,13 @@ def ring_bay_beam_column_stress(
     R and the axial load p R alpha^2 / 2 with alpha = R_o / R; Eq. 7 gives the
     effective ring area A_f (R / R_cg)^2, the bay parameter theta over the
     clear bay, and the frame parameter beta; Eqs. 49-62 give the mid-bay and
-    frame stresses on both surfaces and Eq. 55 the ring hoop stress, all
+    frame stresses on both surfaces and Eq. 55 the ring's deflection, all
     through the functions F1-F6. The solution needs gamma < 1 (Eq. 64). The
     ring enters through its area, centroid radius, and faying width. Stresses
     are tension positive; von Mises is the plane-stress value DAPS4 prints,
-    without the radial stress.
+    without the radial stress. The ring hoop stress is E w_ring / r at
+    ``ring_stress_radius_mm``: the ring model passes the ring's smallest
+    radius, where it is largest, and DAPS4 prints it at R.
     """
     p_mpa = _non_negative_pressure(pressure_mpa)
     r_mm, t_mm, spacing_mm, width_mm, area_mm2, centroid_mm, e_mpa, v = _ring_bay_inputs(
@@ -3243,6 +3246,7 @@ def ring_bay_beam_column_stress(
         elastic_modulus_mpa,
         poisson_ratio,
     )
+    stress_radius_mm = _positive_finite(ring_stress_radius_mm, "ring_stress_radius_mm")
     alpha = (r_mm + 0.5 * t_mm) / r_mm
     membrane = e_mpa * t_mm  # C_phi (1 - nu^2) for an isotropic wall
     rigidity = e_mpa * t_mm**3 / (12.0 * (1.0 - v * v))  # D_x
@@ -3319,10 +3323,12 @@ def ring_bay_beam_column_stress(
             sigma_u - sigma_mf,
             free_deflection + ring_deflection_scale * frame_shape,
         ),
+        # Eq. 55 is E w_ring / R; the ring's hoop stress at radius r is E w_ring / r.
         ring_hoop_stress_mpa=(
             (-p_mpa * width_mm * (1.0 - 0.5 * v * alpha) + sigma_mf * t_mm * clear_bay * f1 / r_mm)
             * r_mm
             / (effective_area + width_mm * t_mm)
+            * (r_mm / stress_radius_mm)
         ),
     )
 
@@ -3376,6 +3382,7 @@ def ring_bay_axisymmetric_collapse(
             ring_centroid_radius_mm=centroid_mm,
             elastic_modulus_mpa=e_mpa,
             poisson_ratio=v,
+            ring_stress_radius_mm=r_mm,  # the ring stress is not used here
         )
 
     upper = limit_mpa * (1.0 - 1.0e-9)
@@ -3588,7 +3595,16 @@ def ring_stiffened_shell_external_pressure(
         )
         beam_column_limit = _ring_bay_limit_pressure(r_mm, t_mm, e_mpa, v)
         if p_mpa < beam_column_limit:
-            beam_column_bay = ring_bay_beam_column_stress(pressure_mpa=p_mpa, **bay_geometry)
+            # The ring's smallest radius carries its largest hoop stress.
+            beam_column_bay = ring_bay_beam_column_stress(
+                pressure_mpa=p_mpa,
+                ring_stress_radius_mm=(
+                    r_mm + 0.5 * t_mm
+                    if ring_location == "external"
+                    else r_mm - 0.5 * t_mm - height_mm
+                ),
+                **bay_geometry,
+            )
         if yield_mpa is not None:
             collapse = ring_bay_axisymmetric_collapse(
                 yield_strength_mpa=yield_mpa, **bay_geometry

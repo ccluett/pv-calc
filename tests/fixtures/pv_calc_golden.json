@@ -3501,7 +3501,7 @@
         "pressure_parameter_gamma": 0.178217686571,
         "ring_hoop_stress_mpa": {
           "unit": "MPa",
-          "value": -203.2694062
+          "value": -202.400521342
         },
         "source_reference": "Pulos and Salerno periodic-bay solution with the beam-column term (DTMB Report 1497), as documented for DAPS4 by Renzi, NSWC Indian Head IHTR 2944 (2008), Eqs. 7 and 43-64",
         "stress_sign_convention": "tension_positive",
@@ -4407,7 +4407,7 @@
         "pressure_parameter_gamma": 0.159001826074,
         "ring_hoop_stress_mpa": {
           "unit": "MPa",
-          "value": -181.861855499
+          "value": -181.084478246
         },
         "source_reference": "Pulos and Salerno periodic-bay solution with the beam-column term (DTMB Report 1497), as documented for DAPS4 by Renzi, NSWC Indian Head IHTR 2944 (2008), Eqs. 7 and 43-64",
         "stress_sign_convention": "tension_positive",
@@ -5313,7 +5313,7 @@
         "pressure_parameter_gamma": 0.15523401029,
         "ring_hoop_stress_mpa": {
           "unit": "MPa",
-          "value": -177.647931963
+          "value": -176.88856733
         },
         "source_reference": "Pulos and Salerno periodic-bay solution with the beam-column term (DTMB Report 1497), as documented for DAPS4 by Renzi, NSWC Indian Head IHTR 2944 (2008), Eqs. 7 and 43-64",
         "stress_sign_convention": "tension_positive",
@@ -6219,7 +6219,7 @@
         "pressure_parameter_gamma": 0.151089412928,
         "ring_hoop_stress_mpa": {
           "unit": "MPa",
-          "value": -173.006563219
+          "value": -172.26703834
         },
         "source_reference": "Pulos and Salerno periodic-bay solution with the beam-column term (DTMB Report 1497), as documented for DAPS4 by Renzi, NSWC Indian Head IHTR 2944 (2008), Eqs. 7 and 43-64",
         "stress_sign_convention": "tension_positive",
@@ -7125,7 +7125,7 @@
         "pressure_parameter_gamma": 0.149959068193,
         "ring_hoop_stress_mpa": {
           "unit": "MPa",
-          "value": -171.739643386
+          "value": -171.005534016
         },
         "source_reference": "Pulos and Salerno periodic-bay solution with the beam-column term (DTMB Report 1497), as documented for DAPS4 by Renzi, NSWC Indian Head IHTR 2944 (2008), Eqs. 7 and 43-64",
         "stress_sign_convention": "tension_positive",
@@ -8031,7 +8031,7 @@
         "pressure_parameter_gamma": 0.148451941879,
         "ring_hoop_stress_mpa": {
           "unit": "MPa",
-          "value": -170.049693169
+          "value": -169.322807572
         },
         "source_reference": "Pulos and Salerno periodic-bay solution with the beam-column term (DTMB Report 1497), as documented for DAPS4 by Renzi, NSWC Indian Head IHTR 2944 (2008), Eqs. 7 and 43-64",
         "stress_sign_convention": "tension_positive",
@@ -8937,7 +8937,7 @@
         "pressure_parameter_gamma": 0.147321597144,
         "ring_hoop_stress_mpa": {
           "unit": "MPa",
-          "value": -168.781689424
+          "value": -168.060223971
         },
         "source_reference": "Pulos and Salerno periodic-bay solution with the beam-column term (DTMB Report 1497), as documented for DAPS4 by Renzi, NSWC Indian Head IHTR 2944 (2008), Eqs. 7 and 43-64",
         "stress_sign_convention": "tension_positive",
@@ -9843,7 +9843,7 @@
         "pressure_parameter_gamma": 0.144307344517,
         "ring_hoop_stress_mpa": {
           "unit": "MPa",
-          "value": -165.398089633
+          "value": -164.69108754
         },
         "source_reference": "Pulos and Salerno periodic-bay solution with the beam-column term (DTMB Report 1497), as documented for DAPS4 by Renzi, NSWC Indian Head IHTR 2944 (2008), Eqs. 7 and 43-64",
         "stress_sign_convention": "tension_positive",
@@ -10749,7 +10749,7 @@
         "pressure_parameter_gamma": 0.123961139285,
         "ring_hoop_stress_mpa": {
           "unit": "MPa",
-          "value": -142.474702992
+          "value": -141.865688018
         },
         "source_reference": "Pulos and Salerno periodic-bay solution with the beam-column term (DTMB Report 1497), as documented for DAPS4 by Renzi, NSWC Indian Head IHTR 2944 (2008), Eqs. 7 and 43-64",
         "stress_sign_convention": "tension_positive",
@@ -11655,7 +11655,7 @@
         "pressure_parameter_gamma": 0.105875623523,
         "ring_hoop_stress_mpa": {
           "unit": "MPa",
-          "value": -121.979592612
+          "value": -121.458184974
         },
         "source_reference": "Pulos and Salerno periodic-bay solution with the beam-column term (DTMB Report 1497), as documented for DAPS4 by Renzi, NSWC Indian Head IHTR 2944 (2008), Eqs. 7 and 43-64",
         "stress_sign_convention": "tension_positive",

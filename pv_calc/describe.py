@@ -333,6 +333,12 @@ _RESULT_FIELD_DESCRIPTIONS: dict[str, str] = {
         "reserve factor phi3 to three hinges. The collapse pressure enters the lowest pressure. "
         "Null without a yield strength or valid geometry."
     ),
+    "ring_hoop_stress_mpa": (
+        "The ring's hoop stress E w_ring / r at its smallest radius, where it is largest: the "
+        "free edge of an internal ring or the base of an external one. It uses Renzi's ring "
+        "area; axisymmetric_stress gives the same stress without the beam-column term and, "
+        "for an internal ring, with DTMB 1639's smaller area. DAPS4 prints E w_ring / R."
+    ),
     "frame": (
         "The shell at the ring face, the end of the clear bay: axial and hoop stress on the "
         "outer and inner surfaces, tension positive, with their von Mises values and the "

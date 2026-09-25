@@ -51,6 +51,11 @@ def _kernel_inputs(case: BayCase) -> dict[str, float]:
     )
 
 
+def _stress_inputs(case: BayCase) -> dict[str, float]:
+    # The reference, like DAPS4, gives the ring hoop stress at R.
+    return {**_kernel_inputs(case), "ring_stress_radius_mm": case.shell_mid_surface_radius}
+
+
 def _daps4_case2() -> tuple[dict, dict[str, float]]:
     fixture = yaml.safe_load(FIXTURE.read_text(encoding="utf-8"))
     source = fixture["source_inputs"]
@@ -93,7 +98,12 @@ def test_daps4_case2_stresses_match_the_published_program_output():
     fixture, inputs = _daps4_case2()
     printed = fixture["printed_output"]
     precision = fixture["printed_precision"]
-    result = ring_bay_beam_column_stress(pressure_mpa=1000.0 * PSI_TO_MPA, **inputs)
+    # DAPS4 prints the ring hoop stress at the mean radius R (Eq. 55).
+    result = ring_bay_beam_column_stress(
+        pressure_mpa=1000.0 * PSI_TO_MPA,
+        ring_stress_radius_mm=inputs["shell_mid_surface_radius_mm"],
+        **inputs,
+    )
     stations = _printed_stations(result)
 
     for name in ("midbay", "frame"):
@@ -156,7 +166,7 @@ def _gamma_one_pressure(case: BayCase) -> float:
 
 def test_parity_cases_span_bay_length_and_ring_side():
     thetas = [
-        ring_bay_beam_column_stress(pressure_mpa=0.0, **_kernel_inputs(case)).bay_parameter_theta
+        ring_bay_beam_column_stress(pressure_mpa=0.0, **_stress_inputs(case)).bay_parameter_theta
         for case in PARITY_CASES
     ]
     assert min(thetas) < 1.0
@@ -167,7 +177,7 @@ def test_parity_cases_span_bay_length_and_ring_side():
 @pytest.mark.parametrize("gamma_fraction", [0.0, 0.3, 0.9])
 def test_closed_form_matches_the_direct_solution(case: BayCase, gamma_fraction: float):
     pressure = gamma_fraction * _gamma_one_pressure(case)
-    production = ring_bay_beam_column_stress(pressure_mpa=pressure, **_kernel_inputs(case))
+    production = ring_bay_beam_column_stress(pressure_mpa=pressure, **_stress_inputs(case))
     if pressure == 0.0:
         assert production.midbay.von_mises_outer_mpa == 0.0
         return
@@ -205,7 +215,7 @@ def test_collapse_matches_the_independent_reference(case: BayCase):
         lunchick_reserve_factor(case, first_yield), rel=1e-9
     )
     at_yield = ring_bay_beam_column_stress(
-        pressure_mpa=production.first_yield_pressure_mpa, **_kernel_inputs(case)
+        pressure_mpa=production.first_yield_pressure_mpa, **_stress_inputs(case)
     )
     assert at_yield.midbay.von_mises_outer_mpa == pytest.approx(yield_strength, rel=1e-9)
 
@@ -300,6 +310,7 @@ def test_bay_stresses_are_withheld_at_or_beyond_the_gamma_limit():
             ring_centroid_radius_mm=1010.5,
             elastic_modulus_mpa=200_000.0,
             poisson_ratio=0.3,
+            ring_stress_radius_mm=1000.5,
         )
 
 
@@ -335,6 +346,7 @@ def test_a_long_bay_reverses_the_mid_bay_bending_and_is_flagged():
         ({"ring_faying_width_mm": 40.0}, "less than ring_spacing_mm"),
         ({"ring_area_mm2": 0.0}, "ring_area_mm2"),
         ({"poisson_ratio": 0.5}, "poisson_ratio"),
+        ({"ring_stress_radius_mm": 0.0}, "ring_stress_radius_mm"),
     ],
 )
 def test_the_kernel_rejects_invalid_inputs(overrides, message):
@@ -348,10 +360,36 @@ def test_the_kernel_rejects_invalid_inputs(overrides, message):
         ring_centroid_radius_mm=108.5,
         elastic_modulus_mpa=113_800.0,
         poisson_ratio=0.34,
+        ring_stress_radius_mm=102.5,
     )
     inputs.update(overrides)
     with pytest.raises(ValueError, match=message):
         ring_bay_beam_column_stress(**inputs)
+
+
+def test_the_bay_ring_stress_is_at_the_ring_smallest_radius():
+    # A ring section translates radially, so its hoop stress E w / r is
+    # largest at its smallest radius: here an internal ring's free edge at
+    # 127 mm, 18% above DAPS4's printed value at the shell radius.
+    result = ring_stiffened_shell_external_pressure(
+        external_pressure_mpa=40.0,
+        shell_mid_surface_radius_mm=150.0,
+        wall_thickness_mm=6.0,
+        unsupported_length_mm=1200.0,
+        ring_spacing_mm=60.0,
+        ring_axial_width_mm=8.0,
+        ring_radial_height_mm=20.0,
+        ring_location="internal",
+        elastic_modulus_mpa=113_800.0,
+        poisson_ratio=0.34,
+        yield_strength_mpa=827.0,
+    )
+    bay = result.beam_column_bay
+    assert bay is not None
+    ring_deflection = bay.frame.radial_deflection_mm
+
+    assert bay.ring_hoop_stress_mpa == pytest.approx(113_800.0 * ring_deflection / 127.0, rel=1e-12)
+    assert bay.ring_hoop_stress_mpa == pytest.approx(-609.92, abs=0.01)
 
 
 def test_the_ring_model_reports_collapse_with_its_disposition():
