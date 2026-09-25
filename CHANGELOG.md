@@ -12,8 +12,9 @@ model; both predate this changelog.
 - Add reference-only compressive Ramberg-Osgood curves from MIL-HDBK-5J, with
   their curve-derived proportional limits, to the bundled `Al-7075-T6` (T651
   plate in L compression: n = 16, anchored at the thick-plate Fcy(L) of
-  352 MPa; limit 228.8 MPa) and `Ni-625` (annealed bar in transverse
-  compression: n = 27, anchored at 414 MPa; limit 305.6 MPa) records.
+  352 MPa; limit 228.8 MPa) and `Ni-625` (annealed bar in L compression:
+  n = 26, anchored at 414 MPa; limit 302.4 MPa) records. Each stores the
+  lesser of its directional exponents.
   Smooth-cylinder buckling now returns corrected
   `released_unqualified_material` estimates for these materials where it
   withheld capacity, the ring model's inter-ring bay applies the same

@@ -440,7 +440,8 @@ describes L compression of T651 plate, anchored at the A-basis Fcy(L) of the
 thickest plate band, which lies below the stored yield. The Ti-6Al-4V curve
 describes longitudinal compression of annealed extrusion, with a tensile
 minimum substituted for compression proof stress. The Ni-625 curve describes
-transverse compression of annealed bar. These assumptions are unverified for
+L compression of annealed bar. Both new curves store the lesser of their
+directional exponents. These assumptions are unverified for
 the generic alloy records, so all four use
 `buckling_data_qualification: reference_only`. Ti-Grade-2, SS-316-316L, and
 SS-2507 carry no curve: MIL-HDBK-5J gives no compressive exponent for them,

@@ -109,7 +109,7 @@ def test_bundled_materials_work_outside_checkout_and_explicit_override_wins(tmp_
         "buckling_data_qualification": "reference_only",
     }
     for name, limit, exponent, proof in (
-        ("Al-7075-T6", 228.8, 16.0, 352.0), ("Ni-625", 305.6, 27.0, 414.0),
+        ("Al-7075-T6", 228.8, 16.0, 352.0), ("Ni-625", 302.4, 26.0, 414.0),
     ):
         properties = show_material(name)["properties"]
         assert properties["proportional_limit_mpa"] == limit

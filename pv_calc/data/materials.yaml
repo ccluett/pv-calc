@@ -247,28 +247,28 @@ materials:
     poisson_ratio: 0.278
     yield_strength_mpa: 414
     ultimate_strength_mpa: 827
-    proportional_limit_mpa: 305.6
-    ramberg_osgood_n: 27
+    proportional_limit_mpa: 302.4
+    ramberg_osgood_n: 26
     compressive_proof_stress_mpa: 414
     buckling_data_qualification: reference_only
     failure_category: ductile_metal
     compressive_stress_strain_source: >-
       MIL-HDBK-5J (31 January 2003), Section 9.8.4.1.2 curve convention.
       Figure 6.3.3.1.6(d), printed p. 6-40, supplies typical
-      room-temperature compressive n = 27 (ST) and 26 (L) for annealed
-      Inconel 625 bar 0.500 to 1.500 in; ST, the bar's transverse direction,
-      is stored for hoop compression of a shell bored from bar. Table
-      6.3.3.0(c), printed p. 6-36, gives S-basis Fcy(ST) = 60 ksi for 2.000
-      to 3.999 in bar, matching the stored tensile minimum used as the
-      anchor; Fcy(L) falls from 60 to 53 ksi as bar size rises to 3.999 in,
-      so axial compression of thick bar lies below it. A minimum anchor with
+      room-temperature compressive n = 26 (L) and 27 (ST) for annealed
+      Inconel 625 bar 0.500 to 1.500 in; the lesser is stored, as for
+      Al-7075-T6, because a shell's hoop direction may lie along either.
+      Table 6.3.3.0(c), printed p. 6-36, gives S-basis Fcy(L) = 60 ksi for
+      0.500 to 0.999 in bar, matching the stored tensile minimum used as the
+      anchor; Fcy(L) falls to 53 ksi as bar size rises to 3.999 in, so L
+      compression of thick bar lies below it. A minimum anchor with
       a typical shape, not a statistical design allowable. Using this shape
       for plate, sheet, pipe, tube, or other bar sizes is unverified;
       annealed sheet is sharper (n = 32, Figure 6.3.3.1.6(b)). Retained as
       reference-only data.
     proportional_limit_source: >-
       Derived from the compressive curve above using the same pv-calc
-      0.99 E tangent-modulus screen as Al-6061-T6: 305.6 MPa = 0.738 x
+      0.99 E tangent-modulus screen as Al-6061-T6: 302.4 MPa = 0.730 x
       yield. An elastic applicability limit, not a design allowable; the
       curve's direction and product-form limitations apply. Retained as
       reference-only data.
