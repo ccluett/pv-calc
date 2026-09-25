@@ -310,7 +310,7 @@ def test_sized_comparison_keeps_unavailable_materials_and_no_solution_rows(tmp_p
     database.write_text(yaml.safe_dump(data))
     request = size_request()
     # A proportional limit is missing from several bundled material records.
-    names = ["QualifiedForTest", "Al-7075-T6", "NoElastic", "missing", "NoDensity"]
+    names = ["QualifiedForTest", "SS-316-316L", "NoElastic", "missing", "NoDensity"]
     result = _evaluate_material_comparison(comparison(request, names), database)
     entries = result["comparison"]["entries"]
     assert [entry["material"] for entry in entries] == names

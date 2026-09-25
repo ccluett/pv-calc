@@ -12,19 +12,23 @@
 # flaw-dominated property rather than material constants.
 #
 # These values are calculation inputs, not design allowables. None is a statistical
-# A-basis or B-basis allowable. None carries a temperature derating, a weld
-# or heat-affected-zone knockdown, a fatigue or notch correction, or an
-# environmental-cracking caveat, and the calculator applies no safety factor
-# of its own. Everything is room temperature unless a record says otherwise.
-# A design uses the governing code and its own qualified material data.
+# A-basis or B-basis allowable; the Al-6061-T6 and Al-7075-T6 compression
+# anchors use an A-basis compressive yield only to scale a typical curve into a
+# minimum curve, as MIL-HDBK-5J Section 9.8.4.4 directs. None carries a
+# temperature derating, a weld or heat-affected-zone knockdown, a fatigue or
+# notch correction, or an environmental-cracking caveat, and the calculator
+# applies no safety factor of its own. Everything is room temperature unless a
+# record says otherwise. A design uses the governing code and its own qualified
+# material data.
 #
 # `proportional_limit_mpa` is not a specification minimum: no consulted
-# handbook tabulates one. Al-6061-T6 and Ti-6Al-4V carry a curve-derived limit
-# and a complete compressive curve, both marked
+# handbook tabulates one. Al-6061-T6, Al-7075-T6, Ti-6Al-4V, and Ni-625 carry a
+# curve-derived limit and a complete compressive curve, all marked
 # `buckling_data_qualification: reference_only`: the calculation returns an
 # estimate, never an acceptance capacity, because the product form, direction,
-# and proof stress are unqualified for any given part. The other metals have
-# neither a curve nor a limit. The plastics remain null because their stored
+# and proof stress are unqualified for any given part. Ti-Grade-2, SS-316-316L,
+# and SS-2507 have neither a curve nor a limit: the consulted public sources do
+# not support one. The plastics remain null because their stored
 # allowable is a long-term quantity that no elastic-limit criterion attaches
 # to. The brittle record is null because releasing buckling capacity for a
 # flaw-dominated material on an elastic screen would claim more than its data
@@ -57,8 +61,10 @@ materials:
       Figure 3.6.2.2.6(i), printed p. 3-283, supplies the typical LT
       compressive exponent n = 28 for room-temperature 6061-T6 extrusion;
       LT is the hoop direction of an extruded tube. Table 3.6.2.0(g) gives
-      Fcy(LT) = 35 ksi for extruded rod, bar, and shapes, rounded to
-      241 MPa, matching the stored tensile minimum. A minimum anchor with
+      A-basis Fcy(LT) = 35 ksi for T6, T6510, and T6511 extruded rod, bar,
+      and shapes up to 1.000 in thick, rounded to 241 MPa, matching the
+      stored tensile minimum; from 1.001 to 6.500 in it gives 30 ksi, 14%
+      lower, which this anchor does not cover. A minimum anchor with
       a typical shape, not a statistical design allowable. This curve is
       retained as reference-only data because the generic alloy name does not
       establish that product form and direction for a particular request.
@@ -86,7 +92,30 @@ materials:
     elastic_modulus_mpa: 71016
     poisson_ratio: 0.33
     yield_strength_mpa: 372
+    proportional_limit_mpa: 228.8
+    ramberg_osgood_n: 16
+    compressive_proof_stress_mpa: 352
+    buckling_data_qualification: reference_only
     failure_category: ductile_metal
+    compressive_stress_strain_source: >-
+      MIL-HDBK-5J (31 January 2003), Section 9.8.4.1.2 curve convention.
+      Figure 3.7.6.1.6(h), printed p. 3-399, supplies typical
+      room-temperature compressive n = 16 (L) and 19 (LT) for 7075-T651
+      plate 0.250 to 2.000 in; the lesser is stored because a shell's hoop
+      direction may lie along either. Table 3.7.6.0(b1), printed p. 3-371,
+      gives A-basis Fcy(L) = 51 ksi and Fcy(LT) = 57 ksi for T651 plate
+      3.501 to 4.000 in, the band whose 54 ksi tensile minimum sets the
+      stored yield; the lower, rounded to 352 MPa, is the anchor. A minimum
+      anchor with a typical shape, not a statistical design allowable. Using
+      this plate shape at that thickness and for the record's other forms
+      is unverified; rolled bar is more gradual in L compression (n = 13,
+      Figure 3.7.6.1.6(j)). Retained as reference-only data.
+    proportional_limit_source: >-
+      Derived from the compressive curve above using the same pv-calc
+      0.99 E tangent-modulus screen as Al-6061-T6: 228.8 MPa = 0.615 x
+      yield. An elastic applicability limit, not a design allowable; the
+      curve's direction and product-form limitations apply. Retained as
+      reference-only data.
     source: >-
       Conservative generic floor across the located common wrought
       7075-T6/T651 product forms and thickness bands: ASTM B209 plate at 3.501
@@ -104,10 +133,8 @@ materials:
       specification-governed; the stored 2810 kg/m3 is the Association's
       metric pairing for 0.101 lb/in3, 71016 MPa is 10.3 Mpsi, the tension
       modulus, the Association publishing 10.4 Mpsi as the average of tension
-      and compression, and 0.33 is its nominal Poisson ratio. No proportional
-      limit is recorded, so elastic buckling capacity stays withheld.
-      Temperature: room temperature; no elevated-temperature derating is
-      stored.
+      and compression, and 0.33 is its nominal Poisson ratio. Temperature:
+      room temperature; no elevated-temperature derating is stored.
   Ti-6Al-4V:
     density_kg_per_m3: 4430
     elastic_modulus_mpa: 113800
@@ -220,7 +247,31 @@ materials:
     poisson_ratio: 0.278
     yield_strength_mpa: 414
     ultimate_strength_mpa: 827
+    proportional_limit_mpa: 302.4
+    ramberg_osgood_n: 26
+    compressive_proof_stress_mpa: 414
+    buckling_data_qualification: reference_only
     failure_category: ductile_metal
+    compressive_stress_strain_source: >-
+      MIL-HDBK-5J (31 January 2003), Section 9.8.4.1.2 curve convention.
+      Figure 6.3.3.1.6(d), printed p. 6-40, supplies typical
+      room-temperature compressive n = 26 (L) and 27 (ST) for annealed
+      Inconel 625 bar 0.500 to 1.500 in; the lesser is stored, as for
+      Al-7075-T6, because a shell's hoop direction may lie along either.
+      Table 6.3.3.0(c), printed p. 6-36, gives S-basis Fcy(L) = 60 ksi for
+      0.500 to 0.999 in bar, matching the stored tensile minimum used as the
+      anchor; Fcy(L) falls to 53 ksi as bar size rises to 3.999 in, so L
+      compression of thick bar lies below it. A minimum anchor with
+      a typical shape, not a statistical design allowable. Using this shape
+      for plate, sheet, pipe, tube, or other bar sizes is unverified;
+      annealed sheet is sharper (n = 32, Figure 6.3.3.1.6(b)). Retained as
+      reference-only data.
+    proportional_limit_source: >-
+      Derived from the compressive curve above using the same pv-calc
+      0.99 E tangent-modulus screen as Al-6061-T6: 302.4 MPa = 0.730 x
+      yield. An elastic applicability limit, not a design allowable; the
+      curve's direction and product-form limitations apply. Retained as
+      reference-only data.
     source: >-
       ASTM B443 Grade 1 specification minimums for the
       nickel-chromium-molybdenum-niobium alloy 625 (UNS N06625) in
