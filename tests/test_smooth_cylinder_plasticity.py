@@ -804,30 +804,43 @@ def test_ring_shell_curve_corrects_its_bay_and_leaves_global_modes_unchanged() -
 
     without = ring_shell(base_properties)
     with_curve = ring_shell({**base_properties, **curve})
-    bay = calculate({
-        "schema_version": CALC_SCHEMA_VERSION,
-        "model": "smooth-buckling",
-        "material": {
-            "type": "explicit",
-            "name": "x",
-            "properties": {**base_properties, **curve},
-        },
-        "inputs": {
-            "external_pressure": {"value": 5.0, "unit": "MPa"},
-            "shell_mid_surface_radius": {"value": 100.0, "unit": "mm"},
-            "wall_thickness": {"value": 4.0, "unit": "mm"},
-            "unsupported_length": {"value": 100.0, "unit": "mm"},
-            "load_case": "hydrostatic_closed_end",
-        },
-    })["result"]
+    # The bay is the smooth kernel over one ring spacing, with its stresses
+    # read at the periodic bay's mid-bay membrane von Mises stress over
+    # sqrt(3)/2 rather than p*r/t.
+    ratio = with_curve["axisymmetric_stress"]["midbay_shell_hoop_stress_per_unit_pressure"]
+    axial = 0.5 * 100.0 / 4.0
+    equivalent = math.sqrt(axial * axial - axial * ratio + ratio * ratio) / (0.5 * math.sqrt(3.0))
+    bay = smooth_cylinder_external_pressure_buckling(
+        external_pressure_mpa=5.0,
+        shell_mid_surface_radius_mm=100.0,
+        wall_thickness_mm=4.0,
+        unsupported_length_mm=100.0,
+        elastic_modulus_mpa=113800.0,
+        poisson_ratio=0.34,
+        yield_strength_mpa=827.0,
+        proportional_limit_mpa=602.0,
+        ramberg_osgood_n=21.0,
+        compressive_proof_stress_mpa=827.0,
+        load_case="hydrostatic_closed_end",
+        ring_stiffened_mid_bay_stress_per_unit_pressure=equivalent,
+    )
+    ring_bay = with_curve["inter_ring_shell_buckling"]
 
-    assert with_curve["inter_ring_shell_buckling"] == bay
+    # beta*L = 6 here, so the mid-bay deflection overshoots the free shell's
+    # and the mid-bay hoop stress sits just above p*r/t.
+    assert ratio == pytest.approx(1.0212 * 100.0 / 4.0, rel=1e-4)
+    assert ring_bay["circumferential_stress_basis"] == "ring_stiffened_mid_bay_membrane_equivalent"
+    assert ring_bay["circumferential_stress_per_unit_pressure"] == pytest.approx(equivalent, rel=1e-15)
+    assert ring_bay["correlated_critical_pressure_mpa"]["value"] == (
+        bay.correlated_critical_pressure_mpa
+    )
+    assert ring_bay["plasticity_factor"] == bay.plasticity_factor
     assert without["inter_ring_shell_buckling"]["capacity_status"] == (
         "released_pending_plasticity"
     )
-    assert bay["capacity_status"] == "released"
+    assert bay.capacity_status == "released"
     assert (
-        bay["correlated_critical_pressure_mpa"]["value"]
+        bay.correlated_critical_pressure_mpa
         < without["inter_ring_shell_buckling"]["correlated_critical_pressure_mpa"]["value"]
     )
     for key in ("global_without_ring_torsion", "global_with_ring_torsion"):
@@ -894,6 +907,35 @@ def test_the_correction_is_not_a_strength_limit() -> None:
         compressive_proof_stress_mpa=827.0,
     )
     assert not any("exceeds the supplied yield strength" in note for note in within.notes)
+
+
+def test_without_a_yield_strength_the_proof_stress_bounds_the_curve_reading():
+    # The same stocky shell with only the curve: nothing checks material
+    # failure, so a corrected stress past the curve's 0.2% proof stress says
+    # the curve was read beyond its anchor.
+    beyond = _kernel(
+        external_pressure_mpa=1.0,
+        shell_mid_surface_radius_mm=100.0,
+        wall_thickness_mm=8.0,
+        unsupported_length_mm=150.0,
+        yield_strength_mpa=None,
+        ramberg_osgood_n=21.0,
+        compressive_proof_stress_mpa=827.0,
+    )
+    assert beyond.correlated_critical_circumferential_stress_mpa > 827.0
+    assert any("exceeds the curve's compressive proof stress" in note for note in beyond.notes)
+    assert not any("exceeds the supplied yield strength" in note for note in beyond.notes)
+    below = _kernel(
+        external_pressure_mpa=1.0,
+        shell_mid_surface_radius_mm=100.0,
+        wall_thickness_mm=2.0,
+        unsupported_length_mm=150.0,
+        yield_strength_mpa=None,
+        ramberg_osgood_n=21.0,
+        compressive_proof_stress_mpa=827.0,
+    )
+    assert below.correlated_critical_circumferential_stress_mpa < 827.0
+    assert not any("compressive proof stress" in note for note in below.notes)
 
 
 @pytest.mark.parametrize(

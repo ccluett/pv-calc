@@ -124,6 +124,7 @@ def _assert_mode_parity(case: RingCase) -> None:
     [
         "tests/reference/ring_shell_reference.py",
         "tests/reference/ring_yield_reference.py",
+        "tests/reference/ring_bay_reference.py",
     ],
 )
 def test_independent_reference_has_no_production_imports(reference: str) -> None:
@@ -1294,8 +1295,13 @@ def test_ring_yield_matches_the_independent_printed_form(case: YieldCase) -> Non
         (stress.frame_parameter_gamma, "gamma"),
         (stress.midbay_shell_hoop_stress_per_unit_pressure, "shell_hoop_stress_per_unit_pressure"),
         (stress.ring_hoop_stress_per_unit_pressure, "ring_hoop_stress_per_unit_pressure"),
+        (
+            stress.ring_maximum_hoop_stress_per_unit_pressure,
+            "ring_innermost_hoop_stress_per_unit_pressure",
+        ),
         (production.shell_yield_between_rings_pressure_mpa, "shell_yield_pressure"),
         (production.ring_yield_pressure_mpa, "ring_yield_pressure"),
+        (production.ring_first_yield_pressure_mpa, "ring_first_yield_pressure"),
     ):
         assert actual == pytest.approx(independent[key], rel=RING_YIELD_RELATIVE_TOLERANCE), key
     # G changes sign in long bays, so it is compared absolutely.
@@ -1311,7 +1317,11 @@ def test_ring_yield_printed_form_matches_the_direct_bay_solution(case: YieldCase
     # the ring stress, which has no published check.
     printed = ring_yield_printed_form(case)
     direct = ring_yield_direct_solution(case)
-    for key in ("shell_hoop_stress_per_unit_pressure", "ring_hoop_stress_per_unit_pressure"):
+    for key in (
+        "shell_hoop_stress_per_unit_pressure",
+        "ring_hoop_stress_per_unit_pressure",
+        "ring_innermost_hoop_stress_per_unit_pressure",
+    ):
         assert printed[key] == pytest.approx(direct[key], rel=RING_YIELD_RELATIVE_TOLERANCE), key
 
 

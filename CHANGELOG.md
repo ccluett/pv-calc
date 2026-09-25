@@ -9,6 +9,39 @@ model; both predate this changelog.
 
 ## [Unreleased]
 
+- Ring-shell model 5.1.0 -> 6.0.0:
+  - When the inter-ring bay falls in NASA's moderate/long correlation overlap,
+    no lowest pressure is formed: the candidate list is empty, the governing
+    fields are null, and a note says why. Before, the global mode alone stood
+    in, far above the bay.
+  - The smeared global search admits only axial half-waves longer than one
+    ring spacing, and always `m = 1`. `mode_domain` becomes
+    `1<=m<=maximum_axial_half_waves_m,n>=2`, and
+    `maximum_axial_half_waves_m`, `axial_half_wave_limit_binding`, and
+    `critical_half_wave_over_ring_spacing` report the screen.
+  - The inter-ring bay's plasticity correction and material screens read the
+    bay's mid-bay membrane von Mises stress divided by `sqrt(3)/2`, which is
+    `p*r/t` without rings, instead of `p*r/t` itself.
+  - Report `ring_first_yield_pressure_mpa`: the pressure at which the ring's
+    hoop stress at its smallest radius reaches yield.
+  - Add the bay's surface stresses and axisymmetric collapse, from the
+    Pulos-Salerno beam-column solution and Lunchick's plastic reserve as
+    Renzi documents them for DAPS4 (IHTR 2944). `beam_column_bay` gives
+    mid-bay and frame stresses on both surfaces, their plane-stress von Mises
+    values, deflections, and the ring hoop stress at the ring's smallest
+    radius. With a yield strength, `axisymmetric_collapse` gives a
+    perfect-shell collapse pressure that enters the lowest pressure, and text
+    output now says "Lowest buckling or collapse pressure". A note flags a
+    bay parameter theta outside the 1.0 to 2.5 that DAPS4's test comparison
+    covers.
+  - Notes and the engineering record state that the pressure acts at the
+    shell mid-surface radius.
+- Smooth-buckling model 5.0.0 -> 5.1.0: results add
+  `circumferential_stress_basis` and `circumferential_stress_per_unit_pressure`,
+  naming the stress compared with material data. A smooth shell's numbers are
+  unchanged. Without a yield strength, a curve-corrected stress past the
+  curve's proof stress now carries a note to supply one, so that material
+  failure and collapse are checked.
 - Add reference-only compressive Ramberg-Osgood curves from MIL-HDBK-5J, with
   their curve-derived proportional limits, to the bundled `Al-7075-T6` (T651
   plate in L compression: n = 16, anchored at the thick-plate Fcy(L) of
@@ -21,6 +54,11 @@ model; both predate this changelog.
   correction, and hemisphere buckling can release against the derived limits;
   `check` still cannot pass on them. `Ti-Grade-2`, `SS-316-316L`, and
   `SS-2507` still carry no curve: no public source found supports one.
+- The tests run in a checkout without symlink support.
+- Model versions: tube 3.1.0, hemisphere 5.0.0, plate 5.0.0, smooth buckling
+  5.1.0, ring shell 6.0.0; cylinder composition 1.0.0. Sizing operation
+  versions: tube 3.1.0, smooth buckling 4.0.0, plate 3.0.0. Sweep 1.2.0 and
+  material comparison 1.1.0. Request schema remains 5.0.0.
 
 ## [0.4.0] - 2026-09-23
 

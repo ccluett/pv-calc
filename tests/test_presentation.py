@@ -63,7 +63,9 @@ def test_ring_summary_reports_lowest_buckling_pressure_without_changing_acceptan
     assert not any(check["eligible"] for check in summary["assessment"]["checks"])
     text = render_text(response)
     assert text.splitlines()[0] == "ring-shell: INDETERMINATE"
-    assert "Lowest buckling pressure: " in text
+    assert "Lowest buckling or collapse pressure: " in text
+    assert "Axisymmetric collapse (Lunchick, perfect shell): " in text
+    assert "Bay surface von Mises at the applied pressure: " in text
     assert "Global buckling is elastic" in text
     assert response == before
 
@@ -78,11 +80,26 @@ def test_ring_pressure_display_retains_applicable_material_limits(yield_mpa) -> 
         properties["yield_strength"] = _q(yield_mpa)
     response = calculate(request)
     summary = summarize_response(response)
-    expected = "advisory_plasticity_undetermined" if yield_mpa is None else "advisory_pending_plasticity"
-    assert summary["ring_buckling"]["advisory_governing_status"] == expected
     text = render_text(response)
-    assert "Lowest buckling pressure: " in text
-    assert ("proportional limit not supplied" if yield_mpa is None else "elastic upper bound") in text
+    assert "Lowest buckling or collapse pressure: " in text
+    if yield_mpa is None:
+        # Without a yield strength there is no collapse mode, and the global
+        # mode keeps its undetermined material label.
+        assert summary["ring_buckling"]["advisory_governing_status"] == (
+            "advisory_plasticity_undetermined"
+        )
+        assert "proportional limit not supplied" in text
+        assert "ring_collapse" not in summary
+    else:
+        # A 10 MPa yield puts every buckling pressure above yield; the shell
+        # collapses by yield first, and the global mode stays labelled an
+        # elastic upper bound in its own screen.
+        assert summary["ring_buckling"]["advisory_governing_mode"] == (
+            "axisymmetric_collapse_lunchick"
+        )
+        assert summary["ring_buckling"]["advisory_governing_status"] == "advisory"
+        assert response["result"]["global_elastic_applicability"] == "exceeded"
+        assert "axisymmetric collapse, Lunchick" in text
     assert summary["assessment"]["status"] == "indeterminate"
 
 
@@ -109,14 +126,16 @@ def test_ring_display_with_a_plasticity_corrected_bay_governing_is_not_called_el
     assert bay["capacity_status"] == "released"
     assert 0.0 < bay["plasticity_factor"] < 1.0
     governing = bay["correlated_critical_pressure_mpa"]
-    assert governing["value"] == pytest.approx(7.336569262268846)
+    # Corrected at the bay's mid-bay membrane stress; p*r/t gave 7.33657 MPa.
+    assert bay["circumferential_stress_basis"] == "ring_stiffened_mid_bay_membrane_equivalent"
+    assert governing["value"] == pytest.approx(7.759387917677017)
     assert governing["value"] < result["global_with_ring_torsion"]["adjusted_critical_pressure_mpa"]["value"]
 
     summary = summarize_response(response)
     assert summary["ring_buckling"]["advisory_governing_pressure_mpa"] == governing
     assert "critical_circumferential_lobes_n" not in summary["ring_buckling"]
     text = render_text(response)
-    assert "Lowest buckling pressure: 7.33657 MPa (inter-ring bay)" in text
+    assert "Lowest buckling or collapse pressure: 7.75939 MPa (inter-ring bay)" in text
     assert "Global buckling is elastic" in text
     assert "Elastic buckling only" not in text
     assert summary["assessment"]["status"] == "indeterminate"
@@ -273,7 +292,7 @@ def test_converged_lobar_search_cannot_pass_with_a_lower_excluded_axisymmetric_m
     result = response["result"]
     lobar = result["global_with_ring_torsion"]
     assert lobar["converged"] is True
-    assert lobar["mode_domain"] == "m>=1,n>=2"
+    assert lobar["mode_domain"] == "1<=m<=maximum_axial_half_waves_m,n>=2"
     assert axisymmetric_pressure < lobar["ideal_critical_pressure_mpa"]["value"]
     assert result["global_elastic_applicability"] == "within"
     dispositions = {item["mode"]: item["disposition"] for item in result["mode_dispositions"]}

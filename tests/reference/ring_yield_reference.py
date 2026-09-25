@@ -35,8 +35,20 @@ class YieldCase:
     yield_strength: float
 
 
-def ring_radius(case: YieldCase, where: Literal["centroid", "flange_tip"]) -> float:
-    """Ring centroid radius R_c, or the radius of the ring edge away from the shell."""
+def ring_radius(
+    case: YieldCase, where: Literal["centroid", "flange_tip", "innermost"]
+) -> float:
+    """Ring centroid radius R_c, the radius of the ring edge away from the shell,
+    or the ring's smallest radius: the free edge of an internal ring and the
+    base of an external one."""
+    if where == "innermost":
+        if case.ring_location == "external":
+            return case.shell_mid_surface_radius + 0.5 * case.wall_thickness
+        return (
+            case.shell_mid_surface_radius
+            - 0.5 * case.wall_thickness
+            - case.ring_radial_height
+        )
     offset = 0.5 * case.wall_thickness + (
         0.5 * case.ring_radial_height if where == "centroid" else case.ring_radial_height
     )
@@ -69,7 +81,9 @@ def printed_form(case: YieldCase, rule: AreaRule = "dtmb_1639") -> dict[str, flo
     gamma = A_e (1 - nu/2) / (A_e + b t + 2 N t / beta),
     mid-bay shell hoop stress / p = (R / t) (1 - gamma G),
     ring hoop stress / p at the centroid radius
-        = R^2 (1 - nu/2) / (t R_c [1 + A_e / (b t + 2 N t / beta)]).
+        = R^2 (1 - nu/2) / (t R_c [1 + A_e / (b t + 2 N t / beta)]),
+    and at the ring's smallest radius with that radius in place of R_c,
+    since the section translates radially as a whole.
     """
     radius = case.shell_mid_surface_radius
     thickness = case.wall_thickness
@@ -98,6 +112,12 @@ def printed_form(case: YieldCase, rule: AreaRule = "dtmb_1639") -> dict[str, flo
         / (thickness * ring_radius(case, "centroid"))
         / (1.0 + modified_area / attached_area)
     )
+    ring_innermost_per_pressure = (
+        radius**2
+        * (1.0 - nu / 2.0)
+        / (thickness * ring_radius(case, "innermost"))
+        / (1.0 + modified_area / attached_area)
+    )
     return {
         "clear_bay": clear_bay,
         "clear_bay_parameter": bl,
@@ -107,8 +127,10 @@ def printed_form(case: YieldCase, rule: AreaRule = "dtmb_1639") -> dict[str, flo
         "gamma": gamma,
         "shell_hoop_stress_per_unit_pressure": shell_per_pressure,
         "ring_hoop_stress_per_unit_pressure": ring_per_pressure,
+        "ring_innermost_hoop_stress_per_unit_pressure": ring_innermost_per_pressure,
         "shell_yield_pressure": case.yield_strength / shell_per_pressure,
         "ring_yield_pressure": case.yield_strength / ring_per_pressure,
+        "ring_first_yield_pressure": case.yield_strength / ring_innermost_per_pressure,
     }
 
 
@@ -178,9 +200,16 @@ def direct_solution(case: YieldCase, rule: AreaRule = "dtmb_1639") -> dict[str, 
         * (1.0 - nu / 2.0)
         * rho
     )
+    ring_innermost_per_pressure = (
+        radius / thickness
+        * (radius / ring_radius(case, "innermost"))
+        * (1.0 - nu / 2.0)
+        * rho
+    )
     return {
         "shell_hoop_stress_per_unit_pressure": shell_per_pressure,
         "ring_hoop_stress_per_unit_pressure": ring_per_pressure,
+        "ring_innermost_hoop_stress_per_unit_pressure": ring_innermost_per_pressure,
     }
 
 

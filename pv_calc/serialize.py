@@ -145,11 +145,32 @@ RING_SHELL_RESULT_UNITS = {
     "elastic_applicability_limit_mpa": "MPa",
     "shell_yield_between_rings_pressure_mpa": "MPa",
     "ring_yield_pressure_mpa": "MPa",
+    "ring_first_yield_pressure_mpa": "MPa",
     "advisory_governing_pressure_mpa": "MPa",
 }
 RING_AXISYMMETRIC_STRESS_UNITS = {
     "clear_bay_mm": "mm",
     "effective_ring_area_mm2": "mm^2",
+    "ring_maximum_hoop_stress_radius_mm": "mm",
+}
+RING_BEAM_COLUMN_BAY_UNITS = {
+    "midbay_von_mises_membrane_mpa": "MPa",
+    "ring_hoop_stress_mpa": "MPa",
+}
+RING_BAY_SURFACE_STRESS_UNITS = {
+    "axial_outer_mpa": "MPa",
+    "axial_inner_mpa": "MPa",
+    "hoop_outer_mpa": "MPa",
+    "hoop_inner_mpa": "MPa",
+    "hoop_membrane_mpa": "MPa",
+    "von_mises_outer_mpa": "MPa",
+    "von_mises_inner_mpa": "MPa",
+    "radial_deflection_mm": "mm",
+}
+RING_AXISYMMETRIC_COLLAPSE_UNITS = {
+    "beam_column_limit_pressure_mpa": "MPa",
+    "first_yield_pressure_mpa": "MPa",
+    "collapse_pressure_mpa": "MPa",
 }
 RING_GLOBAL_RESULT_UNITS = {
     "ideal_critical_pressure_mpa": "MPa",
@@ -278,6 +299,17 @@ def _serialize_result(
         if axisymmetric is not None:
             for name, unit in RING_AXISYMMETRIC_STRESS_UNITS.items():
                 axisymmetric[name] = _quantity(axisymmetric[name], unit)
+        bay = payload["beam_column_bay"]
+        if bay is not None:
+            for name, unit in RING_BEAM_COLUMN_BAY_UNITS.items():
+                bay[name] = _quantity(bay[name], unit)
+            for station in ("midbay", "frame"):
+                for name, unit in RING_BAY_SURFACE_STRESS_UNITS.items():
+                    bay[station][name] = _quantity(bay[station][name], unit)
+        collapse = payload["axisymmetric_collapse"]
+        if collapse is not None:
+            for name, unit in RING_AXISYMMETRIC_COLLAPSE_UNITS.items():
+                collapse[name] = _quantity(collapse[name], unit)
     return payload
 
 

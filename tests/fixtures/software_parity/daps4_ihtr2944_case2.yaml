@@ -1,0 +1,55 @@
+fixture_id: daps4_ihtr2944_example_case2
+role: published_software_example
+source:
+  title: Design and Analysis of Orthotropic Ring-Stiffened Cylindrical Shells Subjected to External Hydrostatic Pressure
+  author: John R. Renzi
+  report: NSWC Indian Head Division IHTR 2944
+  date: 2008-03-28
+  distribution: Approved for public release; distribution is unlimited
+  url: https://archive.org/details/DTIC_ADA480819
+  reference: Case 2 input deck, printed p. 46; sample output, printed p. 48
+  program: DAPS4
+  evidence_origin: published_program_output
+source_inputs:
+  description: Sch. 10 pipe with small internal T-rings; A53 Type S, Grade B
+  analysis_pressure: {value: 1000.0, unit: psi}
+  outside_diameter: {value: 20.000, unit: in}
+  shell_thickness: {value: 0.250, unit: in}
+  ring_spacing: {value: 2.750, unit: in}
+  ring_location: internal
+  ring_web_width_at_shell: {value: 0.100, unit: in}
+  ring_area: {value: 0.070, unit: in^2}
+  ring_centroid_radius: {value: 9.443, unit: in}
+  elastic_modulus: {value: 30.0e+6, unit: psi}
+  poisson_ratio: 0.29
+  yield_stress: {value: 35000.0, unit: psi}
+printed_output:
+  midbay:
+    axial_outer_psi: -22510.0
+    axial_inner_psi: -17997.0
+    hoop_outer_psi: -37185.0
+    hoop_inner_psi: -35877.0
+    von_mises_outer_psi: 32441.0
+    von_mises_inner_psi: 31070.0
+    von_mises_membrane_psi: 31699.0
+    radial_deflection_in: -0.0101
+  frame:
+    axial_outer_psi: -15637.0
+    axial_inner_psi: -24869.0
+    hoop_outer_psi: -34451.0
+    hoop_inner_psi: -37128.0
+    von_mises_outer_psi: 29878.0
+    von_mises_inner_psi: 32766.0
+    radial_deflection_in: -0.0098
+  ring_hoop_stress_psi: -29916.0
+  axisymmetric_collapse_pressure_psi: 1096.0
+  plastic_reserve_factor: 1.016
+printed_precision:
+  stress_psi: 1.0
+  deflection_in: 0.0001
+  pressure_psi: 0.5
+  reserve_factor: 0.0005
+classification:
+  equation_verification: true
+  physical_validation: false
+  allowable: false

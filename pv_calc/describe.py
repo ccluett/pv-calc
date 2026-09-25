@@ -99,7 +99,10 @@ from pv_calc.serialize import (
     HEMISPHERE_STRESS_STATE_UNITS,
     MASS_PROPERTIES_RESULT_UNITS,
     PLATE_RESULT_UNITS,
+    RING_AXISYMMETRIC_COLLAPSE_UNITS,
     RING_AXISYMMETRIC_STRESS_UNITS,
+    RING_BAY_SURFACE_STRESS_UNITS,
+    RING_BEAM_COLUMN_BAY_UNITS,
     RING_GLOBAL_RESULT_UNITS,
     RING_MODE_SEARCH_ITERATION_UNITS,
     RING_SHELL_RESULT_UNITS,
@@ -199,7 +202,8 @@ _RESULT_FIELD_DESCRIPTIONS: dict[str, str] = {
         "value traceable and sets no capacity, margin, or regime."
     ),
     "elastic_applicability": (
-        "Compares applied membrane stress p*r/t with elastic_applicability_limit_mpa: "
+        "Compares the applied circumferential membrane stress, "
+        "working_circumferential_membrane_stress_mpa, with elastic_applicability_limit_mpa: "
         "'exceeded' above the limit, 'within' at or below it, and 'undetermined' when "
         "no limit is supplied. This screen is independent of unsupported length and "
         "sets neither capacity nor margin."
@@ -226,27 +230,33 @@ _RESULT_FIELD_DESCRIPTIONS: dict[str, str] = {
     ),
     "advisory_governing_status": (
         "Whether the selected advisory_governing_pressure_mpa is shown to be elastic: "
-        "'advisory' when its nominal stress is within a supplied proportional limit or a "
+        "'advisory' when its stress is within a supplied proportional limit or a "
         "compressive curve corrects it; 'advisory_pending_plasticity' when the stress "
         "exceeds the proportional limit, or the yield strength without one, so the "
         "pressure is an elastic upper bound; 'advisory_unqualified_material' when the "
         "winning inter-ring estimate uses reference-only material data; and "
         "'advisory_plasticity_undetermined' otherwise, such as a stress below yield with no "
-        "proportional limit. Null when every mode was withheld. This describes the selected "
+        "proportional limit. Axisymmetric collapse, a yield-driven mode, is 'advisory'. Null "
+        "when no minimum is formed: every mode was withheld, or the "
+        "inter-ring bay was withheld on an otherwise valid record. This describes the selected "
         "mode; global_elastic_applicability separately reports the global mode."
     ),
     "working_circumferential_membrane_stress_mpa": (
-        "Applied thin-shell circumferential membrane stress p*r/t at the mid-surface "
-        "radius, as a positive compression magnitude. It is the demand counterpart of "
+        "Applied circumferential membrane stress, the pressure times "
+        "circumferential_stress_per_unit_pressure (p*r/t at the mid-surface radius for a "
+        "smooth shell), as a positive compression magnitude. It is the demand counterpart of "
         "correlated_critical_circumferential_stress_mpa and exists to make the "
         "elastic_applicability comparison readable; it is not a capacity or a margin."
     ),
     "advisory_candidate_modes": (
         "Modes with available pressures, including elastic upper bounds, that entered "
-        "the governing-pressure minimum. Without a proportional limit or compressive "
+        "the governing-pressure minimum: the global mode, the inter-ring bay, and, with a "
+        "yield strength, axisymmetric collapse. Without a proportional limit or compressive "
         "curve, the inter-ring bay enters at its elastic pressure, screened like the "
         "global mode. Withheld and unimplemented modes are absent; capacity_status and "
-        "mode_dispositions record them."
+        "mode_dispositions record them. Empty when the inter-ring bay is withheld on an "
+        "otherwise valid record, as in the NASA moderate/long correlation overlap: a minimum "
+        "without the bay is not the lowest pressure, so none is formed and a note says why."
     ),
     "advisory_margin": (
         "The advisory governing pressure divided by the applied pressure, minus one; null "
@@ -272,9 +282,123 @@ _RESULT_FIELD_DESCRIPTIONS: dict[str, str] = {
     "ring_hoop_stress_per_unit_pressure": (
         "The ring's mean hoop stress at its centroid radius divided by the applied pressure."
     ),
+    "ring_first_yield_pressure_mpa": (
+        "The pressure at which the ring's largest hoop stress, at its smallest radius, "
+        "reaches the yield strength: the free edge of an internal ring or the base of an "
+        "external ring at the shell. Hoop stress only, in a perfect shell. It is below "
+        "ring_yield_pressure_mpa by the ratio of that radius to the centroid radius, "
+        "1 - (h/2)/R_c. Null without a yield strength or valid geometry."
+    ),
+    "ring_maximum_hoop_stress_radius_mm": (
+        "The ring's smallest radius, where its hoop stress is largest: R - t/2 - h at an "
+        "internal ring's free edge, R + t/2 at an external ring's base. Each section "
+        "translates radially as a whole, so its hoop strain w_ring / r peaks there."
+    ),
+    "ring_maximum_hoop_stress_per_unit_pressure": (
+        "The ring's hoop stress at its smallest radius divided by the applied pressure; the "
+        "yield strength divided by it is ring_first_yield_pressure_mpa. Like the centroid "
+        "value it is uniaxial and leaves out the pressure on an external ring's faces."
+    ),
+    "circumferential_stress_basis": (
+        "Which circumferential membrane stress this result compares with material data: "
+        "unstiffened_membrane_p_r_over_t for a smooth shell, or "
+        "ring_stiffened_mid_bay_membrane_equivalent for the bay of a ring-stiffened shell: its "
+        "mid-bay membrane von Mises stress divided by sqrt(3)/2, which is p*r/t without rings. "
+        "Rings carry part of the hoop load but none of the axial. It drives the plasticity "
+        "correction, the "
+        "proportional-limit and elastic-applicability screens, and the reported critical "
+        "stresses; pressures without a curve do not depend on it."
+    ),
+    "circumferential_stress_per_unit_pressure": (
+        "Circumferential membrane stress divided by pressure on circumferential_stress_basis: "
+        "r/t for a smooth shell, or the ring-stiffened bay's equivalent from its mid-bay hoop "
+        "stress (R/t)(1 - gamma*G) and axial stress R/(2t)."
+    ),
+    "beam_column_bay": (
+        "The Pulos-Salerno periodic bay at the applied pressure, as Renzi documents for "
+        "DAPS4 (IHTR 2944, Eqs. 7 and 43-64): mid-bay and frame stresses on both surfaces, "
+        "tension positive, with their plane-stress von Mises values (radial stress omitted, as "
+        "DAPS4 prints them), deflections, and the ring hoop stress, with the beam-column term. "
+        "The axial membrane stress is the mean of the two surfaces. The hoop load acts at the "
+        "mean radius and the "
+        "axial load is p R_o^2 / (2 R). The ring area is Renzi's A_f (R/R_cg)^2 (Eq. 7), which "
+        "for an internal ring exceeds the A_f R/R_c of axisymmetric_stress. Null for invalid "
+        "geometry, or when the applied pressure reaches the gamma = 1 limit of the closed form."
+    ),
+    "axisymmetric_collapse": (
+        "Lunchick's axisymmetric collapse of the periodic bay (Renzi Eqs. 65-66): the pressure "
+        "at which the outer surface at mid-bay first yields (von Mises), and the plastic "
+        "reserve factor phi3 to three hinges. The collapse pressure enters the lowest pressure. "
+        "Null without a yield strength or valid geometry."
+    ),
+    "ring_hoop_stress_mpa": (
+        "The ring's hoop stress E w_ring / r at its smallest radius, where it is largest: the "
+        "free edge of an internal ring or the base of an external one. It uses Renzi's ring "
+        "area; axisymmetric_stress gives the same stress without the beam-column term and, "
+        "for an internal ring, with DTMB 1639's smaller area. DAPS4 prints E w_ring / R."
+    ),
+    "frame": (
+        "The shell at the ring face, the end of the clear bay: axial and hoop stress on the "
+        "outer and inner surfaces, tension positive, with their von Mises values and the "
+        "radial deflection."
+    ),
+    "midbay": (
+        "The shell at mid-bay: axial and hoop stress on the outer and inner surfaces, tension "
+        "positive, with their von Mises values and the radial deflection."
+    ),
+    "midbay_von_mises_membrane_mpa": (
+        "The plane-stress von Mises value of the mid-bay membrane (mid-plane) stresses."
+    ),
+    "pressure_parameter_gamma": (
+        "Renzi Eq. 64, p R^2 alpha^2 / (4 sqrt(D C (1 - nu^2))): the axial load against the "
+        "shell's axisymmetric stiffness. The closed form needs gamma < 1."
+    ),
+    "bay_parameter_theta": (
+        "Renzi Eq. 7, [3 (1 - nu^2)]^(1/4) L_s / sqrt(R t) over the clear bay L_s; DAPS4's "
+        "comparison with machined models covers theta from 1.0 to 2.5."
+    ),
+    "status": (
+        "'advisory' when the collapse pressure is computed; 'withheld_beam_column_limit' when "
+        "gamma reaches 1 before the outer surface at mid-bay yields, so the closed form ends "
+        "first."
+    ),
+    "beam_column_limit_pressure_mpa": (
+        "The pressure at which gamma reaches 1 and the periodic-bay closed form ends."
+    ),
+    "first_yield_pressure_mpa": (
+        "P_y: the pressure at which the outer-surface von Mises stress at mid-bay reaches the "
+        "yield strength, solved through gamma. Other points, such as the inner surface at the "
+        "frame, can yield earlier; this is the reference DAPS4 uses for collapse."
+    ),
+    "outer_midbay_bending_compressive": (
+        "Whether the mid-bay bending adds compression at the outer surface at first yield, as "
+        "Lunchick's derivation assumes. A long bay reverses it, and phi3 then falls just below 1."
+    ),
+    "plastic_reserve_factor_phi3": (
+        "Lunchick's phi3 (Renzi Eq. 66) from the mid-bay stresses at P_y, as DAPS4 evaluates it."
+    ),
+    "collapse_pressure_mpa": (
+        "P_c = phi3 P_y: axisymmetric collapse of a perfect shell of elastic-perfectly plastic "
+        "material between identical rings. Imperfections and end bays are not included."
+    ),
     "mode_domain": (
-        "Integer modes searched: m >= 1 axial half-waves and n >= 2 circumferential "
-        "lobes. Convergence refers to this domain; n=0 and n=1 are not searched."
+        "Integer modes searched: 1 <= m <= maximum_axial_half_waves_m axial half-waves and "
+        "n >= 2 circumferential lobes. Convergence refers to this domain; n=0 and n=1 are "
+        "not searched."
+    ),
+    "maximum_axial_half_waves_m": (
+        "Largest axial half-wave count searched: the most half-waves that are each longer "
+        "than one ring spacing, and at least 1. This is pv-calc's smeared-mode screen; NASA "
+        "gives no number."
+    ),
+    "axial_half_wave_limit_binding": (
+        "True when the governing mode sits at maximum_axial_half_waves_m and the next shorter "
+        "wave, outside the domain, would be lower, so the reported pressure depends on the "
+        "screen; a note then says so. Null without a converged mode."
+    ),
+    "critical_half_wave_over_ring_spacing": (
+        "The governing mode's axial half-wave, L/m, in ring spacings. Near one, the smeared "
+        "ring stiffness is a coarse average of discrete rings. Null without a converged mode."
     ),
 }
 
@@ -625,33 +749,50 @@ def _describe_model(
         assumptions = [
             "Hydrostatic closed-end pressure; global ends remain circular, rotate freely, and warp freely"
             " (incremental N_x = 0 at the supports).",
-            "Shell radius is the shell mid-surface radius.",
+            "Shell radius is the shell mid-surface radius, and the pressure acts there in both"
+            " the buckling equations and the periodic-bay stresses, as in their sources."
+            " Exact equilibrium of pressure on the outer surface gives an unstiffened mean hoop"
+            " stress R_o/R = 1 + t/(2R) larger, and the bay's slightly less.",
             "Shell and ring use one isotropic material record.",
             "The physical ring is one non-overlapping solid rectangle.",
             "The global result uses NASA Eqs. 64-65 and 82-91, including exact rectangular-ring torsion.",
             "NASA recommends a 0.75 pressure multiplier (printed p. 38). Both the ideal"
             " and adjusted pressures are reported; the adjusted pressure enters the mode comparison.",
             "The inter-ring calculation treats an isolated smooth bay over ring center"
-            " spacing; a supplied compressive curve corrects this bay only.",
+            " spacing; a supplied compressive curve corrects this bay only, read at the"
+            " periodic bay's mid-bay membrane von Mises stress over sqrt(3)/2.",
             "Shell and ring yield use the axisymmetric solution of a periodic bay between"
             " identical rings, away from the ends, for a perfectly circular, linearly"
             " elastic shell; they need a yield strength.",
+            "Bay surface stresses use the Pulos-Salerno beam-column solution for the same"
+            " periodic bay as Renzi documents it for DAPS4, with the hoop load at the mean"
+            " radius and the axial load from the outer radius; they need gamma < 1.",
+            "Axisymmetric collapse applies Lunchick's plastic reserve to first yield at the"
+            " outer surface at mid-bay, for an elastic-perfectly plastic material.",
         ]
         checks = [
             "solid rectangular A_r, centroidal I_r, eccentricity, and exact Saint-Venant J_r",
             "NASA Eq. 64/65 global pressure before and after the separate Eq. 91 torsion term",
-            "expanding integer mode search over m >= 1, n >= 2 with stability, frontier, bounds, and termination evidence",
+            "integer mode search over every axial half-wave longer than one ring spacing"
+            " (always m = 1) and expanding n >= 2, with stability, frontier, bounds, whether"
+            " the half-wave limit binds, and termination evidence",
             "isolated-bay smooth-shell buckling with its own applicability checks",
             "optional NASA Eq. 30-32 inelastic correction of the inter-ring bay only",
             "nominal stress at the adjusted global pressure against the proportional limit or yield strength",
             "minimum over the available mode pressures, with the selected mode's material status",
-            "mid-bay shell and ring mean hoop stresses of the periodic bay, and the pressures at"
-            " which each reaches the yield strength",
+            "mid-bay shell and ring mean hoop stresses of the periodic bay, the ring's hoop"
+            " stress at its smallest radius, and the pressures at which each reaches the yield"
+            " strength",
+            "mid-bay and frame surface stresses of the beam-column periodic bay at the applied"
+            " pressure, and Lunchick's axisymmetric collapse pressure, which enters the minimum",
             "structured method coverage and source references",
         ]
         omissions = [
-            "interframe collapse: the interaction of shell yield, inter-ring buckling, and imperfections",
-            "a ring-spacing screen for the smeared global model",
+            "interframe collapse of an imperfect shell: the interaction of shell yield,"
+            " inter-ring buckling, and out-of-roundness",
+            "non-uniform ring patterns, fillets, and end bays",
+            "a discrete-ring check of widely spaced or deep eccentric rings; the smeared global"
+            " search only excludes axial half-waves of one ring spacing or less",
             "axisymmetric hydrostatic instability (n=0); the mode search starts at n=2",
             "discrete-ring global deformation and alternative classical shell formulations;"
             " this calculation implements NASA's smeared Eq. 64/65",
@@ -695,6 +836,9 @@ def _describe_model(
                 ("RingGlobalBucklingResult", RING_GLOBAL_RESULT_UNITS),
                 ("RingModeSearchIteration", RING_MODE_SEARCH_ITERATION_UNITS),
                 ("RingAxisymmetricStressResult", RING_AXISYMMETRIC_STRESS_UNITS),
+                ("RingBeamColumnBayResult", RING_BEAM_COLUMN_BAY_UNITS),
+                ("RingBaySurfaceStress", RING_BAY_SURFACE_STRESS_UNITS),
+                ("RingAxisymmetricCollapseResult", RING_AXISYMMETRIC_COLLAPSE_UNITS),
                 ("SmoothCylinderBucklingResult", SMOOTH_BUCKLING_RESULT_UNITS),
                 ("SmoothCylinderBucklingCandidate", SMOOTH_BUCKLING_CANDIDATE_UNITS),
             ),

@@ -107,10 +107,22 @@ def summarize_response(
     if material:
         summary["material"] = {key: value for key, value in material.get("source", material).items() if key in {"name", "type", "database"}}
     summary["assessment"] = assess_response(payload, checks, minimum_margin)
-    if payload.get("model") == "ring-shell" and _number(result.get("advisory_governing_pressure_mpa")) is not None:
+    # A valid ring record reports its yield pressures even when the bay leaves
+    # the lowest buckling pressure unestablished; then ring_buckling says why.
+    ring_governed = _number(result.get("advisory_governing_pressure_mpa")) is not None
+    ring_unestablished = result.get("capacity_status") == "advisory" and not ring_governed
+    if payload.get("model") == "ring-shell" and (ring_governed or ring_unestablished):
         summary["ring_buckling"] = deepcopy({key: result[key] for key in (
             "advisory_governing_pressure_mpa", "advisory_governing_mode", "advisory_governing_status",
         ) if key in result})
+        # Every candidate is compared on the record's data, so reference-only
+        # data mark the minimum whichever mode governs it.
+        if result.get("buckling_data_qualification") == "reference_only":
+            summary["ring_buckling"]["buckling_data_qualification"] = "reference_only"
+        if ring_unestablished:
+            summary["ring_buckling"]["inter_ring_capacity_status"] = result.get(
+                "inter_ring_shell_buckling", {}
+            ).get("capacity_status")
         if result.get("advisory_governing_mode") == "global_eq64_with_eq91_ring_torsion":
             global_mode = result.get("global_with_ring_torsion", {})
             summary["ring_buckling"].update({key: global_mode[key] for key in (
@@ -118,7 +130,26 @@ def summarize_response(
             ) if key in global_mode})
         summary["ring_yield"] = deepcopy({key: result[key] for key in (
             "shell_yield_between_rings_pressure_mpa", "ring_yield_pressure_mpa",
+            "ring_first_yield_pressure_mpa",
         ) if key in result})
+        if "ring_location" in result:
+            summary["ring_yield"]["ring_location"] = result["ring_location"]
+        collapse = result.get("axisymmetric_collapse")
+        if collapse is not None:
+            summary["ring_collapse"] = deepcopy({key: collapse[key] for key in (
+                "status", "collapse_pressure_mpa", "first_yield_pressure_mpa",
+                "plastic_reserve_factor_phi3", "outer_midbay_bending_compressive",
+            ) if key in collapse})
+        bay = result.get("beam_column_bay")
+        if bay is not None:
+            summary["ring_bay_stress"] = deepcopy({
+                **{
+                    f"{station}_{key}": bay[station][key]
+                    for station in ("midbay", "frame")
+                    for key in ("von_mises_outer_mpa", "von_mises_inner_mpa")
+                },
+                "midbay_von_mises_membrane_mpa": bay["midbay_von_mises_membrane_mpa"],
+            })
     if "sizing" in payload:
         summary["sizing"] = {key: value for key, value in payload["sizing"].items() if key in {
             "selected_wall_thickness", "selected_plate_thickness", "selected_shell_mid_surface_radius",
@@ -174,6 +205,11 @@ def summarize_response(
 _RING_MODE_LABELS = {
     "global_eq64_with_eq91_ring_torsion": "global, NASA SP-8007 Eq. 64 x 0.75",
     "inter_ring_smooth_shell": "inter-ring bay",
+    "axisymmetric_collapse_lunchick": "axisymmetric collapse, Lunchick",
+}
+_RING_FIRST_YIELD_LABELS = {
+    "internal": "inner free edge",
+    "external": "ring base at the shell",
 }
 _RING_STATUS_LABELS = {
     "advisory_pending_plasticity": "elastic upper bound: stress exceeds the material limit",
@@ -224,14 +260,22 @@ def _render_summary(summary: dict[str, Any]) -> list[str]:
             ("depth", "depth"), ("design_factor", "factor"),
             ("service_external_pressure", "service pressure"), ("design_external_pressure", "design pressure"),
         ) if key in loading))
-    if "ring_buckling" in summary:
+    if "ring_buckling" in summary and "inter_ring_capacity_status" in summary["ring_buckling"]:
+        lines.append(
+            "Lowest buckling or collapse pressure: not established (inter-ring bay "
+            f"{summary['ring_buckling']['inter_ring_capacity_status']})"
+        )
+    elif "ring_buckling" in summary:
         buckling = summary["ring_buckling"]
         detail = [_RING_MODE_LABELS.get(buckling.get("advisory_governing_mode"), str(buckling.get("advisory_governing_mode")))]
         if "critical_circumferential_lobes_n" in buckling:
             detail.append(f"m={buckling.get('critical_axial_half_waves_m')}, n={buckling['critical_circumferential_lobes_n']}")
         if buckling.get("advisory_governing_status") in _RING_STATUS_LABELS:
             detail.append(_RING_STATUS_LABELS[buckling["advisory_governing_status"]])
-        lines.append(f"Lowest buckling pressure: {_format(buckling['advisory_governing_pressure_mpa'])} ({'; '.join(detail)})")
+        unqualified = _RING_STATUS_LABELS["advisory_unqualified_material"]
+        if buckling.get("buckling_data_qualification") == "reference_only" and unqualified not in detail:
+            detail.append(unqualified)
+        lines.append(f"Lowest buckling or collapse pressure: {_format(buckling['advisory_governing_pressure_mpa'])} ({'; '.join(detail)})")
     if "ring_yield" in summary:
         shell_yield = summary["ring_yield"].get("shell_yield_between_rings_pressure_mpa")
         ring_yield = summary["ring_yield"].get("ring_yield_pressure_mpa")
@@ -240,6 +284,29 @@ def _render_summary(summary: dict[str, Any]) -> list[str]:
         else:
             lines.append(f"Shell mean hoop yield at mid-bay (Pc5): {_format(shell_yield)}")
             lines.append(f"Ring mean hoop yield: {_format(ring_yield)}")
+            first_yield = summary["ring_yield"].get("ring_first_yield_pressure_mpa")
+            if _number(first_yield) is not None:
+                location = _RING_FIRST_YIELD_LABELS.get(
+                    summary["ring_yield"].get("ring_location"), "smallest radius"
+                )
+                lines.append(f"Ring first yield ({location}): {_format(first_yield)}")
+    if "ring_collapse" in summary:
+        collapse = summary["ring_collapse"]
+        if _number(collapse.get("collapse_pressure_mpa")) is None:
+            lines.append("Axisymmetric collapse: withheld (the periodic-bay closed form ends before first yield)")
+        else:
+            lines.append(
+                f"Axisymmetric collapse (Lunchick, perfect shell): {_format(collapse['collapse_pressure_mpa'])}"
+                f"; mid-bay outer-surface first yield {_format(collapse['first_yield_pressure_mpa'])}"
+            )
+    if "ring_bay_stress" in summary:
+        bay = summary["ring_bay_stress"]
+        lines.append(
+            "Bay surface von Mises at the applied pressure: mid-bay outer "
+            f"{_format(bay['midbay_von_mises_outer_mpa'])}, inner {_format(bay['midbay_von_mises_inner_mpa'])}, "
+            f"membrane {_format(bay['midbay_von_mises_membrane_mpa'])}; frame outer "
+            f"{_format(bay['frame_von_mises_outer_mpa'])}, inner {_format(bay['frame_von_mises_inner_mpa'])}"
+        )
     check_reasons: set[str] = set()
     for check in assessment["checks"]:
         margin = "undefined" if check.get("margin") is None else _format(check["margin"])

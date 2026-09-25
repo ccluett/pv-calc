@@ -3,7 +3,10 @@
 This module intentionally uses only the Python standard library.  It does not
 import pv_calc calculations, section helpers, adapters, or regression
 outputs.  The fixed exhaustive mode bounds are deliberately simple and cover
-the modest DTMB and convergence-trap domain represented here.
+the modest DTMB and convergence-trap domain represented here.  The axial
+half-wave count also obeys pv-calc's smeared-mode screen, which is a project
+rule rather than a NASA equation: a global half-wave is longer than one ring
+spacing, and m = 1 is always admitted.
 
 Sources: NASA/SP-8007-2020/REV 2, printed pp. 35, 37, and 40-42, Eqs. 54-59,
 64-65, and 82-91; NASA/TP-2011-216882, Appendix A, printed p. 100, Eq. A16;
@@ -281,6 +284,18 @@ def _mode_pressure(
     return pressure
 
 
+def admissible_axial_half_waves(case: RingCase) -> int:
+    """Largest m whose half-wave L/m is longer than one ring spacing, at least 1.
+
+    The relative allowance keeps a length that is an exact multiple of the
+    spacing, rounded in its last digit, from admitting the one-spacing wave.
+    """
+    count = 1
+    while (count + 1) * case.ring_spacing < case.unsupported_length * (1.0 - 1.0e-12):
+        count += 1
+    return count
+
+
 def _exhaustive_mode_scan(
     case: RingCase,
     rectangle: RectangleProperties,
@@ -294,17 +309,24 @@ def _exhaustive_mode_scan(
         rectangle,
         include_ring_torsion=include_ring_torsion,
     )
+    admissible = admissible_axial_half_waves(case)
+    axial_limit = min(max_axial_half_waves, admissible)
     candidates = (
         (
             _mode_pressure(case, stiffness, axial_half_waves, lobes),
             axial_half_waves,
             lobes,
         )
-        for axial_half_waves in range(1, max_axial_half_waves + 1)
+        for axial_half_waves in range(1, axial_limit + 1)
         for lobes in range(2, max_circumferential_lobes + 1)
     )
     pressure, axial_half_waves, lobes = min(candidates)
-    if axial_half_waves == max_axial_half_waves or lobes == max_circumferential_lobes:
+    # The screen's own limit is a real edge of the domain; only the fixed
+    # scan bounds would leave a lower mode unexamined.
+    if (
+        axial_half_waves == max_axial_half_waves < admissible
+        or lobes == max_circumferential_lobes
+    ):
         raise RuntimeError("governing reference mode lies on an exhaustive upper bound")
     return ModeResult(
         ideal_critical_pressure=pressure,
@@ -387,8 +409,10 @@ def dtmb_case(frame_spaces: int) -> RingCase:
 
 
 CONVERGENCE_TRAP_CASES = (
+    # Unscreened, the smeared search governed at (42, 2), an axial half-wave
+    # shorter than the ring spacing; the screen leaves m <= 24.
     RingCase(
-        case_id="committed_axial_mode_trap",
+        case_id="committed_sub_spacing_axial_mode",
         length_unit="mm",
         pressure_unit="MPa",
         shell_mid_surface_radius=100.0,
