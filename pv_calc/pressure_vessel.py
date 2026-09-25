@@ -324,8 +324,8 @@ SMOOTH_CYLINDER_CORRECTED_STRESS_ABOVE_YIELD_REASON = (
 )
 SMOOTH_CYLINDER_CORRECTED_STRESS_ABOVE_PROOF_REASON = (
     "corrected critical circumferential membrane stress {stress:.6g} MPa exceeds the "
-    "curve's compressive proof stress {limit:.6g} MPa; the curve is read beyond its "
-    "anchor, and without a yield strength no material check bounds it"
+    "curve's compressive proof stress {limit:.6g} MPa, so the shell buckles in the plastic "
+    "range; without a yield strength no material or collapse check bounds it, so supply one"
 )
 SMOOTH_CYLINDER_RING_BAY_STRESS_NOTE = (
     "Circumferential membrane stresses, including the plasticity correction and the "

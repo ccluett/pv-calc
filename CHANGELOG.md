@@ -40,8 +40,8 @@ model; both predate this changelog.
   `circumferential_stress_basis` and `circumferential_stress_per_unit_pressure`,
   naming the stress compared with material data. A smooth shell's numbers are
   unchanged. Without a yield strength, a curve-corrected stress past the
-  curve's proof stress now carries a note that the curve is read beyond its
-  anchor.
+  curve's proof stress now carries a note to supply one, so that material
+  failure and collapse are checked.
 - Add reference-only compressive Ramberg-Osgood curves from MIL-HDBK-5J, with
   their curve-derived proportional limits, to the bundled `Al-7075-T6` (T651
   plate in L compression: n = 16, anchored at the thick-plate Fcy(L) of
