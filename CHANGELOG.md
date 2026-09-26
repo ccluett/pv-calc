@@ -9,6 +9,8 @@ model; both predate this changelog.
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-09-26
+
 - Ring-shell model 5.1.0 -> 6.0.0:
   - When the inter-ring bay falls in NASA's moderate/long correlation overlap,
     no lowest pressure is formed: the candidate list is empty, the governing
