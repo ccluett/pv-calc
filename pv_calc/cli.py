@@ -22,7 +22,7 @@ from pv_calc.presentation import (
     render_text,
     summarize_response,
 )
-from pv_calc.materials import list_materials, show_material
+from pv_calc.materials import list_materials, material_records, show_material
 from pv_calc.cylinder import describe_cylinder
 
 from pv_calc import __version__
@@ -115,8 +115,6 @@ def main(
 def _validated_units(units: str | None, output_format: str | None) -> str:
     if units is not None and output_format != "text":
         raise CalcCliError("invalid_request", "--units applies only to --format text")
-    if units is not None and units not in UNIT_SYSTEMS:
-        raise CalcCliError("invalid_request", "--units must be si or us")
     return units or "si"
 
 
@@ -1918,26 +1916,18 @@ def cylinder(
         _emit(calculate(raw, materials_file=materials_file), compact=json_output, output_format=output_format, units=units)
     except CalcCliError as exc:
         _exit_with_error(exc, output_format, units, json_output=json_output)
+
+
 materials_app = typer.Typer(help="Inspect the bundled reference materials or an explicit database.")
 app.add_typer(materials_app, name="materials")
 
 
-def _emit_material(
-    payload: dict[str, Any], compact: bool, output_format: str | None,
-    materials_file: Path | None = None, units: str | None = None,
-) -> None:
+def _emit_material(payload: dict[str, Any], compact: bool, output_format: str | None) -> None:
     output_format = output_format or "json"
-    units = _validated_units(units, output_format)
-    if output_format == "text" and "materials" in payload:
+    if output_format == "text":
         if compact:
             raise CalcCliError("input_source_conflict", "--json requires --format json")
-        typer.echo(render_material_table(
-            [show_material(record["name"], materials_file) for record in payload["materials"]], units,
-        ))
-    elif output_format == "text":
-        if compact:
-            raise CalcCliError("input_source_conflict", "--json requires --format json")
-        records = [payload]
+        records = payload.get("materials", [payload])
         for record in records:
             typer.echo(f"{record['name']} ({record['database']})")
             for name, capability in record["capabilities"].items():
@@ -1963,7 +1953,11 @@ def materials_list(
 ) -> None:
     """List material records and the calculation inputs each record supplies."""
     try:
-        _emit_material({"materials": list_materials(materials_file)}, json_output, output_format, materials_file, units)
+        units = _validated_units(units, output_format)
+        if output_format == "text" and not json_output:
+            typer.echo(render_material_table(material_records(materials_file), units))
+        else:
+            _emit_material({"materials": list_materials(materials_file)}, json_output, output_format)
     except (OSError, ValueError, yaml.YAMLError) as exc:
         _exit_with_error(CalcCliError("invalid_material_database", str(exc)), output_format, units, json_output=json_output)
     except CalcCliError as exc:
@@ -1986,6 +1980,8 @@ def materials_show(
         _exit_with_error(CalcCliError("invalid_material_database", str(exc)), output_format, json_output=json_output)
     except CalcCliError as exc:
         _exit_with_error(exc, output_format, json_output=json_output)
+
+
 # The dimension of every unit-carrying option, by parameter name; a command's
 # contract lists the ones its signature declares. Options that take a plain
 # number (--poisson-ratio, --minimum-margin, --design-factor, counts) are not

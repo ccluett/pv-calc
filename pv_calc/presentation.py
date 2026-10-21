@@ -17,13 +17,22 @@ from typing import Any
 
 from pv_calc.assessment import (
     ASSESSMENT_SCOPE as ASSESSMENT_SCOPE,
+    RING_SHELL_INTER_RING_SUPPORT_REASON,
     batch_entries,
     entry_context,
     _number,
     assess_response as assess_response,
 )
+from pv_calc.cylinder import (
+    CAPACITY_SHORTFALL_NOTE,
+    SEAT_BEARING_REASON,
+    SMOOTH_BUCKLING_PENDING_PLASTICITY_REASON,
+)
 from pv_calc.errors import CalcCliError
-from pv_calc.pressure_vessel import BUCKLING_REFERENCE_ONLY_REASON
+from pv_calc.pressure_vessel import (
+    BUCKLING_REFERENCE_ONLY_REASON,
+    RING_SHELL_PARTIAL_SCOPE_REASON,
+)
 from pv_calc.units import Q_, UNIT_EVALUATION_ERRORS
 
 
@@ -178,15 +187,7 @@ def summarize_response(
             "value": deepcopy(result.get("released_buckling_pressure_mpa")),
             "reasons": list(result.get("buckling_validity_violations", [])),
         }
-    if payload.get("model") == "cylinder":
-        buckling = payload.get("components", {}).get("smooth_buckling", {}).get("result", {})
-    elif payload.get("model") == "smooth-buckling":
-        buckling = payload.get(
-            "result",
-            payload.get("selected_results", {}).get("smooth-buckling", {}).get("result", {}),
-        )
-    else:
-        buckling = {}
+    buckling = _kernel_result(payload, "smooth_cylinder_buckling") or {}
     if buckling.get("capacity_status") == "released_pending_plasticity":
         outputs["elastic_buckling_estimate"] = {
             "status": buckling["capacity_status"],
@@ -208,21 +209,26 @@ def summarize_response(
 
 
 UNIT_SYSTEMS = ("si", "us")
-# Text output converts every quantity to one unit per dimension. Depth is a
-# length with its own unit, so it is converted only where it is labelled.
+# Text output converts every quantity to one unit per dimension.
 _DISPLAY_UNITS = {
-    "si": {"pressure": "MPa", "length": "mm", "depth": "m", "mass": "kg", "volume": "L", "force": "N",
-           "density": "kg/m^3"},
-    "us": {"pressure": "psi", "length": "in", "depth": "ft", "mass": "lb", "volume": "in^3", "force": "lbf",
-           "density": "lb/in^3"},
+    "si": {"pressure": "MPa", "length": "mm", "mass": "kg", "volume": "L", "force": "N",
+           "density": "kg/m^3", "acceleration": "m/s^2"},
+    "us": {"pressure": "psi", "length": "in", "mass": "lb", "volume": "in^3", "force": "lbf",
+           "density": "lb/in^3", "acceleration": "ft/s^2"},
 }
-_PINT_NAMES = {
-    "in": "inch", "ft": "foot", "lb": "pound", "in^3": "inch**3", "lbf": "force_pound", "L": "liter",
-    "lb/in^3": "pound/inch**3",
+# Depth and fluid density have their own units where they are labelled.
+_KIND_UNITS = {
+    "si": {"depth": "m", "fluid_density": "kg/m^3"},
+    "us": {"depth": "ft", "fluid_density": "lb/ft^3"},
 }
-_REFERENCE_UNITS = {
-    "pressure": "MPa", "length": "mm", "mass": "kg", "volume": "m**3", "force": "N", "density": "kg/m**3",
-}
+# Fixed scope statements stay in the JSON, summary and CSV reasons; the text
+# report gives what varies with the calculation. A pending plasticity
+# correction is shown with its elastic upper bound instead.
+_TEXT_OMITTED_REASONS = frozenset({
+    CAPACITY_SHORTFALL_NOTE,
+    RING_SHELL_INTER_RING_SUPPORT_REASON, RING_SHELL_PARTIAL_SCOPE_REASON,
+    SEAT_BEARING_REASON, SMOOTH_BUCKLING_PENDING_PLASTICITY_REASON,
+})
 _GEOMETRY_LABELS = {
     "internal_radius": "internal radius", "external_radius": "external radius",
     "wall_thickness": "wall", "shell_mid_surface_radius": "mid-surface radius",
@@ -231,22 +237,30 @@ _GEOMETRY_LABELS = {
     "plate_thickness": "thickness",
 }
 _REFERENCE_ONLY = "reference-only material data"
+_PENDING_PLASTICITY = "elastic upper bound only, pending a plasticity correction"
 _RING_STATUS_LABELS = {
     "advisory_pending_plasticity": "elastic upper bound: stress exceeds the material limit",
     "advisory_plasticity_undetermined": "proportional limit not supplied",
     "advisory_unqualified_material": _REFERENCE_ONLY,
 }
 _RING_FIRST_YIELD_LABELS = {"internal": "inner free edge", "external": "ring base at the shell"}
+_ELASTIC_PROPERTIES = ("elastic_modulus_mpa", "poisson_ratio")
 # Below this, the plasticity correction moves the elastic pressure by more than
 # half a percent and the report shows both.
 _PLASTICITY_SHOWN_BELOW = 0.995
+
+
+def _validated_units(units: str) -> str:
+    if units not in UNIT_SYSTEMS:
+        raise CalcCliError("invalid_request", "--units must be si or us")
+    return units
 
 
 @cache
 def _dimension(unit: str) -> str | None:
     try:
         dimensionality = Q_(1.0, unit).dimensionality
-        for name, reference in _REFERENCE_UNITS.items():
+        for name, reference in _DISPLAY_UNITS["si"].items():
             if Q_(1.0, reference).dimensionality == dimensionality:
                 return name
     except UNIT_EVALUATION_ERRORS:
@@ -260,9 +274,9 @@ def _converted(quantity: Any, units: str, kind: str | None = None) -> tuple[floa
     dimension = _dimension(unit) if unit else None
     if value is None or dimension is None:
         return value, unit
-    target = _DISPLAY_UNITS[units]["depth" if kind == "depth" and dimension == "length" else dimension]
+    target = _KIND_UNITS[units].get(kind or "") or _DISPLAY_UNITS[units][dimension]
     if target != unit:
-        value = Q_(value, unit).to(_PINT_NAMES.get(target, target)).magnitude
+        value = Q_(value, unit).to(target).magnitude
     return value, target
 
 
@@ -272,7 +286,7 @@ def _num(value: float) -> str:
     if magnitude == 0.0:
         return "0"
     if 1e-4 <= magnitude:
-        text = f"{value:.4g}"
+        text = f"{value:,.4g}"
         if "e" not in text:
             return text
         return f"{round(value, 3 - math.floor(math.log10(magnitude))):,.0f}"
@@ -299,6 +313,15 @@ def _table(rows: Sequence[Sequence[str]]) -> list[str]:
     return ["  ".join(cell.ljust(width) for cell, width in zip(row, widths)).rstrip() for row in rows]
 
 
+def _shown_reasons(reasons: Sequence[str], shown: set[str], omitted: frozenset[str] = frozenset()) -> list[str]:
+    lines = []
+    for reason in reasons:
+        if reason not in shown and reason not in omitted and reason not in _TEXT_OMITTED_REASONS:
+            shown.add(reason)
+            lines.append(f"  {reason}")
+    return lines
+
+
 def _material_name(record: Any) -> str | None:
     if not isinstance(record, dict):
         return None
@@ -317,11 +340,6 @@ def _material_line(payload: dict[str, Any], summary: dict[str, Any]) -> str | No
             return f"Material: {distinct.pop()}"
     name = summary.get("material", {}).get("name")
     return f"Material: {name}" if name else None
-
-
-def _geometry_line(payload: dict[str, Any], summary: dict[str, Any], units: str) -> str | None:
-    parts = _geometry_parts(payload, summary, units)
-    return "Geometry: " + ", ".join(parts) if parts else None
 
 
 def _geometry_parts(payload: dict[str, Any], summary: dict[str, Any], units: str) -> list[str]:
@@ -378,47 +396,36 @@ def _kernel_result(payload: dict[str, Any], check_id: str) -> dict[str, Any] | N
     return None
 
 
-def _elastic_pressure(result: dict[str, Any]) -> Any:
-    values = [
-        candidate.get("correlated_critical_pressure_mpa") for candidate in result.get("candidates", [])
-        if candidate.get("applicable") and _number(candidate.get("correlated_critical_pressure_mpa")) is not None
-    ]
-    return values[0] if len(values) == 1 else None
+def _elastic_before_plasticity(result: dict[str, Any]) -> dict[str, Any] | None:
+    """The elastic pressure behind a plasticity-corrected one, when the correction is material."""
+    pressure = result.get("correlated_critical_pressure_mpa") or {}
+    value, factor = _number(pressure), _number(result.get("plasticity_factor"))
+    if value is None or not factor or factor >= _PLASTICITY_SHOWN_BELOW:
+        return None
+    return {"value": value / factor, "unit": pressure.get("unit", "MPa"), "factor": factor}
 
 
-def _buckling_detail(result: dict[str, Any], hemisphere: bool, units: str) -> dict[str, Any]:
-    """A reference-only estimate, and the elastic pressure behind a buckling value.
+def _buckling_detail(payload: dict[str, Any], check: dict[str, Any]) -> dict[str, Any]:
+    """What the kernel result adds to a buckling check.
 
-    Reference-only estimates keep their numerical margin for preliminary
-    sizing but never become acceptance capacities. A plasticity factor shows
-    how far the corrected pressure sits below the elastic one.
+    A reference-only estimate keeps its margin for preliminary sizing but stays
+    out of the capacity column, as it does in the JSON.
     """
-    detail: dict[str, Any] = {"estimate": None, "margin": None, "notes": []}
-    if hemisphere:
-        status = result.get("buckling_capacity_status")
-        if status == "released_unqualified_material":
-            detail.update(estimate=result.get("released_buckling_pressure_mpa"), margin=result.get("buckling_margin"))
-            detail["notes"].append(_REFERENCE_ONLY)
-        elif (
-            status != "released"
-            and _number(result.get("nasa_candidate_design_pressure_mpa")) is not None
-            and (_number(result.get("mean_radius_over_thickness")) or 0.0)
-            > (_number(result.get("thin_wall_threshold_mean_radius_over_thickness")) or math.inf)
-        ):
-            detail["notes"].append(f"elastic upper bound {_qty(result['nasa_candidate_design_pressure_mpa'], units)}")
-        return detail
+    result = _kernel_result(payload, check["id"])
+    if not result:
+        return {}
+    if check["id"].endswith("hemisphere_buckling"):
+        if result.get("buckling_capacity_status") != "released_unqualified_material":
+            return {}
+        return {"estimate": result.get("released_buckling_pressure_mpa"), "estimate_margin": result.get("buckling_margin")}
     status = result.get("capacity_status")
     if status == "released_pending_plasticity":
-        detail["notes"].append(f"elastic upper bound {_qty(result.get('correlated_critical_pressure_mpa'), units)}")
-        return detail
+        return {"upper_bound": check.get("upper_bound")}
+    detail: dict[str, Any] = {}
     if status == "released_unqualified_material":
-        detail.update(estimate=result.get("correlated_critical_pressure_mpa"), margin=result.get("margin"))
-        detail["notes"].append(_REFERENCE_ONLY)
-    factor = _number(result.get("plasticity_factor"))
-    elastic = _elastic_pressure(result)
-    if status in {"released", "released_unqualified_material"} and factor is not None \
-            and factor < _PLASTICITY_SHOWN_BELOW and elastic is not None:
-        detail["notes"].append(f"elastic {_qty(elastic, units)} x plasticity factor {factor:.3f}")
+        detail.update(estimate=result.get("correlated_critical_pressure_mpa"), estimate_margin=result.get("margin"))
+    if status in {"released", "released_unqualified_material"}:
+        detail["elastic"] = _elastic_before_plasticity(result)
     return detail
 
 
@@ -434,29 +441,35 @@ def _check_basis(model: str | None, check: dict[str, Any]) -> str:
 
 
 def _check_view(payload: dict[str, Any], check: dict[str, Any], units: str) -> dict[str, Any]:
-    capacity, margin = check.get("capacity"), check.get("margin")
+    detail = _buckling_detail(payload, check)
+    reference_only = _number(detail.get("estimate")) is not None
     notes: list[str] = []
-    reasons = list(check.get("reasons", []))
-    result = _kernel_result(payload, check["id"])
-    if result:
-        detail = _buckling_detail(result, check["id"].endswith("hemisphere_buckling"), units)
-        if _number(capacity) is None and _number(detail["estimate"]) is not None:
-            capacity, margin = detail["estimate"], detail["margin"]
-        notes = detail["notes"]
-        if _REFERENCE_ONLY in notes:
-            reasons = [reason for reason in reasons if reason != BUCKLING_REFERENCE_ONLY_REASON]
+    if reference_only:
+        notes.append(f"{_REFERENCE_ONLY}: estimate {_qty(detail['estimate'], units)}, "
+                     f"margin {_margin(detail['estimate_margin'])}")
+    if detail.get("elastic"):
+        notes.append(f"elastic {_qty(detail['elastic'], units)} x plasticity factor {detail['elastic']['factor']:.3f}")
+    if detail.get("upper_bound"):
+        notes.append(f"elastic upper bound {_qty(detail['upper_bound'], units)}, pending a plasticity correction")
     demand_value, unit = _converted(check.get("demand"), units)
-    capacity_value, capacity_unit = _converted(capacity, units)
-    unit = unit or capacity_unit
+    capacity_value, capacity_unit = _converted(check.get("capacity"), units)
+    margin = _number(check.get("margin"))
+    estimate = margin is None and reference_only
     required = _number(check.get("required_margin")) or 0.0
     return {
         "id": check["id"], "status": check["status"].upper(),
         "basis": _check_basis(payload.get("model"), check),
         "demand": "n/a" if demand_value is None else _num(demand_value),
         "capacity": "n/a" if capacity_value is None else _num(capacity_value),
-        "unit": unit, "margin": _margin(margin), "margin_value": _number(margin),
-        "required": f" (required {_num(required)})" if required else "",
-        "notes": notes, "reasons": reasons,
+        "unit": unit or capacity_unit, "margin": _margin(margin), "required": required,
+        "notes": notes, "reasons": check.get("reasons", []),
+        "omitted": frozenset({BUCKLING_REFERENCE_ONLY_REASON}) if reference_only else frozenset(),
+        # Batch tables show the estimate in the capacity column, marked as one.
+        "estimate": _qty(detail["estimate"], units) if estimate else None,
+        "estimate_margin": _margin(detail["estimate_margin"]) if estimate else None,
+        "margin_value": _number(detail["estimate_margin"]) if estimate else margin,
+        "footnotes": [*((_REFERENCE_ONLY,) if reference_only else ()),
+                      *((_PENDING_PLASTICITY,) if detail.get("upper_bound") else ())],
     }
 
 
@@ -469,7 +482,8 @@ def _pair(view: dict[str, Any]) -> str:
 def _check_lines(payload: dict[str, Any], checks: Sequence[dict[str, Any]], units: str, shown: set[str]) -> list[str]:
     views = [_check_view(payload, check, units) for check in checks]
     rows = _table([
-        [view["id"], view["status"], f"{view['basis']} {_pair(view)}", f"margin {view['margin']}{view['required']}"]
+        [view["id"], view["status"], f"{view['basis']} {_pair(view)}",
+         f"margin {view['margin']}" + (f" (required {_num(view['required'])})" if view["required"] else "")]
         for view in views
     ])
     lines: list[str] = []
@@ -477,10 +491,7 @@ def _check_lines(payload: dict[str, Any], checks: Sequence[dict[str, Any]], unit
         lines.append(row)
         if view["notes"]:
             lines.append("  " + "; ".join(view["notes"]))
-        for reason in view["reasons"]:
-            if reason not in shown:
-                shown.add(reason)
-                lines.append(f"  {reason}")
+        lines += _shown_reasons(view["reasons"], shown, view["omitted"])
     return lines
 
 
@@ -519,32 +530,28 @@ def _displacement_lines(payload: dict[str, Any], units: str, shown: set[str]) ->
     if status is None:
         return []
     if status == "withheld_missing_elastic_properties":
-        missing = [reason.split(" is required", 1)[0] for reason in reasons if " is required" in reason]
+        missing = [name for name in _ELASTIC_PROPERTIES if name in result and _number(result[name]) is None]
         if missing:
             return [f"{label}: not calculated (needs {', '.join(missing)})"]
     if line is None:
         line = f"{label}: withheld"
     elif status == "elastic_estimate_material_limit":
         line += " (elastic estimate)"
-    lines = [line]
-    for reason in reasons:
-        if reason not in shown:
-            shown.add(reason)
-            lines.append(f"  {reason}")
-    return lines
+    return [line, *_shown_reasons(reasons, shown)]
 
 
-def _mass_line(summary: dict[str, Any], payload: dict[str, Any], units: str) -> str | None:
+def _mass_lines(summary: dict[str, Any], payload: dict[str, Any], units: str) -> list[str]:
     mass = summary.get("mass_properties", {})
     if not mass:
-        return None
+        return []
     structure = mass.get("structural_air_mass_kg")
     total = mass.get("total_air_mass_kg", structure)
     payload_mass = _number(mass.get("payload_mass_kg")) or 0.0
     parts: list[str] = []
+    notes: list[str] = []
     if _number(total) is None:
-        reasons = [reason[:1].lower() + reason[1:].rstrip(".") for reason in mass.get("reasons", [])]
-        parts.append("unavailable" + (f" ({'; '.join(reasons)})" if reasons else ""))
+        parts.append("unavailable")
+        notes += mass.get("reasons", [])
     else:
         air = f"{_qty(total, units)} in air"
         if payload_mass > 0.0:
@@ -558,21 +565,22 @@ def _mass_line(summary: dict[str, Any], payload: dict[str, Any], units: str) -> 
         parts.append(f"net {_qty(mass['net_submerged_mass_kg'], units)} ({state})")
     if _number(mass.get("remaining_internal_volume_m3")) is not None:
         parts.append(f"free volume {_qty(mass['remaining_internal_volume_m3'], units)}")
-    basis = mass.get("volume_basis")
-    if basis and payload.get("model") != "cylinder":
-        parts.append(basis.split(":", 1)[0].split(",", 1)[0])
-    return "Mass: " + "; ".join(parts)
+    # The cylinder's basis is the closure arrangement already listed above.
+    if mass.get("volume_basis") and payload.get("model") != "cylinder":
+        notes.append(mass["volume_basis"])
+    return ["Mass: " + "; ".join(parts), *(f"  {note}" for note in notes)]
 
 
 def _ring_lines(result: dict[str, Any], checks: Sequence[dict[str, Any]], units: str, shown: set[str]) -> list[str]:
     demand = _number(result.get("external_pressure_mpa"))
     governing = result.get("advisory_governing_mode")
+    # Every mode is compared on the record's data, so reference-only data mark
+    # the minimum whichever mode governs.
+    reference_only = result.get("buckling_data_qualification") == "reference_only"
     governing_notes = [
         label for label in (
             _RING_STATUS_LABELS.get(result.get("advisory_governing_status", "")),
-            # Every mode is compared on the record's data, so reference-only
-            # data mark the minimum whichever mode governs.
-            _REFERENCE_ONLY if result.get("buckling_data_qualification") == "reference_only" else None,
+            _REFERENCE_ONLY if reference_only else None,
         ) if label
     ]
 
@@ -581,7 +589,7 @@ def _ring_lines(result: dict[str, Any], checks: Sequence[dict[str, Any]], units:
         margin = value / demand - 1.0 if value is not None and demand else None
         if mode is not None and mode == governing:
             notes = ["lowest", *notes, *(note for note in governing_notes if note not in notes)]
-        return [label, _qty(pressure, units), f"margin {_margin(margin)}", "; ".join(notes)]
+        return [f"  {label}", _qty(pressure, units), f"margin {_margin(margin)}", "; ".join(notes)]
 
     rows: list[list[str]] = []
     global_mode = result.get("global_with_ring_torsion") or {}
@@ -595,13 +603,15 @@ def _ring_lines(result: dict[str, Any], checks: Sequence[dict[str, Any]], units:
 
     bay = result.get("inter_ring_shell_buckling") or {}
     bay_status = bay.get("capacity_status", "")
-    bay_pressure = bay.get("correlated_critical_pressure_mpa") if not bay_status.startswith("withheld") else None
-    notes = [] if bay_pressure is not None or not bay_status else [bay_status.replace("_", " ")]
-    if bay_pressure is not None:
-        notes = [note for note in _buckling_detail(bay, False, units)["notes"] if not note.startswith("elastic upper bound")]
-        if bay_status == "released_pending_plasticity":
-            notes.append("elastic upper bound")
-    rows.append(row("inter-ring bay buckling", bay_pressure, notes, "inter_ring_smooth_shell"))
+    withheld = bay_status.startswith("withheld")
+    notes = ["withheld"] if withheld else []
+    elastic = None if withheld else _elastic_before_plasticity(bay)
+    if elastic:
+        notes.append(f"elastic {_qty(elastic, units)} x plasticity factor {elastic['factor']:.3f}")
+    if bay_status == "released_pending_plasticity":
+        notes.append("elastic upper bound")
+    rows.append(row("inter-ring bay buckling", None if withheld else bay.get("correlated_critical_pressure_mpa"),
+                    notes, "inter_ring_smooth_shell"))
 
     collapse = result.get("axisymmetric_collapse")
     if collapse is not None:
@@ -609,6 +619,8 @@ def _ring_lines(result: dict[str, Any], checks: Sequence[dict[str, Any]], units:
         rows.append(row("axisymmetric collapse, Lunchick", collapse.get("collapse_pressure_mpa"),
                         ["perfect shell"] if established else ["closed form ends before first yield"],
                         "axisymmetric_collapse_lunchick"))
+        if _number(collapse.get("first_yield_pressure_mpa")) is not None:
+            rows.append(row("mid-bay outer first yield, Lunchick", collapse["first_yield_pressure_mpa"], []))
     yield_evaluated = _number(result.get("shell_yield_between_rings_pressure_mpa")) is not None
     if yield_evaluated:
         location = _RING_FIRST_YIELD_LABELS.get(result.get("ring_location", ""), "smallest radius")
@@ -617,9 +629,13 @@ def _ring_lines(result: dict[str, Any], checks: Sequence[dict[str, Any]], units:
             row("ring mean hoop yield", result.get("ring_yield_pressure_mpa"), []),
             row(f"ring first yield ({location})", result.get("ring_first_yield_pressure_mpa"), []),
         ]
-    lines = _table(rows)
+    lines = ["Advisory pressures (no acceptance capacity):", *_table(rows)]
     if governing is None and result.get("capacity_status") == "advisory":
-        lines.append(f"Lowest buckling or collapse pressure: not established (inter-ring bay {bay_status})")
+        lines.append("  lowest buckling or collapse pressure not established: inter-ring bay "
+                     + ("withheld" if withheld else "unavailable"))
+    omitted = frozenset({BUCKLING_REFERENCE_ONLY_REASON}) if reference_only and governing else frozenset()
+    for check in checks:
+        lines += _shown_reasons(check.get("reasons", []), shown, omitted)
     if not yield_evaluated:
         lines.append("Yield pressures: not evaluated without a yield strength")
     bay_stress = result.get("beam_column_bay")
@@ -631,13 +647,6 @@ def _ring_lines(result: dict[str, Any], checks: Sequence[dict[str, Any]], units:
             f"inner {stress('midbay', 'inner')}, membrane {_qty(bay_stress['midbay_von_mises_membrane_mpa'], units)}; "
             f"frame outer {stress('frame', 'outer')}, inner {stress('frame', 'inner')}"
         )
-    reference_only = any(_REFERENCE_ONLY in line for line in lines)
-    for check in checks:
-        for reason in check.get("reasons", []):
-            if reason in shown or (reference_only and reason == BUCKLING_REFERENCE_ONLY_REASON):
-                continue
-            shown.add(reason)
-            lines.append(f"  {reason}")
     return lines
 
 
@@ -645,8 +654,10 @@ def _render_single(payload: dict[str, Any], summary: dict[str, Any], units: str)
     assessment = summary["assessment"]
     title = " ".join(part for part in (summary.get("model", "calculation"), summary.get("operation")) if part)
     lines = [f"{title}: {assessment['status'].upper()}" if assessment["checks"] else title]
+    geometry = _geometry_parts(payload, summary, units)
     lines += [line for line in (
-        _material_line(payload, summary), _geometry_line(payload, summary, units), _pressure_line(summary, units),
+        _material_line(payload, summary), "Geometry: " + ", ".join(geometry) if geometry else None,
+        _pressure_line(summary, units),
     ) if line]
     shown: set[str] = set()
     if payload.get("model") == "ring-shell" and "result" in payload:
@@ -656,9 +667,7 @@ def _render_single(payload: dict[str, Any], summary: dict[str, Any], units: str)
     lines += _displacement_lines(payload, units, shown)
     if assessment.get("governing_check") and len(assessment["checks"]) > 1:
         lines.append(f"Governing: {assessment['governing_check']}")
-    mass = _mass_line(summary, payload, units)
-    if mass:
-        lines.append(mass)
+    lines += _mass_lines(summary, payload, units)
     if payload.get("model") == "cylinder" and not payload.get("components", {}).get("closures", [None]):
         lines.append("No closures supplied.")
     return lines
@@ -679,13 +688,12 @@ def _render_batch(payload: dict[str, Any], summary: dict[str, Any], units: str) 
     lines = [f"{title}: {summary['assessment']['status'].upper()}"]
     children = [entry["summary"] for entry in entries]
     responses = [raw.get("response", {}) for raw in raw_entries]
-    comparison = "comparison" in payload
 
     def shared(render: Any) -> str | None:
         values = {render(response, child) for response, child in zip(responses, children) if response}
         return values.pop() if len(values) == 1 else None
 
-    if not comparison:
+    if "comparison" not in payload:
         lines += [line for line in (shared(_material_line),) if line]
     sized = any("sizing" in child for child in children)
     if not sized:
@@ -698,30 +706,29 @@ def _render_batch(payload: dict[str, Any], summary: dict[str, Any], units: str) 
     depth_conversion = payload.get("sweep", {}).get("depth_to_pressure")
     if depth_conversion:
         lines.append(
-            f"Pressure: from depth at {_qty(depth_conversion['fluid_density'], units)}, "
+            f"Pressure: from depth at {_qty(depth_conversion['fluid_density'], units, 'fluid_density')}, "
             f"g = {_qty(depth_conversion['gravity'], units)}, "
             f"design factor {_num(depth_conversion['design_factor'])}"
         )
     elif not payload.get("sweep", {}).get("swept_input", "").endswith("external_pressure"):
         lines += [line for line in (shared(lambda response, child: _pressure_line(child, units)),) if line]
 
-    check_ids = list(dict.fromkeys(
-        check["id"] for child in children for check in child["assessment"]["checks"]
-    ))
-    single_check = len(check_ids) == 1
+    all_checks = [check for child in children for check in child["assessment"]["checks"]]
+    check_ids = list(dict.fromkeys(check["id"] for check in all_checks))
+    required = {_number(check.get("required_margin")) or 0.0 for check in all_checks}
+    margin_label = "margin" if len(check_ids) == 1 else "lowest margin"
+    if len(required) == 1 and required != {0.0}:
+        margin_label += f" (required {_num(required.pop())})"
     first_axis = _batch_axis(entries[0]) if entries else []
     header = [key.replace("_external_pressure", " pressure").replace("_", " ") for key, _ in first_axis] + ["status"]
     if sized:
         header.append("selected")
-    basis = ""
-    if single_check:
-        for response, child in zip(responses, children):
-            if child["assessment"]["checks"]:
-                basis = _check_basis(response.get("model"), child["assessment"]["checks"][0])
-                break
-        header += [basis, "capacity", "margin"]
+    if len(check_ids) == 1:
+        basis = next((_check_basis(response.get("model"), child["assessment"]["checks"][0])
+                      for response, child in zip(responses, children) if child["assessment"]["checks"]), "")
+        header += [basis, "capacity", margin_label]
     else:
-        header += ["lowest margin", "check"]
+        header += [margin_label, "check"]
     masses = [_batch_mass(raw, child) for raw, child in zip(raw_entries, children)]
     show_mass = any(mass[0] is not None for mass in masses)
     show_net = any(mass[1] is not None for mass in masses)
@@ -745,11 +752,9 @@ def _render_batch(payload: dict[str, Any], summary: dict[str, Any], units: str) 
             selected = next((value for key, value in child.get("sizing", {}).items() if key.startswith("selected_") and isinstance(value, dict) and "unit" in value), None)
             row.append(_qty(selected, units))
         views = {check["id"]: _check_view(response, check, units) for check in child["assessment"]["checks"]}
-        if single_check:
+        if len(check_ids) == 1:
             view = views.get(check_ids[0])
-            row += ([f"{view['demand']} {view['unit']}",
-                     view["capacity"] if view["capacity"] == "n/a" else f"{view['capacity']} {view['unit']}",
-                     view["margin"]]
+            row += ([f"{view['demand']} {view['unit']}", _batch_capacity(view), _batch_margin(view)]
                     if view else ["n/a"] * 3)
         else:
             row += _lowest_margin(child["assessment"]["checks"], views)
@@ -759,15 +764,25 @@ def _render_batch(payload: dict[str, Any], summary: dict[str, Any], units: str) 
             row.append(_qty(net, units))
         rows.append(row)
         for view in views.values():
-            for text in (*view["notes"], *view["reasons"]):
-                if text.startswith("elastic "):
-                    continue
+            reasons = [reason for reason in view["reasons"]
+                       if reason not in view["omitted"] and reason not in _TEXT_OMITTED_REASONS]
+            for text in (*view["footnotes"], *reasons):
                 note = f"{view['id']}: {text}"
                 if note not in footnotes:
                     footnotes.append(note)
     lines += _table(rows)
     lines += [f"  {note}" for note in footnotes]
     return lines
+
+
+def _batch_capacity(view: dict[str, Any]) -> str:
+    if view["estimate"]:
+        return f"{view['estimate']} (estimate)"
+    return view["capacity"] if view["capacity"] == "n/a" else f"{view['capacity']} {view['unit']}"
+
+
+def _batch_margin(view: dict[str, Any]) -> str:
+    return f"{view['estimate_margin']} (estimate)" if view["estimate"] else view["margin"]
 
 
 def _lowest_margin(checks: Sequence[dict[str, Any]], views: dict[str, dict[str, Any]]) -> list[str]:
@@ -780,7 +795,7 @@ def _lowest_margin(checks: Sequence[dict[str, Any]], views: dict[str, dict[str, 
     if not candidates:
         return ["n/a", ""]
     _, check_id = min(candidates)
-    return [views[check_id]["margin"], check_id]
+    return [_batch_margin(views[check_id]), check_id]
 
 
 def _batch_mass(raw: dict[str, Any], child: dict[str, Any]) -> tuple[Any, Any]:
@@ -798,8 +813,7 @@ def render_text(
     ``assessment`` replaces the response's own when ``check`` has applied
     selected checks or a minimum margin.
     """
-    if units not in UNIT_SYSTEMS:
-        raise CalcCliError("invalid_request", "--units must be si or us")
+    units = _validated_units(units)
     summary = summarize_response(payload)
     if assessment is not None:
         if "entries" in summary:
@@ -830,6 +844,7 @@ def _modulus(value_mpa: Any, units: str) -> str:
 
 def render_material_table(records: Sequence[dict[str, Any]], units: str = "si") -> str:
     """One row per material record: strength, stiffness, density, and buckling data."""
+    units = _validated_units(units)
     rows = [["material", "category", "strength", "E", "density", "buckling data"]]
     for record in records:
         properties = record.get("properties", {})

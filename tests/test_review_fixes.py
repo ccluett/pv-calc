@@ -82,12 +82,7 @@ def test_selected_ring_bay_check_stays_indeterminate_at_the_cli_boundary():
     assert check["eligible"] is False
     assert check["capacity"]["value"] is None
     assert check["margin"] is None
-    assert "advisory" in " ".join(check["reasons"])
-    # The bay's support idealization is recorded with the model's boundary assumptions.
-    assert any(
-        "ideal circular supports" in item
-        for item in calculate(request)["result"]["boundary_assumptions"]
-    )
+    assert "ideal circular support" in " ".join(check["reasons"])
 
 
 @pytest.mark.parametrize("output_format", ["json", "summary", "text", "csv"])

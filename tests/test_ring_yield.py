@@ -197,7 +197,7 @@ def test_json_summary_and_text_report_the_yield_pressures():
     summary = summarize_response(response)
     assert summary["assessment"]["status"] == "indeterminate"
     assert summary["ring_yield"]["ring_yield_pressure_mpa"]["unit"] == "MPa"
-    rows = {line.split("  ")[0]: line for line in render_text(response).splitlines()}
+    rows = {line.strip().split("  ")[0]: line for line in render_text(response).splitlines()}
     collapse = rows["axisymmetric collapse, Lunchick"]
     assert "2.735 MPa" in collapse and "lowest" in collapse
     assert "2.487 MPa" in rows["shell hoop yield at mid-bay (Pc5)"]

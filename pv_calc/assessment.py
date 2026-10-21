@@ -17,16 +17,14 @@ from pv_calc.errors import CalcCliError
 from pv_calc.pressure_vessel import (
     BUCKLING_ELASTIC_UPPER_BOUND_FAILURE_REASON,
     BUCKLING_ELASTIC_UPPER_BOUND_STATUSES,
+    RING_SHELL_PARTIAL_SCOPE_REASON,
 )
 
 
 ASSESSMENT_SCOPE = "Only the listed calculation checks and supplied criteria are assessed."
-# The ring-shell model's scope and support assumptions are in its result notes
-# and boundary assumptions; the check states only why it cannot pass.
-RING_SHELL_ADVISORY_REASON = "Ring-shell pressures are advisory and set no acceptance capacity."
-SMOOTH_BUCKLING_PENDING_PLASTICITY_REASON = (
-    "The elastic critical stress exceeds the proportional limit; a compressive curve "
-    "is needed for the inelastic correction."
+RING_SHELL_INTER_RING_SUPPORT_REASON = (
+    "Inter-ring buckling is advisory: ideal circular support at each ring center line is "
+    "assumed; ring stiffness and attachment are not checked for that support."
 )
 
 
@@ -173,8 +171,6 @@ def _result_checks(payload: dict[str, Any]) -> list[dict[str, Any]]:
             reasons=[
                 *result.get("validity_violations", []),
                 *result.get("release_gate_violations", []),
-                *((SMOOTH_BUCKLING_PENDING_PLASTICITY_REASON,)
-                  if result.get("capacity_status") == "released_pending_plasticity" else ()),
             ],
             upper_bound=_smooth_buckling_elastic_upper_bound(result),
         )]
@@ -234,13 +230,13 @@ def _result_checks(payload: dict[str, Any]) -> list[dict[str, Any]]:
                 *parent_violations,
                 *inter_ring_result.get("validity_violations", []),
                 *inter_ring_result.get("release_gate_violations", []),
-                RING_SHELL_ADVISORY_REASON,
+                RING_SHELL_INTER_RING_SUPPORT_REASON,
             ],
         )
         return [
             _check("ring_shell_global_buckling", pressure, None, None,
                    result.get("capacity_status", "unavailable"),
-                   [*result.get("validity_violations", []), RING_SHELL_ADVISORY_REASON]),
+                   [*result.get("validity_violations", []), RING_SHELL_PARTIAL_SCOPE_REASON]),
             inter_ring,
         ]
     return []

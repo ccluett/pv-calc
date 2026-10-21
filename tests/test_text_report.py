@@ -11,7 +11,7 @@ from typer.testing import CliRunner
 from pv_calc.api import calculate
 from pv_calc.cli import app
 from pv_calc.contracts import CALC_SCHEMA_VERSION
-from pv_calc.presentation import _margin, _num, render_text
+from pv_calc.presentation import _margin, _num, assess_response, render_text
 
 
 EXAMPLES = Path(__file__).resolve().parents[1] / "examples"
@@ -41,7 +41,7 @@ def _titanium_cylinder() -> dict:
 
 
 @pytest.mark.parametrize(("value", "text"), [
-    (75.41441, "75.41"), (827.0, "827"), (10938.4, "10,940"), (9999.6, "10,000"),
+    (75.41441, "75.41"), (827.0, "827"), (6251.2, "6,251"), (10938.4, "10,940"), (9999.6, "10,000"),
     (0.0009457, "0.0009457"), (1.427e-5, "1.427e-05"), (-0.6415, "-0.6415"), (0.0, "0"),
 ])
 def test_numbers_have_four_significant_figures(value: float, text: str) -> None:
@@ -58,14 +58,48 @@ def test_margins_read_to_three_decimals_and_a_solved_target_reads_zero() -> None
 def test_buckling_check_shows_the_estimate_and_the_elastic_pressure_it_came_from() -> None:
     text = render_text(_titanium_cylinder())
     lines = text.splitlines()
-    assert lines[3] == "Pressure: 75.41 MPa design (6000 m depth, 60.33 MPa service x 1.25)"
+    assert lines[3] == "Pressure: 75.41 MPa design (6,000 m depth, 60.33 MPa service x 1.25)"
     buckling = next(line for line in lines if line.startswith("smooth_cylinder_buckling"))
+    # A reference-only estimate is not a capacity, here or in the JSON.
     assert buckling.split()[1] == "INDETERMINATE"
-    assert "pressure 75.41 / 75.43 MPa" in buckling and "margin 0.000" in buckling
+    assert "pressure 75.41 MPa / n/a" in buckling and buckling.endswith("margin n/a")
     # Elastic buckling is well above demand; the plasticity factor shows the
     # corrected value is membrane yield, not elastic instability.
-    note = lines[lines.index(buckling) + 1]
-    assert note == "  reference-only material data; elastic 129.3 MPa x plasticity factor 0.583"
+    assert lines[lines.index(buckling) + 1] == (
+        "  reference-only material data: estimate 75.43 MPa, margin 0.000; "
+        "elastic 129.3 MPa x plasticity factor 0.583"
+    )
+
+
+def test_a_reference_only_sweep_marks_its_capacities_as_estimates() -> None:
+    request = {
+        "schema_version": CALC_SCHEMA_VERSION, "model": "smooth-buckling",
+        "material": {"type": "named", "name": "Ti-6Al-4V"},
+        "inputs": {
+            "external_pressure": _q(75.41), "shell_mid_surface_radius": _q(154.8, "mm"),
+            "wall_thickness": _q(14.09, "mm"), "unsupported_length": _q(11, "inch"),
+            "load_case": "hydrostatic_closed_end",
+        },
+    }
+    response = calculate({
+        "schema_version": CALC_SCHEMA_VERSION, "model": "sweep", "request": request,
+        "inputs": {"geometry": "wall_thickness",
+                   "axis": {"type": "list", "values": [_q(12, "mm"), _q(14, "mm")]}},
+    })
+    lines = render_text(response).splitlines()
+    rows = [line for line in lines if line.startswith(("12 mm", "14 mm"))]
+    assert all("MPa (estimate)" in row and row.endswith("(estimate)") for row in rows)
+    assert "  smooth_cylinder_buckling: reference-only material data" in lines
+
+
+def test_hemisphere_text_adds_no_bound_the_check_does_not_have() -> None:
+    request = json.loads((EXAMPLES / "hemisphere_subsea_screen.json").read_text())
+    request["inputs"]["external_pressure"] = _q(9.0)
+    request["material"]["properties"]["proportional_limit"] = _q(50.0)
+    response = calculate(request)
+    buckling = next(check for check in assess_response(response)["checks"] if check["id"] == "hemisphere_buckling")
+    assert "upper_bound" not in buckling
+    assert "upper bound" not in render_text(response)
 
 
 def test_report_carries_no_fixed_disclaimers() -> None:
@@ -112,10 +146,23 @@ def test_us_units_convert_every_quantity() -> None:
 
 def test_sweep_is_one_header_and_one_row_per_point() -> None:
     lines = render_text(_example("sweep_tube_depth_range.json")).splitlines()
-    assert lines[3] == "Pressure: from depth at 1025 kg/m^3, g = 9.81 m/s^2, design factor 1.25"
+    assert lines[3] == "Pressure: from depth at 1,025 kg/m^3, g = 9.81 m/s^2, design factor 1.25"
     assert lines[4].split() == ["depth", "design", "pressure", "status", "stress", "capacity", "margin"]
     assert lines[5].split() == ["500", "m", "6.285", "MPa", "PASS", "43.1", "MPa", "427.5", "MPa", "8.918"]
     assert len(lines) == 8
+
+
+def test_us_units_convert_the_depth_conversion() -> None:
+    text = render_text(_example("sweep_tube_depth_range.json"), units="us")
+    assert "Pressure: from depth at 63.99 lb/ft^3, g = 32.19 ft/s^2, design factor 1.25" in text
+
+
+def test_batch_margin_header_carries_the_required_margin() -> None:
+    result = runner.invoke(app, [
+        "check", "--input", str(EXAMPLES / "sweep_tube_depth_range.json"), "--format", "text",
+        "--minimum-margin", "0.5",
+    ])
+    assert result.stdout.splitlines()[4].endswith("margin (required 0.5)")
 
 
 def test_multi_check_sweep_reports_the_lowest_margin_per_point() -> None:
@@ -184,6 +231,16 @@ def test_materials_list_text_is_one_row_per_record() -> None:
     assert lines[0].split() == ["material", "category", "strength", "E", "density", "buckling", "data"]
     titanium = next(line for line in lines if line.startswith("Ti-6Al-4V "))
     assert titanium.split() == [
-        "Ti-6Al-4V", "ductile", "metal", "yield", "827", "MPa", "113.8", "GPa", "4430", "kg/m^3", "reference-only",
+        "Ti-6Al-4V", "ductile", "metal", "yield", "827", "MPa", "113.8", "GPa", "4,430", "kg/m^3", "reference-only",
     ]
     assert lines[-1] == "Database: bundled:pv_calc/data/materials.yaml"
+
+
+def test_ring_report_lists_every_advisory_pressure() -> None:
+    lines = render_text(_example("ring_shell_dtmb_17_spaces.json")).splitlines()
+    assert lines[4] == "Advisory pressures (no acceptance capacity):"
+    rows = {line.strip().split("  ")[0]: line for line in lines[5:12]}
+    assert "5.257 MPa" in rows["mid-bay outer first yield, Lunchick"]
+    assert "lowest" in rows["global buckling, Eq. 64 x 0.75"]
+    assert rows["inter-ring bay buckling"].endswith("withheld")
+

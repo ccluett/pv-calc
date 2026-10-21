@@ -13,22 +13,26 @@ model; both predate this changelog.
   - Each check line gives demand and capacity on the basis the check compares,
     stress, pressure, or deflection, with its margin. A required margin
     appears only when it is not zero.
-  - A buckling check carries its reference-only estimate and margin, and the
-    elastic pressure and plasticity factor behind a corrected value, so a
-    result at membrane yield is distinguishable from elastic instability. A
-    hemisphere withheld above its proportional limit shows its elastic upper
-    bound.
-  - The ring-shell report is one table of buckling, collapse, and yield
-    pressures with their margins, and its geometry line includes the rings.
+  - A buckling check states its reference-only estimate and margin beside
+    the check, not as its capacity, and the elastic pressure and plasticity
+    factor behind a corrected value, so a result at membrane yield is
+    distinguishable from elastic instability. Batch tables mark such values
+    "(estimate)".
+  - The ring-shell report is one table of advisory buckling, collapse, and
+    yield pressures with their margins, including Lunchick's mid-bay
+    first-yield pressure, and its geometry line includes the rings.
   - Displacement and deflection lines give their values; mass is one line
     with air mass, displaced mass, net submerged mass, and free volume.
   - Sweeps and comparisons are one row per point or material; several checks
-    reduce to the lowest margin and its check.
-  - The scope sentence, the cylinder's disclaimer and omissions, and method
-    descriptions no longer print; they remain in the JSON. A cylinder without
-    closures still says so.
-  - Four significant figures, margins to three decimals, volumes in litres,
-    and plain labels in place of field names and status codes.
+    reduce to the lowest margin and its check, and a required margin is
+    given in the margin header.
+  - The scope sentence, the cylinder's disclaimer and omissions, and fixed
+    scope reasons on ring-shell and seat-bearing checks no longer print; they
+    remain in the JSON, summary, and CSV. A cylinder without closures still
+    says so.
+  - Four significant figures with thousands separators, margins to three
+    decimals, volumes in litres, and plain labels in place of field names and
+    status codes.
   - A model without checks prints no verdict.
 - Add `--units si|us` for the text report.
 - Errors print as text with `--format text`; other formats keep the JSON
@@ -37,13 +41,6 @@ model; both predate this changelog.
   assessment.
 - `materials list --format text` is a table of strength, elastic modulus,
   density, and buckling-data status.
-- Shorten the reference-only and elastic-upper-bound failure reasons. Ring-shell
-  checks give one advisory reason; the scope and support statements they
-  repeated stay in the ring result's notes and boundary assumptions. The
-  cylinder's seat-bearing basis moves from each `seat_bearing` check to its
-  `assumptions`, and its failed checks no longer add a reason restating the
-  failure. A standalone smooth-buckling check above its proportional limit
-  without a compressive curve now gives the same reason as the cylinder's.
 
 ## [0.5.0] - 2026-09-26
 

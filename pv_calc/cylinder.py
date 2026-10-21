@@ -11,11 +11,7 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
-from pv_calc.assessment import (
-    SMOOTH_BUCKLING_PENDING_PLASTICITY_REASON,
-    check_decision,
-    summarize_checks,
-)
+from pv_calc.assessment import check_decision, summarize_checks
 from pv_calc.contracts import (
     CALC_SCHEMA_VERSION,
     Closure as Closure,
@@ -55,10 +51,14 @@ from pv_calc.serialize import (
 
 CYLINDER_MODEL_ID = "cylinder_assessment"
 CYLINDER_MODEL_VERSION = "1.0.0"
-SEAT_BEARING_ASSUMPTION = (
-    "Each seat_bearing check is the average stress on the shared butt annulus, using the "
-    "weaker uniaxial compressive allowance of tube and closure; local contact stresses "
-    "and retention are not evaluated."
+CAPACITY_SHORTFALL_NOTE = "Released capacity does not meet demand and the required margin."
+SMOOTH_BUCKLING_PENDING_PLASTICITY_REASON = (
+    "The elastic critical stress exceeds the proportional limit; "
+    "the formula pressure is an upper bound pending an inelastic correction."
+)
+SEAT_BEARING_REASON = (
+    "Average bearing on the shared butt annulus, using the weaker uniaxial compressive "
+    "allowance of tube and closure; local contact stresses and retention are not evaluated."
 )
 
 
@@ -148,6 +148,8 @@ def _check(
             notes.append("The required calculation has no released demand or capacity.")
     elif demand == 0:
         notes.append("Zero demand: the capacity-to-demand margin is undefined (null).")
+    elif decision.status == "fail":
+        notes.append(CAPACITY_SHORTFALL_NOTE)
     check = {
         "id": name,
         "status": decision.status,
@@ -453,7 +455,8 @@ def evaluate_cylinder(
                 wall * (outer + inner) / outer**2
             )
             checks.append(_check(f"{name}.seat_bearing", pressure, seat_capacity,
-                                 required_margin=target))
+                                 required_margin=target,
+                                 reasons=[SEAT_BEARING_REASON]))
         except CalcCliError as exc:
             if exc.code != "invalid_material":
                 raise
@@ -481,7 +484,6 @@ def evaluate_cylinder(
             "Each closure inherits the tube bore and outer radius. Plates use the requested "
             "idealized edge support; hemispherical buckling assumes a clamped equator. "
             "The assembly does not establish that its connections provide these restraints.",
-            *((SEAT_BEARING_ASSUMPTION,) if inputs.closures else ()),
         ],
         "components": components,
         "assessment": _assessment(checks, closures_included=inputs.closures is not None),

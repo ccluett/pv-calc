@@ -1263,7 +1263,9 @@
           },
           "id": "closure_1.seat_bearing",
           "margin": 96.078046905,
-          "reasons": [],
+          "reasons": [
+            "Average bearing on the shared butt annulus, using the weaker uniaxial compressive allowance of tube and closure; local contact stresses and retention are not evaluated."
+          ],
           "required_margin": 0.0,
           "status": "pass"
         },
@@ -1311,7 +1313,9 @@
           },
           "id": "closure_2.seat_bearing",
           "margin": 96.078046905,
-          "reasons": [],
+          "reasons": [
+            "Average bearing on the shared butt annulus, using the weaker uniaxial compressive allowance of tube and closure; local contact stresses and retention are not evaluated."
+          ],
           "required_margin": 0.0,
           "status": "pass"
         }
@@ -1353,8 +1357,7 @@
     "assumptions": [
       "The same uniform differential external pressure acts on a closed-end cylinder and all supplied closures; the interior is the zero-gauge reference.",
       "Cylinder buckling uses simply supported circular ends separated by unsupported_length; stress uses the exact closed-end Lam\u00e9 solution away from junctions.",
-      "Each closure inherits the tube bore and outer radius. Plates use the requested idealized edge support; hemispherical buckling assumes a clamped equator. The assembly does not establish that its connections provide these restraints.",
-      "Each seat_bearing check is the average stress on the shared butt annulus, using the weaker uniaxial compressive allowance of tube and closure; local contact stresses and retention are not evaluated."
+      "Each closure inherits the tube bore and outer radius. Plates use the requested idealized edge support; hemispherical buckling assumes a clamped equator. The assembly does not establish that its connections provide these restraints."
     ],
     "calculation_source": {
       "function": "pv_calc.cylinder.evaluate_cylinder",
@@ -12187,7 +12190,7 @@
     "material": {
       "data_qualification": {
         "buckling": {
-          "reason": "Buckling data are reference-only.",
+          "reason": "Buckling data are reference-only; applicability of the material properties to this part is unverified.",
           "status": "reference_only"
         }
       },
@@ -12416,7 +12419,7 @@
         "Moderate-regime beta and continuous wave count are Eq. 20/22 mode diagnostics; the released capacity follows the printed 0.855 coefficient in Eq. 24.",
         "The Roark probable-minimum pressure and its lobe count are reported only as a published comparator at the mid-surface radius and set no released capacity or margin. It does not reduce to the classical long-tube E*t^3/(4*R^3*(1-nu^2)), of which it is 4/3 at long length: it is Roark's own probable-minimum value, not a capacity.",
         "elastic_applicability compares the applied circumferential membrane stress, p*r/t for a smooth shell, with the proportional limit, falling back to yield strength. It sets neither capacity nor margin.",
-        "Buckling data are reference-only."
+        "Buckling data are reference-only; applicability of the material properties to this part is unverified."
       ],
       "plasticity_factor": 0.98478044267,
       "poisson_ratio": 0.34,
@@ -12428,7 +12431,7 @@
       "ramberg_osgood_n": 21.0,
       "regime": "short",
       "release_gate_violations": [
-        "Buckling data are reference-only."
+        "Buckling data are reference-only; applicability of the material properties to this part is unverified."
       ],
       "roark_probable_minimum_factor": 0.8,
       "roark_probable_minimum_lobes_n": 2,

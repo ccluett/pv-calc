@@ -24,8 +24,8 @@ commands accept `--format json|summary|text|csv`. Detailed JSON remains the
 default, `summary` is a smaller structured assessment, `text` is a terminal
 report, and CSV exports check rows with batch positions. The text report gives
 each check's demand and capacity on the basis the check compares, stress or
-pressure, and states the reference-only estimate and the elastic pressure and
-plasticity factor behind a buckling value. Sweeps and comparisons are one row
+pressure. A reference-only buckling estimate is stated beside its check, not as
+its capacity, with the elastic pressure and plasticity factor behind it. Sweeps and comparisons are one row
 per point or material. `--units us` converts the text report; errors in text
 format are text. `--json` changes only
 JSON whitespace and cannot be combined with another format. Material inspection

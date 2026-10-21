@@ -32,7 +32,7 @@ def _q(value: float | None, unit: str = "MPa") -> dict:
 
 def _line(text: str, prefix: str) -> str:
     """The one text-report line starting with prefix."""
-    lines = [line for line in text.splitlines() if line.startswith(prefix)]
+    lines = [line for line in text.splitlines() if line.lstrip().startswith(prefix)]
     assert len(lines) == 1, (prefix, text)
     return lines[0]
 
@@ -74,9 +74,9 @@ def test_ring_summary_reports_lowest_buckling_pressure_without_changing_acceptan
     assert "2.782 MPa" in global_row and "lowest" in global_row and "m=1, n=3" in global_row
     assert "perfect shell" in _line(text, "axisymmetric collapse, Lunchick")
     assert _line(text, "Bay von Mises at 3.261 MPa: ")
-    # The model's scope stays in its notes rather than in every report.
+    # The model's fixed scope stays in the check reasons of the other formats.
     assert "Global buckling is elastic" not in text
-    assert any("Global buckling is elastic" in note for note in response["result"]["notes"])
+    assert "Global buckling is elastic" in " ".join(summary["assessment"]["checks"][0]["reasons"])
     assert response == before
 
 
@@ -320,12 +320,11 @@ def test_converged_lobar_search_cannot_pass_with_a_lower_excluded_axisymmetric_m
     assert check["eligible"] is False
     assert check["capacity"]["value"] is None
     assert check["margin"] is None
-    assert "advisory" in " ".join(check["reasons"])
-    # The excluded n=0 mode is recorded with the model's scope and dispositions.
-    assert any("n=0" in note for note in result["notes"])
+    assert "n=0" in " ".join(check["reasons"])
     row = next(csv.DictReader(io.StringIO(render_csv(selected))))
     assert row["status"] == "indeterminate"
     assert row["capacity"] == ""
+    assert "n=0" in row["reasons"]
 
 
 def _uncorrected_titanium() -> dict:
@@ -377,10 +376,9 @@ def test_pending_pressure_is_visible_and_its_elastic_upper_bound_can_reject(
     assert check["margin"] is None
     text = render_text(response)
     assert "pressure" in _line(text, "smooth_cylinder_buckling") and "/ n/a" in _line(text, "smooth_cylinder_buckling")
-    assert "  elastic upper bound 63.69 MPa" in text.splitlines()
-    assert any("compressive curve is needed" in reason for reason in check["reasons"])
+    assert "  elastic upper bound 63.69 MPa, pending a plasticity correction" in text.splitlines()
     if expected_status == "fail":
-        assert any("elastic upper bound is below demand" in reason for reason in check["reasons"])
+        assert any("could only reduce or withhold it" in reason for reason in check["reasons"])
         row = next(csv.DictReader(io.StringIO(render_csv(response))))
         if model == "cylinder":
             row = next(
@@ -433,11 +431,14 @@ def test_reference_curve_uses_the_elastic_bound_not_the_corrected_estimate(
     assert summary["outputs"]["reference_buckling_estimate"]["value"][
         "value"
     ] == pytest.approx(62.7161928406424)
-    assert any("reference-only" in reason for reason in check["reasons"])
+    reason = next(reason for reason in check["reasons"] if "reference-only" in reason)
     text = render_text(response)
-    # The estimate sits on the check line, with the elastic pressure it came from.
-    assert "/ 62.72 MPa" in _line(text, "smooth_cylinder_buckling")
-    assert text.count("reference-only material data; elastic 63.69 MPa x plasticity factor 0.985") == 1
+    # The estimate stays out of the capacity column and is stated once, with
+    # the elastic pressure it came from.
+    assert "/ n/a" in _line(text, "smooth_cylinder_buckling")
+    assert reason not in text
+    note = _line(text, "reference-only material data: estimate 62.72 MPa")
+    assert note.endswith("elastic 63.69 MPa x plasticity factor 0.985")
     if expected_status == "fail":
         coverage = summary["assessment"]["required_check_coverage"]
         assert "smooth_cylinder_buckling" in coverage["evaluated"]
@@ -629,8 +630,8 @@ def test_named_hemisphere_reference_estimate_uses_its_elastic_upper_bound(
     estimate = summary["outputs"]["reference_buckling_estimate"]
     assert estimate["value"]["value"] is not None
     text = render_text(response)
-    assert "/ 8.019 MPa" in _line(text, "hemisphere_buckling")
-    assert "  reference-only material data" in text.splitlines()
+    assert "/ n/a" in _line(text, "hemisphere_buckling")
+    assert _line(text, "reference-only material data: estimate 8.019 MPa")
 
 
 def test_coupled_sizing_retains_both_checks_and_targets() -> None:
