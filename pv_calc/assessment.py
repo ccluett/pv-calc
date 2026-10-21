@@ -22,6 +22,10 @@ from pv_calc.pressure_vessel import (
 
 
 ASSESSMENT_SCOPE = "Only the listed calculation checks and supplied criteria are assessed."
+RING_SHELL_INTER_RING_SUPPORT_REASON = (
+    "Inter-ring buckling is advisory: ideal circular support at each ring center line is "
+    "assumed; ring stiffness and attachment are not checked for that support."
+)
 
 
 @dataclass(frozen=True)
@@ -226,9 +230,7 @@ def _result_checks(payload: dict[str, Any]) -> list[dict[str, Any]]:
                 *parent_violations,
                 *inter_ring_result.get("validity_violations", []),
                 *inter_ring_result.get("release_gate_violations", []),
-                "Inter-ring buckling is advisory: ideal circular support at each ring "
-                "center line is assumed; ring stiffness and attachment are not checked "
-                "for that support.",
+                RING_SHELL_INTER_RING_SUPPORT_REASON,
             ],
         )
         return [

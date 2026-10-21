@@ -51,6 +51,15 @@ from pv_calc.serialize import (
 
 CYLINDER_MODEL_ID = "cylinder_assessment"
 CYLINDER_MODEL_VERSION = "1.0.0"
+CAPACITY_SHORTFALL_NOTE = "Released capacity does not meet demand and the required margin."
+SMOOTH_BUCKLING_PENDING_PLASTICITY_REASON = (
+    "The elastic critical stress exceeds the proportional limit; "
+    "the formula pressure is an upper bound pending an inelastic correction."
+)
+SEAT_BEARING_REASON = (
+    "Average bearing on the shared butt annulus, using the weaker uniaxial compressive "
+    "allowance of tube and closure; local contact stresses and retention are not evaluated."
+)
 
 
 def describe_cylinder(cli_options: Mapping[str, str] | None = None) -> dict[str, Any]:
@@ -140,7 +149,7 @@ def _check(
     elif demand == 0:
         notes.append("Zero demand: the capacity-to-demand margin is undefined (null).")
     elif decision.status == "fail":
-        notes.append("Released capacity does not meet demand and the required margin.")
+        notes.append(CAPACITY_SHORTFALL_NOTE)
     check = {
         "id": name,
         "status": decision.status,
@@ -321,8 +330,7 @@ def evaluate_cylinder(
         )
         reasons = [*buckling.validity_violations, *buckling.release_gate_violations]
         if buckling.capacity_status == "released_pending_plasticity":
-            reasons.append("The elastic critical stress exceeds the proportional limit; "
-                           "the formula pressure is an upper bound pending an inelastic correction.")
+            reasons.append(SMOOTH_BUCKLING_PENDING_PLASTICITY_REASON)
         checks.append(_check(
             "smooth_cylinder_buckling", pressure, buckling.correlated_critical_pressure_mpa,
             required_margin=target, applicability=buckling.capacity_status, reasons=reasons,
@@ -448,9 +456,7 @@ def evaluate_cylinder(
             )
             checks.append(_check(f"{name}.seat_bearing", pressure, seat_capacity,
                                  required_margin=target,
-                                 reasons=["Average bearing on the shared butt annulus, using the "
-                                          "weaker uniaxial compressive allowance of tube and closure; "
-                                          "local contact stresses and retention are not evaluated."]))
+                                 reasons=[SEAT_BEARING_REASON]))
         except CalcCliError as exc:
             if exc.code != "invalid_material":
                 raise

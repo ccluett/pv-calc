@@ -1263,4 +1263,4 @@ def test_concise_check_formats_omit_the_material_projection() -> None:
     assert "components" not in summary_payload
     assert summary_payload["assessment"]["status"] == "pass"
     assert "components" not in text.stdout
-    assert "cylindrical_shell_stress: PASS" in text.stdout
+    assert any(line.split()[:2] == ["cylindrical_shell_stress", "PASS"] for line in text.stdout.splitlines())

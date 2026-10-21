@@ -45,11 +45,14 @@ def test_cylinder_user_formats_preserve_checks_and_scoped_conclusion(output_form
         assert any("closure" in omission.lower() for omission in assessment["omissions"])
         assert "not a housing qualification" in assessment["scope"]
     elif output_format == "text":
-        assert "cylinder: PASS" in response.stdout
-        assert "cylindrical_shell_stress: PASS" in response.stdout
-        assert "smooth_cylinder_buckling: PASS" in response.stdout
-        assert "Seals" in response.stdout
-        assert "No closures supplied" in response.stdout
+        lines = response.stdout.splitlines()
+        assert lines[0] == "cylinder: PASS"
+        assert any(line.split()[:2] == ["cylindrical_shell_stress", "PASS"] for line in lines)
+        assert any(line.split()[:2] == ["smooth_cylinder_buckling", "PASS"] for line in lines)
+        # The scope and omissions stay in the JSON assessment; the report names
+        # only the omission that depends on this request.
+        assert "Seals" not in response.stdout
+        assert "No closures supplied." in lines
     else:
         rows = list(csv.DictReader(io.StringIO(response.stdout)))
         assert len(rows) == 2

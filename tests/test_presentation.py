@@ -30,6 +30,13 @@ def _q(value: float | None, unit: str = "MPa") -> dict:
     return {"value": value, "unit": unit}
 
 
+def _line(text: str, prefix: str) -> str:
+    """The one text-report line starting with prefix."""
+    lines = [line for line in text.splitlines() if line.lstrip().startswith(prefix)]
+    assert len(lines) == 1, (prefix, text)
+    return lines[0]
+
+
 def _qualified_aluminium() -> dict:
     """Test-only scoped material for checks unrelated to material selection."""
     return {
@@ -63,10 +70,13 @@ def test_ring_summary_reports_lowest_buckling_pressure_without_changing_acceptan
     assert not any(check["eligible"] for check in summary["assessment"]["checks"])
     text = render_text(response)
     assert text.splitlines()[0] == "ring-shell: INDETERMINATE"
-    assert "Lowest buckling or collapse pressure: " in text
-    assert "Axisymmetric collapse (Lunchick, perfect shell): " in text
-    assert "Bay surface von Mises at the applied pressure: " in text
-    assert "Global buckling is elastic" in text
+    global_row = _line(text, "global buckling, Eq. 64 x 0.75")
+    assert "2.782 MPa" in global_row and "lowest" in global_row and "m=1, n=3" in global_row
+    assert "perfect shell" in _line(text, "axisymmetric collapse, Lunchick")
+    assert _line(text, "Bay von Mises at 3.261 MPa: ")
+    # The model's fixed scope stays in the check reasons of the other formats.
+    assert "Global buckling is elastic" not in text
+    assert "Global buckling is elastic" in " ".join(summary["assessment"]["checks"][0]["reasons"])
     assert response == before
 
 
@@ -81,7 +91,7 @@ def test_ring_pressure_display_retains_applicable_material_limits(yield_mpa) -> 
     response = calculate(request)
     summary = summarize_response(response)
     text = render_text(response)
-    assert "Lowest buckling or collapse pressure: " in text
+    assert any("lowest" in line for line in text.splitlines())
     if yield_mpa is None:
         # Without a yield strength there is no collapse mode, and the global
         # mode keeps its undetermined material label.
@@ -99,7 +109,7 @@ def test_ring_pressure_display_retains_applicable_material_limits(yield_mpa) -> 
         )
         assert summary["ring_buckling"]["advisory_governing_status"] == "advisory"
         assert response["result"]["global_elastic_applicability"] == "exceeded"
-        assert "axisymmetric collapse, Lunchick" in text
+        assert "lowest" in _line(text, "axisymmetric collapse, Lunchick")
     assert summary["assessment"]["status"] == "indeterminate"
 
 
@@ -135,9 +145,11 @@ def test_ring_display_with_a_plasticity_corrected_bay_governing_is_not_called_el
     assert summary["ring_buckling"]["advisory_governing_pressure_mpa"] == governing
     assert "critical_circumferential_lobes_n" not in summary["ring_buckling"]
     text = render_text(response)
-    assert "Lowest buckling or collapse pressure: 7.75939 MPa (inter-ring bay)" in text
-    assert "Global buckling is elastic" in text
-    assert "Elastic buckling only" not in text
+    bay_row = _line(text, "inter-ring bay buckling")
+    assert "7.759 MPa" in bay_row and "lowest" in bay_row
+    # The corrected bay shows the elastic pressure it came from.
+    assert "plasticity factor" in bay_row
+    assert "elastic upper bound" not in bay_row
     assert summary["assessment"]["status"] == "indeterminate"
 
 
@@ -151,8 +163,10 @@ def test_summary_is_concise_retains_quantities_and_does_not_mutate() -> None:
     assert check["capacity"] == response["result"]["strength_mpa"]
     assert check["status"] == "pass"
     assert len(json.dumps(summary)) < len(json.dumps(response)) / 2
-    assert "cylindrical_shell_stress: PASS" in render_text(response)
-    assert "displacement: withheld_missing_elastic_properties" in render_text(response)
+    text = render_text(response)
+    assert _line(text, "cylindrical_shell_stress").split()[:2] == ["cylindrical_shell_stress", "PASS"]
+    assert "stress 47.29 / 427.5 MPa" in text
+    assert "Displacement: not calculated (needs elastic_modulus_mpa, poisson_ratio)" in text
     assert response == original
 
 
@@ -170,7 +184,9 @@ def test_elastic_estimates_never_become_capacities(release_status: str) -> None:
     assert check["eligible"] is False
     assert check["capacity"]["value"] is None
     assert check["margin"] is None
-    assert "elastic formula estimate" in render_text(response)
+    text = render_text(response)
+    assert "elastic formula estimate" in text
+    assert "INDETERMINATE" in _line(text, "smooth_cylinder_buckling")
     assert summary["assessment"]["governing_check"] is None
 
 
@@ -224,8 +240,7 @@ def test_ring_bay_estimate_cannot_be_promoted_to_a_released_check(
     }
     text = render_text(selected_payload)
     assert "ring-shell: INDETERMINATE" in text
-    assert "inter_ring_shell_buckling: INDETERMINATE" in text
-    assert "capacity unavailable" in text
+    assert "pressure 0.1 MPa / n/a  margin n/a" in _line(text, "inter_ring_shell_buckling  INDETERMINATE")
     row = next(csv.DictReader(io.StringIO(render_csv(selected_payload))))
     assert row["status"] == "indeterminate"
     assert row["eligible"] == "False"
@@ -306,7 +321,6 @@ def test_converged_lobar_search_cannot_pass_with_a_lower_excluded_axisymmetric_m
     assert check["capacity"]["value"] is None
     assert check["margin"] is None
     assert "n=0" in " ".join(check["reasons"])
-    assert "n=0" in render_text(selected)
     row = next(csv.DictReader(io.StringIO(render_csv(selected))))
     assert row["status"] == "indeterminate"
     assert row["capacity"] == ""
@@ -360,8 +374,9 @@ def test_pending_pressure_is_visible_and_its_elastic_upper_bound_can_reject(
     assert check["capacity"]["value"] is None
     assert check["upper_bound"]["value"] == pytest.approx(63.685456731934785)
     assert check["margin"] is None
-    assert "elastic_buckling_estimate: released_pending_plasticity | 63.6855 MPa" in render_text(response)
-    assert "upper bound 63.6855 MPa" in render_text(response)
+    text = render_text(response)
+    assert "pressure" in _line(text, "smooth_cylinder_buckling") and "/ n/a" in _line(text, "smooth_cylinder_buckling")
+    assert "  elastic upper bound 63.69 MPa, pending a plasticity correction" in text.splitlines()
     if expected_status == "fail":
         assert any("could only reduce or withhold it" in reason for reason in check["reasons"])
         row = next(csv.DictReader(io.StringIO(render_csv(response))))
@@ -417,7 +432,13 @@ def test_reference_curve_uses_the_elastic_bound_not_the_corrected_estimate(
         "value"
     ] == pytest.approx(62.7161928406424)
     reason = next(reason for reason in check["reasons"] if "reference-only" in reason)
-    assert render_text(response).count(reason) == 1
+    text = render_text(response)
+    # The estimate stays out of the capacity column and is stated once, with
+    # the elastic pressure it came from.
+    assert "/ n/a" in _line(text, "smooth_cylinder_buckling")
+    assert reason not in text
+    note = _line(text, "reference-only material data: estimate 62.72 MPa")
+    assert note.endswith("elastic 63.69 MPa x plasticity factor 0.985")
     if expected_status == "fail":
         coverage = summary["assessment"]["required_check_coverage"]
         assert "smooth_cylinder_buckling" in coverage["evaluated"]
@@ -608,9 +629,9 @@ def test_named_hemisphere_reference_estimate_uses_its_elastic_upper_bound(
     assert buckling["upper_bound"]["value"] == pytest.approx(8.018849005433532)
     estimate = summary["outputs"]["reference_buckling_estimate"]
     assert estimate["value"]["value"] is not None
-    assert "reference_buckling_estimate: released_unqualified_material" in render_text(
-        response
-    )
+    text = render_text(response)
+    assert "/ n/a" in _line(text, "hemisphere_buckling")
+    assert _line(text, "reference-only material data: estimate 8.019 MPa")
 
 
 def test_coupled_sizing_retains_both_checks_and_targets() -> None:

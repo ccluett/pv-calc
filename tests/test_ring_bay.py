@@ -481,7 +481,11 @@ def test_reference_only_material_data_mark_a_collapse_minimum():
     assert result["advisory_governing_mode"] == "axisymmetric_collapse_lunchick"
     summary = summarize_response(response)
     assert summary["ring_buckling"]["buckling_data_qualification"] == "reference_only"
-    assert "axisymmetric collapse, Lunchick; reference-only material data)" in render_text(response)
+    collapse_row = next(
+        line for line in render_text(response).splitlines()
+        if line.lstrip().startswith("axisymmetric collapse, Lunchick")
+    )
+    assert "lowest" in collapse_row and "reference-only material data" in collapse_row
 
 
 def test_json_summary_and_text_carry_the_bay_stresses_and_collapse():
@@ -514,5 +518,8 @@ def test_json_summary_and_text_carry_the_bay_stresses_and_collapse():
     assert summary["ring_collapse"]["status"] == "advisory"
     assert summary["ring_bay_stress"]["frame_von_mises_inner_mpa"]["unit"] == "MPa"
     text = render_text(response)
-    assert "Axisymmetric collapse (Lunchick, perfect shell): " in text
-    assert "Bay surface von Mises at the applied pressure: mid-bay outer " in text
+    assert any(
+        line.lstrip().startswith("axisymmetric collapse, Lunchick") and "perfect shell" in line
+        for line in text.splitlines()
+    )
+    assert "Bay von Mises at 40 MPa: mid-bay outer " in text

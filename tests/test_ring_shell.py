@@ -664,10 +664,9 @@ def test_text_report_says_the_lowest_pressure_is_not_established():
     )
     text = render_text(response)
     assert (
-        "Lowest buckling or collapse pressure: not established (inter-ring bay "
-        "withheld_correlation_overlap)"
-    ) in text
-    assert "Shell mean hoop yield at mid-bay (Pc5):" in text
+        "  lowest buckling or collapse pressure not established: inter-ring bay withheld"
+    ) in text.splitlines()
+    assert any(line.lstrip().startswith("shell hoop yield at mid-bay (Pc5)") for line in text.splitlines())
 
 
 TITANIUM = dict(elastic_modulus_mpa=113_800.0, poisson_ratio=0.34, yield_strength_mpa=827.0)

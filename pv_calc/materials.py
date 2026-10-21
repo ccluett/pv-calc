@@ -266,6 +266,13 @@ def list_materials(materials_file: str | Path | None = None) -> list[dict[str, A
     ]
 
 
+def material_records(materials_file: str | Path | None = None) -> list[dict[str, Any]]:
+    """Every record as :func:`show_material` returns it, in name order."""
+    materials = load_calc_materials(materials_file)
+    database = str(materials_file) if materials_file is not None else BUNDLED_MATERIAL_DATABASE
+    return [_material_record(name, materials[name], database) for name in sorted(materials)]
+
+
 def show_material(name: str, materials_file: str | Path | None = None) -> dict[str, Any]:
     """Return one record, its property sources, and capability availability.
 

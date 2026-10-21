@@ -34,7 +34,8 @@ pv-calc cylinder \
 Every dimensioned input carries a unit, quoted (`"8 mm"`) or attached (`8mm`).
 The default output is detailed JSON with `{"value", "unit"}` quantities,
 source citations, and validity status. `--format text` gives a concise terminal
-report; `--format summary` gives a compact structured assessment; and
+report, in SI units or, with `--units us`, in psi, inches, feet, pounds, and
+cubic inches; `--format summary` gives a compact structured assessment; and
 `--format csv` exports check rows, including sweep and comparison results.
 Depth-based results retain the depth, design factor, and service/design pressures
 in these formats. Batch `check` results retain material names, sweep coordinates,
@@ -260,7 +261,8 @@ Ordinary calculation commands exit zero for an evaluated negative margin or
 withheld capacity. `check` instead exits **0 for pass, 1 for fail, and 3 for
 indeterminate**; repeat `--check ID` to select required checks. An unavailable
 requested check stays indeterminate. A request that cannot be evaluated exits 2 with one
-JSON object on stderr:
+JSON object on stderr, or with `--format text` its message and key details as
+text:
 
 ```json
 {"schema_version": "5.0.0",

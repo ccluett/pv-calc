@@ -9,6 +9,40 @@ model; both predate this changelog.
 
 ## [Unreleased]
 
+- Rewrite the `--format text` report to state each result once:
+  - Each check line gives demand and capacity on the basis the check compares,
+    stress, pressure, or deflection, with its margin. A required margin
+    appears only when it is not zero.
+  - A buckling check states its reference-only estimate and margin beside
+    the check, not as its capacity, and the elastic pressure and plasticity
+    factor behind a corrected value, so a result at membrane yield is
+    distinguishable from elastic instability. Batch tables mark such values
+    "(estimate)".
+  - The ring-shell report is one table of advisory buckling, collapse, and
+    yield pressures with their margins, including Lunchick's mid-bay
+    first-yield pressure, and its geometry line includes the rings.
+  - Displacement and deflection lines give their values; mass is one line
+    with air mass, displaced mass, net submerged mass, and free volume,
+    followed by the volume basis for a tube, plate, or hemisphere.
+  - Sweeps and comparisons are one row per point or material; several checks
+    reduce to the lowest margin and its check, and a required margin is
+    given in the margin header.
+  - The scope sentence, the cylinder's disclaimer and omissions, and fixed
+    scope reasons on ring-shell and seat-bearing checks no longer print; they
+    remain in the JSON, summary, and CSV. A cylinder without closures still
+    says so.
+  - Four significant figures with thousands separators, margins to three
+    decimals, volumes in litres, and plain labels in place of field names and
+    status codes.
+  - A model without checks prints no verdict.
+- Add `--units si|us` for the text report.
+- Errors print as text with `--format text`; other formats keep the JSON
+  error object.
+- `check --format text` reports the full calculation under the check's own
+  assessment.
+- `materials list --format text` is a table of strength, elastic modulus,
+  density, and buckling-data status.
+
 ## [0.5.0] - 2026-09-26
 
 - Ring-shell model 5.1.0 -> 6.0.0:
