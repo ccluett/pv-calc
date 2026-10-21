@@ -263,3 +263,15 @@ def test_ring_report_lists_every_advisory_pressure() -> None:
     assert "5.257 MPa" in rows["mid-bay outer first yield, Lunchick"]
     assert "lowest" in rows["global buckling, Eq. 64 x 0.75"]
     assert rows["inter-ring bay buckling"].endswith("withheld")
+
+
+def test_pressure_sweep_of_a_pressure_check_shows_the_pressure_once() -> None:
+    request = json.loads((EXAMPLES / "smooth_buckling_moderate_nasa.json").read_text())
+    response = calculate({
+        "schema_version": CALC_SCHEMA_VERSION, "model": "sweep", "request": request,
+        "inputs": {"external_pressure": {"type": "list", "values": [_q(0.01), _q(0.02)]}},
+    })
+    lines = render_text(response).splitlines()
+    assert lines[3].split() == ["external", "pressure", "status", "capacity", "margin"]
+    assert lines[4].split() == ["0.01", "MPa", "PASS", "0.1338", "MPa", "12.383"]
+

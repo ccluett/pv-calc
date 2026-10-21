@@ -729,7 +729,10 @@ def _render_batch(payload: dict[str, Any], summary: dict[str, Any], units: str) 
     if len(check_ids) == 1:
         basis = next((_check_basis(response.get("model"), child["assessment"]["checks"][0])
                       for response, child in zip(responses, children) if child["assessment"]["checks"]), "")
-        header += [basis, "capacity", margin_label]
+        # A pressure check's demand is the swept or depth-derived pressure
+        # already in the row.
+        show_demand = not (basis == "pressure" and any(key.endswith("pressure") for key, _ in first_axis))
+        header += [*((basis,) if show_demand else ()), "capacity", margin_label]
     else:
         header += [margin_label, "check"]
     masses = [_batch_mass(raw, child) for raw, child in zip(raw_entries, children)]
@@ -757,8 +760,8 @@ def _render_batch(payload: dict[str, Any], summary: dict[str, Any], units: str) 
         views = {check["id"]: _check_view(response, check, units) for check in child["assessment"]["checks"]}
         if len(check_ids) == 1:
             view = views.get(check_ids[0])
-            row += ([f"{view['demand']} {view['unit']}", _batch_capacity(view), _batch_margin(view)]
-                    if view else ["n/a"] * 3)
+            demand = [f"{view['demand']} {view['unit']}"] if view and show_demand else []
+            row += [*demand, _batch_capacity(view), _batch_margin(view)] if view else ["n/a"] * (2 + show_demand)
         else:
             row += _lowest_margin(child["assessment"]["checks"], views)
         if show_mass:

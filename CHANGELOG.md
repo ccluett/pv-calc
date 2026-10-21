@@ -22,7 +22,8 @@ model; both predate this changelog.
     yield pressures with their margins, including Lunchick's mid-bay
     first-yield pressure, and its geometry line includes the rings.
   - Displacement and deflection lines give their values; mass is one line
-    with air mass, displaced mass, net submerged mass, and free volume.
+    with air mass, displaced mass, net submerged mass, and free volume,
+    followed by the volume basis for a tube, plate, or hemisphere.
   - Sweeps and comparisons are one row per point or material; several checks
     reduce to the lowest margin and its check, and a required margin is
     given in the margin header.
