@@ -112,7 +112,7 @@ def main(
     """
 
 
-def _validated_units(units: str | None, output_format: str | None) -> str:
+def _text_units(units: str | None, output_format: str | None) -> str:
     if units is not None and output_format != "text":
         raise CalcCliError("invalid_request", "--units applies only to --format text")
     return units or "si"
@@ -128,7 +128,7 @@ def _emit(
             raise CalcCliError("invalid_request", "--format must be json, summary, text, or csv")
         if compact and output_format != "json":
             raise CalcCliError("input_source_conflict", "--json requires --format json")
-        units = _validated_units(units, output_format)
+        units = _text_units(units, output_format)
         if output_format == "text":
             text = render_text(payload, units, assessment)
         elif output_format == "csv":
@@ -1953,7 +1953,7 @@ def materials_list(
 ) -> None:
     """List material records and the calculation inputs each record supplies."""
     try:
-        units = _validated_units(units, output_format)
+        units = _text_units(units, output_format)
         if output_format == "text" and not json_output:
             typer.echo(render_material_table(material_records(materials_file), units))
         else:

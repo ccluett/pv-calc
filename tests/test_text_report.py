@@ -11,6 +11,7 @@ from typer.testing import CliRunner
 from pv_calc.api import calculate
 from pv_calc.cli import app
 from pv_calc.contracts import CALC_SCHEMA_VERSION
+from pv_calc.cylinder import SMOOTH_BUCKLING_PENDING_PLASTICITY_REASON
 from pv_calc.presentation import _margin, _num, assess_response, render_text
 
 
@@ -100,6 +101,25 @@ def test_hemisphere_text_adds_no_bound_the_check_does_not_have() -> None:
     buckling = next(check for check in assess_response(response)["checks"] if check["id"] == "hemisphere_buckling")
     assert "upper_bound" not in buckling
     assert "upper bound" not in render_text(response)
+
+
+def test_the_pending_plasticity_reason_gives_way_only_to_its_upper_bound() -> None:
+    wall = 152.4 / 10.55
+    response = calculate({
+        "schema_version": CALC_SCHEMA_VERSION, "model": "cylinder",
+        "material": {"type": "explicit", "name": "Ti-6Al-4V without a compressive curve", "properties": {
+            "failure_category": "ductile_metal", "yield_strength": _q(827.0), "elastic_modulus": _q(113800.0),
+            "poisson_ratio": 0.34, "proportional_limit": _q(602.0),
+        }},
+        "inputs": {"external_pressure": _q(1.0), "internal_radius": _q(152.4 - wall, "mm"),
+                   "wall_thickness": _q(wall, "mm"), "unsupported_length": _q(609.6, "mm")},
+    })
+    check = next(check for check in response["assessment"]["checks"] if check["id"] == "smooth_cylinder_buckling")
+    assert SMOOTH_BUCKLING_PENDING_PLASTICITY_REASON in check["reasons"]
+    assert SMOOTH_BUCKLING_PENDING_PLASTICITY_REASON not in render_text(response)
+    # Without the bound there is no note to replace the reason.
+    del check["upper_bound"]
+    assert f"  {SMOOTH_BUCKLING_PENDING_PLASTICITY_REASON}" in render_text(response).splitlines()
 
 
 def test_report_carries_no_fixed_disclaimers() -> None:
@@ -243,4 +263,3 @@ def test_ring_report_lists_every_advisory_pressure() -> None:
     assert "5.257 MPa" in rows["mid-bay outer first yield, Lunchick"]
     assert "lowest" in rows["global buckling, Eq. 64 x 0.75"]
     assert rows["inter-ring bay buckling"].endswith("withheld")
-

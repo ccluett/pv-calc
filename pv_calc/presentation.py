@@ -221,13 +221,12 @@ _KIND_UNITS = {
     "si": {"depth": "m", "fluid_density": "kg/m^3"},
     "us": {"depth": "ft", "fluid_density": "lb/ft^3"},
 }
-# Fixed scope statements stay in the JSON, summary and CSV reasons; the text
-# report gives what varies with the calculation. A pending plasticity
-# correction is shown with its elastic upper bound instead.
+# Fixed statements stay in the JSON, summary and CSV reasons; the text report
+# gives what varies with the calculation.
 _TEXT_OMITTED_REASONS = frozenset({
     CAPACITY_SHORTFALL_NOTE,
     RING_SHELL_INTER_RING_SUPPORT_REASON, RING_SHELL_PARTIAL_SCOPE_REASON,
-    SEAT_BEARING_REASON, SMOOTH_BUCKLING_PENDING_PLASTICITY_REASON,
+    SEAT_BEARING_REASON,
 })
 _GEOMETRY_LABELS = {
     "internal_radius": "internal radius", "external_radius": "external radius",
@@ -463,7 +462,11 @@ def _check_view(payload: dict[str, Any], check: dict[str, Any], units: str) -> d
         "capacity": "n/a" if capacity_value is None else _num(capacity_value),
         "unit": unit or capacity_unit, "margin": _margin(margin), "required": required,
         "notes": notes, "reasons": check.get("reasons", []),
-        "omitted": frozenset({BUCKLING_REFERENCE_ONLY_REASON}) if reference_only else frozenset(),
+        # A reason is left out only while a note above states it.
+        "omitted": frozenset({
+            *((BUCKLING_REFERENCE_ONLY_REASON,) if reference_only else ()),
+            *((SMOOTH_BUCKLING_PENDING_PLASTICITY_REASON,) if detail.get("upper_bound") else ()),
+        }),
         # Batch tables show the estimate in the capacity column, marked as one.
         "estimate": _qty(detail["estimate"], units) if estimate else None,
         "estimate_margin": _margin(detail["estimate_margin"]) if estimate else None,
