@@ -197,19 +197,17 @@ def test_json_summary_and_text_report_the_yield_pressures():
     summary = summarize_response(response)
     assert summary["assessment"]["status"] == "indeterminate"
     assert summary["ring_yield"]["ring_yield_pressure_mpa"]["unit"] == "MPa"
-    text = render_text(response)
-    assert (
-        "Lowest buckling or collapse pressure: 2.73537 MPa (axisymmetric collapse, Lunchick)"
-    ) in text
-    assert "Axisymmetric collapse (Lunchick, perfect shell): 2.73537 MPa" in text
-    assert "Shell mean hoop yield at mid-bay (Pc5): 2.48663 MPa" in text
-    assert "Ring mean hoop yield: 5.66939 MPa" in text
+    rows = {line.split("  ")[0]: line for line in render_text(response).splitlines()}
+    collapse = rows["axisymmetric collapse, Lunchick"]
+    assert "2.735 MPa" in collapse and "lowest" in collapse
+    assert "2.487 MPa" in rows["shell hoop yield at mid-bay (Pc5)"]
+    assert "5.669 MPa" in rows["ring mean hoop yield"]
     first_yield = 5.66939427151082 * (274.5 + 1.19) / (274.5 + 13.69)
     assert summary["ring_yield"]["ring_first_yield_pressure_mpa"]["value"] == pytest.approx(
         first_yield, rel=1e-12
     )
     assert summary["ring_yield"]["ring_location"] == "external"
-    assert f"Ring first yield (ring base at the shell): {first_yield:.6g} MPa" in text
+    assert f"{first_yield:.4g} MPa" in rows["ring first yield (ring base at the shell)"]
 
     without_yield = render_text(_response(None))
-    assert "Mean hoop yield: not evaluated without a yield strength" in without_yield
+    assert "Yield pressures: not evaluated without a yield strength" in without_yield

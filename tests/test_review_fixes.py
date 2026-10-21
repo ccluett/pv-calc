@@ -82,7 +82,12 @@ def test_selected_ring_bay_check_stays_indeterminate_at_the_cli_boundary():
     assert check["eligible"] is False
     assert check["capacity"]["value"] is None
     assert check["margin"] is None
-    assert "ideal circular support" in " ".join(check["reasons"])
+    assert "advisory" in " ".join(check["reasons"])
+    # The bay's support idealization is recorded with the model's boundary assumptions.
+    assert any(
+        "ideal circular supports" in item
+        for item in calculate(request)["result"]["boundary_assumptions"]
+    )
 
 
 @pytest.mark.parametrize("output_format", ["json", "summary", "text", "csv"])
@@ -174,8 +179,7 @@ def test_depth_loading_survives_summary_text_and_csv(batch, command):
         assert loading["design_external_pressure"]["value"] == pytest.approx(1.25690625)
     text = invoke(request, "text", command)
     assert text.exit_code == 0
-    assert "depth 100 m" in text.stdout and "factor 1.25" in text.stdout
-    assert "service pressure" in text.stdout and "design pressure" in text.stdout
+    assert "Pressure: 1.257 MPa design (100 m depth, 1.006 MPa service x 1.25)" in text.stdout
     rows = list(csv.DictReader(io.StringIO(invoke(request, "csv", command).stdout)))
     assert all(float(row["depth_m"]) == 100 and float(row["design_factor"]) == 1.25 for row in rows)
     assert all(float(row["design_external_pressure_mpa"]) == pytest.approx(1.25690625) for row in rows)
@@ -210,7 +214,11 @@ def test_depth_axis_reports_its_own_loading_in_every_format(command):
             assert [entry["loading"]["depth"]["value"] for entry in entries] == pytest.approx(expected_depths)
             assert all(entry["loading"]["design_factor"] == 1.5 for entry in entries)
         elif output_format == "text":
-            assert "factor 1.5" in result.stdout and "depth 30.48 m" in result.stdout
+            assert "design factor 1.5" in result.stdout
+            # The 100 ft point is reported in the text's depth unit.
+            assert [line.split()[0:2] for line in result.stdout.splitlines()[-4:-1]] == [
+                ["0", "m"], ["30.48", "m"], ["100", "m"],
+            ]
         elif output_format == "csv":
             rows = list(csv.DictReader(io.StringIO(result.stdout)))
             assert [row["axis_unit"] for row in rows] == ["m", "ft", "m"]

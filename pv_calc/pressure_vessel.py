@@ -20,14 +20,11 @@ from pv_calc.schemas import (
 )
 
 
-BUCKLING_REFERENCE_ONLY_REASON = (
-    "Buckling data are reference-only; applicability of the material properties "
-    "to this part is unverified."
-)
+BUCKLING_REFERENCE_ONLY_REASON = "Buckling data are reference-only."
+# Qualified or plasticity-corrected data can only lower an elastic pressure, so
+# an elastic value below demand establishes failure.
 BUCKLING_ELASTIC_UPPER_BOUND_FAILURE_REASON = (
-    "The elastic buckling estimate for the supplied elastic properties is below demand "
-    "including the required margin; qualified or corrected material data could only "
-    "reduce or withhold it."
+    "The elastic upper bound is below demand at the required margin."
 )
 BUCKLING_ELASTIC_UPPER_BOUND_STATUSES = frozenset(
     {"released_pending_plasticity", "released_unqualified_material"}

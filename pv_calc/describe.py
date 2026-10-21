@@ -1062,7 +1062,7 @@ def _workflow_contract(description: dict[str, Any]) -> dict[str, Any]:
     description["output_formats"] = {
         "json": "Complete response; --json selects compact whitespace.",
         "summary": "Structured check assessment, geometry, loading, and applicability reasons.",
-        "text": "Concise human-readable assessment.",
+        "text": "Concise terminal report; --units us converts it to US customary units.",
         "csv": "Rows of checks with units, status, reasons, and batch coordinates.",
     }
     description["zero_load"] = (
