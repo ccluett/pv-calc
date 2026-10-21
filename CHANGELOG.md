@@ -9,6 +9,8 @@ model; both predate this changelog.
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-10-20
+
 - Rewrite the `--format text` report to state each result once:
   - Each check line gives demand and capacity on the basis the check compares,
     stress, pressure, or deflection, with its margin. A required margin
