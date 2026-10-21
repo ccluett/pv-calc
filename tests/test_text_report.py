@@ -274,4 +274,3 @@ def test_pressure_sweep_of_a_pressure_check_shows_the_pressure_once() -> None:
     lines = render_text(response).splitlines()
     assert lines[3].split() == ["external", "pressure", "status", "capacity", "margin"]
     assert lines[4].split() == ["0.01", "MPa", "PASS", "0.1338", "MPa", "12.383"]
-
