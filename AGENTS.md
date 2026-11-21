@@ -29,8 +29,10 @@ and code comments are read by people who see nothing else.
   co-author or "generated with" lines, or refer to a review, session, or
   conversation the reader cannot open.
 - Claim only what was checked, and say how.
-- Name a branch for its change, without a tool prefix. Pull requests are
-  squash merged, so the title and description become the commit on `main`.
+- Name a branch for its change, without a tool prefix. If a session starts
+  on a branch that has one, rename it before the first push
+  (`git branch -m <new-name>`). Pull requests are squash merged, so the
+  title and description become the commit on `main`.
 - The sdist and wheel ship only the files listed in
   `.github/scripts/check_distribution.py`; add a new shipped file there on
   purpose. CI runs that check on every build and again before publishing,
