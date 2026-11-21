@@ -9,6 +9,8 @@ model; both predate this changelog.
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-11-21
+
 - Breaking: `design_factor` must be at least 1. A smaller factor set the
   design pressure below the service pressure; a request with one is now
   rejected as `invalid_request`, and `describe` publishes the bound.

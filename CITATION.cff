@@ -6,8 +6,8 @@ authors:
   - family-names: Cluett
     given-names: Christopher S.
 license: MIT
-version: 0.6.0
-date-released: 2026-10-20
+version: 0.7.0
+date-released: 2026-11-21
 repository-code: https://github.com/ccluett/pv-calc
 url: https://github.com/ccluett/pv-calc
 abstract: >-
