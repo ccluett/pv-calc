@@ -517,7 +517,7 @@ MaterialsFormatOption = Annotated[
     typer.Option("--format", help="Result format: json or text."),
 ]
 DepthOption = Annotated[str | None, typer.Option(help="Depth with unit, alternative to --external-pressure.")]
-DesignFactorOption = Annotated[str | None, typer.Option(help="Explicit pressure multiplier required with --depth.")]
+DesignFactorOption = Annotated[str | None, typer.Option(help="Explicit pressure multiplier, at least 1, required with --depth.")]
 DepthFluidOption = Annotated[str | None, typer.Option("--fluid-density", help="Fluid density with unit for --depth.")]
 DepthGravityOption = Annotated[str | None, typer.Option("--gravity", help="Gravity with unit for --depth.")]
 ExternalRadiusOption = Annotated[str | None, typer.Option(help="Fixed outside radius with unit, alternative to --internal-radius when sizing.")]
@@ -1657,7 +1657,7 @@ def sweep(
     ] = None,
     design_factor: Annotated[
         str | None,
-        typer.Option(help="Depth axis only: dimensionless factor on the service pressure."),
+        typer.Option(help="Depth axis only: dimensionless factor on the service pressure, at least 1."),
     ] = None,
     input_path: Annotated[
         str | None,
@@ -1954,7 +1954,9 @@ def _emit_material(payload: dict[str, Any], compact: bool, output_format: str | 
                 if qualification is not None:
                     available += f"; buckling data {qualification}"
                 if "withheld_reason" in capability:
-                    available += f"; withheld: {capability['withheld_reason']}"
+                    # The properties are present, yet no result is released.
+                    withheld = f"withheld: {capability['withheld_reason']}"
+                    available = withheld if capability["available"] else f"{available}; {withheld}"
                 typer.echo(f"  {name}: {available}")
         if "properties" in payload:
             typer.echo(_json_text(payload["properties"], compact=False))

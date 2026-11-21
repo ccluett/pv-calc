@@ -54,6 +54,9 @@ def test_margins_read_to_three_decimals_and_a_solved_target_reads_zero() -> None
     assert _margin(4.11277e-10) == "0.000"
     # A failing margin closer to zero than three decimals still shows its sign.
     assert _margin(-4e-4) == "-0.0004"
+    # In fixed point, never an exponent.
+    assert _margin(9e-5) == "0.00009"
+    assert _margin(-1e-5) == "-0.00001"
     assert _margin(None) == "n/a"
 
 

@@ -615,8 +615,9 @@ def _submergence_payloads(
         module="pv_calc.hydrostatics",
     )
     metres_per_mpa = 1.0e6 / (fluid_density * gravity)
-    # Above the proportional limit the NASA pressure only bounds buckling from
-    # above, as the hemisphere's, withheld there, does.
+    # Above the proportional limit the smooth cylinder's NASA pressure is only
+    # an upper bound on buckling, so it gets no depth. The hemisphere needs no
+    # entry here: its released pressure is already null in that case.
     upper_bounds = (
         {"correlated_critical_pressure_mpa"}
         if getattr(result, "capacity_status", None) == "released_pending_plasticity"

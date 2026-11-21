@@ -577,16 +577,16 @@ def test_sweep_depth_axis_errors_use_the_cli_error_contract(tmp_path: Path) -> N
         "point_index": 1,
     }
 
-    zero_factor_request = _depth_sweep(
+    low_factor_request = _depth_sweep(
         base, {"type": "list", "values": [{"value": 100.0, "unit": "m"}]}
     )
     for factor in (0.0, 0.25):
-        zero_factor_request["inputs"]["design_factor"] = factor
-        zero_factor = runner.invoke(
+        low_factor_request["inputs"]["design_factor"] = factor
+        low_factor = runner.invoke(
             app,
-            ["sweep", "--input", _written(tmp_path / "factor.json", zero_factor_request)],
+            ["sweep", "--input", _written(tmp_path / "factor.json", low_factor_request)],
         )
-        assert _error_payload(zero_factor)["error"]["code"] == "invalid_request"
+        assert _error_payload(low_factor)["error"]["code"] == "invalid_request"
 
 
 def test_sweep_nonfinite_response_keeps_the_point_index(monkeypatch) -> None:

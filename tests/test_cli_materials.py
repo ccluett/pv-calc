@@ -329,7 +329,7 @@ def test_plate_capability_names_a_poisson_ratio_outside_its_evidence_band() -> N
     # Every plate result for PVC-1120 (nu 0.38) is withheld, so say so up front.
     result = runner.invoke(app, ["materials", "show", "PVC-1120", "--format", "text"])
     assert result.exit_code == 0, result.output
-    assert "  plate_bending: available; withheld: poisson_ratio 0.38 is outside the plate's 0.05-0.35 evidence band" in result.stdout.splitlines()
+    assert "  plate_bending: withheld: poisson_ratio 0.38 is outside the plate's 0.05-0.35 evidence band" in result.stdout.splitlines()
     capabilities = json.loads(runner.invoke(app, ["materials", "show", "Al-6061-T6"]).stdout)["capabilities"]
     assert "withheld_reason" not in capabilities["plate_bending"]
 

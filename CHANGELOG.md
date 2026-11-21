@@ -9,6 +9,9 @@ model; both predate this changelog.
 
 ## [Unreleased]
 
+- Breaking: `design_factor` must be at least 1. A smaller factor set the
+  design pressure below the service pressure; a request with one is now
+  rejected as `invalid_request`, and `describe` publishes the bound.
 - `check` on a sizing response requires every check the response reports,
   not only the declared ones. A plate sized on bending with an outside radius
   now fails when its seat bearing fails, as the same forward request does,
@@ -22,8 +25,6 @@ model; both predate this changelog.
   relative rounding difference of 1e-12.
 - `failure_depths` gives no depth for the smooth cylinder's elastic upper
   bound pending a plasticity correction.
-- `design_factor` must be at least 1; a smaller factor designed below the
-  service pressure.
 - `check --format csv` and `--format summary` report the full calculation
   under the check's assessment, so a sizing request's thickness and mass and
   a sweep's material appear. `check` JSON includes a sizing response's
@@ -32,13 +33,14 @@ model; both predate this changelog.
 - Text report: a withheld ring-shell bay that governs shows its elastic
   pressure; ring-shell geometry outside the model's validity reads
   "Advisory pressures: withheld" with its reasons instead of pressures and
-  margins; a margin below 5e-4 in size keeps its sign and first digit
-  rather than reading 0.000.
+  margins; a margin smaller than 5e-4 in magnitude keeps its sign and first
+  digit rather than reading 0.000.
 - `sweep --pressure` and `--depth` accept a sweep request with empty
   `inputs`, and name the expected request shape when `--input` is a forward
   request.
-- `materials show` marks plate capabilities `withheld_reason` when the
-  record's Poisson ratio is outside the plate's evidence band (PVC-1120).
+- `materials show` adds a `withheld_reason` to the plate capabilities when
+  the record's Poisson ratio is outside the plate's evidence band (PVC-1120);
+  the text format reads "withheld" with the reason.
 - CSV output no longer ends with a blank line.
 - Help and docs: `--fluid-density`, `--material-density`, `check
   --minimum-margin`, and `materials --format` state what they do; the README

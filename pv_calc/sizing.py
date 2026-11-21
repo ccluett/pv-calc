@@ -348,11 +348,11 @@ def _solve_thickness(
 
     The lower bound wins outright when it already meets every check's own
     target, before anything else here is evaluated; partition thicknesses
-    passed as a sequence were already computed by the caller. Otherwise the bounds are split
-    at every supplied branch-boundary thickness so that each interval carries
-    one continuous branch, and the intervals are walked in ascending thickness
-    until one either opens at a thickness that already meets them or has
-    failing and passing ends, which is bisected.
+    passed as a sequence were already computed by the caller. Otherwise the
+    bounds are split at every supplied branch-boundary thickness so that each
+    interval carries one continuous branch, and the intervals are walked in
+    ascending thickness until one either opens at a thickness that already
+    meets them or has failing and passing ends, which is bisected.
     Known applicability boundaries also partition the domain. A wholly
     withheld interval is excluded, never used as a failing target bracket.
     Missing outputs are not inferred; any independently released check

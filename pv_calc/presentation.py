@@ -319,7 +319,10 @@ def _margin(value: Any) -> str:
     # margin keeps its sign and first digit, so a failing one never reads 0.
     if abs(margin) < 1e-6:
         return "0.000"
-    return f"{margin:.1g}" if abs(margin) < 5e-4 else f"{margin:.3f}"
+    if abs(margin) < 5e-4:
+        # One significant digit in fixed point; "g" alone turns to an exponent.
+        return f"{float(f'{margin:.1g}'):.6f}".rstrip("0")
+    return f"{margin:.3f}"
 
 
 def _table(rows: Sequence[Sequence[str]]) -> list[str]:
