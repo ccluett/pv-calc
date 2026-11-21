@@ -9,6 +9,42 @@ model; both predate this changelog.
 
 ## [Unreleased]
 
+- `check` on a sizing response requires every check the response reports,
+  not only the declared ones. A plate sized on bending with an outside radius
+  now fails when its seat bearing fails, as the same forward request does,
+  and so does a material comparison built from it. An undeclared check takes
+  the request's `minimum_margin`.
+- A hemisphere whose NASA critical stress exceeds the supplied proportional
+  limit fails when that elastic pressure is below demand, as the smooth
+  cylinder's pending-plasticity bound already did; standalone and as a
+  cylinder closure. The text report shows the bound.
+- A margin equal to its target passes on every basis: the decision allows a
+  relative rounding difference of 1e-12.
+- `failure_depths` gives no depth for the smooth cylinder's elastic upper
+  bound pending a plasticity correction.
+- `design_factor` must be at least 1; a smaller factor designed below the
+  service pressure.
+- `check --format csv` and `--format summary` report the full calculation
+  under the check's assessment, so a sizing request's thickness and mass and
+  a sweep's material appear. `check` JSON includes a sizing response's
+  `sizing` block. A cylinder's summary and CSV name a material only when
+  every component shares it.
+- Text report: a withheld ring-shell bay that governs shows its elastic
+  pressure; ring-shell geometry outside the model's validity reads
+  "Advisory pressures: withheld" with its reasons instead of pressures and
+  margins; a margin below 5e-4 in size keeps its sign and first digit
+  rather than reading 0.000.
+- `sweep --pressure` and `--depth` accept a sweep request with empty
+  `inputs`, and name the expected request shape when `--input` is a forward
+  request.
+- `materials show` marks plate capabilities `withheld_reason` when the
+  record's Poisson ratio is outside the plate's evidence band (PVC-1120).
+- CSV output no longer ends with a blank line.
+- Help and docs: `--fluid-density`, `--material-density`, `check
+  --minimum-margin`, and `materials --format` state what they do; the README
+  error table separates command-line and JSON quantity errors; hemisphere
+  seat bearing is documented as a required check.
+
 ## [0.6.0] - 2026-10-20
 
 - Rewrite the `--format text` report to state each result once:

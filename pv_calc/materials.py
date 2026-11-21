@@ -16,6 +16,7 @@ from typing import Any
 import yaml
 from pydantic import BaseModel, ConfigDict, field_validator, model_validator
 
+from pv_calc.pressure_vessel import FLAT_CIRCULAR_PLATE_POISSON_EVIDENCE_BAND
 from pv_calc.schemas import BucklingDataQualification, MaterialFailureCategory
 
 
@@ -181,7 +182,8 @@ def material_capabilities(material: CalcMaterial) -> dict[str, dict[str, Any]]:
     does not promise that a capacity will be released at a particular geometry
     or load, or qualify the reference properties as design allowables. Buckling
     capabilities carry ``buckling_data_qualification`` when the record declares
-    one.
+    one, and plate capabilities ``withheld_reason`` when the record's Poisson
+    ratio lies outside the plate's evidence band, which withholds every result.
     """
     strength_field = {
         "ductile_metal": "yield_strength_mpa",
@@ -235,6 +237,13 @@ def material_capabilities(material: CalcMaterial) -> dict[str, dict[str, Any]]:
             capabilities[name]["buckling_data_qualification"] = (
                 material.buckling_data_qualification
             )
+    low, high = FLAT_CIRCULAR_PLATE_POISSON_EVIDENCE_BAND
+    if material.poisson_ratio is not None and not low <= material.poisson_ratio <= high:
+        for name in ("plate_bending", "plate_deflection"):
+            capabilities[name]["withheld_reason"] = (
+                f"poisson_ratio {material.poisson_ratio:g} is outside the plate's "
+                f"{low:g}-{high:g} evidence band"
+            )
     return capabilities
 
 
@@ -245,9 +254,9 @@ def _material_record(name: str, material: CalcMaterial, database: str) -> dict[s
         "properties": material.model_dump(exclude_none=True),
         "capabilities": material_capabilities(material),
         "capability_scope": (
-            "Property availability only; buckling data qualification is reported on the "
-            "affected capabilities, and geometry, load, and source applicability must "
-            "still be evaluated."
+            "Property availability only; buckling data qualification and a plate Poisson "
+            "ratio outside its evidence band are reported on the affected capabilities, and "
+            "geometry, load, and source applicability must still be evaluated."
         ),
     }
 

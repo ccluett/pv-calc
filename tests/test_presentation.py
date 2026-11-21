@@ -661,6 +661,44 @@ def test_reference_only_curve_can_size_preliminarily_without_passing_check() -> 
     assert estimate["value"] == buckling["correlated_critical_pressure_mpa"]
 
 
+def test_plate_sizing_check_requires_seat_bearing_at_the_request_target() -> None:
+    # The seat does not change with thickness, so sizing on bending cannot meet
+    # it; the check still requires it, at the request's own target.
+    response = calculate({
+        "schema_version": CALC_SCHEMA_VERSION, "model": "plate", "operation": "size",
+        "material": {"type": "named", "name": "Acrylic-PMMA"},
+        "inputs": {
+            "external_pressure": _q(1), "free_radius": _q(50, "mm"), "outside_radius": _q(52, "mm"),
+            "boundary_condition": "simply_supported", "minimum_margin": 0.1,
+            "plate_thickness_bounds": {"lower": _q(5, "mm"), "upper": _q(40, "mm")},
+        },
+    })
+    assert response["sizing"]["declared_check_set"] == ["flat_endcap_bending"]
+    assessment = assess_response(response)
+    assert [check["id"] for check in assessment["checks"]] == ["flat_endcap_bending", "seat_bearing"]
+    assert [check["status"] for check in assessment["checks"]] == ["pass", "fail"]
+    assert assessment["status"] == "fail"
+    for checks in (None, ["seat_bearing"]):
+        seat = next(check for check in assess_response(response, checks)["checks"] if check["id"] == "seat_bearing")
+        assert seat["required_margin"] == 0.1
+
+
+def test_a_margin_equal_to_its_target_passes() -> None:
+    # 0.75 * 4.224 MPa * (100/10)^2 = 316.8 MPa, two-thirds of 475.2 MPa, yet
+    # 316.8 * 1.5 rounds above 475.2.
+    response = calculate({
+        "schema_version": CALC_SCHEMA_VERSION, "model": "plate",
+        "inputs": {"external_pressure": _q(4.224), "free_radius": _q(100, "mm"),
+                   "plate_thickness": _q(10, "mm"), "boundary_condition": "fixed"},
+        "material": {"type": "explicit", "properties": {
+            "failure_category": "ductile_metal", "yield_strength": _q(475.2),
+            "elastic_modulus": _q(70000), "poisson_ratio": 0.3,
+        }},
+    })
+    assert response["result"]["margin"] == 0.5
+    assert assess_response(response, minimum_margin=0.5)["status"] == "pass"
+
+
 def test_plate_sizing_deflection_check_has_its_own_units_and_criterion() -> None:
     request = _validate_request(PlateSizeRequest, json.loads((EXAMPLES / "plate_size_deflection_limited.json").read_text()))
     response = _evaluate_plate_size(request, None)

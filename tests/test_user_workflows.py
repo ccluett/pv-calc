@@ -230,6 +230,28 @@ def test_sized_material_comparison_csv_retains_selected_dimensions_and_mass() ->
     assert all(entry["summary"]["structural_mass"]["status"] == "available" for entry in entries)
 
 
+def test_check_reports_keep_what_the_check_approved() -> None:
+    size = json.loads((EXAMPLES / "tube_size_7_ksi.json").read_text())
+    sweep = json.loads((EXAMPLES / "sweep_tube_pressure_range.json").read_text())
+    selected = calculate(size)["sizing"]["selected_wall_thickness"]
+    check = _run(size, "--json", command="check")
+    assert json.loads(check.stdout)["sizing"]["selected_wall_thickness"] == selected
+    row = next(csv.DictReader(io.StringIO(_run(size, "--format", "csv", command="check").stdout)))
+    assert float(row["wall_thickness_mm"]) == selected["value"]
+    # The check's own target, not the response's, and every point keeps its material.
+    rows = list(csv.DictReader(io.StringIO(
+        _run(sweep, "--minimum-margin", "6", "--format", "csv", command="check").stdout
+    )))
+    assert [row["status"] for row in rows] == ["pass", "pass", "fail"]
+    assert all(row["material"] and row["wall_thickness_mm"] and row["required_margin"] == "6.0" for row in rows)
+    # One name stands for an assembly only when every component shares it.
+    housing = json.loads((EXAMPLES / "cylinder_housing.json").read_text())
+    housing["inputs"]["closures"][1]["material"] = {"type": "named", "name": "Ti-6Al-4V"}
+    for command in ("run", "check"):
+        rows = list(csv.DictReader(io.StringIO(_run(housing, "--format", "csv", command=command).stdout)))
+        assert {row["material"] for row in rows} == {""}
+
+
 def test_structural_margin_retarget_keeps_explicit_deflection_limit() -> None:
     request = json.loads((EXAMPLES / "cylinder_housing.json").read_text())
     response = _run(request, "--minimum-margin", "0.1", "--format", "summary", command="check")

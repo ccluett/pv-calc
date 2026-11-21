@@ -1209,6 +1209,24 @@ def test_submergence_names_the_geometry_and_density_it_needs() -> None:
     assert "mid-surface radius" in smooth_payload["mass_properties"]["volume_basis"]
 
 
+def test_failure_depth_omits_an_elastic_upper_bound_pending_plasticity() -> None:
+    result = runner.invoke(app, [
+        "smooth-buckling", "--external-pressure", "20 MPa", "--shell-mid-surface-radius", "50 mm",
+        "--wall-thickness", "4 mm", "--unsupported-length", "200 mm",
+        "--load-case", "hydrostatic_closed_end", "--elastic-modulus", "200 GPa",
+        "--poisson-ratio", "0.3", "--yield-strength", "250 MPa", "--proportional-limit", "200 MPa",
+        "--failure-category", "ductile_metal", "--material-density", "7850 kg/m^3",
+        "--fluid-density", "1025 kg/m^3", "--gravity", "9.81 m/s^2", "--json",
+    ])
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.stdout)
+    # 62.29 MPa elastic would read as 6,195 m, though p*r/t reaches yield near 2,000 m.
+    assert payload["result"]["capacity_status"] == "released_pending_plasticity"
+    assert payload["result"]["correlated_critical_pressure_mpa"]["value"] > 60
+    depths = payload["failure_depths"]["depths"]
+    assert depths["correlated_critical_pressure_mpa"] == {"unit": "m", "value": None}
+
+
 @pytest.mark.parametrize("wall_thickness", [100, 120])
 def test_smooth_submergence_rejects_a_nonpositive_bore(
     wall_thickness: float,

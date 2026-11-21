@@ -179,6 +179,7 @@ def test_public_api_accepts_typed_forward_and_sizing_requests() -> None:
 
 @pytest.mark.parametrize("change,code", [
     ("missing_factor", "invalid_request"),
+    ("factor_below_one", "invalid_request"),
     ("missing_gravity", "invalid_request"),
     ("wrong_depth_dimension", "incompatible_unit"),
     ("pressure_conflict", "input_source_conflict"),
@@ -187,6 +188,9 @@ def test_direct_depth_rejects_incomplete_or_conflicting_loading_without_mutation
     request = depth_request("tube_9_0401_ksi.json")
     if change == "missing_factor":
         request["inputs"].pop("design_factor")
+    elif change == "factor_below_one":
+        # It would design below the service pressure.
+        request["inputs"]["design_factor"] = 0.25
     elif change == "missing_gravity":
         request["inputs"].pop("gravity")
     elif change == "wrong_depth_dimension":

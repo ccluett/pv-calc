@@ -52,7 +52,8 @@ def test_numbers_have_four_significant_figures(value: float, text: str) -> None:
 def test_margins_read_to_three_decimals_and_a_solved_target_reads_zero() -> None:
     assert _margin(0.0541171) == "0.054"
     assert _margin(4.11277e-10) == "0.000"
-    assert _margin(-1e-5) == "0.000"
+    # A failing margin closer to zero than three decimals still shows its sign.
+    assert _margin(-4e-4) == "-0.0004"
     assert _margin(None) == "n/a"
 
 
@@ -67,7 +68,7 @@ def test_buckling_check_shows_the_estimate_and_the_elastic_pressure_it_came_from
     # Elastic buckling is well above demand; the plasticity factor shows the
     # corrected value is membrane yield, not elastic instability.
     assert lines[lines.index(buckling) + 1] == (
-        "  reference-only material data: estimate 75.43 MPa, margin 0.000; "
+        "  reference-only material data: estimate 75.43 MPa, margin 0.0002; "
         "elastic 129.3 MPa x plasticity factor 0.583"
     )
 
@@ -93,13 +94,22 @@ def test_a_reference_only_sweep_marks_its_capacities_as_estimates() -> None:
     assert "  smooth_cylinder_buckling: reference-only material data" in lines
 
 
-def test_hemisphere_text_adds_no_bound_the_check_does_not_have() -> None:
+def test_hemisphere_text_shows_the_elastic_bound_only_where_the_check_has_one() -> None:
     request = json.loads((EXAMPLES / "hemisphere_subsea_screen.json").read_text())
     request["inputs"]["external_pressure"] = _q(9.0)
     request["material"]["properties"]["proportional_limit"] = _q(50.0)
     response = calculate(request)
+    # Above the proportional limit, NASA's elastic 8.019 MPa bounds buckling
+    # from above and so fails 9 MPa, as the smooth cylinder's does.
     buckling = next(check for check in assess_response(response)["checks"] if check["id"] == "hemisphere_buckling")
-    assert "upper_bound" not in buckling
+    assert buckling["status"] == "fail"
+    assert buckling["upper_bound"]["value"] == pytest.approx(8.018849005433532)
+    assert "elastic upper bound 8.019 MPa" in render_text(response)
+    # Without a proportional limit there is no bound, as for the cylinder.
+    del request["material"]["properties"]["proportional_limit"]
+    response = calculate(request)
+    buckling = next(check for check in assess_response(response)["checks"] if check["id"] == "hemisphere_buckling")
+    assert buckling["status"] == "indeterminate" and "upper_bound" not in buckling
     assert "upper bound" not in render_text(response)
 
 
@@ -263,6 +273,39 @@ def test_ring_report_lists_every_advisory_pressure() -> None:
     assert "5.257 MPa" in rows["mid-bay outer first yield, Lunchick"]
     assert "lowest" in rows["global buckling, Eq. 64 x 0.75"]
     assert rows["inter-ring bay buckling"].endswith("withheld")
+
+
+_RING_BAY_WITHOUT_PROPORTIONAL_LIMIT = [
+    "ring-shell", "--external-pressure", "1 MPa", "--shell-mid-surface-radius", "100 mm",
+    "--wall-thickness", "1 mm", "--unsupported-length", "1000 mm", "--ring-spacing", "100 mm",
+    "--ring-axial-width", "10 mm", "--ring-radial-height", "20 mm", "--ring-location", "external",
+    "--elastic-modulus", "200 GPa", "--poisson-ratio", "0.3", "--yield-strength", "500 MPa",
+    "--failure-category", "ductile_metal",
+]
+
+
+def test_ring_report_shows_the_elastic_bay_pressure_that_governs() -> None:
+    result = runner.invoke(app, [*_RING_BAY_WITHOUT_PROPORTIONAL_LIMIT, "--format", "text"])
+    assert result.exit_code == 0, result.output
+    # The withheld bay enters the minimum at its elastic pressure, 1.506 MPa.
+    bay = next(line for line in result.stdout.splitlines() if line.strip().startswith("inter-ring bay buckling"))
+    assert "1.506 MPa" in bay and "margin 0.506" in bay
+    assert "lowest; elastic; proportional limit not supplied" in bay
+
+
+def test_ring_report_withholds_every_pressure_for_invalid_geometry() -> None:
+    # More than the 1,000 mm span between rings.
+    result = runner.invoke(app, [
+        "ring-shell", "--external-pressure", "1 MPa", "--shell-mid-surface-radius", "100 mm",
+        "--wall-thickness", "1 mm", "--unsupported-length", "1000 mm", "--ring-spacing", "2000 mm",
+        "--ring-axial-width", "10 mm", "--ring-radial-height", "20 mm", "--ring-location", "external",
+        "--material", "Al-6061-T6", "--format", "text",
+    ])
+    assert result.exit_code == 0, result.output
+    lines = result.stdout.splitlines()
+    assert "Advisory pressures: withheld" in lines
+    assert any("ring_spacing_mm must not exceed" in line for line in lines)
+    assert not any("margin" in line or "Yield pressures" in line for line in lines)
 
 
 def test_pressure_sweep_of_a_pressure_check_shows_the_pressure_once() -> None:

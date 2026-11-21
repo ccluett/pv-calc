@@ -74,9 +74,19 @@ def _mass_summary(payload: dict[str, Any]) -> dict[str, Any]:
 
 def summarize_response(
     payload: dict[str, Any], checks: Sequence[str] | None = None,
-    minimum_margin: float = 0.0,
+    minimum_margin: float = 0.0, *, assessment: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    """Return a compact, unit-bearing response with check status and reasons."""
+    """Return a compact, unit-bearing response with check status and reasons.
+
+    ``assessment`` replaces the response's own when ``check`` has applied
+    selected checks or a minimum margin.
+    """
+    if assessment is not None:
+        retargeted = summarize_response(payload, checks, minimum_margin)
+        for entry, entry_assessment in zip(retargeted.get("entries", []), assessment.get("entries", [])):
+            entry["summary"]["assessment"] = entry_assessment
+        retargeted["assessment"] = {key: value for key, value in assessment.items() if key != "entries"}
+        return retargeted
     summary: dict[str, Any] = {key: payload[key] for key in ("schema_version", "model", "operation") if key in payload}
     batch = batch_entries(payload)
     if batch is not None:
@@ -117,7 +127,11 @@ def summarize_response(
             "input_mode", "depth", "fluid_density", "gravity", "design_factor",
             "pressure_reference", "service_external_pressure", "design_external_pressure",
         ) if key in payload["loading"]})
-    material = payload.get("material", payload.get("components", {}).get("tube", {}).get("material", {}))
+    # An assembly names one material only when every component shares it.
+    components = payload.get("components", {})
+    parts = [components.get("tube", {}), *components.get("closures", [])]
+    shared = len({_material_name(part.get("material")) for part in parts if part.get("material")}) == 1
+    material = payload.get("material", parts[0].get("material", {}) if shared else {})
     if material:
         summary["material"] = {key: value for key, value in material.get("source", material).items() if key in {"name", "type", "database"}}
     summary["assessment"] = assess_response(payload, checks, minimum_margin)
@@ -301,8 +315,11 @@ def _margin(value: Any) -> str:
     margin = _number(value)
     if margin is None:
         return "n/a"
-    # A sizing solution meets its target to bisection tolerance.
-    return f"{0.0 if abs(margin) < 5e-4 else margin:.3f}"
+    # A sizing solution meets its target to bisection tolerance; any larger
+    # margin keeps its sign and first digit, so a failing one never reads 0.
+    if abs(margin) < 1e-6:
+        return "0.000"
+    return f"{margin:.1g}" if abs(margin) < 5e-4 else f"{margin:.3f}"
 
 
 def _table(rows: Sequence[Sequence[str]]) -> list[str]:
@@ -415,7 +432,7 @@ def _buckling_detail(payload: dict[str, Any], check: dict[str, Any]) -> dict[str
         return {}
     if check["id"].endswith("hemisphere_buckling"):
         if result.get("buckling_capacity_status") != "released_unqualified_material":
-            return {}
+            return {"upper_bound": check["upper_bound"]} if check.get("upper_bound") else {}
         return {"estimate": result.get("released_buckling_pressure_mpa"), "estimate_margin": result.get("buckling_margin")}
     status = result.get("capacity_status")
     if status == "released_pending_plasticity":
@@ -575,6 +592,12 @@ def _mass_lines(summary: dict[str, Any], payload: dict[str, Any], units: str) ->
 
 
 def _ring_lines(result: dict[str, Any], checks: Sequence[dict[str, Any]], units: str, shown: set[str]) -> list[str]:
+    # Geometry outside the model's validity withholds every mode pressure.
+    if result.get("capacity_status", "").startswith("withheld"):
+        lines = ["Advisory pressures: withheld"]
+        for check in checks:
+            lines += _shown_reasons(check.get("reasons", []), shown)
+        return lines
     demand = _number(result.get("external_pressure_mpa"))
     governing = result.get("advisory_governing_mode")
     # Every mode is compared on the record's data, so reference-only data mark
@@ -607,14 +630,19 @@ def _ring_lines(result: dict[str, Any], checks: Sequence[dict[str, Any]], units:
     bay = result.get("inter_ring_shell_buckling") or {}
     bay_status = bay.get("capacity_status", "")
     withheld = bay_status.startswith("withheld")
-    notes = ["withheld"] if withheld else []
+    bay_pressure = None if withheld else bay.get("correlated_critical_pressure_mpa")
+    # Withheld for want of a proportional limit, the bay still enters the
+    # lowest pressure at its elastic value.
+    elastic_governs = withheld and governing == "inter_ring_smooth_shell"
+    if elastic_governs:
+        bay_pressure = result.get("advisory_governing_pressure_mpa")
+    notes = ["elastic"] if elastic_governs else ["withheld"] if withheld else []
     elastic = None if withheld else _elastic_before_plasticity(bay)
     if elastic:
         notes.append(f"elastic {_qty(elastic, units)} x plasticity factor {elastic['factor']:.3f}")
     if bay_status == "released_pending_plasticity":
         notes.append("elastic upper bound")
-    rows.append(row("inter-ring bay buckling", None if withheld else bay.get("correlated_critical_pressure_mpa"),
-                    notes, "inter_ring_smooth_shell"))
+    rows.append(row("inter-ring bay buckling", bay_pressure, notes, "inter_ring_smooth_shell"))
 
     collapse = result.get("axisymmetric_collapse")
     if collapse is not None:
@@ -820,12 +848,7 @@ def render_text(
     selected checks or a minimum margin.
     """
     units = _validated_units(units)
-    summary = summarize_response(payload)
-    if assessment is not None:
-        if "entries" in summary:
-            for entry, entry_assessment in zip(summary["entries"], assessment.get("entries", [])):
-                entry["summary"]["assessment"] = entry_assessment
-        summary["assessment"] = assessment
+    summary = summarize_response(payload, assessment=assessment)
     if "entries" in summary:
         return "\n".join(_render_batch(payload, summary, units))
     return "\n".join(_render_single(payload, summary, units))
@@ -912,9 +935,9 @@ def render_error_text(error: dict[str, Any], units: str = "si") -> str:
     return "\n".join(lines)
 
 
-def render_csv(payload: dict[str, Any]) -> str:
+def render_csv(payload: dict[str, Any], assessment: dict[str, Any] | None = None) -> str:
     """Render one row per check and point, with stable units and no JSON cells."""
-    summary = summarize_response(payload)
+    summary = summarize_response(payload, assessment=assessment)
     entries = summary.get("entries", [{"index": 0, "summary": summary}])
     output = io.StringIO(newline="")
     writer = csv.DictWriter(output, fieldnames=CSV_FIELDS, lineterminator="\n")

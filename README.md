@@ -276,7 +276,7 @@ empty; `message` always says what went wrong. The codes:
 |---|---|
 | `input_read_error`, `invalid_json` | `--input` cannot be read, or is not JSON |
 | `invalid_request` | the request does not satisfy the model's contract, including a missing option; `details` lists each pydantic error with its `location` |
-| `invalid_quantity`, `invalid_number`, `incompatible_unit` | a quantity has no unit, an unknown unit, or no finite value; a plain number is not numeric or finite; a quantity's unit has the wrong dimension |
+| `invalid_quantity`, `invalid_number`, `incompatible_unit` | a quantity has an unknown unit, or a command-line quantity has no unit or no finite value (in a JSON request, those two are `invalid_request`); a plain number is not numeric or finite; a quantity's unit has the wrong dimension |
 | `missing_input` | a request-file operation was run without `--input` |
 | `input_source_conflict`, `material_source_conflict`, `missing_material_source`, `axis_source_conflict` | `--input` beside option values; both or neither of `--material` and explicit properties; two sweep axes |
 | `invalid_material_database`, `unknown_material`, `invalid_material` | an unreadable database; a name it lacks (`details` lists every name); a record missing a property the model reads |

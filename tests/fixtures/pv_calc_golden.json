@@ -15432,7 +15432,7 @@
       "package_version": "0.6.0"
     },
     "failure_depths": {
-      "basis": "h = p / (rho * g) in the request's fluid, the inverse of pv_calc.hydrostatics.external_pressure_from_depth; each depth follows its published formula pressure, not a released margin, and a withheld pressure has no depth. The request's density is constant, so the depth carries no rise in seawater density with depth; against a depth-dependent density the same pressure sits shallower, by a margin that grows with depth.",
+      "basis": "h = p / (rho * g) in the request's fluid, the inverse of pv_calc.hydrostatics.external_pressure_from_depth; each depth follows its published formula pressure, not a released margin, and a withheld pressure or an elastic upper bound pending a plasticity correction has no depth. The request's density is constant, so the depth carries no rise in seawater density with depth; against a depth-dependent density the same pressure sits shallower, by a margin that grows with depth.",
       "depths": {
         "theoretical_failure_pressure_mpa": {
           "unit": "m",

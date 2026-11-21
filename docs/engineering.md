@@ -55,7 +55,7 @@ CSV includes the operation, coordinates, material, outcome, and error message.
 An ordinary forward or sizing JSON request can replace `inputs.external_pressure`
 with `inputs.depth`, `inputs.fluid_density`, `inputs.gravity`, and
 `inputs.design_factor`; the first three quantities carry units and the factor
-is dimensionless. All four are
+is dimensionless, at least 1. All four are
 required. The CLI equivalents are `--depth`, `--fluid-density`, `--gravity`, and
 `--design-factor`. Sizing and ring-shell commands reject fluid options without
 `--depth`; other forward commands can use them for submergence calculations.
@@ -99,7 +99,9 @@ pv-calc check --input examples/tube_9_0401_ksi.json \
 
 Without `--check`, the margin applies to every structural check in the
 response, including buckling and seat bearing; a deflection check keeps its
-own explicit limit. `inputs.minimum_margin` sets the same target in a cylinder
+own explicit limit. A sizing response requires its declared checks and any
+other check it reports, such as a plate's seat bearing, which no thickness
+changes. `inputs.minimum_margin` sets the same target in a cylinder
 or sizing request, and the effective target is the largest of the request's
 own requirement and `--minimum-margin`. A depth-based `design_factor`
 multiplies pressure, so it compounds with a required margin. Applicability
@@ -137,7 +139,7 @@ changes from 0.1.0 on are recorded in the [changelog](../CHANGELOG.md).
 |---|---|---|
 | `closed_end_tube_stress` | 3.1.0 | Exact closed-end Lamé stress at both wall surfaces for every thickness; the material check follows the failure category: 3D von Mises against yield strength for `ductile_metal`, maximum hoop stress against the working strength (`plastic`) or ultimate compressive strength (`brittle`), component stresses stay report-only. Scalar radial displacement at each stress-state radius, uniform axial strain, and an axial length change over a supplied gauge length, released only when the caller gives both an elastic modulus and a Poisson ratio |
 | `uniformly_loaded_flat_circular_plate` | 5.0.0 | Roark cases 10a/10b for fixed or simply-supported edges, with a Reissner shear correction for released center deflection. Bending margins require `D_free/t >= 10` (fixed) or `>= 4` (simply supported); deflection requires `>= 10` or `>= 6`, respectively. Both require `0.05 <= nu <= 0.35` and corrected `w <= t/2`; released deflection also requires stress within the supplied material strength. Optional outside radius adds average annular seat bearing |
-| `roark_nasa_hemispherical_head_external_pressure` | 5.0.0 | Exact Lamé sphere stress under the category's criterion, as for the tube, plus NASA SP-8032 clamped-cap buckling; capacity released only for a thin shell with `lambda > 2` and a source-traceable proportional limit. Reference-only limits retain the numerical result as `released_unqualified_material` but cannot support acceptance. Exact spherical radial displacement at both wall surfaces, away from the equator. The average seat bearing stress on the equator annulus, its failure pressure, and margin, report-only |
+| `roark_nasa_hemispherical_head_external_pressure` | 5.0.0 | Exact Lamé sphere stress under the category's criterion, as for the tube, plus NASA SP-8032 clamped-cap buckling; capacity released only for a thin shell with `lambda > 2` and a source-traceable proportional limit. Reference-only limits retain the numerical result as `released_unqualified_material` but cannot support acceptance. Exact spherical radial displacement at both wall surfaces, away from the equator. The average seat bearing stress on the equator annulus, its failure pressure, and margin, assessed as the `seat_bearing` check |
 | `nasa_smooth_cylinder_external_pressure_buckling` | 5.1.0 | NASA SP-8007 Rev. 2 Eqs. 19-29 at shell mid-surface radius; capacity released at every `gamma*Z` except the moderate/long correlation overlap. A complete compressive Ramberg-Osgood curve (`ramberg_osgood_n` with `compressive_proof_stress`) applies the Eqs. 30-32 correction and releases the corrected capacity and margin. Without a curve, a result above the proportional limit remains an elastic upper bound with a null margin (`released_pending_plasticity`). Reference-only data retain the numerical result and margin as `released_unqualified_material`. Requires `R_mid/t > 10`. Reports Roark Table 35 case 20 as a comparator that sets no capacity. The `elastic_applicability` screen labels the applied `p*r/t` comparison and sets no margin. `circumferential_stress_basis` names the stress compared with material data: `p*r/t` here, or a ring-stiffened bay's mid-bay membrane equivalent when the ring model evaluates its bay |
 | `nasa_ring_stiffened_shell_external_pressure` | 6.0.0 | NASA SP-8007 Rev. 2 Eq. 64/65 with Eqs. 82-91 and Eq. 91 torsion for global buckling, the smooth-cylinder model over the ring spacing for the inter-ring bay, and the periodic-bay solution for yield pressures, bay surface stresses, and Lunchick's axisymmetric collapse; see [Ring-stiffened shell](#ring-stiffened-shell) |
 | `archimedes_submerged_mass_and_buoyancy` | 1.0.0 | Archimedes' principle in Lautrup's constant-gravity form for a fully submerged, rigid, closed, non-flooded body; structural air mass, displaced-fluid mass, net submerged mass, and buoyant-force magnitude from two resolved volumes, two densities, and gravity |
@@ -368,7 +370,8 @@ block names the conversion's model id and version, its source and pressure
 reference convention, the three conversion inputs, and
 `substituted_pressure: design_external_pressure`. Fluid density, gravity, and
 the design factor are request inputs with no default; the factor is the caller's
-policy multiplier, so no value for it comes from a source.
+policy multiplier, so no value for it comes from a source. It must be at least 1,
+since a smaller factor would design below the service pressure.
 
 The `pv-calc compare-materials` operation contract is 1.1.0. It runs one forward
 or supported sizing request against an ordered list of named materials. Each
@@ -452,7 +455,10 @@ the named record or from an explicit record's `density`; without one the
 request is refused as `invalid_material` rather than answered without weights.
 `failure_depths` expresses that model's failure pressures, an explicit per-model
 list of result fields, as `h = p / (rho * g)` in the same fluid, the inverse of
-the depth axis's conversion, with a withheld pressure keeping its null. The
+the depth axis's conversion. A withheld pressure keeps a null depth, as does
+the smooth cylinder's elastic upper bound pending a plasticity correction; a
+Roark comparator keeps its depth as a published formula pressure, which sets no
+capacity. The
 block's `basis` records that the request's density is one constant, so the
 depth carries no rise in seawater density with depth; against a
 depth-dependent density the same pressure sits shallower, by a margin that
