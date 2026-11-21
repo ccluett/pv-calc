@@ -69,6 +69,8 @@ jobs:
         run: uv build --out-dir "$RUNNER_TEMP/dist"
       - name: Check distribution metadata
         run: uvx twine check "$RUNNER_TEMP"/dist/*
+      - name: Check distribution contents
+        run: uv run --no-project python .github/scripts/check_distribution.py dist "$RUNNER_TEMP/dist"
       - name: Smoke-test the wheel
         run: |
           uv venv "$RUNNER_TEMP/wheel"

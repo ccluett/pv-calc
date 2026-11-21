@@ -34,6 +34,8 @@ workflow also matches prerelease tags.
    ```
 
    The workflow first runs the full test suite on the tagged commit. It stops
-   if the tag does not match `pv-calc --version`.
+   if the tag does not match `pv-calc --version`, or if
+   `.github/scripts/check_distribution.py` finds a file in the built archives
+   that is not on its list.
 5. Check the PyPI release page and `pip install pv-calc==X.Y.Z` in a clean
    environment.
