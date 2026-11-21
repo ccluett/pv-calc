@@ -1003,7 +1003,7 @@ def _workflow_contract(description: dict[str, Any]) -> dict[str, Any]:
             load_fields = ("depth", "fluid_density", "gravity", "design_factor")
             for name in load_fields[:3]:
                 properties[name] = {"$ref": "#/$defs/QuantityInput"}
-            properties["design_factor"] = {"type": "number", "exclusiveMinimum": 0}
+            properties["design_factor"] = {"type": "number", "minimum": 1}
             inputs["required"] = [name for name in inputs.get("required", []) if name != "external_pressure"]
             inputs.setdefault("allOf", []).append({"oneOf": [
                 {"required": ["external_pressure"], "not": {"anyOf": [{"required": [name]} for name in load_fields]}},
@@ -1045,7 +1045,7 @@ def _workflow_contract(description: dict[str, Any]) -> dict[str, Any]:
                 })
         input_contract["pressure_source_rule"] = (
             "Each physical request accepts exactly one of external_pressure or depth with "
-            "fluid_density, gravity, and an explicit positive design_factor. Converted design "
+            "fluid_density, gravity, and an explicit design_factor of at least 1. Converted design "
             "pressure drives the model; service/design pressures and source inputs are echoed "
             "in loading. A sweep load axis replaces its base request's load."
         )

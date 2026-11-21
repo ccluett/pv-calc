@@ -327,6 +327,24 @@ def test_reference_only_hemisphere_closure_can_fail_on_its_elastic_upper_bound(
     assert any("could only reduce or withhold it" in reason for reason in check["reasons"])
 
 
+@pytest.mark.parametrize("pressure,status", [(6.0, "fail"), (3.0, "indeterminate")])
+def test_hemisphere_closure_above_its_proportional_limit_fails_only_below_the_elastic_bound(
+    payload: dict[str, Any], pressure: float, status: str,
+) -> None:
+    add_closures(payload)
+    # NASA's critical stress, about 127 MPa, exceeds this limit, so the
+    # 5.026 MPa elastic pressure is withheld as a capacity and kept as a bound.
+    payload["inputs"]["closures"][1]["material"]["properties"]["proportional_limit"] = q(20.0, "MPa")
+    payload["inputs"]["external_pressure"] = q(pressure, "MPa")
+
+    check = checks(evaluate(payload))["closure_2.hemisphere_buckling"]
+    assert check["applicability"] == "withheld_applicability"
+    assert check["capacity"] == q(None, "MPa")
+    assert check["upper_bound"]["value"] == pytest.approx(5.025867625946412)
+    assert check["status"] == status
+    assert any("could only reduce or withhold it" in reason for reason in check["reasons"]) == (status == "fail")
+
+
 def test_named_material_missing_elastic_data_keeps_closed_end_stress(
     payload: dict[str, Any], tmp_path: Path
 ) -> None:

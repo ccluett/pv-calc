@@ -347,11 +347,12 @@ def _solve_thickness(
     """Select the smallest model-eligible thickness that meets every target.
 
     The lower bound wins outright when it already meets every check's own
-    target, before anything else is evaluated. Otherwise the bounds are split
-    at every supplied branch-boundary thickness so that each interval carries
-    one continuous branch, and the intervals are walked in ascending thickness
-    until one either opens at a thickness that already meets them or has
-    failing and passing ends, which is bisected.
+    target, before anything else here is evaluated; partition thicknesses
+    passed as a sequence were already computed by the caller. Otherwise the
+    bounds are split at every supplied branch-boundary thickness so that each
+    interval carries one continuous branch, and the intervals are walked in
+    ascending thickness until one either opens at a thickness that already
+    meets them or has failing and passing ends, which is bisected.
     Known applicability boundaries also partition the domain. A wholly
     withheld interval is excluded, never used as a failing target bracket.
     Missing outputs are not inferred; any independently released check
@@ -405,8 +406,9 @@ def _solve_thickness(
     excluded_intervals: list[tuple[_SizingSample, _SizingSample]] = []
     if lower_sample.eligible and slack(lower_sample) >= 0.0:
         # The winning lower bound is the whole answer, so nothing above it is
-        # evaluated: an upper bound or a partition probe the models cannot
-        # answer for must not fail a search whose result never depends on it.
+        # evaluated here: an upper bound or a lazy partition probe the models
+        # cannot answer for must not fail a search whose result never depends
+        # on it. A partition passed as a sequence has already been probed.
         selected = lower_sample
         solution_type = "lower_bound"
     else:

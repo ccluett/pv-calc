@@ -230,6 +230,39 @@ def test_sized_material_comparison_csv_retains_selected_dimensions_and_mass() ->
     assert all(entry["summary"]["structural_mass"]["status"] == "available" for entry in entries)
 
 
+def test_check_json_and_csv_keep_a_sizing_requests_selected_thickness() -> None:
+    size = json.loads((EXAMPLES / "tube_size_7_ksi.json").read_text())
+    selected = calculate(size)["sizing"]["selected_wall_thickness"]
+    check = _run(size, "--json", command="check")
+    assert json.loads(check.stdout)["sizing"]["selected_wall_thickness"] == selected
+    row = next(csv.DictReader(io.StringIO(_run(size, "--format", "csv", command="check").stdout)))
+    assert float(row["wall_thickness_mm"]) == selected["value"]
+
+
+def test_check_csv_of_a_sweep_applies_the_check_margin_and_keeps_each_material() -> None:
+    sweep = json.loads((EXAMPLES / "sweep_tube_pressure_range.json").read_text())
+    rows = list(csv.DictReader(io.StringIO(
+        _run(sweep, "--minimum-margin", "6", "--format", "csv", command="check").stdout
+    )))
+    assert [row["status"] for row in rows] == ["pass", "pass", "fail"]
+    assert all(row["material"] and row["wall_thickness_mm"] and row["required_margin"] == "6.0" for row in rows)
+
+
+@pytest.mark.parametrize("command", ["run", "check"])
+def test_csv_output_ends_with_one_newline(command: str) -> None:
+    sweep = json.loads((EXAMPLES / "sweep_tube_pressure_range.json").read_text())
+    output = _run(sweep, "--format", "csv", command=command).stdout
+    assert output.endswith("\n") and not output.endswith("\n\n")
+
+
+def test_cylinder_csv_names_a_material_only_when_every_component_shares_it() -> None:
+    housing = json.loads((EXAMPLES / "cylinder_housing.json").read_text())
+    housing["inputs"]["closures"][1]["material"] = {"type": "named", "name": "Ti-6Al-4V"}
+    for command in ("run", "check"):
+        rows = list(csv.DictReader(io.StringIO(_run(housing, "--format", "csv", command=command).stdout)))
+        assert {row["material"] for row in rows} == {""}
+
+
 def test_structural_margin_retarget_keeps_explicit_deflection_limit() -> None:
     request = json.loads((EXAMPLES / "cylinder_housing.json").read_text())
     response = _run(request, "--minimum-margin", "0.1", "--format", "summary", command="check")

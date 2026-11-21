@@ -494,7 +494,7 @@ FAILURE_DEPTH_BASIS = (
     "h = p / (rho * g) in the request's fluid, the inverse of "
     "pv_calc.hydrostatics.external_pressure_from_depth; each depth follows its "
     "published formula pressure, not a released margin, and a withheld pressure "
-    "has no depth. "
+    "or an elastic upper bound pending a plasticity correction has no depth. "
     "The request's density is constant, so the depth carries no rise in seawater density "
     "with depth; against a depth-dependent density the same pressure sits shallower, "
     "by a margin that grows with depth."
@@ -615,10 +615,20 @@ def _submergence_payloads(
         module="pv_calc.hydrostatics",
     )
     metres_per_mpa = 1.0e6 / (fluid_density * gravity)
-    depths = {
-        name: _quantity(None if (p := getattr(result, name)) is None else p * metres_per_mpa, "m")
-        for name in FAILURE_PRESSURE_FIELDS[model]
-    }
+    # Above the proportional limit the smooth cylinder's NASA pressure is only
+    # an upper bound on buckling, so it gets no depth. The hemisphere needs no
+    # entry here: its released pressure is already null in that case.
+    upper_bounds = (
+        {"correlated_critical_pressure_mpa"}
+        if getattr(result, "capacity_status", None) == "released_pending_plasticity"
+        else set()
+    )
+
+    def depth(name: str) -> dict[str, Any]:
+        pressure = None if name in upper_bounds else getattr(result, name)
+        return _quantity(None if pressure is None else pressure * metres_per_mpa, "m")
+
+    depths = {name: depth(name) for name in FAILURE_PRESSURE_FIELDS[model]}
     return {
         "mass_properties": {**mass, "volume_basis": volume_basis},
         "failure_depths": {"basis": FAILURE_DEPTH_BASIS, "depths": depths},

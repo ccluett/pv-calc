@@ -132,9 +132,9 @@ def _emit(
         if output_format == "text":
             text = render_text(payload, units, assessment)
         elif output_format == "csv":
-            text = render_csv(payload)
+            text = render_csv(payload, assessment).removesuffix("\n")
         elif output_format == "summary":
-            text = _json_text(summarize_response(payload), compact=False)
+            text = _json_text(summarize_response(payload, assessment=assessment), compact=False)
         else:
             text = _json_text(payload, compact=compact)
     except (TypeError, ValueError) as exc:
@@ -512,8 +512,12 @@ UnitsOption = Annotated[
     str | None,
     typer.Option("--units", help="Units for --format text: si (default) or us."),
 ]
+MaterialsFormatOption = Annotated[
+    str | None,
+    typer.Option("--format", help="Result format: json or text."),
+]
 DepthOption = Annotated[str | None, typer.Option(help="Depth with unit, alternative to --external-pressure.")]
-DesignFactorOption = Annotated[str | None, typer.Option(help="Explicit pressure multiplier required with --depth.")]
+DesignFactorOption = Annotated[str | None, typer.Option(help="Explicit pressure multiplier, at least 1, required with --depth.")]
 DepthFluidOption = Annotated[str | None, typer.Option("--fluid-density", help="Fluid density with unit for --depth.")]
 DepthGravityOption = Annotated[str | None, typer.Option("--gravity", help="Gravity with unit for --depth.")]
 ExternalRadiusOption = Annotated[str | None, typer.Option(help="Fixed outside radius with unit, alternative to --internal-radius when sizing.")]
@@ -648,11 +652,11 @@ def tube(
     ultimate_compressive_strength: UltimateCompressiveStrengthOption = None,
     material_density: Annotated[
         str | None,
-        typer.Option(help="Explicit material density with unit; read only with --fluid-density."),
+        typer.Option(help="Explicit material density with unit; read only for mass properties."),
     ] = None,
     fluid_density: Annotated[
         str | None,
-        typer.Option(help="Optional fluid density with unit; with --gravity adds mass properties and failure depths."),
+        typer.Option(help="Optional fluid density with unit; with --gravity and without --depth, adds mass properties and failure depths."),
     ] = None,
     gravity: Annotated[
         str | None,
@@ -846,11 +850,11 @@ def plate(
     ultimate_compressive_strength: UltimateCompressiveStrengthOption = None,
     material_density: Annotated[
         str | None,
-        typer.Option(help="Explicit material density with unit; read only with --fluid-density."),
+        typer.Option(help="Explicit material density with unit; read only for mass properties."),
     ] = None,
     fluid_density: Annotated[
         str | None,
-        typer.Option(help="Optional fluid density with unit; with --gravity adds mass properties and failure depths."),
+        typer.Option(help="Optional fluid density with unit; with --gravity and without --depth, adds mass properties and failure depths."),
     ] = None,
     gravity: Annotated[
         str | None,
@@ -1071,11 +1075,11 @@ def hemisphere(
     ultimate_compressive_strength: UltimateCompressiveStrengthOption = None,
     material_density: Annotated[
         str | None,
-        typer.Option(help="Explicit material density with unit; read only with --fluid-density."),
+        typer.Option(help="Explicit material density with unit; read only for mass properties."),
     ] = None,
     fluid_density: Annotated[
         str | None,
-        typer.Option(help="Optional fluid density with unit; with --gravity adds mass properties and failure depths."),
+        typer.Option(help="Optional fluid density with unit; with --gravity and without --depth, adds mass properties and failure depths."),
     ] = None,
     gravity: Annotated[
         str | None,
@@ -1183,11 +1187,11 @@ def smooth_buckling(
     ] = None,
     material_density: Annotated[
         str | None,
-        typer.Option(help="Explicit material density with unit; read only with --fluid-density."),
+        typer.Option(help="Explicit material density with unit; read only for mass properties."),
     ] = None,
     fluid_density: Annotated[
         str | None,
-        typer.Option(help="Optional fluid density with unit; with --gravity adds mass properties and failure depths."),
+        typer.Option(help="Optional fluid density with unit; with --gravity and without --depth, adds mass properties and failure depths."),
     ] = None,
     gravity: Annotated[
         str | None,
@@ -1653,18 +1657,27 @@ def sweep(
     ] = None,
     design_factor: Annotated[
         str | None,
-        typer.Option(help="Depth axis only: dimensionless factor on the service pressure."),
+        typer.Option(help="Depth axis only: dimensionless factor on the service pressure, at least 1."),
     ] = None,
     input_path: Annotated[
         str | None,
-        typer.Option("--input", help="JSON sweep request file, or '-' for stdin."),
+        typer.Option(
+            "--input",
+            help="JSON sweep request file, or '-' for stdin; with --pressure or --depth"
+            " options, it omits inputs.",
+        ),
     ] = None,
     materials_file: MaterialsFileOption = None,
     json_output: JsonOutputOption = False,
     output_format: OutputFormatOption = None,
     units: UnitsOption = None,
 ) -> None:
-    """Sweep one forward request over pressure, depth, or a geometric dimension."""
+    """Sweep one forward request over pressure, depth, or a geometric dimension.
+
+    The request is {"schema_version": "5.0.0", "model": "sweep", "inputs":
+    <axis>, "request": <forward request>}; the --pressure and --depth options
+    supply its inputs instead.
+    """
     try:
         if input_path is None:
             raise CalcCliError(
@@ -1693,7 +1706,14 @@ def sweep(
             design_factor=design_factor,
         )
         if inputs is not None:
-            if "inputs" in raw:
+            if raw.get("model") != "sweep":
+                raise CalcCliError(
+                    "invalid_request",
+                    "with --pressure or --depth options, --input is a sweep request"
+                    ' without inputs: {"schema_version", "model": "sweep", "request":'
+                    " <forward request>}",
+                )
+            if raw.get("inputs"):
                 raise CalcCliError(
                     "axis_source_conflict",
                     "choose exactly one sweep axis: the request's inputs or the"
@@ -1812,7 +1832,7 @@ def _check_provenance_projection(response: dict[str, Any]) -> dict[str, Any]:
 def check_request(
     input_path: Annotated[str | None, typer.Option("--input", help="Request JSON file, or '-' for stdin.")] = None,
     checks: Annotated[list[str] | None, typer.Option("--check", help="Required check ID; repeat to select checks. Defaults to the request's checks.")] = None,
-    minimum_margin: Annotated[str | None, typer.Option(help="Additional minimum margin required on selected checks.")] = None,
+    minimum_margin: Annotated[str | None, typer.Option(help="Minimum margin required on selected structural checks; the larger of this and the request's own target applies.")] = None,
     materials_file: MaterialsFileOption = None,
     json_output: JsonOutputOption = False,
     output_format: OutputFormatOption = None,
@@ -1827,23 +1847,21 @@ def check_request(
             response, required_checks=checks or None,
             minimum_margin=_minimum_margin_from_option(minimum_margin),
         )
-        payload: dict[str, Any] = {
-            key: response[key]
-            for key in ("schema_version", "model", "operation", "loading", "material")
-            if key in response
-        }
-        # Detailed JSON is the auditable check record. Keep material provenance
-        # there without making the concise summary/text/CSV formats imply that
-        # one tube material represents a multi-material assembly.
         if output_format in (None, "json"):
+            # Detailed JSON is the auditable check record: the assessment, its
+            # material provenance, and a sizing request's selected geometry.
+            payload: dict[str, Any] = {
+                key: response[key]
+                for key in ("schema_version", "model", "operation", "loading", "material", "sizing")
+                if key in response
+            }
             payload.update(_check_provenance_projection(response))
-        payload["assessment"] = assessment
-        if output_format == "text":
-            # The text report reads estimates, displacement, and mass from the
-            # full response; the check's own assessment replaces the response's.
-            _emit(response, compact=json_output, output_format=output_format, units=units, assessment=assessment)
-        else:
+            payload["assessment"] = assessment
             _emit(payload, compact=json_output, output_format=output_format, units=units)
+        else:
+            # The other formats read geometry, estimates, displacement, and
+            # mass from the full response; the check's assessment replaces its own.
+            _emit(response, compact=json_output, output_format=output_format, units=units, assessment=assessment)
         raise typer.Exit({"pass": 0, "fail": 1, "indeterminate": 3}[assessment["status"]])
     except CalcCliError as exc:
         _exit_with_error(exc, output_format, units, json_output=json_output)
@@ -1935,6 +1953,10 @@ def _emit_material(payload: dict[str, Any], compact: bool, output_format: str | 
                 qualification = capability.get("buckling_data_qualification")
                 if qualification is not None:
                     available += f"; buckling data {qualification}"
+                if "withheld_reason" in capability:
+                    # The properties are present, yet no result is released.
+                    withheld = f"withheld: {capability['withheld_reason']}"
+                    available = withheld if capability["available"] else f"{available}; {withheld}"
                 typer.echo(f"  {name}: {available}")
         if "properties" in payload:
             typer.echo(_json_text(payload["properties"], compact=False))
@@ -1948,7 +1970,7 @@ def _emit_material(payload: dict[str, Any], compact: bool, output_format: str | 
 def materials_list(
     materials_file: MaterialsFileOption = None,
     json_output: JsonOutputOption = False,
-    output_format: OutputFormatOption = None,
+    output_format: MaterialsFormatOption = None,
     units: UnitsOption = None,
 ) -> None:
     """List material records and the calculation inputs each record supplies."""
@@ -1969,7 +1991,7 @@ def materials_show(
     name: str,
     materials_file: MaterialsFileOption = None,
     json_output: JsonOutputOption = False,
-    output_format: OutputFormatOption = None,
+    output_format: MaterialsFormatOption = None,
 ) -> None:
     """Show a material's properties, provenance, and input availability."""
     try:

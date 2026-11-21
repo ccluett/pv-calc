@@ -24,7 +24,8 @@ class DepthLoad(ContractModel):
     depth: Length
     fluid_density: Density
     gravity: Acceleration
-    design_factor: Annotated[float, Field(gt=0, allow_inf_nan=False)]
+    # A policy factor on pressure; below 1 it would design under the service load.
+    design_factor: Annotated[float, Field(ge=1, allow_inf_nan=False)]
 
 
 def _prepare_request(raw: Mapping[str, Any]) -> tuple[dict[str, Any], dict[str, Any] | None]:

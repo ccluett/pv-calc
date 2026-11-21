@@ -26,6 +26,9 @@ RING_SHELL_INTER_RING_SUPPORT_REASON = (
     "Inter-ring buckling is advisory: ideal circular support at each ring center line is "
     "assumed; ring stiffness and attachment are not checked for that support."
 )
+# Checks accept equality, and the same equality rounds differently on a stress
+# basis and on a pressure basis, so a relative difference this small is equal.
+_EQUALITY_TOLERANCE = 1e-12
 
 
 @dataclass(frozen=True)
@@ -50,6 +53,8 @@ def check_decision(
     A producer's decision may be retained only at the same target. This keeps
     native and sizing decisions stable where division and multiplication round
     differently; every new target uses the direct capacity-demand comparison.
+    A producer supplies ``upper_bound`` only where the elastic pressure bounds
+    an unreleased capacity from above, so it can establish failure.
     """
     eligible = (
         eligible and applicability == "released"
@@ -64,13 +69,13 @@ def check_decision(
         elif status_at_target == "fail":
             status = "fail"
         else:
-            status = "pass" if demand * (1.0 + required_margin) <= capacity else "fail"
+            required = demand * (1.0 + required_margin)
+            status = "pass" if required <= capacity * (1.0 + _EQUALITY_TOLERANCE) else "fail"
         return _CheckDecision(status, True)
     upper_bound_failure = (
-        applicability in BUCKLING_ELASTIC_UPPER_BOUND_STATUSES
-        and demand is not None and demand >= 0.0
+        demand is not None and demand >= 0.0
         and upper_bound is not None and upper_bound >= 0.0
-        and upper_bound < demand * (1.0 + required_margin)
+        and upper_bound * (1.0 + _EQUALITY_TOLERANCE) < demand * (1.0 + required_margin)
     )
     return _CheckDecision(
         "fail" if upper_bound_failure else "indeterminate", False, upper_bound_failure,
@@ -153,6 +158,26 @@ def _smooth_buckling_elastic_upper_bound(result: dict[str, Any]) -> Any:
     return candidates[0] if len(candidates) == 1 else None
 
 
+def hemisphere_elastic_upper_bound(result: dict[str, Any]) -> float | None:
+    """NASA's elastic pressure where only material data hold back its release.
+
+    As for the smooth cylinder's pending plasticity: a thin shell inside
+    ``lambda > 2`` with a supplied proportional limit, which the critical
+    stress exceeds or whose data are reference-only. A plasticity correction
+    or qualified data could only lower it.
+    """
+    ratio = _number(result.get("mean_radius_over_thickness"))
+    threshold = _number(result.get("thin_wall_threshold_mean_radius_over_thickness"))
+    thin = ratio is not None and threshold is not None and ratio > threshold
+    if (
+        not thin or result.get("buckling_capacity_status") == "released"
+        or _number(result.get("proportional_limit_mpa")) is None
+    ):
+        return None
+    # Null outside lambda > 2.
+    return _number(result.get("nasa_candidate_design_pressure_mpa"))
+
+
 def _result_checks(payload: dict[str, Any]) -> list[dict[str, Any]]:
     if "assessment" in payload and "checks" in payload["assessment"]:
         return deepcopy(payload["assessment"]["checks"])
@@ -181,12 +206,7 @@ def _result_checks(payload: dict[str, Any]) -> list[dict[str, Any]]:
             _check("hemisphere_buckling", pressure, result.get("released_buckling_pressure_mpa"), result.get("buckling_margin"),
                    applicability=result.get("buckling_capacity_status", "unavailable"),
                    reasons=result.get("buckling_validity_violations", []),
-                   upper_bound=(
-                       result.get("released_buckling_pressure_mpa")
-                       if result.get("buckling_capacity_status")
-                       == "released_unqualified_material"
-                       else None
-                   )),
+                   upper_bound=hemisphere_elastic_upper_bound(result)),
         ]
     if model == "plate":
         checks = [_check(
@@ -312,15 +332,23 @@ def assess_response(
         return {"status": "fail" if "fail" in statuses else "indeterminate" if not statuses or "indeterminate" in statuses else "pass",
                 "scope": ASSESSMENT_SCOPE, "entries": assessments}
     sizing = payload.get("sizing", {})
-    declared = sizing.get("declared_check_set")
     available = {check["id"]: check for check in _result_checks(payload)}
-    required = list(dict.fromkeys(required_checks if required_checks is not None else declared or list(available)))
+    # A sizing request's declared checks lead, and the response's other
+    # checks, such as a plate's seat bearing, are still required.
+    required = list(dict.fromkeys(
+        required_checks if required_checks is not None
+        else [*sizing.get("declared_check_set", []), *available]
+    ))
     check_targets = sizing.get("check_targets", {})
     checks: list[dict[str, Any]] = []
     for name in required:
         check = available.get(name, _check(name, None, None, None, "unavailable", ["Requested check is absent from this response."]))
         original_target = check.get("required_margin", 0.0)
-        declared_target = check_targets.get(name, sizing.get("target_minimum_margin", original_target))
+        # An undeclared check takes the request's structural target: the
+        # plate's bending target, which no declared plate target exceeds.
+        declared_target = check_targets.get(name, sizing.get(
+            "target_minimum_margin", max(check_targets.values(), default=original_target),
+        ))
         structural_target = 0.0 if name.rsplit(".", 1)[-1] == "center_deflection" else minimum_margin
         target = max(structural_target, original_target, declared_target)
         check["required_margin"] = target

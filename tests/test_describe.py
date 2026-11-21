@@ -99,7 +99,7 @@ def _assert_workflow_input_schema(inputs: dict[str, Any], base_inputs: dict[str,
     assert {name: inputs["properties"][name] for name in base_inputs["properties"]} == base_inputs["properties"]
     assert set(inputs["properties"]) == set(base_inputs["properties"]) | set(load_names)
     assert all(inputs["properties"][name] == {"$ref": "#/$defs/QuantityInput"} for name in load_names[:3])
-    assert inputs["properties"]["design_factor"] == {"type": "number", "exclusiveMinimum": 0}
+    assert inputs["properties"]["design_factor"] == {"type": "number", "minimum": 1}
     assert inputs["required"] == [name for name in base_inputs["required"] if name != "external_pressure"]
     conditions = [{"oneOf": [
         {"required": ["external_pressure"], "not": {"anyOf": [{"required": [name]} for name in load_names]}},

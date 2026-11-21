@@ -11,7 +11,7 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
-from pv_calc.assessment import check_decision, summarize_checks
+from pv_calc.assessment import check_decision, hemisphere_elastic_upper_bound, summarize_checks
 from pv_calc.contracts import (
     CALC_SCHEMA_VERSION,
     Closure as Closure,
@@ -426,12 +426,7 @@ def evaluate_cylinder(
                            result["released_buckling_pressure_mpa"]["value"], required_margin=target,
                            applicability=result["buckling_capacity_status"],
                            reasons=list(result["buckling_validity_violations"]),
-                           upper_bound=(
-                               result["released_buckling_pressure_mpa"]["value"]
-                               if result["buckling_capacity_status"]
-                               == "released_unqualified_material"
-                               else None
-                           )),
+                           upper_bound=hemisphere_elastic_upper_bound(result)),
                 ])
             except CalcCliError as exc:
                 if exc.code != "invalid_material":
