@@ -1,0 +1,34 @@
+name: change text
+
+# A squash merge puts the pull-request title and description on main as the
+# commit message, and the branch name stays on the pull-request page, so all
+# three are checked with the commit messages. Editing the title or
+# description runs the check again.
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  contents: read
+
+jobs:
+  change-text:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          # The commit range below needs the branch's history.
+          fetch-depth: 0
+      - name: Check the branch name, title, description, and commit messages
+        env:
+          # Passed through the environment so the text is never run as shell.
+          PR_BRANCH: ${{ github.head_ref }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          {
+            printf '%s\n' "$PR_BRANCH" "$PR_TITLE" "$PR_BODY"
+            git log --format=%B "$BASE_SHA..$HEAD_SHA"
+          } | python3 .github/scripts/check_distribution.py text
